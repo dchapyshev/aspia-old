@@ -1,0 +1,950 @@
+/*
+ * PROJECT:         Aspia
+ * FILE:            languages/uk-UA/uk-UA.rc
+ * LICENSE:         LGPL (GNU Lesser General Public License)
+ * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
+ * TRANSLATORS:     Sakara Eugene (vzov@yandex.ua)
+ */
+
+/* Ukrainian resource file */
+
+#include <windows.h>
+#include <commctrl.h>
+#include "../../aspia/resource.h"
+
+LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
+
+IDR_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "Копіювати рядок\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Копіювати значення", ID_COPY_VALUE
+        MENUITEM "Копіювати назву", ID_COPY_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Оновити\tF5", ID_RELOAD
+    END
+END
+
+IDR_COPY_ALL_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Копіювати обране\tCtrl+C", ID_COPY_ALL
+    END
+END
+
+IDR_SAVE_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Поточна сторінка\tCtrl+S", ID_SAVE_CURRENT
+        MENUITEM "&Всі категорії", ID_SAVE_ALL
+        MENUITEM "В&ибірково...", ID_SAVE_REPORT
+    END
+END
+
+IDR_SHOW_TRAY_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Показати вікно", ID_SHOW_WINDOW
+        MENUITEM SEPARATOR
+        MENUITEM "Звіт: &всі категорії", ID_SAVE_ALL
+        MENUITEM "Звіт: &обрані...", ID_SAVE_REPORT
+        MENUITEM SEPARATOR
+        MENUITEM "&Вихід", ID_EXIT
+    END
+END
+
+IDR_HIDE_TRAY_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Сховати вікно", ID_HIDE_WINDOW
+        MENUITEM SEPARATOR
+        MENUITEM "Звіт: &всі категорії", ID_SAVE_ALL
+        MENUITEM "Звіт: &обрані...", ID_SAVE_REPORT
+        MENUITEM SEPARATOR
+        MENUITEM "&Вихід", ID_EXIT
+    END
+END
+
+IDD_ABOUT_DIALOG DIALOGEX 100, 100, 198, 187
+STYLE DS_SHELLFONT | WS_BORDER | WS_DLGFRAME | WS_SYSMENU | DS_MODALFRAME | DS_CENTER
+CAPTION "Про програму"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CONTROL -1, IDC_ABOUT_ICON, "STATIC", SS_ICON | SS_CENTERIMAGE | SS_REALSIZEIMAGE, 15, 10, 30, 30
+    LTEXT "Aspia (версія %s)", IDC_VERSION_TEXT, 67, 15, 73, 11
+    LTEXT "© 2011 Aspia Software", -1, 66, 27, 100, 10
+    EDITTEXT IDC_ABOUT_EDIT, 5, 45, 188, 87, WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_GROUP | WS_TABSTOP | ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL
+    CONTROL "", -1, "STATIC", SS_ETCHEDFRAME, 5, 136, 188, 27
+    PUSHBUTTON "&Підтримати матеріально!", IDC_DONATE_BTN, 75, 143, 110, 14
+    PUSHBUTTON "&Сайт", IDC_SITE_BTN, 13, 143, 55, 14
+
+    PUSHBUTTON "&Закрити", IDOK, 140, 168, 50, 14
+END
+
+IDD_REPORT_DIALOG DIALOGEX 22, 16, 226, 291
+STYLE DS_SHELLFONT | WS_BORDER | WS_DLGFRAME | WS_SYSMENU | DS_MODALFRAME | DS_CENTER
+CAPTION "Збереження звіту"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT "Включити до звіту інформацію з категорій:", -1, 6, 6, 191, 10
+    CONTROL "", IDC_CATEGORIES_TREE, "SysTreeView32",
+        WS_BORDER | WS_GROUP | WS_TABSTOP | TVS_HASLINES | TVS_SHOWSELALWAYS |
+        TVS_HASBUTTONS | TVS_LINESATROOT | TVS_CHECKBOXES, 6, 18, 191, 133
+
+    PUSHBUTTON "", IDC_SELECT_ALL, 202, 18, 20, 18, BS_ICON
+    PUSHBUTTON "", IDC_UNSELECT_ALL, 202, 40, 20, 18, BS_ICON
+
+    AUTOCHECKBOX "&Додавати зміст у звіт", IDC_ADD_CONTENT, 14, 156, 130, 8
+
+    GROUPBOX "Фільтрація вмісту", -1, 6, 168, 215, 66, WS_VISIBLE
+    LTEXT "Системні події:", -1, 14, 178, 77, 10
+    AUTOCHECKBOX """Помилка""", IDC_FILTER_ELOG_ERROR, 14, 191, 90, 8
+    AUTOCHECKBOX """Попередження""", IDC_FILTER_ELOG_WARNING, 14, 205, 90, 8
+    AUTOCHECKBOX """Інформація""", IDC_FILTER_ELOG_INFO, 14, 219, 90, 8
+    LTEXT "Історія IE:", -1, 114, 178, 77, 10
+    AUTOCHECKBOX "Показувати ""file://""", IDC_FILTER_IE_FILE, 114, 191, 90, 8
+    AUTOCHECKBOX "Показувати ""http://""", IDC_FILTER_IE_HTTP, 114, 205, 90, 8
+    AUTOCHECKBOX "Показувати ""ftp://""", IDC_FILTER_IE_FTP, 114, 219, 90, 8
+
+    GROUPBOX "Шлях до файлу звіту", -1, 6, 237, 215, 32, WS_VISIBLE
+    EDITTEXT IDC_FILEPATH_EDIT, 14, 249, 174, 14, WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP | ES_READONLY | ES_AUTOHSCROLL
+    PUSHBUTTON "...", IDC_SET_PATH_BTN, 193, 249, 20, 14
+
+    PUSHBUTTON "&Зберегти", IDOK, 95, 272, 60, 14
+    PUSHBUTTON "З&акрити", IDCANCEL, 160, 272, 60, 14
+END
+
+IDD_REPORT_STATUS_DIALOG DIALOGEX 22, 16, 253, 68
+STYLE DS_SHELLFONT | WS_BORDER | WS_DLGFRAME | WS_SYSMENU | DS_MODALFRAME | DS_CENTER
+CAPTION "Збереження звіту"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CONTROL -1, IDC_STATUS_ICON, "STATIC", SS_ICON | SS_CENTERIMAGE | SS_REALSIZEIMAGE, 10, 3, 18, 15
+    LTEXT "", IDC_STATUS_MSG, 33, 6, 212, 10
+    CONTROL "", IDC_REPORT_PROGRESS, PROGRESS_CLASS, WS_BORDER | WS_TABSTOP | PBS_MARQUEE, 9, 19, 235, 17
+    LTEXT "* Збереження звіту може зайняти тривалий час", -1, 13, 39, 233, 10
+    PUSHBUTTON "&Скасувати", IDCANCEL, 183, 49, 60, 14
+END
+
+IDD_SETTINGS_DIALOG DIALOGEX 20, 16, 217, 282
+STYLE DS_SHELLFONT | WS_BORDER | WS_DLGFRAME | WS_SYSMENU | DS_MODALFRAME | DS_CENTER
+CAPTION "Параметри"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    GROUPBOX "Основні", -1, 4, 3, 208, 101, WS_VISIBLE
+    LTEXT "Мова:", -1, 13, 16, 33, 10
+    COMBOBOX IDC_LANGUAGE_COMBO, 95, 12, 110, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
+    LTEXT "Тема іконок:", -1, 13, 33, 59, 10
+    COMBOBOX IDC_ICONS_COMBO, 95, 29, 110, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
+    LTEXT "Відкриті категорії при запуску:", -1, 13, 48, 190, 10
+    COMBOBOX IDC_STARTUP_CAT_COMBO, 13, 58, 192, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
+    AUTOCHECKBOX "Запускати разом з Windows", IDC_START_WITH_WINDOWS, 20, 76, 110, 8
+    AUTOCHECKBOX "Зберігати положення вікна", IDC_SAVE_WINDOW_POS, 20, 90, 109, 8
+
+    GROUPBOX "Системний трей", -1, 4, 106, 208, 108, WS_VISIBLE
+    AUTOCHECKBOX "Запускати згорнутою в трей", IDC_START_MINIMIZED, 20, 117, 119, 8
+    AUTOCHECKBOX "Показувати іконку програми", IDC_SHOW_PROG_ICON, 20, 131, 127, 8
+    AUTOCHECKBOX "Показувати іконки датчиків:", IDC_SHOW_SENSOR_ICON, 20, 145, 123, 8
+    CONTROL "", IDC_SENSOR_ICON_LIST, "SysListView32", LVS_REPORT | LVS_SORTASCENDING | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP, 13, 158, 191, 36
+    LTEXT "Частота оновлення (в секундах):", -1, 20, 200, 127, 10
+    EDITTEXT IDC_REFRESH_RATE_EDIT, 150, 198, 40, 12, WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP | ES_NUMBER
+    CONTROL "", IDC_REF_RATE_UPDOWN, "msctls_updown32", UDS_NOTHOUSANDS | UDS_WRAP | UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS | WS_CHILD | WS_VISIBLE | UDS_ALIGNRIGHT, 190, 198, 9, 11
+
+    GROUPBOX "Іконки процесорів", -1, 4, 215, 101, 46, WS_VISIBLE
+    CONTROL -1, IDC_CPU_ICON, "STATIC", SS_ICON | SS_CENTERIMAGE | SS_REALSIZEIMAGE | WS_BORDER, 12, 232, 18, 15
+    PUSHBUTTON "&Колір шрифту", IDC_CPU_FONT_COLOR, 40, 225, 60, 14
+    PUSHBUTTON "&Фон", IDC_CPU_BACKGROUND, 40, 242, 60, 14
+
+    GROUPBOX "Іконки жорстких дисків", -1, 111, 215, 101, 46, WS_VISIBLE
+    CONTROL -1, IDC_HDD_ICON, "STATIC", SS_ICON | SS_CENTERIMAGE | SS_REALSIZEIMAGE | WS_BORDER, 119, 232, 18, 15
+    PUSHBUTTON "&Колір шрифту", IDC_HDD_FONT_COLOR, 147, 225, 60, 14
+    PUSHBUTTON "&Фон", IDC_HDD_BACKGROUND, 147, 242, 60, 14
+
+    PUSHBUTTON "&Зберегти", IDOK, 84, 264, 60, 14
+    PUSHBUTTON "&Закрити", IDCANCEL, 148, 264, 60, 14
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_APPTITLE, "Aspia"
+    IDS_SAVE, "Зберегти звіт"
+    IDS_RELOAD, "Оновити"
+    IDS_ABOUT, "Про програму..."
+    IDS_PARAM, "Параметр"
+    IDS_VALUE, "Значення"
+    IDS_PRODUCT_KEY, "Ключ продукту"
+    IDS_PRODUCT_ID, "ID продукту"
+    IDS_KERNEL_TYPE, "Тип ядра ОС"
+    IDS_SYSTEM_ROOT, "Коренева тека ОС"
+    IDS_OS_VERSION, "Версія ОС"
+    IDS_OS_BUILD, "Збірка ОС"
+    IDS_OS_REG_USER, "Зареєстрований користувач"
+    IDS_OS_REG_ORG, "Зареєстрована організація"
+    IDS_OS_PRODUCT_NAME, "Назва ОС"
+    IDS_USER_NAME, "Ім’я користувача"
+    IDS_FULL_USER_NAME, "Повне ім’я"
+    IDS_USER_DESC, "Опис"
+    IDS_USER_GROUP_NAME, "Назва групи"
+    IDS_USER_GROUP_DESC, "Опис"
+
+    IDS_FONT_NAME, "Назва шрифту"
+    IDS_FONT_SIZE, "Розмір"
+    IDS_FONT_FILENAME, "Назва файлу"
+
+    IDS_ELOG_ERROR_TYPE, "Помилка"
+    IDS_ELOG_WARNING_TYPE, "Попередження"
+    IDS_ELOG_INFO_TYPE, "Повідомлення"
+    IDS_ELOG_AUDIT_SUCCESS, "Аудит успіхів"
+    IDS_ELOG_AUDIT_FAILURE, "Аудит відмов"
+    IDS_ELOG_SUCCESS, "Успіх"
+    IDS_ELOG_UNKNOWN_TYPE, "Невідома подія"
+    IDS_ELOG_SOURCE, "Джерело"
+    IDS_ELOG_CATEGORY, "Категорія"
+    IDS_ELOG_EVENT, "Подія"
+    IDS_ELOG_USER, "Користувач"
+    IDS_ELOG_COMPUTER, "Комп’ютер"
+    IDS_ELOG_APPLICATIONS, "Програми"
+    IDS_ELOG_SECURITY, "Безпека"
+    IDS_ELOG_SYSTEM, "Система"
+
+    IDS_FOLDER_NAME, "Ім’я теки"
+    IDS_FOLDER_PATH, "Шлях до теки"
+
+    IDS_DIR_ADMIN_TOOLS, "Administrative Tools"
+    IDS_DIR_APPDATA, "AppData"
+    IDS_DIR_CACHE, "Cache"
+    IDS_DIR_CD_BURNING, "CD Burning"
+    IDS_DIR_COMMON_ADMIN_TOOLS, "Common Administrative Tools"
+    IDS_DIR_COMMON_APPDATA, "Common AppData"
+    IDS_DIR_COMMON_DESKTOP, "Common Desktop"
+    IDS_DIR_COMMON_DOCUMENTS, "Common Documents"
+    IDS_DIR_COMMON_FAVORITES, "Common Favorites"
+    IDS_DIR_COMMON_FILES, "Common Files"
+    IDS_DIR_COMMON_MUSIC, "Common Music"
+    IDS_DIR_COMMON_PICTURES, "Common Pictures"
+    IDS_DIR_COMMON_PROGRAMS, "Common Programs"
+    IDS_DIR_COMMON_STARTMENU, "Common Start Menu"
+    IDS_DIR_COMMON_STARTUP, "Common Startup"
+    IDS_DIR_COMMON_TEMPLATES, "Common Templates"
+    IDS_DIR_COMMON_VIDEO, "Common Video"
+    IDS_DIR_COOKIES, "Cookies"
+    IDS_DIR_DESKTOP, "Desktop"
+    IDS_DIR_FAVORITES, "Favorites"
+    IDS_DIR_FONTS, "Fonts"
+    IDS_DIR_HISTORY, "History"
+    IDS_DIR_LOCAL_APPDATA, "Local AppData"
+    IDS_DIR_MY_DOCS, "My Documents"
+    IDS_DIR_MY_MUSIC, "My Music"
+    IDS_DIR_MY_PICTURES, "My Pictures"
+    IDS_DIR_MY_VIDEO, "My Video"
+    IDS_DIR_NETHOOD, "NetHood"
+    IDS_DIR_PRINTHOOD, "PrintHood"
+    IDS_DIR_PROFILE, "Profile"
+    IDS_DIR_PROGRAMFILES, "Program Files"
+    IDS_DIR_PROGRAMS, "Programs"
+    IDS_DIR_RECENT, "Recent"
+    IDS_DIR_RESOURCES, "Resources"
+    IDS_DIR_SENDTO, "SendTo"
+    IDS_DIR_STARTMENU, "Start Menu"
+    IDS_DIR_STARTUP, "Startup"
+    IDS_DIR_SYSTEM, "System"
+    IDS_DIR_TEMP, "Temp"
+    IDS_DIR_TEMPLATES, "Templates"
+    IDS_DIR_WINDOWS, "Windows"
+
+    IDS_COMPUTER_NAME, "Ім’я комп’ютера"
+    IDS_CURRENT_USERNAME, "Ім’я поточного користувача"
+
+    IDS_ALL_MEMORY, "Всього оперативної пам’яті"
+    IDS_FREE_MEMORY, "Вільної оперативної пам’яті"
+    IDS_TOTAL_PAGINGFILE, "Розмір файлу підкачки"
+    IDS_FREE_PAGINGFILE, "Вільного місця у файлі підкачки"
+    IDS_TOTAL_VIRUALMEM, "Всього віртуальної пам’яті"
+    IDS_FREE_VIRUALMEM, "Вільної віртуальної пам’яті"
+
+    IDS_APP_PUBLISHER, "Виробник"
+    IDS_APP_HELPLINK, "Посилання на довідку"
+    IDS_APP_HELPPHONE, "Телефон підтримки"
+    IDS_APP_URL_UPDATEINFO, "Інформація про оновлення"
+    IDS_APP_URL_INFOABOUT, "Інформація про програму"
+    IDS_APP_INSTALLDATE, "Дата встановлення"
+    IDS_APP_INSTALLLOCATION, "Шлях установки"
+    IDS_APP_UNINSTALL_STR, "Рядок для видалення"
+    IDS_APP_MODIFY_PATH, "Рядок для зміни"
+
+    IDS_TIME, "Час"
+    IDS_DATE, "Дата"
+    IDS_COLUMN_CATEGORIES, "Категорії"
+
+    IDS_MEM_SIZE, "Розмір"
+    IDS_MEM_FORMFACTOR, "Форм-фактор"
+    IDS_MEM_SPEED, "Частота"
+    IDS_MEM_PARTNUMBER, "Шифр компонента"
+    IDS_MEM_BANK, "Банк"
+    IDS_MEM_TOTALWIDTH, "Загальна ширина"
+    IDS_MEM_DATAWIDTH, "Ширина даних"
+
+    IDS_CPU_SOCKET, "Тип роз’єму"
+    IDS_CPU_VOLTAGE, "Напруга живлення"
+    IDS_CPU_EXTCLOCK, "Зовнішня частота"
+    IDS_CPU_CURRENTSPEED, "Поточна частота"
+    IDS_CPU_UPGRADE, "Встановлення"
+    IDS_CPU_FAMILY, "Сімейство"
+
+    IDS_SUMMARY_MEM, "Пам’ять"
+    IDS_SUMMARY_CPU, "Центральний процесор"
+    IDS_SUMMARY_OS, "Операційна система"
+    IDS_SUMMARY_HDD, "Жорсткі диски"
+    IDS_CPU_MAXSPEED, "Максимальна частота"
+
+    IDS_ROUTE_DEST_IP, "Мережне призначення"
+    IDS_ROUTE_SUBNET_MASK, "Маска мережі"
+    IDS_ROUTE_GATEWAY, "Шлюз"
+    IDS_ROUTE_METRIC, "Метрика"
+
+    IDS_IE_HISTORY_TIME, "Час"
+    IDS_IE_HISTORY_DATE, "Дата"
+    IDS_IE_HISTORY_URL, "Посилання"
+    IDS_IE_HISTORY_TITLE, "Заголовок"
+    IDS_IE_STARTPAGE, "Стартова сторінка"
+    IDS_IE_SEARCHPAGE, "Сторінка пошуку"
+    IDS_IE_LOCALPAGE, "Порожня сторінка"
+    IDS_IE_DOWNLOADDIR, "Тека для завантаження"
+    IDS_IE_USE_PROXY, "Проксі включений"
+    IDS_IE_PROXY_ADDR, "Адреса проксі"
+
+    IDS_YES, "Так"
+    IDS_NO, "Ні"
+
+    IDS_DMI_CACHE_SRAM_TYPES, "Підтримуваний тип SRAM"
+    IDS_DMI_CACHE_SRAM_CURRENT, "Поточний тип SRAM"
+    IDS_DMI_CACHE_MAX_SIZE, "Максимальний обсяг"
+    IDS_DMI_CACHE_CURRENT_SIZE, "Поточний обсяг"
+    IDS_DMI_CACHE_MODE, "Режим роботи"
+    IDS_DMI_CACHE_LEVEL, "Рівень кеша"
+
+    IDS_BIOS_DATE, "Дата випуску"
+    IDS_BIOS_SIZE, "Розмір"
+    IDS_BIOS_BOOT_DEVICES, "Завантажувальні пристрої"
+    IDS_BIOS_STANDATDS, "Підтримувані стандарти"
+    IDS_BIOS_SLOTS, "Можливості розширення"
+    IDS_BIOS_FATURES, "Можливості"
+
+    IDS_SYS_ID, "Універсальний унікальний ID"
+    IDS_SYS_WAKEUP, "Тип пробудження"
+
+    IDS_DMI_HEADER_TITLE, "Увага!"
+    IDS_DMI_HEADER, "Дані DMI можуть бути недостовірні!"
+
+    IDS_SLOT_BUS_WIDTH, "Ширина шини даних"
+    IDS_SLOT_LENGTH, "Довжина"
+
+    IDS_PORT_TYPE, "Тип порту"
+    IDS_PORT_INT_DESIGNATION, "Внутрішнє позначення"
+    IDS_PORT_EXT_DESIGNATION, "Зовнішнє позначення"
+    IDS_PORT_INT_CONNECTOR, "Внутрішній тип роз’єму"
+    IDS_PORT_EXT_CONNECTOR, "Зовнішній тип роз’єму"
+
+    IDS_ENCL_OSLOAD_STATUS, "Стан завантаження ОС"
+    IDS_ENCL_POWER_STATUS, "Стан джерела живлення"
+    IDS_ENCL_TEMPERATURE_STATUS, "Температурний стан"
+    IDS_ENCL_SECURITY_STATUS, "Стан безпеки"
+    IDS_ENCL_ID, "Шасі"
+    IDS_ENCL_TYPE, "Тип шасі"
+
+    IDS_NIC_NAME, "Назва з’єднання"
+    IDS_NIC_IP, "IP адреса"
+    IDS_NIC_MAC, "MAC адреса"
+    IDS_NIC_SUBNET_MASK, "Маска підмережі"
+    IDS_NIC_DHCP_ADDR, "Адреса DHCP сервера"
+    IDS_NIC_DHCP_OBTAINED, "DHCP-оренда отримана"
+    IDS_NIC_DHCP_EXPIRES, "DHCP-оренда закінчується"
+    IDS_NIC_MTU, "MTU"
+    IDS_NIC_GETEWAY, "Шлюз"
+    IDS_NIC_TYPE, "Тип інтерфейсу"
+    IDS_NIC_SPEED, "Швидкість з’єднання"
+    IDS_NIC_SENT, "Відправлено"
+    IDS_NIC_RECEIVED, "Отримано"
+    IDS_NIC_DHCP_STATUS, "DHCP увімкнений"
+    IDS_NIC_WINS_STATUS, "WINS увімкнений"
+
+    IDS_NONE, "Порожньо"
+
+    IDS_MONITOR_DAC_TYPE, "Тип DAC"
+    IDS_MONITOR_CHIP_TYPE, "Тип відеопроцесора"
+    IDS_MONITOR_MODE, "Поточний режим"
+    IDS_MONITOR_MEM_SIZE, "Обсяг відео ОЗУ"
+    IDS_MONITOR_ADAPTER, "Адаптер"
+    IDS_MONITOR_DRIVER_VENDOR, "Виробник драйвера"
+
+    IDS_SMART_ATTR_ID, "ID"
+    IDS_SMART_ATTR_WORST, "Найгірше"
+    IDS_SMART_ATTR_NAME, "Опис атрибуту"
+    IDS_SMART_ATTR_VALUE, "Значення"
+    IDS_SMART_THRESHOLD, "Поріг"
+    IDS_SMART_DATA, "Дані"
+
+    IDS_HDD_ID, "ID моделі"
+    IDS_HDD_ECC_BYTES, "Байти ECC"
+    IDS_HDD_BUFFER_SIZE, "Буфер"
+    IDS_HDD_MULTISECTORS, "Мультисектори"
+    IDS_HDD_PARAMS, "Параметри"
+    IDS_HDD_PARAMS_FORMAT, "циліндрів: %ld, головок: %ld, секторів в треці: %ld, байт в секторі: %ld"
+    IDS_HDD_SIZE, "Неформатована ємність"
+
+    IDS_SERVICE_DISP_NAME, "Відображуване ім’я"
+    IDS_SERVICE_START_TYPE, "Тип запуску"
+    IDS_SERVICE_USER_NAME, "Вхід від імені"
+    IDS_SERVICE_EX_FILE, "Виконуваний файл"
+    IDS_SERVICE_RUNNING, "Запущено"
+    IDS_SERVICE_PAUSED, "Призупинено"
+    IDS_SERVICE_STOPPED, "Зупинено"
+    IDS_SERVICE_START_PENDING, "Запуск"
+    IDS_SERVICE_STOP_PENDING, "Зупинка"
+    IDS_SERVICE_PAUSE_PENDING, "Призупинення"
+    IDS_SERVICE_CONT_PENDING, "Продовження"
+    IDS_SERVICE_AUTO, "Автоматично"
+    IDS_SERVICE_MANUAL, "Вручну"
+    IDS_SERVICE_DISABLED, "Відключено"
+    IDS_SERVICE_BOOT_START, "Запускається завантажувачем"
+    IDS_SERVICE_SYSTEM_START, "Запускається ядром"
+
+    IDS_USED_MEMORY, "Використовується пам’яті"
+    IDS_PERCENT_USED, "Завантаження пам’яті"
+    IDS_USED_PAGINFILE, "Використовується у файлі підкачки"
+    IDS_PERCENT_PAGINFILE, "Завантаження файлу підкачки"
+    IDS_USED_VIRTMEM, "Використовується віртуальної пам’яті"
+    IDS_PERCENT_VIRTMEM, "Завантаження віртуальної пам’яті"
+
+    IDS_DRIVE_UNKNOWN, "Невідомий"
+    IDS_DRIVE_NO_ROOT_DIR, "Неправильний шлях"
+    IDS_DRIVE_REMOVABLE, "Зовнішній"
+    IDS_DRIVE_FIXED, "Внутрішній"
+    IDS_DRIVE_REMOTE, "Віддалений"
+    IDS_DRIVE_CDROM, "CDROM"
+    IDS_DRIVE_RAMDISK, "RAM-диск"
+
+    IDS_SHARE_PATH, "Локальний шлях"
+    IDS_SHARE_DISKTREE, "Диск"
+    IDS_SHARE_PRINTQ, "Принтер"
+    IDS_SHARE_DEVICE, "Пристрій"
+    IDS_SHARE_IPC, "IPC"
+    IDS_SHARE_SPECIAL, "Системна тека"
+    IDS_SHARE_TEMPORARY, "Тимчасове"
+
+    IDS_TASK_NAME, "Ім’я процесу"
+    IDS_TASK_FILEPATH, "Шлях до файлу"
+    IDS_TASK_USED_MEM, "Зайнято пам’яті"
+    IDS_TASK_USED_PAGEFILE, "Зайнято підкачкою"
+    IDS_TASK_DESC, "Опис"
+
+    IDS_CATEGORY_COLUMN, "Категорія"
+
+    IDS_CPUID_FEATURES, "Можливості"
+    IDS_CPUID_SUPPORTED, "Підтримується"
+    IDS_CPUID_UNSUPPORTED, "Не підтримується"
+    IDS_CPUID_LOGICAL_COUNT, "Логічних процесорів"
+    IDS_CPUID_NAME, "Ім’я процесора"
+    IDS_CPUID_MODEL, "Модель"
+    IDS_CPUID_FAMILY, "Сімейство"
+    IDS_CPUID_STEPPINGID, "Степпінг"
+
+    IDS_BAT_ID, "Ідентифікатор"
+    IDS_BAT_TYPE, "Тип батареї"
+    IDS_BAT_CAPACITY, "Паспортна ємність"
+    IDS_BAT_FULL_CAPACITY, "Ємність при повному заряді"
+    IDS_BAT_CURRENT_CAPACITY, "Поточна ємність"
+    IDS_BAT_VOLTAGE, "Напруга живлення"
+    IDS_BAT_DEPRECIATION, "Ступінь зношеності"
+    IDS_BAT_MANUFACTUREDATE, "Дата виробництва"
+    IDS_BAT_TEMPERATURE, "Температура"
+    IDS_BAT_RECHARGEABLE, "Перезаряджається"
+    IDS_BAT_NONRECHARGEABLE, "Неможливо заряджати"
+    IDS_BAT_CHARGING, "Зарядка"
+    IDS_BAT_CRITICAL, "Критичне"
+    IDS_BAT_DISCHARGING, "Розрядка"
+    IDS_BAT_POWERONLINE, "Живлення від мережі"
+    IDS_BAT_BATTERYS, "Властивості батареї"
+
+    IDS_PRINTER_PORT, "Порт"
+    IDS_PRINTER_DRIVER, "Драйвер"
+    IDS_PRINTER_LOCATION, "Розташування"
+    IDS_PRINTER_COMMENT, "Коментар"
+    IDS_PRINTER_SHARENAME, "Ім’я загального ресурсу"
+    IDS_PRINTER_SERVER, "Сервер"
+    IDS_PRINTER_PROCESSOR, "Процесор друку"
+    IDS_PRINTER_SHARED, "Загальний доступ"
+    IDS_PRINTER_DATATYPE, "Тип даних"
+    IDS_PRINTER_JOBS_COUNT, "Завдань на друк"
+    IDS_PRINTER_DEFAULT, "За замовчуванням"
+    IDS_PRINTER_DEVICENAME, "Ім’я пристрою"
+    IDS_PRINTER_PAPER_SIZE, "Розмір паперу"
+    IDS_PRINTER_QUALITY, "Якість друку"
+    IDS_PRINTER_ORIENTATION, "Орієнтація паперу"
+    IDS_PRINTER_PORTRAIT, "Книжкова"
+    IDS_PRINTER_LANDSCAPE, "Альбомна"
+
+    IDS_RAS_COUNTRY_CODE, "Код країни"
+    IDS_RAS_AREA_CODE, "Код регіону"
+    IDS_RAS_PHONE_NUMBER, "Номер телефону"
+    IDS_RAS_IP, "IP адрес"
+    IDS_RAS_DEVICE_TYPE, "Тип пристрою"
+    IDS_RAS_DEVICE_NAME, "Ім’я пристрою"
+    IDS_RAS_DINAMIC_ADDR, "Динамічний"
+    IDS_RAS_SCRIPT, "Сценарій входу в систему"
+    IDS_RAS_FRAMING_PROTOCOL, "Протокол кадрування"
+    IDS_RAS_USERNAME, "Ім’я користувача"
+    IDS_RAS_DOMAIN, "Домен"
+    IDS_SYS_UPTIME, "Час роботи системи"
+    IDS_SYS_UPTIME_FORMAT, "%I64u днів, %I64u годин, %I64u хвилин, %.2I64u секунд"
+    IDS_TASK_COMMENT, "Коментар"
+    IDS_TASK_NEXT_RUN_TIME, "Час наступного запуску"
+    IDS_TASK_LAST_RUN_TIME, "Час попереднього запуску"
+    IDS_TASK_ACCAUNT, "Ім’я облікового запису"
+    IDS_TASK_APP_NAME, "Ім’я додатку"
+    IDS_TASK_WORK_DIR, "Робоча тека"
+    IDS_TASK_APP_PARAMS, "Параметри додатку"
+    IDS_TASK_CREATOR, "Автор"
+    IDS_TASK_READY, "Дозволено"
+    IDS_TASK_RUNNING, "Запущено"
+    IDS_TASK_DISABLED, "Відключено"
+    IDS_TASK_HAS_NOT_RUN, "Не працює"
+    IDS_TASK_NOT_SCHEDULED, "Не заплановано"
+    IDS_TASK_NO_MORE_RUNS, "Немає наступних запусків"
+    IDS_TASK_NO_VALID_TRIGGERS, "Немає коректних тригерів"
+    IDS_TASK_TRIGGER_FORMAT, "Тригер #%ld"
+
+    IDS_MANUFACTURER, "Виробник"
+    IDS_SERIAL_NUMBER, "Серійний номер"
+    IDS_NAME, "Ім’я"
+    IDS_TYPE, "Тип"
+    IDS_DESC, "Опис"
+    IDS_STATUS, "Стан"
+    IDS_PROP, "Властивості"
+    IDS_DNS1, "DNS 1"
+    IDS_DNS2, "DNS 2"
+    IDS_WINS1, "WINS 1"
+    IDS_WINS2, "WINS 2"
+    IDS_PRODUCT, "Продукт"
+    IDS_VERSION, "Версія"
+
+    /* Desktop */
+    IDS_DESK_DESKTOP, "Робочий стіл"
+    IDS_DESK_WALLPAPER, "Малюнок робочого столу"
+    IDS_DESK_COLOR_DEPTH, "Глибина кольору"
+    IDS_DESK_RESOLUTION, "Роздільна здатність"
+    IDS_DESK_REFRESH_RATE, "Частота оновлення"
+    IDS_DESK_FONT_SMOOTHING, "Згладжування шрифтів"
+    IDS_DESK_FONT_SMOOTHING_TYPE, "Тип згладжування шрифтів"
+    /* Mouse */
+    IDS_DESK_MOUSE, "Миша"
+    IDS_DESK_MOUSE_SPEED, "Швидкість миші"
+    IDS_DESK_MOUSE_TRAILS, "Слід вказівника миші"
+    IDS_DESK_WHELL_SCROLL_LINES, "Кількість прокручуваних рядків"
+    /* Keyboard */
+    IDS_DESK_KEYBOARD, "Клавіатура"
+    IDS_DESK_KEYBOARD_SPEED, "Швидкість повтору"
+    IDS_DESK_KEYBOARD_DELAY, "Затримка перед початком повтору"
+    /* Menu */
+    IDS_DESK_MENU, "Меню"
+    IDS_DESK_MENU_FADE_ANIMATION, "Анімація меню"
+    IDS_DESK_MENU_SHOW_DELAY, "Затримка показу меню"
+    IDS_DESK_FLAT_MENU, "Плоске меню"
+    /* Screen saver */
+    IDS_DESK_SS, "Заставка"
+    IDS_DESK_SS_ACTIVE, "Увімкнена"
+    IDS_DESK_SS_TIMEOUT, "Затримка увімкнення"
+    /* UI effects */
+    IDS_DESK_UI_EFFECTS, "Ефекти"
+    IDS_DESK_COMBOBOX_ANIMATION, "Ковзання при відкритті списків"
+    IDS_DESK_CURSOR_SHADOW, "Тінь під вказівником миші"
+    IDS_DESK_GRADIENT_CAPTIONS, "Градієнт заголовка вікна"
+    IDS_DESK_LISTBOXSMOOTHSCROLLING, "Плавна прокрутка списків"
+    IDS_DESK_MENUANIMATION, "Анімація меню"
+    IDS_DESK_TOOLTIPANIMATION, "Анімація підказок"
+    /* Window */
+    IDS_DESK_WINDOW, "Вікна"
+    IDS_DESK_WND_ANIMATION, "Анімація вікон"
+    IDS_DESK_WND_BORDER, "Ширина обрамлення"
+    IDS_DESK_WND_DRAG_FULL, "Переміщати вікно повністю"
+    IDS_DESK_DROPS_SHADOW, "Тінь під час перетягування"
+
+    IDS_SMOOTHING_CLEARTYPE, "ClearType"
+    IDS_SMOOTHING_STANDARD, "Стандартне"
+
+    IDS_RAS_IP_HEADER_COMPRES, "Стиснення IP-заголовка"
+    IDS_RAS_PPP_LCP_EXTENSIONS, "Розширення PPP LCP"
+    IDS_RAS_SW_COMPRESSION, "Програмне стиснення"
+    IDS_RAS_REQURE_ENCRYPT_PASS, "Потрібний зашифрований пароль"
+    IDS_RAS_REQURE_MS_ENCRYPT_PASS, "Потрібний MS-зашифрований пароль"
+    IDS_RAS_REQURE_DATA_ENCRYPT, "Потрібне шифрування даних"
+    IDS_RAS_REQURE_EAP, "Потрібний EAP"
+    IDS_RAS_REQURE_PAP, "Потрібний PAP"
+    IDS_RAS_REQURE_SPAP, "Потрібний SPAP"
+    IDS_RAS_REQURE_CHAP, "Потрібний CHAP"
+    IDS_RAS_REQURE_MSCHAP, "Потрібний MSCHAP"
+    IDS_RAS_REQURE_MSCHAP2, "Потрібний MSCHAP v.2"
+
+    IDS_IE_COOKIE_URL_NAME, "URL"
+    IDS_IE_COOKIE_FILE_NAME, "Назва файлу"
+    IDS_IE_COOKIE_LAST_MODIFY, "Остання зміна"
+    IDS_IE_COOKIE_LAST_ACCESS, "Останнє звернення"
+    IDS_IE_COOKIE_LAST_SYNC, "Остання синхронізація"
+    IDS_IE_COOKIE_EXPIRE, "Час закінчення дії"
+    IDS_IE_COOKIE_USE_COUNT, "Кількість звернень"
+
+    IDS_INFORMATION, "Інформація"
+
+    IDS_OS_ARCH, "Архітектура ОС"
+    IDS_HW_ARCH, "Архітектура процесора"
+
+    IDS_SITE_LINK, "http://www.aspia.ru"
+    IDS_SITE_DONATE_LINK, "http://www.aspia.ru/donate"
+
+    IDS_REGION_TIME_ZONE, "Тимчасова зона"
+    IDS_REGION_LANGUAGE, "Мова"
+    IDS_REGION_COUNTRY, "Країна/регіон"
+    IDS_REGION_CURRENCY, "Грошова одиниця"
+    IDS_REGION_FORMATTING, "Форматування"
+    IDS_REGION_DAYS_OF_WEEK, "Дні тижня"
+    IDS_REGION_MONTHS, "Місяці"
+    IDS_REGION_MISCELLANEOUS, "Різне"
+    IDS_REGION_CUR_TIMEZONE, "Поточна часова зона"
+    IDS_REGION_CUR_TIMEZONE_DESK, "Опис поточної часової зони"
+    IDS_REGION_CHANGE_TO_STD_TIME, "Перехід на зимовий час"
+    IDS_REGION_CHANGE_TO_DL_TIME, "Перехід на літній час"
+    IDS_REGION_LANG_NAME_NATIVE, "Мова (система)"
+    IDS_REGION_LANG_NAME_ENGLISH, "Мова (англійська)"
+    IDS_REGION_LANG_NAME_ISO639, "Мова (ISO 639)"
+    IDS_REGION_COUNTRY_NAME_NATIVE, "Країна (система)"
+    IDS_REGION_COUNTRY_NAME_ENGLISH, "Країна (англійська)"
+    IDS_REGION_COUNTRY_NAME_ISO3166, "Країна (ISO 3166)"
+    IDS_REGION_COUNTRY_CODE, "Код країни"
+    IDS_REGION_CUR_NAME_NATIVE, "Грошова одиниця (система)"
+    IDS_REGION_CUR_NAME_ENGLISH, "Грошова одиниця (англійська)"
+    IDS_REGION_CUR_SYMBOL_NATIVE, "Символ грошової одиниці (система)"
+    IDS_REGION_CUR_SYMBOL_ISO4217, "Символ грошової одиниці (ISO 4217)"
+    IDS_REGION_CUR_FORMAT, "Формат грошових сум"
+    IDS_REGION_CUR_NEG_FORMAT, "Формат від’ємних грошових сум"
+    IDS_REGION_FRMT_TIME_FORMAT, "Формат часу"
+    IDS_REGION_FRMT_SDATE_FORMAT, "Короткий формат дати"
+    IDS_REGION_FRMT_LDATE_FORMAT, "Повний формат дати"
+    IDS_REGION_FRMT_NUMBER_FORMAT, "Формат виведення чисел"
+    IDS_REGION_FRMT_NEG_NUM_FORMAT, "Формат виводу від’ємних чисел"
+    IDS_REGION_FRMT_LIST_FORMAT, "Формат списку"
+    IDS_REGION_FRMT_NATIVE_DIGITS, "Набір цифр"
+    IDS_REGION_DOW_MONDAY, "Ім’я для понеділка"
+    IDS_REGION_DOW_TUESDAY, "Ім’я для вівторка"
+    IDS_REGION_DOW_WEDNESDAY, "Ім’я для середи"
+    IDS_REGION_DOW_THURSDAY, "Ім’я для четверга"
+    IDS_REGION_DOW_FRIDAY, "Ім’я для п’ятниці"
+    IDS_REGION_DOW_SATURDAY, "Ім’я для суботи"
+    IDS_REGION_DOW_SUNDAY, "Ім’я для неділі"
+    IDS_REGION_MNS_JANUARY, "Ім’я для січня"
+    IDS_REGION_MNS_FEBRUARY, "Ім’я для лютого"
+    IDS_REGION_MNS_MARCH, "Ім’я для березня"
+    IDS_REGION_MNS_APRIL, "Ім’я для квітня"
+    IDS_REGION_MNS_MAY, "Ім’я для травня"
+    IDS_REGION_MNS_JUNE, "Ім’я для червня"
+    IDS_REGION_MNS_JULE, "Ім’я для липня"
+    IDS_REGION_MNS_AUGUST, "Ім’я для серпня"
+    IDS_REGION_MNS_SEPTEMBER, "Ім’я для вересня"
+    IDS_REGION_MNS_OCTOBER, "Ім’я для жовтня"
+    IDS_REGION_MNS_NOVEMBER, "Ім’я для листопада"
+    IDS_REGION_MNS_DECEMBER, "Ім’я для грудня"
+    IDS_REGION_CALENDAR_TYPE, "Тип календаря"
+    IDS_REGION_MEASUREMENT_SYSTEM, "Система числення"
+    IDS_REGION_PAPER_SIZE, "Розмір паперу за замовчуванням"
+
+    IDS_LOCAL_TIME, "Локальний час"
+    IDS_LOCAL_DATE, "Локальна дата"
+
+    IDS_POWER_MANAGMT_PROP, "Властивості електроживлення"
+    IDS_CURRENT_POWER_SOURCE, "Поточне джерело живлення"
+    IDS_BATTERY_STATUS, "Стан батареї"
+    IDS_FULL_BATTERY_LIFETIME, "Повний час роботи від батареї"
+    IDS_REMAINING_BAT_LIFETIME, "Поточний час роботи від батареї"
+    IDS_POWER_ON_AC_LINE, "Електромережа"
+    IDS_POWER_ON_DC_BATTERY, "Батарея"
+    IDS_POWER_HIGH_BATTERY, "Високий рівень"
+    IDS_POWER_LOW_BATTERY, "Низький рівень"
+    IDS_POWER_CRITICAL_BATTERY, "Критичний рівень"
+    IDS_POWER_CHARGING, "Зарядка"
+    IDS_POWER_NO_BATTERY, "Немає батареї"
+
+    IDS_UNKNOWN, "Невідомо"
+
+    IDS_USER_ACCOUNT_DISABLED, "Відключений"
+    IDS_USER_PASSWD_CANT_CHANGE, "Не може змінити пароль"
+    IDS_USER_PASSWORD_EXPIRED, "Термін дії пароля минув"
+    IDS_USER_DONT_EXPIRE_PASSWD, "Термін дії пароля не обмежений"
+    IDS_USER_LOCKOUT, "Заблоковано"
+
+    IDS_REPORT_TITLE, "Зміст"
+    IDS_REPORT_TOP, "Вгору"
+
+    IDS_CMD_HELP, "ASPIA [-nonav] [-help] file_path\n\
+                  -nonav\tНе додавати меню навігації в файл звіту\n\
+                  -help\tДовідка по використанню програми з командного рядка\n\
+                  file_path\tШлях до файлу звіту\n\
+                  \nПриклади використання\n\
+                  Створити файл звіту зі змістом:\n\
+                  ASPIA c:\\report.htm\t\n\
+                  Створити файл звіту без змісту:\n\
+                  ASPIA -nonav c:\\report.htm\n\
+                  Показати це повідомлення:\n\
+                  ASPIA -help"
+
+    IDS_NETSTAT_PROC_NAME, "Ім’я процесу"
+    IDS_NETSTAT_PROTOCOL, "Протокол"
+    IDS_NETSTAT_LOCAL_ADDRESS, "Локальна адреса"
+    IDS_NETSTAT_REMOTE_ADDRESS, "Віддалена адреса"
+    IDS_NETSTAT_STATE, "Стан"
+
+    IDS_SHARE_MAX_USES, "Макс. підключень"
+    IDS_SHARE_CURRENT_USES, "Поточних підключень"
+    IDS_SHARE_UNLIMITED, "Не обмежено"
+
+    IDS_ACTUSERS_DOMAIN, "Домен"
+    IDS_ACTUSERS_USERID, "ID"
+    IDS_ACTUSERS_STATE, "State"
+    IDS_ACTUSERS_CLIENTNAME, "Client Name"
+    IDS_ACTUSERS_LOGON_TYPE, "Тип входу"
+
+    IDS_OPENFILE_ID, "ID"
+    IDS_OPENFILE_PATH, "Шлях"
+    IDS_OPENFILE_COUNT, "Блокувань"
+
+    IDS_USER_LAST_LOGON, "Останній вхід"
+    IDS_USER_NUM_LOGONS, "Кількість входів"
+    IDS_USER_BAD_PW_COUNT, "Помилкових вводів пароля"
+
+    IDS_NEVER, "Ніколи"
+
+    IDS_DEVICE_NAME, "Ім'я пристрою"
+    IDS_DEVICE_DRIVER_DATE, "Дата драйвера"
+    IDS_DEVICE_DRIVER_VENDOR, "Виробник драйвера"
+    IDS_DEVICE_VENDOR_ID, "VenId-DevId"
+    IDS_DEVICE_CLASS_NAME, "Клас пристрою"
+    IDS_DEVICE_ESTIMATED, "Можливий пристрій"
+    IDS_DEVICE_VERSION, "Версія драйвера"
+    IDS_DEVICE_ESTIMATED_VENDOR, "Виробник драйвера"
+    IDS_DEVICE_UNKNOWN_DEVICE, "Невідомий пристрій"
+    IDS_DEVICE_INSTANCE_ID, "Instance Id"
+
+    IDS_LICENSE_APP_NAME, "Назва продукту"
+    IDS_LICENSE_PRODUCT_KEY, "Ключ продукту"
+
+    IDS_SENSOR_TEMPERATURE, "Температура"
+    IDS_SENSOR_CORE_TEMPERATURE, "Температура (ядро %ld)"
+
+    IDS_SPD_PRODUCT_DATE, "Дата виробництва"
+    IDS_SPD_MODULE_SIZE, "Розмір модуля"
+    IDS_SPD_FREQUENT, "Частота модуля"
+    IDS_SPD_MEMORY_TYPE, "Тип пам'яті"
+    IDS_SPD_MODULE_TYPE, "Тип модуля"
+    IDS_SPD_VOLTAGE, "Напруга модуля"
+    IDS_SPD_MODULE_WIDTH, "Ширина модуля"
+    IDS_SPD_REFRESH_RATE, "Частота регенерації"
+    IDS_SPD_MEMORY_TIMINGS, "Таймінги пам'яті"
+    IDS_SPD_ERROR_DETECTION, "Метод виявлення помилок"
+    IDS_SPD_SUPPORTED_CAS_LATENCIES, "Підтримувані затримки CAS"
+    IDS_SPD_DIMM_TYPE, "Тип модуля"
+    IDS_SPD_ANALYSIS_PROBE, "Analysis Probe"
+    IDS_SPD_FET_SWITCH_EXT, "FET Switch External"
+    IDS_SPD_WEAK_DRIVER, "Weak Driver"
+    IDS_SPD_BURST_LENGTHS, "Підтримувані розміри пакетів"
+    IDS_SPD_TIMING_RCD, "Мін. час затримки між сигналами RAS і CAS (tRCD)"
+    IDS_SPD_TIMING_RP, "Мін. час формування сигналу RAS (tRP)"
+    IDS_SPD_TIMING_RAS, "Мін. час переходу з активного стану в режим передзарядження (tRAS)"
+    IDS_SPD_TIMING_RTP, "Внутрішня затримка видачі команди передзарядження при читанні (tRTP)"
+    IDS_SPD_TIMING_WTR, "Внутрішня затримка видачі команди читання після завершення запису (tWTR)"
+    IDS_SPD_TIMING_WR, "Мін. затримка закриття рядка банку пам'яті при записі (tWR)"
+    IDS_SPD_TIMING_RRD, "Мін. час переходу рядка в активний стан (tRRD)"
+    IDS_SPD_TIMING_RFC, "Мін. час між командами поновлення рядка та активізації/оновлення (tRFC)"
+    IDS_SPD_TIMING_RC, "Мін. час між командами активізації рядки та активізації/оновлення (tRC)"
+    IDS_SPD_TIMING_IS, "Час, на який фронт тактового імпульсу передує передачі встановлень адресів та команд (tIS)"
+    IDS_SPD_TIMING_IH, "Час заборони встановлення адреси і команд після закінчення тактового імпульсу (tIH)"
+    IDS_SPD_TIMING_DS, "Час, на який фронт синхроімпульса передує передачі встановлень даних (tDS)"
+    IDS_SPD_TIMING_DH, "Час заборони встановлення введення даних після закінчення синхроімпульса (tDH)"
+    IDS_SPD_TIMING_FORMAT, "Підтримувані таймінги при %.1f MHz"
+
+    IDS_SENSOR_VOLTAGE, "Напруга"
+
+    IDS_SETTINGS, "Параметри"
+
+    IDS_OS_INSTALL_DATE, "Дата встановлення"
+
+    IDS_PREV_TOOLS, "System Tools"
+    IDS_PREV_TASKMGR, "Task Manager"
+    IDS_PREV_REGEDIT, "Regostry Editor"
+    IDS_PREV_EXPLORER, "Explorer"
+    IDS_PREV_DESKTOP_ITEMS, "Desktop Items"
+    IDS_PREV_EXPLORER_CONTEXT_MENU, "Explorer Context Menu"
+    IDS_PREV_TASKBAR_CONTEXT_MENU, "Taskbar Context Menu"
+    IDS_PREV_HIDE_TRAY, "System Tray on Taskbar"
+    IDS_PREV_HIDE_CLOCK, "Clock on Taskbar"
+    IDS_PREV_TOOLBARS_ON_TASKBAR, "Toolbars on Taskbar"
+    IDS_PREV_AUTORUN, "Autorun"
+    IDS_PREV_HKLM_RUN, "HKLM - Run"
+    IDS_PREV_HKLM_RUNONCE, "HKLM - RunOnce"
+    IDS_PREV_HKCU_RUN, "HKCU - Run"
+    IDS_PREV_HKCU_RUNONCE, "HKCU - RunOnce"
+    IDS_PREV_OTHER, "Other"
+    IDS_PREV_DISABLE_GPO, "Using Group Policies"
+    IDS_PREV_ALLOWED, "Allowed"
+    IDS_PREV_NOT_ALLOWED, "Not Allowed"
+    IDS_PREV_DISABLE_CMD, "Command Prompt"
+    IDS_PREV_RECENT_DOCS, "Recent Documents in Start Menu"
+    IDS_PREV_LOG_OFF, "Log Off in Start Menu"
+    IDS_PREV_RUN_COMMAND, "Run command in Start Menu"
+    IDS_PREV_FIND_COMMAND, "Find in Start Menu"
+    IDS_PREV_FAVORITES, "Favorites in Start Menu"
+    IDS_PREV_SHUTDOWN, "Shutdown in Start Menu"
+    IDS_FIREWALL_ACTION, "Action"
+    IDS_FIREWALL_STATE, "State"
+    IDS_FIREWALL_DIR, "Destination"
+    IDS_FIREWALL_PROTO, "Protocol"
+    IDS_FIREWALL_APP, "Application"
+    IDS_FIREWALL_NAME, "Name"
+    IDS_FIREWALL_SCOPE, "Scope"
+    IDS_DMI_ONBOARD_DESC, "Description"
+    IDS_DMI_ONBOARD_TYPE, "Type"
+    IDS_DMI_ONBOARD_STATUS, "Status"
+    IDS_DMI_BATTERY_LOCATION, "Location"
+    IDS_DMI_BATTERY_MANUFACTURER, "Manufacturer"
+    IDS_DMI_BATTERY_MANUFDATE, "Manufacture Date"
+    IDS_DMI_BATTERY_SERIAL, "Serial Number"
+    IDS_DMI_BATTERY_DEVICE_NAME, "Device Name"
+    IDS_DMI_BATTERY_DEVICE_CHEMISTRY, "Device Chemistry"
+    IDS_DMI_BATTERY_DESIGN_CAPACITY, "Design Capacity"
+    IDS_DMI_BATTERY_DESIGN_VOLTAGE, "Design Voltage"
+    IDS_DMI_BATTERY_SBDS_VERSION, "SBDS Version Number"
+    IDS_DMI_BATTERY_SBDS_SERIAL, "SBDS Serial Number"
+    IDS_DMI_BATTERY_SBDS_MANUFDATE, "SBDS Manufacture Date"
+    IDS_DMI_BATTERY_SBDS_DEV_CHEMIST, "SBDS Device Chemistry"
+    IDS_DMI_BATTERY_MAXERROR_IN_DATA, "Max. Error in Battery Data"
+    IDS_PASSWD_RAS_PASSWORD, "Password"
+    IDS_PASSWD_RAS_USERNAME, "User Name"
+    IDS_PASSWD_RAS_PHONE_NUMBER, "Phone Number"
+    IDS_PASSWD_RAS_AREA_CODE, "Area Code"
+    IDS_PASSWD_RAS_TYPE, "Connection Type"
+    IDS_PASSWD_IE_URL, "URL"
+    IDS_PASSWD_IE_USERNAME, "User Name"
+    IDS_PASSWD_IE_PASSWORD, "Password"
+    IDS_NETWORK_RAS_SERVER, "Server Address"
+
+    IDS_CAT_SUMMARY, "Загальна інформація"
+
+    IDS_CAT_HW, "Обладнання"
+    IDS_CAT_HW_SENSOR, "Показання датчиків"
+    IDS_CAT_HW_CPU, "Центральний процесор"
+    IDS_CAT_HW_POWER, "Електроживлення"
+    IDS_CAT_HW_PRINTERS, "Принтери"
+    IDS_CAT_HW_SPD, "SPD"
+
+    IDS_CAT_HW_DEVICES, "Пристрої Windows"
+    IDS_CAT_HW_ALL_DEVICES, "Всі пристрої"
+    IDS_CAT_HW_UNKNOWN_DEVICES, "Невідомі пристрої"
+
+    IDS_CAT_HW_DISPLAY, "Display"
+    IDS_CAT_HW_MONITOR, "Монітор"
+    IDS_CAT_HW_WIN_VIDEO, "Windows Video"
+
+    IDS_CAT_HW_DATA, "Зберігання даних"
+    IDS_CAT_HW_DATA_CD, "Optical Drives"
+    IDS_CAT_HW_DATA_SCSI, "SCSI"
+    IDS_CAT_HW_DATA_ATA, "ATA"
+    IDS_CAT_HW_DATA_SMART, "S.M.A.R.T."
+
+    IDS_CAT_HW_DMI, "DMI"
+    IDS_CAT_HW_DMI_BIOS, "BIOS"
+    IDS_CAT_HW_DMI_SYSTEM, "Система"
+    IDS_CAT_HW_DMI_BOARD, "Системна плата"
+    IDS_CAT_HW_DMI_CACHE, "Кеш-пам’ять"
+    IDS_CAT_HW_DMI_PROCESSOR, "Процесори"
+    IDS_CAT_HW_DMI_MEM, "Пристрої пам’яті"
+    IDS_CAT_HW_DMI_SLOT, "Системні роз’єми"
+    IDS_CAT_HW_DMI_PORTS, "Роз’єми портів"
+    IDS_CAT_HW_DMI_ENCLOSURE, "Шасі"
+    IDS_CAT_HW_DMI_ONBOARD, "Onboard Devices"
+    IDS_CAT_HW_DMI_BATTERY, "Portable Battery"
+
+    IDS_CAT_SOFTWARE, "Програмне забезпечення"
+    IDS_CAT_SOFTWARE_UPD_SFT, "Програми та оновлення"
+    IDS_CAT_SOFTWARE_UPDATES, "Встановлені оновлення"
+    IDS_CAT_SOFTWARE_PROGRAMS, "Встановлені програми"
+    IDS_CAT_SOFTWARE_TASKMGR, "Процеси"
+    IDS_CAT_SOFTWARE_SERVICES, "Системні служби"
+    IDS_CAT_SOFTWARE_DRIVERS, "Драйвери пристроїв"
+    IDS_CAT_SOFTWARE_LICENSES, "Ліцензії"
+
+    IDS_CAT_SOFTWARE_PASSWORDS, "Passwords"
+    IDS_CAT_PASSWD_IE,         "Internet Explorer"
+    IDS_CAT_PASSWD_OUTLOOK_E,  "Outlook Express"
+    IDS_CAT_PASSWD_OUTLOOK,    "MS Office Outlook"
+    IDS_CAT_PASSWD_CHROME,     "Google Chrome"
+    IDS_CAT_PASSWD_FIREFOX,    "Mozilla Firefox"
+    IDS_CAT_PASSWD_THUNDERBIRD,"Mozilla Thunderbird"
+    IDS_CAT_PASSWD_OPERA,      "Opera"
+    IDS_CAT_PASSWD_RAS,        "RAS"
+    IDS_CAT_PASSWD_MSRDP,      "MS RDP Client"
+
+    IDS_CAT_NETWORK, "Мережа"
+    IDS_CAT_NETWORK_CARDS, "Мережеві адаптери"
+    IDS_CAT_NETWORK_RAS, "З’єднання RAS"
+    IDS_CAT_NETWORK_NETSTAT, "Відкриті підключення"
+    IDS_CAT_NETWORK_SHARED, "Мережеві ресурси"
+    IDS_CAT_NETWORK_FILES, "Відкриті файли"
+    IDS_CAT_NETWORK_ROUTE, "Маршрути"
+    IDS_CAT_NETWORK_FIREWALL, "Windows Firewall"
+    IDS_CAT_NETWORK_IE, "Internet Explorer"
+    IDS_CAT_NETWORK_IE_HISTORY, "Історія"
+    IDS_CAT_NETWORK_IE_COOKIE, "Cookie"
+    IDS_CAT_NETWORK_IE_PARAMS, "Параметри"
+
+    IDS_CAT_OS, "Операційна система"
+    IDS_CAT_OS_REGDATA, "Реєстраційна інформація"
+    IDS_CAT_OS_DESKTOP, "Робочий стіл"
+    IDS_CAT_OS_USERS_GROUPS, "Користувачі та групи"
+    IDS_CAT_OS_USERS, "Користувачі"
+    IDS_CAT_OS_USERGROUP, "Групи користувачів"
+    IDS_CAT_OS_ACTIVEUSERS, "Активні сесії"
+    IDS_CAT_OS_PREVENTS, "Prevents"
+    IDS_CAT_OS_REGPARAM, "Регіональні параметри"
+    IDS_CAT_OS_TASKSCHED, "Планувач завдань"
+    IDS_CAT_OS_FONTS, "Встановлені шрифти"
+    IDS_CAT_OS_EVENTVIEW, "Системні події"
+    IDS_CAT_OS_AUTORUN, "Автозавантаження"
+    IDS_CAT_OS_ENVIRON, "Змінні середовища"
+    IDS_CAT_OS_SYSFOLDERS, "Системні теки"
+
+    IDS_ABOUT_STRING, "Aspia - вільне програмне забезпечення, що розповсюджується за ліцензією GNU LGPL.\r\n\
+                       Ви можете отримати копію ліцензії GNU LGPL за адресою:\r\n\
+                       http://www.gnu.org/licenses/lgpl.html\r\n\r\n\
+                       Ознайомитися з перекладом GNU LGPL на свою мову можна за адресою:\r\n\
+                       http://www.gnu.org/licenses/translations.html\r\n\r\n\
+                       Розробники:\r\n\
+                       • Dmitry Chapyshev (dmitry@aspia.ru) (основна програма, драйвер)\r\n\
+                       • Maksim Shevchuk (maksim.shevchuk@gmail.com) (драйвер)\r\n\r\n\
+                       Перекладачі:\r\n\
+                       • Sakara Eugene (vzov@yandex.ua) (Ukrainian)\r\n\r\n\
+                       Цифровий підпис для драйверів наданий ReactOS Foundation.\r\n\r\n\
+                       При розробці були використані напрацювання наступних проектів:\r\n\
+                       • ReactOS (http://reactos.org)\r\n\
+                       • Wine (http://winehq.org)\r\n\
+                       • Open Hardware Monitor (http://openhardwaremonitor.org)\r\n\
+                       • Tango Project (http://tango.freedesktop.org)"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_LANGUAGE_NAME, "Ukrainian (Українська)"
+END
+
+/* EOF */

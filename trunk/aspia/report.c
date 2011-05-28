@@ -1,0 +1,637 @@
+/*
+ * PROJECT:         Aspia
+ * FILE:            aspia/report.c
+ * LICENSE:         LGPL (GNU Lesser General Public License)
+ * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
+ */
+
+#include "main.h"
+
+
+static HIMAGELIST hReportImageList = NULL;
+HWND hStatusDlg = NULL;
+static BOOL IsCanceled = FALSE;
+
+
+static VOID
+AddTreeViewItems(HWND hTree, CATEGORY_LIST *List, HTREEITEM hRoot)
+{
+    SIZE_T Index = 0;
+
+    do
+    {
+        List[Index].hTreeItem = AddCategory(hTree,
+                                            hReportImageList,
+                                            hRoot,
+                                            List[Index].StringID,
+                                            List[Index].IconID);
+
+        if (List[Index].Child)
+        {
+            AddTreeViewItems(hTree, List[Index].Child, List[Index].hTreeItem);
+        }
+    }
+    while (List[++Index].StringID != 0);
+}
+
+static VOID
+SetCheckStateTreeView(HWND hTree, CATEGORY_LIST *List)
+{
+    SIZE_T Index = 0;
+
+    do
+    {
+        TreeView_SetCheckState(hTree, List[Index].hTreeItem, List[Index].Checked);
+        if (List[Index].Child)
+        {
+            SetCheckStateTreeView(hTree, List[Index].Child);
+        }
+    }
+    while (List[++Index].StringID != 0);
+}
+
+static VOID
+GetCheckStateTreeView(HWND hTree, CATEGORY_LIST *List)
+{
+    SIZE_T Index = 0;
+
+    do
+    {
+        List[Index].Checked = TreeView_GetCheckState(hTree, List[Index].hTreeItem);
+        if (List[Index].Child)
+            GetCheckStateTreeView(hTree, List[Index].Child);
+    }
+    while (List[++Index].StringID != 0);
+}
+
+static VOID
+ReportAddNavigationMenu(BOOL IsSaveAll, CATEGORY_LIST *List)
+{
+    WCHAR szTemp[MAX_STR_LEN];
+    SIZE_T Index = 0;
+
+    do
+    {
+        if (List[Index].Checked || IsSaveAll)
+        {
+            LoadMUIString(List[Index].StringID, szTemp, MAX_STR_LEN);
+            IoWriteContentTableItem(List[Index].StringID,
+                                    szTemp,
+                                    List[Index].Child ? TRUE : FALSE);
+
+            if (List[Index].Child)
+            {
+                ReportAddNavigationMenu(IsSaveAll, List[Index].Child);
+                IoWriteContentTableEndRootItem();
+            }
+        }
+    }
+    while (List[++Index].StringID != 0);
+}
+
+static BOOL
+ReportAction(LPWSTR lpszRootName, BOOL IsSaveAll, CATEGORY_LIST *List)
+{
+    WCHAR szText[MAX_STR_LEN], szStatus[MAX_STR_LEN];
+    HICON hIcon = NULL;
+    SIZE_T Index = 0;
+    BOOL Result = TRUE;
+    INT Count = 0;
+
+    do
+    {
+        if (IsCanceled) return FALSE;
+
+        if (List[Index].Checked || IsSaveAll)
+        {
+            LoadMUIString(List[Index].StringID, szText, MAX_STR_LEN);
+
+            IoWriteTableTitle(szText,
+                              List[Index].StringID,
+                              SettingsInfo.IsAddContent);
+
+            if (hStatusDlg)
+            {
+                hIcon = (HICON)LoadImage(hIconsInst,
+                                         MAKEINTRESOURCE(List[Index].IconID),
+                                         IMAGE_ICON, 16, 16,
+                                         LR_DEFAULTCOLOR);
+                PostMessage(GetDlgItem(hStatusDlg, IDC_STATUS_ICON), STM_SETICON, (WPARAM)hIcon, 0);
+
+                if (lpszRootName)
+                    StringCbPrintf(szStatus, sizeof(szStatus), L"%s - %s", lpszRootName, szText);
+                else
+                    StringCbCopy(szStatus, sizeof(szStatus), szText);
+
+                SetWindowText(GetDlgItem(hStatusDlg, IDC_STATUS_MSG), szStatus);
+            }
+
+            if (!List[Index].Child)
+            {
+                IoWriteBeginTable();
+                IoAddColumnsList(List[Index].ColumnList);
+                List[Index].InfoFunc();
+                IoWriteEndTable();
+                DestroyIcon(hIcon);
+            }
+            else
+            {
+                DestroyIcon(hIcon);
+                Result = ReportAction(szText, IsSaveAll, List[Index].Child);
+            }
+
+            ++Count;
+        }
+    }
+    while (List[++Index].StringID != 0);
+
+    if (!Count) return FALSE;
+
+    return Result;
+}
+
+VOID
+ReportThread(IN LPVOID lpParameter)
+{
+    WCHAR szTitle[MAX_STR_LEN];
+    BOOL IsSaveAll = (BOOL)lpParameter;
+    INT OldColumnsCount;
+
+    EnterCriticalSection(&CriticalSection);
+
+    IsCanceled = FALSE;
+
+    IoSetTarget(IO_TARGET_HTML);
+    OldColumnsCount = IoGetColumnsCount();
+
+    IoCreateReport(SettingsInfo.szReportPath);
+
+    if (SettingsInfo.IsAddContent)
+    {
+        LoadMUIString(IDS_REPORT_TITLE, szTitle, MAX_STR_LEN);
+        IoWriteBeginContentTable(szTitle);
+        ReportAddNavigationMenu(IsSaveAll, RootCategoryList);
+        IoWriteEndContentTable();
+    }
+
+    if (!ReportAction(NULL, IsSaveAll, RootCategoryList))
+    {
+        IoCloseReport();
+        DeleteFile(SettingsInfo.szReportPath);
+    }
+    else
+    {
+        IoCloseReport();
+    }
+
+    IoSetColumnsCount(OldColumnsCount);
+    IoSetTarget(IO_TARGET_LISTVIEW);
+
+    EndDialog(hStatusDlg, 0);
+
+    LeaveCriticalSection(&CriticalSection);
+    _endthread();
+}
+
+INT_PTR CALLBACK
+ReportStatusDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
+{
+    switch (Msg)
+    {
+        case WM_INITDIALOG:
+            hStatusDlg = hDlg;
+            _beginthread(ReportThread, 0, (LPVOID)lParam);
+            PostMessage(GetDlgItem(hDlg, IDC_REPORT_PROGRESS), PBM_SETMARQUEE, TRUE, 50);
+            break;
+
+        case WM_CLOSE:
+            IsCanceled = TRUE;
+            break;
+
+        case WM_COMMAND:
+        {
+            switch (LOWORD(wParam))
+            {
+                case IDCANCEL:
+                    IsCanceled = TRUE;
+                    break;
+            }
+        }
+        break;
+    }
+
+    return FALSE;
+}
+
+VOID
+ReportStatusThread(IN LPVOID lpParameter)
+{
+    DialogBoxParam(hLangInst,
+                   MAKEINTRESOURCE(IDD_REPORT_STATUS_DIALOG),
+                   hMainWnd,
+                   ReportStatusDlgProc,
+                   (LPARAM)lpParameter);
+    _endthread();
+}
+
+VOID
+ReportCreateThread(IN BOOL IsGUI, IN BOOL IsSaveAll)
+{
+    if (TryEnterCriticalSection(&CriticalSection))
+        LeaveCriticalSection(&CriticalSection);
+    else
+        return;
+
+    if (IsGUI)
+    {
+        _beginthread(ReportStatusThread, 0, (LPVOID)IsSaveAll);
+    }
+    else
+    {
+        ReportThread((LPVOID)IsSaveAll);
+    }
+}
+
+VOID
+ReportSaveAll(IN BOOL IsGUI, IN LPWSTR lpszPath, IN BOOL bWithMenu)
+{
+    StringCbCopy(SettingsInfo.szReportPath,
+                 sizeof(SettingsInfo.szReportPath),
+                 lpszPath);
+
+    SettingsInfo.IsAddContent = bWithMenu;
+
+    ReportCreateThread(IsGUI, TRUE);
+}
+
+VOID
+ReportCategoryInfo(IN UINT Category,
+                   IN CATEGORY_LIST *List)
+{
+    WCHAR szText[MAX_STR_LEN];
+    SIZE_T Index = 0;
+
+    do
+    {
+        if (!List[Index].Child)
+        {
+            if (Category == List[Index].StringID)
+            {
+                IoAddColumnsList(List[Index].ColumnList);
+                LoadMUIString(List[Index].StringID, szText, MAX_STR_LEN);
+
+                IoWriteTableTitle(szText,
+                                  List[Index].StringID,
+                                  FALSE);
+                IoWriteBeginTable();
+                List[Index].InfoFunc();
+                IoWriteEndTable();
+                return;
+            }
+        }
+        else
+        {
+            ReportCategoryInfo(Category, List[Index].Child);
+        }
+    }
+    while (List[++Index].StringID != 0);
+}
+
+VOID
+ReportSavePage(IN LPWSTR lpszPath,
+               IN UINT PageIndex)
+{
+    INT OldColumnsCount;
+
+    if (!TryEnterCriticalSection(&CriticalSection))
+        return;
+
+    OldColumnsCount = IoGetColumnsCount();
+
+    IoSetTarget(IO_TARGET_HTML);
+
+    StringCbCopy(SettingsInfo.szReportPath,
+                 sizeof(SettingsInfo.szReportPath),
+                 lpszPath);
+    IoCreateReport(SettingsInfo.szReportPath);
+    ReportCategoryInfo(PageIndex, RootCategoryList);
+    IoCloseReport();
+
+    IoSetColumnsCount(OldColumnsCount);
+    IoSetTarget(IO_TARGET_LISTVIEW);
+
+    LeaveCriticalSection(&CriticalSection);
+}
+
+static VOID
+SetAllItemsStateTreeView(IN HWND hTree,
+                         IN BOOL State,
+                         IN CATEGORY_LIST *List)
+{
+    SIZE_T Index = 0;
+
+    do
+    {
+        TreeView_SetCheckState(hTree, List[Index].hTreeItem, State);
+        List[Index].Checked = State;
+        if (List[Index].Child)
+            SetAllItemsStateTreeView(hTree, State, List[Index].Child);
+    }
+    while (List[++Index].StringID != 0);
+}
+
+BOOL
+IsChildItemsSelected(HWND hTree, HTREEITEM hItem)
+{
+    HTREEITEM hChild;
+
+    hChild = TreeView_GetChild(hTree, hItem);
+
+    while (hChild)
+    {
+        if (TreeView_GetCheckState(hTree, hChild) == 1)
+            return TRUE;
+
+        hChild = TreeView_GetNextItem(hTree, hChild, TVGN_NEXT);
+    }
+    return FALSE;
+}
+
+VOID
+SetCheckStateForChildItems(HWND hTree, HTREEITEM hItem, BOOL State)
+{
+    HTREEITEM hChild, hSubChild, hSubSubChild;
+
+    hChild = TreeView_GetChild(hTree, hItem);
+
+    while (hChild)
+    {
+        TreeView_SetCheckState(hTree, hChild, State);
+        hChild = TreeView_GetNextItem(hTree, hChild, TVGN_NEXT);
+
+        hSubChild = TreeView_GetChild(hTree, hChild);
+        if (!hSubChild) continue;
+
+        if (IsChildItemsSelected(hTree, hChild)) continue;
+
+        while (hSubChild)
+        {
+            TreeView_SetCheckState(hTree, hSubChild, State);
+            hSubChild = TreeView_GetNextSibling(hTree, hSubChild);
+
+            hSubSubChild = TreeView_GetChild(hTree, hSubChild);
+            if (!hSubSubChild) continue;
+
+            if (IsChildItemsSelected(hTree, hSubChild)) continue;
+
+            while (hSubSubChild)
+            {
+                TreeView_SetCheckState(hTree, hSubSubChild, State);
+                hSubSubChild = TreeView_GetNextSibling(hTree, hSubSubChild);
+            }
+        }
+    }
+}
+
+HTREEITEM
+GetChangedItem(HWND hTree, CATEGORY_LIST *List)
+{
+    HTREEITEM hItem = NULL;
+    SIZE_T Index = 0;
+    BOOL Checked;
+
+    do
+    {
+        Checked = (TreeView_GetCheckState(hTree, List[Index].hTreeItem) == 1) ? TRUE : FALSE;
+
+        if (Checked != List[Index].Checked)
+            return List[Index].hTreeItem;
+
+        if (List[Index].Child)
+        {
+            hItem = GetChangedItem(hTree, List[Index].Child);
+            if (hItem) return hItem;
+        }
+    }
+    while (List[++Index].StringID != 0);
+
+    return hItem;
+}
+
+VOID
+RebuildTreeChecks(HWND hTree)
+{
+    HTREEITEM hItem = GetChangedItem(hTree, RootCategoryList);
+    HTREEITEM hParent;
+    BOOL Checked;
+
+    if (!hItem) return;
+
+    Checked = (TreeView_GetCheckState(hTree, hItem) == 1) ? TRUE : FALSE;
+
+    if (Checked)
+    {
+        hParent = TreeView_GetParent(hTree, hItem);
+
+        while (hParent)
+        {
+            TreeView_SetCheckState(hTree, hParent, TRUE);
+            hParent = TreeView_GetParent(hTree, hParent);
+        }
+
+        if (!IsChildItemsSelected(hTree, hItem))
+        {
+            SetCheckStateForChildItems(hTree, hItem, TRUE);
+        }
+    }
+    else
+    {
+        SetCheckStateForChildItems(hTree, hItem, FALSE);
+    }
+}
+
+static VOID CALLBACK
+UpdateProc(HWND hwnd, UINT msg, UINT id, DWORD systime)
+{
+    UNREFERENCED_PARAMETER(msg);
+    UNREFERENCED_PARAMETER(id);
+    UNREFERENCED_PARAMETER(systime);
+
+    RebuildTreeChecks(hwnd);
+    GetCheckStateTreeView(hwnd, RootCategoryList);
+}
+
+#define IDT_UPDATE_TIMER 501
+
+static HICON hCheckAllIcon = NULL;
+static HICON hUnCheckAllIcon = NULL;
+
+
+VOID
+GetCheckBoxesState(HWND hDlg)
+{
+    SettingsInfo.IsAddContent =
+       (IsDlgButtonChecked(hDlg, IDC_ADD_CONTENT) == BST_CHECKED) ? TRUE : FALSE;
+
+    SettingsInfo.ELogShowError =
+       (IsDlgButtonChecked(hDlg, IDC_FILTER_ELOG_ERROR) == BST_CHECKED) ? TRUE : FALSE;
+    SettingsInfo.ELogShowWarning =
+       (IsDlgButtonChecked(hDlg, IDC_FILTER_ELOG_WARNING) == BST_CHECKED) ? TRUE : FALSE;
+    SettingsInfo.ELogShowInfo =
+       (IsDlgButtonChecked(hDlg, IDC_FILTER_ELOG_INFO) == BST_CHECKED) ? TRUE : FALSE;
+    SettingsInfo.IEShowFile =
+       (IsDlgButtonChecked(hDlg, IDC_FILTER_IE_FILE) == BST_CHECKED) ? TRUE : FALSE;
+    SettingsInfo.IEShowHttp =
+       (IsDlgButtonChecked(hDlg, IDC_FILTER_IE_HTTP) == BST_CHECKED) ? TRUE : FALSE;
+    SettingsInfo.IEShowFtp =
+       (IsDlgButtonChecked(hDlg, IDC_FILTER_IE_FTP) == BST_CHECKED) ? TRUE : FALSE;
+}
+
+INT_PTR CALLBACK
+ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
+{
+    HWND hTree = GetDlgItem(hDlg, IDC_CATEGORIES_TREE);
+
+    UNREFERENCED_PARAMETER(lParam);
+
+    switch (Msg)
+    {
+        case WM_INITDIALOG:
+        {
+            WCHAR szFileName[MAX_PATH];
+            DWORD dwSize;
+
+            DebugTrace(L"Dialog init");
+
+            CheckDlgButton(hDlg, IDC_ADD_CONTENT,
+                           SettingsInfo.IsAddContent ? BST_CHECKED : BST_UNCHECKED);
+
+            /* Initialize TreeView */
+            hReportImageList = ImageList_Create(SettingsInfo.SxSmIcon,
+                                                SettingsInfo.SySmIcon,
+                                                ILC_MASK | SettingsInfo.SysColorDepth,
+                                                1, 1);
+            AddTreeViewItems(hTree, RootCategoryList, TVI_ROOT);
+            TreeView_SetImageList(hTree, hReportImageList, LVSIL_NORMAL);
+
+            /* Checkbox'es */
+            SetCheckStateTreeView(hTree, RootCategoryList);
+
+            /* Set icons for buttons */
+            hCheckAllIcon = (HICON)LoadImage(hIconsInst,
+                                             MAKEINTRESOURCE(IDI_CHECK_ALL),
+                                             IMAGE_ICON,
+                                             SettingsInfo.SxSmIcon,
+                                             SettingsInfo.SySmIcon,
+                                             LR_DEFAULTCOLOR);
+            SendMessage(GetDlgItem(hDlg, IDC_SELECT_ALL),
+                        BM_SETIMAGE, IMAGE_ICON, (LPARAM)hCheckAllIcon);
+
+            hUnCheckAllIcon = (HICON)LoadImage(hIconsInst,
+                                               MAKEINTRESOURCE(IDI_UNCHECK_ALL),
+                                               IMAGE_ICON,
+                                               SettingsInfo.SxSmIcon,
+                                               SettingsInfo.SySmIcon,
+                                               LR_DEFAULTCOLOR);
+            SendMessage(GetDlgItem(hDlg, IDC_UNSELECT_ALL),
+                        BM_SETIMAGE, IMAGE_ICON, (LPARAM)hUnCheckAllIcon);
+
+            /* Set default file path */
+            if (SafeStrLen(SettingsInfo.szReportPath) == 0)
+            {
+                SHGetSpecialFolderPath(hDlg,
+                                       SettingsInfo.szReportPath,
+                                       CSIDL_MYDOCUMENTS, FALSE);
+
+                dwSize = MAX_PATH;
+                GetComputerName(szFileName, &dwSize);
+
+                StringCbCat(SettingsInfo.szReportPath,
+                            sizeof(SettingsInfo.szReportPath), L"\\");
+                StringCbCat(SettingsInfo.szReportPath,
+                            sizeof(SettingsInfo.szReportPath), szFileName);
+                StringCbCat(SettingsInfo.szReportPath,
+                            sizeof(SettingsInfo.szReportPath), L".htm");
+            }
+
+            SetWindowText(GetDlgItem(hDlg, IDC_FILEPATH_EDIT),
+                          SettingsInfo.szReportPath);
+
+            SetTimer(hTree, IDT_UPDATE_TIMER, 10, UpdateProc);
+        }
+        break;
+
+        case WM_CLOSE:
+        {
+            DebugTrace(L"Dialog close");
+
+            GetCheckBoxesState(hDlg);
+
+            RebuildTreeChecks(hTree);
+            GetCheckStateTreeView(hTree, RootCategoryList);
+
+            KillTimer(hMainWnd, IDT_UPDATE_TIMER);
+
+            DestroyIcon(hCheckAllIcon);
+            DestroyIcon(hUnCheckAllIcon);
+
+            EndDialog(hDlg, LOWORD(wParam));
+        }
+        break;
+
+        case WM_NOTIFY:
+        break;
+
+        case WM_COMMAND:
+        {
+            switch (LOWORD(wParam))
+            {
+                case IDC_SELECT_ALL:
+                    SetAllItemsStateTreeView(hTree, TRUE, RootCategoryList);
+                    break;
+
+                case IDC_UNSELECT_ALL:
+                    SetAllItemsStateTreeView(hTree, FALSE, RootCategoryList);
+                    break;
+
+                case IDC_SET_PATH_BTN:
+                {
+                    if (SaveFileDialog(hDlg,
+                                       SettingsInfo.szReportPath,
+                                       sizeof(SettingsInfo.szReportPath)))
+                    {
+                        SetWindowText(GetDlgItem(hDlg, IDC_FILEPATH_EDIT),
+                                      SettingsInfo.szReportPath);
+                    }
+                }
+                break;
+
+                case IDOK:
+                {
+                    DebugTrace(L"Dialog close");
+
+                    GetCheckBoxesState(hDlg);
+
+                    GetCheckStateTreeView(hTree, RootCategoryList);
+
+                    KillTimer(hMainWnd, IDT_UPDATE_TIMER);
+
+                    DestroyIcon(hCheckAllIcon);
+                    DestroyIcon(hUnCheckAllIcon);
+
+                    ReportCreateThread(TRUE, FALSE);
+
+                    EndDialog(hDlg, LOWORD(wParam));
+                }
+                break;
+
+                case IDCANCEL:
+                    PostMessage(hDlg, WM_CLOSE, 0, 0);
+                    break;
+            }
+        }
+        break;
+    }
+
+    return FALSE;
+}
