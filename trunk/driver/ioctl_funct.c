@@ -6,25 +6,11 @@
  *                  Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "ntddk.h"
+#include <ntddk.h>
 #include <stddef.h>
 
 #include "ioctl_funct.h"
 
-#if defined(_M_AMD64)
-
-ULONG64 __readgsqword(IN ULONG Offset);
-
-#pragma intrinsic(__readgsqword)
-
-__forceinline
-PKTHREAD
-KeGetCurrentThread(VOID)
-{
-    return (struct _KTHREAD *)__readgsqword(0x188);
-}
-
-#endif /* defined(_M_AMD64) */
 
 NTSTATUS (NTAPI *_KeSetAffinityThread)(IN PKTHREAD Thread, IN KAFFINITY Affinity);
 KAFFINITY (NTAPI *_KeSetSystemAffinityThreadEx)(IN KAFFINITY Affinity);
