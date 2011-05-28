@@ -6,7 +6,7 @@
  *                  Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "ntddk.h"
+#include <ntddk.h>
 
 #include "version.h"
 #include "ioctl_funct.h"
