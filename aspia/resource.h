@@ -157,8 +157,7 @@
 #define IDC_FILTER_IE_FILE      134
 #define IDC_FILTER_IE_HTTP      135
 #define IDC_FILTER_IE_FTP       136
-#define IDC_TAB_CONTROL         137
-#define IDC_SETTINGS_TREE       138
+#define IDC_SETTINGS_TREE       137
 
 /* Strings */
 #define IDS_APPTITLE                100
@@ -778,10 +777,25 @@
 #define IDS_DMI_BATTERY_SBDS_MANUFDATE   674
 #define IDS_DMI_BATTERY_SBDS_DEV_CHEMIST 675
 #define IDS_DMI_BATTERY_MAXERROR_IN_DATA 676
-#define IDS_NETWORK_RAS_SERVER           685
-#define IDS_SETTINGS_GENERAL             686
-#define IDS_SETTINGS_FILTER              687
-#define IDS_SETTINGS_SYSTRAY             688
+#define IDS_NETWORK_RAS_SERVER           677
+#define IDS_SETTINGS_GENERAL             678
+#define IDS_SETTINGS_FILTER              679
+#define IDS_SETTINGS_SYSTRAY             680
+#define IDS_DISPLAY_ID                   681
+#define IDS_DISPLAY_MANUFACTURER         682
+#define IDS_DISPLAY_MANUFACTURE_DATE     683
+#define IDS_DISPLAY_TYPE                 684
+#define IDS_DISPLAY_MAX_VISIBLE_SIZE     685
+#define IDS_DISPLAY_SERIAL_NUMBER        686
+#define IDS_DISPLAY_ASPECT_RATIO         687
+#define IDS_DISPLAY_HORIZ_FREQ           688
+#define IDS_DISPLAY_VERT_FREQ            689
+#define IDS_DISPLAY_MAX_RESOLUTION       690
+#define IDS_DISPLAY_GAMMA                691
+#define IDS_DISPLAY_DPMS_MODE            692
+#define IDS_DISPLAY_SUPPORTED_MODES      693
+#define IDS_DISPLAY_MODEL                694
+#define IDS_DISPLAY_EDID_VERSION         695
 
 #define IDS_CAT_SUMMARY           1000
 

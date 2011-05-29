@@ -11,6 +11,21 @@
 
 SETTINGS_STRUCT SettingsInfo = {0};
 
+#define DIALOGS_COUNT   3
+#define GENERAL_DIALOG  0
+#define FILTER_DIALOG   1
+#define SYSTRAY_DIALOG  2
+
+HIMAGELIST hSettingsImageList;
+HWND hDialogs[DIALOGS_COUNT];
+
+COLORREF CpuFontColor = 0;
+COLORREF CpuBackground = 0;
+COLORREF HddFontColor = 0;
+COLORREF HddBackground = 0;
+HICON hCpuIcon = NULL;
+HICON hHddIcon = NULL;
+
 
 BOOL
 GetIniFilePath(OUT LPWSTR lpszPath, IN SIZE_T PathLen)
@@ -731,61 +746,6 @@ ChooseColorDialog(HWND hDlg,
     return Result;
 }
 
-#define DIALOGS_COUNT 3
-HIMAGELIST hSettingsImageList;
-HWND hDialogs[DIALOGS_COUNT];
-
-HTREEITEM
-AddSettingsCategory(HWND hTree,
-                    UINT TextIndex,
-                    UINT IconIndex,
-                    UINT DialogIndex)
-{
-    TV_INSERTSTRUCT Insert = {0};
-    WCHAR szText[MAX_STR_LEN];
-    INT Index;
-    HICON hIcon;
-
-    hIcon = (HICON)LoadImage(hIconsInst,
-                             MAKEINTRESOURCE(IconIndex),
-                             IMAGE_ICON,
-                             SettingsInfo.SxSmIcon,
-                             SettingsInfo.SySmIcon,
-                             LR_CREATEDIBSECTION);
-
-    Index = ImageList_AddIcon(hSettingsImageList, hIcon);
-    DestroyIcon(hIcon);
-
-    LoadMUIString(TextIndex, szText, MAX_STR_LEN);
-
-    Insert.item.mask = TVIF_TEXT | TVIF_PARAM | TVIF_IMAGE | TVIF_SELECTEDIMAGE;
-    Insert.hInsertAfter = TVI_LAST;
-    Insert.hParent = TVI_ROOT;
-    Insert.item.iSelectedImage = Index;
-    Insert.item.iImage = Index;
-    Insert.item.lParam = (LPARAM)DialogIndex;
-    Insert.item.pszText = szText;
-
-    return TreeView_InsertItem(hTree, &Insert);
-}
-
-VOID
-InitSettingsTree(HWND hTree)
-{
-    hSettingsImageList =
-        ImageList_Create(SettingsInfo.SxSmIcon,
-                         SettingsInfo.SySmIcon,
-                         SettingsInfo.SysColorDepth | ILC_MASK,
-                         0, 1);
-
-    TreeView_SelectItem(hTree,
-                        AddSettingsCategory(hTree, IDS_SETTINGS_GENERAL, IDI_COMPUTER, 0));
-    AddSettingsCategory(hTree, IDS_SETTINGS_FILTER, IDI_APPS, 1);
-    AddSettingsCategory(hTree, IDS_SETTINGS_SYSTRAY, IDI_SERVICES, 2);
-
-    TreeView_SetImageList(hTree, hSettingsImageList, TVSIL_NORMAL);
-}
-
 INT_PTR CALLBACK
 GeneralPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
@@ -853,13 +813,6 @@ FilterPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
     return FALSE;
 }
 
-COLORREF CpuFontColor = 0;
-COLORREF CpuBackground = 0;
-COLORREF HddFontColor = 0;
-COLORREF HddBackground = 0;
-HICON hCpuIcon = NULL;
-HICON hHddIcon = NULL;
-
 INT_PTR CALLBACK
 SysTrayPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
@@ -910,7 +863,6 @@ SysTrayPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             return TRUE;
         }
 
-/*
         case WM_COMMAND:
         {
             switch (LOWORD(wParam))
@@ -969,27 +921,19 @@ SysTrayPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                 break;
             }
         }
-        break;*/
+        break;
     }
 
     return FALSE;
 }
 
 VOID
-InsertTabCtrlItem(HWND hDlgCtrl, INT Position)
-{
-    TCITEMW item = {0};
-
-    SendMessage(hDlgCtrl, TCM_INSERTITEM, Position, (LPARAM)&item);
-}
-
-VOID
-TabCtrl_OnSelChange(UINT CurSel)
+OnSelCategoryChange(INT CurSel)
 {
     INT Index;
 
     /* retrieve new page */
-    if (CurSel < 0 || CurSel > DIALOGS_COUNT - 1)
+    if (CurSel < 0 || CurSel > DIALOGS_COUNT)
         return;
 
     /* hide all windows */
@@ -997,42 +941,188 @@ TabCtrl_OnSelChange(UINT CurSel)
         ShowWindow(hDialogs[Index], SW_HIDE);
 
     ShowWindow(hDialogs[CurSel], SW_SHOW);
+    BringWindowToTop(hDialogs[CurSel]);
+}
+
+HTREEITEM
+AddSettingsCategory(HWND hTree,
+                    UINT TextIndex,
+                    UINT IconIndex,
+                    UINT DialogIndex)
+{
+    TV_INSERTSTRUCT Insert = {0};
+    WCHAR szText[MAX_STR_LEN];
+    INT Index;
+    HICON hIcon;
+
+    hIcon = (HICON)LoadImage(hIconsInst,
+                             MAKEINTRESOURCE(IconIndex),
+                             IMAGE_ICON,
+                             SettingsInfo.SxSmIcon,
+                             SettingsInfo.SySmIcon,
+                             LR_CREATEDIBSECTION);
+
+    Index = ImageList_AddIcon(hSettingsImageList, hIcon);
+    DestroyIcon(hIcon);
+
+    LoadMUIString(TextIndex, szText, MAX_STR_LEN);
+
+    Insert.item.mask = TVIF_TEXT | TVIF_PARAM | TVIF_IMAGE | TVIF_SELECTEDIMAGE;
+    Insert.hInsertAfter = TVI_LAST;
+    Insert.hParent = TVI_ROOT;
+    Insert.item.iSelectedImage = Index;
+    Insert.item.iImage = Index;
+    Insert.item.lParam = (LPARAM)DialogIndex;
+    Insert.item.pszText = szText;
+
+    return TreeView_InsertItem(hTree, &Insert);
 }
 
 VOID
-InitTabControl(HWND hTab)
+InitSettingsControls(HWND hDlg, HWND hTree)
 {
-    hDialogs[0] = CreateDialogParam(hLangInst,
-                                    MAKEINTRESOURCE(IDD_SETTINGS_GENERAL),
-                                    hTab,
-                                    GeneralPageWndProc,
-                                    (LPARAM)0);
-    hDialogs[1] = CreateDialogParam(hLangInst,
-                                    MAKEINTRESOURCE(IDD_SETTINGS_FILTER),
-                                    hTab,
-                                    FilterPageWndProc,
-                                    (LPARAM)0);
-    hDialogs[2] = CreateDialogParam(hLangInst,
-                                    MAKEINTRESOURCE(IDD_SETTINGS_SYSTRAY),
-                                    hTab,
-                                    SysTrayPageWndProc,
-                                    (LPARAM)0);
+    hSettingsImageList =
+        ImageList_Create(SettingsInfo.SxSmIcon,
+                         SettingsInfo.SySmIcon,
+                         SettingsInfo.SysColorDepth | ILC_MASK,
+                         0, 1);
 
-    InsertTabCtrlItem(hTab, 0);
-    InsertTabCtrlItem(hTab, 1);
-    InsertTabCtrlItem(hTab, 2);
+    TreeView_SelectItem(hTree,
+                        AddSettingsCategory(hTree, IDS_SETTINGS_GENERAL, IDI_COMPUTER, 0));
+    AddSettingsCategory(hTree, IDS_SETTINGS_FILTER, IDI_APPS, 1);
+    AddSettingsCategory(hTree, IDS_SETTINGS_SYSTRAY, IDI_SERVICES, 2);
 
-    TabCtrl_OnSelChange(0);
+    TreeView_SetImageList(hTree, hSettingsImageList, TVSIL_NORMAL);
+
+    hDialogs[GENERAL_DIALOG] =
+        CreateDialog(hLangInst,
+                     MAKEINTRESOURCE(IDD_SETTINGS_GENERAL),
+                     hDlg,
+                     GeneralPageWndProc);
+    hDialogs[FILTER_DIALOG] =
+        CreateDialog(hLangInst,
+                     MAKEINTRESOURCE(IDD_SETTINGS_FILTER),
+                     hDlg,
+                     FilterPageWndProc);
+    hDialogs[SYSTRAY_DIALOG] =
+        CreateDialog(hLangInst,
+                     MAKEINTRESOURCE(IDD_SETTINGS_SYSTRAY),
+                     hDlg,
+                     SysTrayPageWndProc);
+
+    OnSelCategoryChange(0);
+}
+
+VOID
+SaveSettingsFromDialog(HWND hDlg)
+{
+    HWND hCatList = GetDlgItem(hDialogs[GENERAL_DIALOG], IDC_STARTUP_CAT_COMBO);
+    HWND hLangList = GetDlgItem(hDialogs[GENERAL_DIALOG], IDC_LANGUAGE_COMBO);
+    HWND hSensorsList = GetDlgItem(hDialogs[SYSTRAY_DIALOG], IDC_SENSOR_ICON_LIST);
+    HWND hIconsList = GetDlgItem(hDialogs[GENERAL_DIALOG], IDC_ICONS_COMBO);
+    WCHAR *IconFile, *LangFile, szText[MAX_STR_LEN];
+    INT Selected;
+    BOOL ReInitCtrls = FALSE;
+
+    SettingsInfo.CpuBackground = CpuBackground;
+    SettingsInfo.CpuFontColor = CpuFontColor;
+    SettingsInfo.HddBackground = HddBackground;
+    SettingsInfo.HddFontColor = HddFontColor;
+
+    GetWindowText(GetDlgItem(hDialogs[SYSTRAY_DIALOG], IDC_REFRESH_RATE_EDIT),
+                  szText, MAX_STR_LEN);
+    SettingsInfo.SensorsRefreshRate = (UINT)_wtoi(szText);
+
+    /* Save checkbox'es states */
+    SettingsInfo.SaveWindowPos =
+        (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_SAVE_WINDOW_POS) == BST_CHECKED) ? TRUE : FALSE;
+    SettingsInfo.Autorun =
+        (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_START_WITH_WINDOWS) == BST_CHECKED) ? TRUE : FALSE;
+    SettingsInfo.HideToTray =
+        (IsDlgButtonChecked(hDialogs[SYSTRAY_DIALOG], IDC_START_MINIMIZED) == BST_CHECKED) ? TRUE : FALSE;
+    SettingsInfo.ShowProgIcon =
+        (IsDlgButtonChecked(hDialogs[SYSTRAY_DIALOG], IDC_SHOW_PROG_ICON) == BST_CHECKED) ? TRUE : FALSE;
+    SettingsInfo.ShowSensorIcons =
+        (IsDlgButtonChecked(hDialogs[SYSTRAY_DIALOG], IDC_SHOW_SENSOR_ICON) == BST_CHECKED) ? TRUE : FALSE;
+
+    SettingsInfo.ELogShowError =
+        (IsDlgButtonChecked(hDialogs[FILTER_DIALOG], IDC_FILTER_ELOG_ERROR) == BST_CHECKED) ? TRUE : FALSE;
+    SettingsInfo.ELogShowWarning =
+        (IsDlgButtonChecked(hDialogs[FILTER_DIALOG], IDC_FILTER_ELOG_WARNING) == BST_CHECKED) ? TRUE : FALSE;
+    SettingsInfo.ELogShowInfo =
+        (IsDlgButtonChecked(hDialogs[FILTER_DIALOG], IDC_FILTER_ELOG_INFO) == BST_CHECKED) ? TRUE : FALSE;
+    SettingsInfo.IEShowFile =
+        (IsDlgButtonChecked(hDialogs[FILTER_DIALOG], IDC_FILTER_IE_FILE) == BST_CHECKED) ? TRUE : FALSE;
+    SettingsInfo.IEShowHttp =
+        (IsDlgButtonChecked(hDialogs[FILTER_DIALOG], IDC_FILTER_IE_HTTP) == BST_CHECKED) ? TRUE : FALSE;
+    SettingsInfo.IEShowFtp =
+        (IsDlgButtonChecked(hDialogs[FILTER_DIALOG], IDC_FILTER_IE_FTP) == BST_CHECKED) ? TRUE : FALSE;
+
+    /* Находим текущий выделенный элемент. Если язык был изменен,
+       то реинициализируем элементы управления */
+    Selected = SendMessage(hLangList, CB_GETCURSEL, 0, 0);
+    LangFile = (WCHAR*)SendMessage(hLangList, CB_GETITEMDATA, Selected, 0);
+    if (!LangFile)
+    {
+        if (SafeStrLen(SettingsInfo.szLangFile) > 0)
+        {
+            SettingsInfo.szLangFile[0] = 0;
+            LoadLanguage();
+            ReInitCtrls = TRUE;
+        }
+    }
+    else
+    {
+        if (SafeStrCmp(LangFile, SettingsInfo.szLangFile) != 0)
+        {
+            SafeStrCpyN(SettingsInfo.szLangFile, LangFile, MAX_PATH);
+            LoadLanguage();
+            ReInitCtrls = TRUE;
+        }
+    }
+
+    Selected = SendMessage(hCatList, CB_GETCURSEL, 0, 0);
+    SettingsInfo.StartupCategory =
+        (UINT)SendMessage(hCatList, CB_GETITEMDATA, Selected, 0);
+
+    Selected = SendMessage(hIconsList, CB_GETCURSEL, 0, 0);
+    IconFile = (WCHAR*)SendMessage(hIconsList, CB_GETITEMDATA, Selected, 0);
+
+    if (!IconFile)
+    {
+        if (SafeStrLen(SettingsInfo.szIconsFile) > 0)
+        {
+             SettingsInfo.szIconsFile[0] = 0;
+             LoadIcons();
+             ReInitCtrls = TRUE;
+        }
+    }
+    else
+    {
+        if (SafeStrCmp(IconFile, SettingsInfo.szIconsFile) != 0)
+        {
+            SafeStrCpyN(SettingsInfo.szIconsFile, IconFile, MAX_PATH);
+            LoadIcons();
+            ReInitCtrls = TRUE;
+        }
+    }
+
+    if (ReInitCtrls) ReInitControls();
+
+    SaveSensorsState(hSensorsList);
+
+    /* Save settings to .ini file */
+    SaveSettings();
+
+    UpdateTrayIcons();
+
+    /* Close settings dialog */
+    PostMessage(hDlg, WM_CLOSE, 0, 0);
 }
 
 INT_PTR CALLBACK
 SettingsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-    HWND hCatList = GetDlgItem(hDialogs[0], IDC_STARTUP_CAT_COMBO);
-    HWND hLangList = GetDlgItem(hDialogs[0], IDC_LANGUAGE_COMBO);
-    HWND hSensorsList = GetDlgItem(hDialogs[2], IDC_SENSOR_ICON_LIST);
-    HWND hIconsList = GetDlgItem(hDialogs[0], IDC_ICONS_COMBO);
-
     UNREFERENCED_PARAMETER(lParam);
 
     switch (Msg)
@@ -1042,9 +1132,7 @@ SettingsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             DebugTrace(L"Dialog init");
 
             SettingsInfo.Autorun = GetAutostartState();
-
-            InitSettingsTree(GetDlgItem(hDlg, IDC_SETTINGS_TREE));
-            InitTabControl(GetDlgItem(hDlg, IDC_TAB_CONTROL));
+            InitSettingsControls(hDlg, GetDlgItem(hDlg, IDC_SETTINGS_TREE));
         }
         break;
 
@@ -1053,7 +1141,7 @@ SettingsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             LPNMHDR pnmh = (LPNMHDR)lParam;
             if (pnmh->idFrom == IDC_SETTINGS_TREE && pnmh->code == TVN_SELCHANGED)
             {
-                TabCtrl_OnSelChange((UINT)((LPNMTREEVIEW)lParam)->itemNew.lParam);
+                OnSelCategoryChange((UINT)((LPNMTREEVIEW)lParam)->itemNew.lParam);
             }
         }
         break;
@@ -1081,104 +1169,8 @@ SettingsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                     break;
 
                 case IDOK:
-                {
-                    WCHAR *IconFile, *LangFile, szText[MAX_STR_LEN];
-                    INT Selected;
-                    BOOL ReInitCtrls = FALSE;
-
-                    SettingsInfo.CpuBackground = CpuBackground;
-                    SettingsInfo.CpuFontColor = CpuFontColor;
-                    SettingsInfo.HddBackground = HddBackground;
-                    SettingsInfo.HddFontColor = HddFontColor;
-
-                    GetWindowText(GetDlgItem(hDialogs[2], IDC_REFRESH_RATE_EDIT), szText, MAX_STR_LEN);
-                    SettingsInfo.SensorsRefreshRate = (UINT)_wtoi(szText);
-
-                    /* Save checkbox'es states */
-                    SettingsInfo.SaveWindowPos =
-                        (IsDlgButtonChecked(hDialogs[0], IDC_SAVE_WINDOW_POS) == BST_CHECKED) ? TRUE : FALSE;
-                    SettingsInfo.Autorun =
-                        (IsDlgButtonChecked(hDialogs[0], IDC_START_WITH_WINDOWS) == BST_CHECKED) ? TRUE : FALSE;
-                    SettingsInfo.HideToTray =
-                        (IsDlgButtonChecked(hDialogs[2], IDC_START_MINIMIZED) == BST_CHECKED) ? TRUE : FALSE;
-                    SettingsInfo.ShowProgIcon =
-                        (IsDlgButtonChecked(hDialogs[2], IDC_SHOW_PROG_ICON) == BST_CHECKED) ? TRUE : FALSE;
-                    SettingsInfo.ShowSensorIcons =
-                        (IsDlgButtonChecked(hDialogs[2], IDC_SHOW_SENSOR_ICON) == BST_CHECKED) ? TRUE : FALSE;
-
-                    SettingsInfo.ELogShowError =
-                        (IsDlgButtonChecked(hDialogs[1], IDC_FILTER_ELOG_ERROR) == BST_CHECKED) ? TRUE : FALSE;
-                    SettingsInfo.ELogShowWarning =
-                        (IsDlgButtonChecked(hDialogs[1], IDC_FILTER_ELOG_WARNING) == BST_CHECKED) ? TRUE : FALSE;
-                    SettingsInfo.ELogShowInfo =
-                        (IsDlgButtonChecked(hDialogs[1], IDC_FILTER_ELOG_INFO) == BST_CHECKED) ? TRUE : FALSE;
-                    SettingsInfo.IEShowFile =
-                        (IsDlgButtonChecked(hDialogs[1], IDC_FILTER_IE_FILE) == BST_CHECKED) ? TRUE : FALSE;
-                    SettingsInfo.IEShowHttp =
-                        (IsDlgButtonChecked(hDialogs[1], IDC_FILTER_IE_HTTP) == BST_CHECKED) ? TRUE : FALSE;
-                    SettingsInfo.IEShowFtp =
-                        (IsDlgButtonChecked(hDialogs[1], IDC_FILTER_IE_FTP) == BST_CHECKED) ? TRUE : FALSE;
-
-                    Selected = SendMessage(hLangList, CB_GETCURSEL, 0, 0);
-                    LangFile = (WCHAR*)SendMessage(hLangList, CB_GETITEMDATA, Selected, 0);
-                    if (!LangFile)
-                    {
-                        if (SafeStrLen(SettingsInfo.szLangFile) > 0)
-                        {
-                            SettingsInfo.szLangFile[0] = 0;
-                            LoadLanguage();
-                            ReInitCtrls = TRUE;
-                        }
-                    }
-                    else
-                    {
-                        if (SafeStrCmp(LangFile, SettingsInfo.szLangFile) != 0)
-                        {
-                            SafeStrCpyN(SettingsInfo.szLangFile, LangFile, MAX_PATH);
-                            LoadLanguage();
-                            ReInitCtrls = TRUE;
-                        }
-                    }
-
-                    Selected = SendMessage(hCatList, CB_GETCURSEL, 0, 0);
-                    SettingsInfo.StartupCategory =
-                        (UINT)SendMessage(hCatList, CB_GETITEMDATA, Selected, 0);
-
-                    Selected = SendMessage(hIconsList, CB_GETCURSEL, 0, 0);
-                    IconFile = (WCHAR*)SendMessage(hIconsList, CB_GETITEMDATA, Selected, 0);
-
-                    if (!IconFile)
-                    {
-                        if (SafeStrLen(SettingsInfo.szIconsFile) > 0)
-                        {
-                            SettingsInfo.szIconsFile[0] = 0;
-                            LoadIcons();
-                            ReInitCtrls = TRUE;
-                        }
-                    }
-                    else
-                    {
-                        if (SafeStrCmp(IconFile, SettingsInfo.szIconsFile) != 0)
-                        {
-                            SafeStrCpyN(SettingsInfo.szIconsFile, IconFile, MAX_PATH);
-                            LoadIcons();
-                            ReInitCtrls = TRUE;
-                        }
-                    }
-
-                    if (ReInitCtrls) ReInitControls();
-
-                    SaveSensorsState(hSensorsList);
-
-                    /* Save settings to .ini file */
-                    SaveSettings();
-
-                    UpdateTrayIcons();
-
-                    /* Close settings dialog */
-                    PostMessage(hDlg, WM_CLOSE, 0, 0);
-                }
-                break;
+                    SaveSettingsFromDialog(hDlg);
+                    break;
             }
         }
         break;
