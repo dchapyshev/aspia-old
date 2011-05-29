@@ -255,7 +255,7 @@ INT GetSystemColorDepth(VOID);
 BOOL GetFileDescription(LPWSTR, LPWSTR, SIZE_T);
 INT GetDesktopColorDepth(VOID);
 VOID CopyTextToClipboard(LPCWSTR);
-BOOL IsWow64System(VOID);
+BOOL IsWin64System(VOID);
 VOID ConvertSecondsToString(LONGLONG, LPWSTR, SIZE_T);
 BOOL SaveFileDialog(HWND, LPWSTR, SIZE_T);
 VOID ChopSpaces(LPWSTR, SIZE_T);
@@ -427,8 +427,9 @@ VOID UpdateTrayIcons(VOID);
 /* debug.c */
 BOOL DebugCreateLog(VOID);
 VOID DebugCloseLog(VOID);
-VOID DebugWriteLog(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg);
-#define DebugTrace(msg) DebugWriteLog(__FILE__, __LINE__, __FUNCTION__, msg)
+VOID DebugWriteLog(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, ...);
+
+#define DebugTrace(_msg, ...) DebugWriteLog(__FILE__, __LINE__, __FUNCTION__, _msg, ##__VA_ARGS__)
 #define DebugStartReceiving() DebugTrace(L"Start data receiving")
 #define DebugEndReceiving() DebugTrace(L"End data receiving")
 #define DebugAllocFailed() DebugTrace(L"Alloc() failed")

@@ -287,9 +287,9 @@ CopyTextToClipboard(LPCTSTR lpszText)
     }
 }
 
-BOOL
-IsWow64System(VOID)
+BOOL IsWin64System(VOID)
 {
+#ifdef _M_IX86
     typedef BOOL (WINAPI *IW64P)(HANDLE, PBOOL);
 
     IW64P IsWow64Process;
@@ -312,6 +312,9 @@ IsWow64System(VOID)
 
     FreeLibrary(hDLL);
     return FALSE;
+#else
+	return TRUE;
+#endif
 }
 
 VOID

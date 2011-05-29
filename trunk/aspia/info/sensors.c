@@ -37,15 +37,8 @@ GetTjmaxTemperature(DWORD CpuIndex)
 
     GetProcessorIDs(&CpuIds);
 
-    if (SettingsInfo.DebugMode)
-    {
-        WCHAR szText[MAX_STR_LEN];
-
-        StringCbPrintf(szText, sizeof(szText),
-                       L"Family = %d, Model = %d, Stepping = %d",
-                       CpuIds.Family, CpuIds.Model, CpuIds.Stepping);
-        DebugTrace(szText);
-    }
+    DebugTrace(L"Family = %d, Model = %d, Stepping = %d",
+		       CpuIds.Family, CpuIds.Model, CpuIds.Stepping);
 
     switch (CpuIds.Family)
     {
@@ -185,14 +178,8 @@ GetIntelCpuInfo(VOID)
                            L"%d °C", Tjmax - Temp);
             IoSetItemText(Index, 1, szText);
 
-            if (SettingsInfo.DebugMode)
-            {
-                StringCbPrintf(szText, sizeof(szText),
-                               L"Core = %d, Tjmax = %d, Temp = %d, Result = %d",
-                               bIndex + 1, Tjmax, Temp, Tjmax - Temp);
-                DebugTrace(szText);
-            }
-
+            DebugTrace(L"Core = %d, Tjmax = %d, Temp = %d, Result = %d",
+                       bIndex + 1, Tjmax, Temp, Tjmax - Temp);
             ++bIndex;
         }
     }

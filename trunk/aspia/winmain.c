@@ -592,8 +592,7 @@ HandleCommandLine(VOID)
             }
             else if (wcscmp(ptr, L"debug") == 0)
             {
-                if (DebugCreateLog())
-                    SettingsInfo.DebugMode = TRUE;
+				SettingsInfo.DebugMode = TRUE;
             }
             else if (wcscmp(ptr, L"nonav") == 0)
             {
@@ -657,15 +656,9 @@ LoadLanguage(VOID)
         StringCbCat(szPath, sizeof(szPath), L"languages\\");
         StringCbCat(szPath, sizeof(szPath), SettingsInfo.szLangFile);
 
-        if (SettingsInfo.DebugMode)
-        {
-            WCHAR szText[MAX_STR_LEN];
-
-            StringCbPrintf(szText, sizeof(szText), L"Loading language file: %s", szPath);
-            DebugTrace(szText);
-        }
-
-        hLangInst = LoadLibraryEx(szPath, NULL, LOAD_LIBRARY_AS_DATAFILE);
+        DebugTrace(L"Loading language file: %s", szPath);
+        
+		hLangInst = LoadLibraryEx(szPath, NULL, LOAD_LIBRARY_AS_DATAFILE);
         if (!hLangInst) hLangInst = hInstance;
     }
 }
@@ -689,13 +682,7 @@ LoadIcons(VOID)
                        SettingsInfo.szCurrentPath,
                        SettingsInfo.szIconsFile);
 
-        if (SettingsInfo.DebugMode)
-        {
-            WCHAR szText[MAX_STR_LEN];
-
-            StringCbPrintf(szText, sizeof(szText), L"Loading icon file: %s", szPath);
-            DebugTrace(szText);
-        }
+        DebugTrace(L"Loading icon file: %s", szPath);
 
         hIconsInst = LoadLibraryEx(szPath, NULL, LOAD_LIBRARY_AS_DATAFILE);
         if (!hIconsInst) hIconsInst = hInstance;
@@ -819,6 +806,13 @@ wWinMain(HINSTANCE hInst,
     /* ѕытаемс€ обработать аргументы командной строки */
     if (HandleCommandLine())
         goto Exit;
+
+	/* если у нас дебаг билд, то всегда включаем DebugMode */
+#ifdef _DEBUG
+	SettingsInfo.DebugMode = TRUE;
+#endif
+	if (SettingsInfo.DebugMode) 
+		SettingsInfo.DebugMode = DebugCreateLog();
 
     DebugTrace(L"Start with debug mode");
 
