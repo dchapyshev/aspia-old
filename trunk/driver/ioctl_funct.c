@@ -477,65 +477,6 @@ IOCTL_WritePciConfig(IN PVOID InputBuffer,
 
 NTSTATUS
 NTAPI
-IOCTL_ReadMemory(IN PVOID InputBuffer,
-                 IN ULONG InputSize,
-                 OUT PVOID OutputBuffer,
-                 IN ULONG OutputSize,
-                 OUT PULONG BytesReturned)
-{
-    PREAD_MEMORY_INPUT Data;
-    PHYSICAL_ADDRESS Address;
-    BOOLEAN Error;
-    PVOID Maped;
-    ULONG Size;
-
-    if (InputSize != sizeof(READ_MEMORY_INPUT))
-    {
-        return STATUS_INVALID_PARAMETER;
-    }
-
-    Data = (PREAD_MEMORY_INPUT)InputBuffer;
-    Size = Data->UnitSize * Data->Count;
-
-    if (OutputSize < Size)
-    {
-        return STATUS_INVALID_PARAMETER;
-    }
-
-    Address.QuadPart = Data->Address.QuadPart;
-    Maped = MmMapIoSpace(Address, Size, FALSE);
-
-    Error = FALSE;
-    switch (Data->UnitSize)
-    {
-        case 1:
-            READ_REGISTER_BUFFER_UCHAR(Maped, OutputBuffer, Data->Count);
-            break;
-        case 2:
-            READ_REGISTER_BUFFER_USHORT(Maped, OutputBuffer, Data->Count);
-            break;
-        case 4:
-            READ_REGISTER_BUFFER_ULONG(Maped, OutputBuffer, Data->Count);
-            break;
-        default:
-            Error = TRUE;
-            break;
-    }
-
-    MmUnmapIoSpace(Maped, Size);
-
-    if (Error)
-    {
-        return STATUS_INVALID_PARAMETER;
-    }
-
-    *BytesReturned = OutputSize;
-
-    return STATUS_SUCCESS;
-}
-
-NTSTATUS
-NTAPI
 IOCTL_Init()
 {
     NTSTATUS Status = STATUS_INTERNAL_ERROR;

@@ -778,7 +778,8 @@ InitSettingsTree(HWND hTree)
                          SettingsInfo.SysColorDepth | ILC_MASK,
                          0, 1);
 
-    AddSettingsCategory(hTree, IDS_SETTINGS_GENERAL, IDI_COMPUTER, 0);
+    TreeView_SelectItem(hTree,
+                        AddSettingsCategory(hTree, IDS_SETTINGS_GENERAL, IDI_COMPUTER, 0));
     AddSettingsCategory(hTree, IDS_SETTINGS_FILTER, IDI_APPS, 1);
     AddSettingsCategory(hTree, IDS_SETTINGS_SYSTRAY, IDI_SERVICES, 2);
 
@@ -1083,6 +1084,7 @@ SettingsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                 {
                     WCHAR *IconFile, *LangFile, szText[MAX_STR_LEN];
                     INT Selected;
+                    BOOL ReInitCtrls = FALSE;
 
                     SettingsInfo.CpuBackground = CpuBackground;
                     SettingsInfo.CpuFontColor = CpuFontColor;
@@ -1120,9 +1122,23 @@ SettingsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                     Selected = SendMessage(hLangList, CB_GETCURSEL, 0, 0);
                     LangFile = (WCHAR*)SendMessage(hLangList, CB_GETITEMDATA, Selected, 0);
                     if (!LangFile)
-                        SettingsInfo.szLangFile[0] = 0;
+                    {
+                        if (SafeStrLen(SettingsInfo.szLangFile) > 0)
+                        {
+                            SettingsInfo.szLangFile[0] = 0;
+                            LoadLanguage();
+                            ReInitCtrls = TRUE;
+                        }
+                    }
                     else
-                        SafeStrCpyN(SettingsInfo.szLangFile, LangFile, MAX_PATH);
+                    {
+                        if (SafeStrCmp(LangFile, SettingsInfo.szLangFile) != 0)
+                        {
+                            SafeStrCpyN(SettingsInfo.szLangFile, LangFile, MAX_PATH);
+                            LoadLanguage();
+                            ReInitCtrls = TRUE;
+                        }
+                    }
 
                     Selected = SendMessage(hCatList, CB_GETCURSEL, 0, 0);
                     SettingsInfo.StartupCategory =
@@ -1132,13 +1148,25 @@ SettingsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                     IconFile = (WCHAR*)SendMessage(hIconsList, CB_GETITEMDATA, Selected, 0);
 
                     if (!IconFile)
-                        SettingsInfo.szIconsFile[0] = 0;
+                    {
+                        if (SafeStrLen(SettingsInfo.szIconsFile) > 0)
+                        {
+                            SettingsInfo.szIconsFile[0] = 0;
+                            LoadIcons();
+                            ReInitCtrls = TRUE;
+                        }
+                    }
                     else
-                        SafeStrCpyN(SettingsInfo.szIconsFile, IconFile, MAX_PATH);
+                    {
+                        if (SafeStrCmp(IconFile, SettingsInfo.szIconsFile) != 0)
+                        {
+                            SafeStrCpyN(SettingsInfo.szIconsFile, IconFile, MAX_PATH);
+                            LoadIcons();
+                            ReInitCtrls = TRUE;
+                        }
+                    }
 
-                    LoadLanguage();
-                    LoadIcons();
-                    ReInitControls();
+                    if (ReInitCtrls) ReInitControls();
 
                     SaveSensorsState(hSensorsList);
 

@@ -9,70 +9,7 @@
 
 #include <stddef.h>
 
-
-#define IOCTL_GET_SMBIOS \
-    CTL_CODE(FILE_DEVICE_UNKNOWN, 1,  METHOD_BUFFERED, FILE_ALL_ACCESS)
-#define IOCTL_GET_MSR \
-    CTL_CODE(FILE_DEVICE_UNKNOWN, 2,  METHOD_BUFFERED, FILE_ALL_ACCESS)
-#define IOCTL_GET_PMC \
-    CTL_CODE(FILE_DEVICE_UNKNOWN, 3,  METHOD_BUFFERED, FILE_ALL_ACCESS)
-#define IOCTL_READ_PORT_DWORD \
-    CTL_CODE(FILE_DEVICE_UNKNOWN, 4,  METHOD_BUFFERED, FILE_ALL_ACCESS)
-#define IOCTL_READ_PORT_WORD \
-    CTL_CODE(FILE_DEVICE_UNKNOWN, 5,  METHOD_BUFFERED, FILE_ALL_ACCESS)
-#define IOCTL_READ_PORT_BYTE \
-    CTL_CODE(FILE_DEVICE_UNKNOWN, 6,  METHOD_BUFFERED, FILE_ALL_ACCESS)
-#define IOCTL_WRITE_PORT_DWORD \
-    CTL_CODE(FILE_DEVICE_UNKNOWN, 7,  METHOD_BUFFERED, FILE_ALL_ACCESS)
-#define IOCTL_WRITE_PORT_WORD \
-    CTL_CODE(FILE_DEVICE_UNKNOWN, 8,  METHOD_BUFFERED, FILE_ALL_ACCESS)
-#define IOCTL_WRITE_PORT_BYTE \
-    CTL_CODE(FILE_DEVICE_UNKNOWN, 9,  METHOD_BUFFERED, FILE_ALL_ACCESS)
-#define IOCTL_READ_PCI_CONFIG \
-    CTL_CODE(FILE_DEVICE_UNKNOWN, 10, METHOD_BUFFERED, FILE_ALL_ACCESS)
-#define IOCTL_WRITE_PCI_CONFIG \
-    CTL_CODE(FILE_DEVICE_UNKNOWN, 11, METHOD_BUFFERED, FILE_ALL_ACCESS)
-#define IOCTL_READ_MEMORY \
-    CTL_CODE(FILE_DEVICE_UNKNOWN, 12, METHOD_BUFFERED, FILE_ALL_ACCESS)
-
-
-typedef struct _PORT_WRITE_INPUT
-{
-    ULONG PortNumber; 
-    union
-    {
-        ULONG LongData;
-        USHORT ShortData;
-        UCHAR CharData;
-    }u;
-} PORT_WRITE_INPUT, *PPORT_WRITE_INPUT;
-
-typedef struct _READ_MSR_QUERY
-{
-    UINT32 Register;
-    UINT32 CpuIndex;
-} READ_MSR_QUERY, *PREAD_MSR_QUERY;
-
-typedef struct  _READ_PCI_CONFIG_INPUT
-{
-    ULONG PciAddress;
-    ULONG PciOffset;
-} READ_PCI_CONFIG_INPUT, *PREAD_PCI_CONFIG_INPUT;
-
-typedef struct _WRITE_PCI_CONFIG_INPUT
-{
-    ULONG PciAddress;
-    ULONG PciOffset;
-    UCHAR Data[1];
-} WRITE_PCI_CONFIG_INPUT, *PWRITE_PCI_CONFIG_INPUT;
-
-typedef struct _READ_MEMORY_INPUT
-{
-    LARGE_INTEGER Address;
-    ULONG UnitSize;
-    ULONG Count;
-} READ_MEMORY_INPUT, *PREAD_MEMORY_INPUT;
-
+#include "../driver/ioctl.h"
 
 HANDLE hDriverFile = INVALID_HANDLE_VALUE;
 const LPWSTR lpDriverName = L"Aspia";
@@ -610,49 +547,6 @@ DRIVER_WritePciConfig(IN DWORD PciAddress,
     Free(InputBuffer);
 
     return Result;
-}
-
-DWORD
-DRIVER_ReadMemory(IN DWORD_PTR Address,
-                  OUT PBYTE Buffer,
-                  IN DWORD Count,
-                  IN DWORD UnitSize)
-{
-    READ_MEMORY_INPUT InputBuffer;
-    DWORD ReturnedLength = 0;
-    BOOL Result = FALSE;
-    DWORD Size = 0;
-
-    if (!Buffer) return 0;
-
-#ifndef _M_AMD64
-        InputBuffer.Address.HighPart = 0;
-        InputBuffer.Address.LowPart = (DWORD)Address;
-#else
-        InputBuffer.Address.QuadPart = Address;
-#endif
-
-    InputBuffer.UnitSize = UnitSize;
-    InputBuffer.Count = Count;
-    Size = InputBuffer.UnitSize * InputBuffer.Count;
-
-    Result = DeviceIoControl(hDriverFile,
-                             (DWORD)IOCTL_READ_MEMORY,
-                             &InputBuffer,
-                             sizeof(READ_MEMORY_INPUT),
-                             Buffer,
-                             Size,
-                             &ReturnedLength,
-                             NULL);
-
-    if (Result && ReturnedLength == Size)
-    {
-        return Count * UnitSize;
-    }
-    else
-    {
-        return 0;
-    }
 }
 
 BOOL
