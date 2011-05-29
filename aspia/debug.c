@@ -12,11 +12,13 @@ static HANDLE hDebugLog = INVALID_HANDLE_VALUE;
 
 
 VOID
-DebugWriteLog(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg)
+DebugWriteLog(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, ...)
 {
     LARGE_INTEGER FileSize, MoveTo, NewPos;
-    WCHAR szText[MAX_STR_LEN * 3], szTime[MAX_STR_LEN];
+	WCHAR szMsg[MAX_STR_LEN * 3];
+    WCHAR szText[MAX_STR_LEN * 4], szTime[MAX_STR_LEN];
     DWORD dwBytesWritten;
+	va_list args;
 
     if (!hDebugLog || hDebugLog == INVALID_HANDLE_VALUE)
         return;
@@ -34,9 +36,13 @@ DebugWriteLog(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg)
                   0, NULL, NULL, szTime,
                   MAX_STR_LEN);
 
+	va_start(args, lpMsg);
+	StringCbVPrintf(szMsg, sizeof(szMsg), lpMsg, args);
+	va_end(args);
+
     StringCbPrintf(szText, sizeof(szText),
                    L"[%s] %S:%ld %S(): \"%s\"\r\n",
-                   szTime, lpFile, iLine, lpFunc, lpMsg);
+                   szTime, lpFile, iLine, lpFunc, szMsg);
 
     WriteFile(hDebugLog, szText,
               SafeStrLen(szText) * sizeof(WCHAR),
@@ -57,7 +63,7 @@ DebugCreateLog(VOID)
 
     hDebugLog = CreateFile(szPath,
                            GENERIC_WRITE,
-                           FILE_SHARE_WRITE,
+                           FILE_SHARE_READ | FILE_SHARE_WRITE,
                            NULL,
                            CREATE_ALWAYS,
                            FILE_ATTRIBUTE_NORMAL,

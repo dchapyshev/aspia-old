@@ -162,7 +162,7 @@ ShowSummaryInfo(VOID)
 
     /* OS Arch */
     Index = IoAddValueName(IDS_OS_ARCH, -1);
-    IoSetItemText(Index, 1, IsWow64System() ? L"AMD64" : L"x86");
+    IoSetItemText(Index, 1, IsWin64System() ? L"AMD64" : L"x86");
 
     /* Computer name */
     Index = IoAddValueName(IDS_COMPUTER_NAME, -1);
