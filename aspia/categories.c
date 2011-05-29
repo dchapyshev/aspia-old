@@ -247,14 +247,6 @@ COLUMN_LIST FirewallColumnList[] =
     { 0 }
 };
 
-COLUMN_LIST PasswdIEColumnList[] =
-{
-    { IDS_PASSWD_IE_URL, 250 },
-    { IDS_PASSWD_IE_USERNAME, 150 },
-    { IDS_PASSWD_IE_PASSWORD, 150 },
-    { 0 }
-};
-
 CATEGORY_LIST DMICategoryList[] =
 {
     { IDS_CAT_HW_DMI_BIOS,      IDI_CPU,      FALSE, TRUE, NULL, DMI_BIOSInfo,      StdColumnList, NULL },
@@ -315,26 +307,11 @@ CATEGORY_LIST UpdSftCategoryList[] =
     { 0 }
 };
 
-CATEGORY_LIST PasswdCategoryList[] =
-{
-    { IDS_CAT_PASSWD_IE,         IDI_IE,         FALSE, TRUE, NULL, SOFTWARE_PasswdIEInfo,         PasswdIEColumnList, NULL },
-    { IDS_CAT_PASSWD_OUTLOOK_E,  IDI_SOFTWARE,   FALSE, TRUE, NULL, SOFTWARE_PasswdOutlookInfo,    StdColumnList, NULL },
-    { IDS_CAT_PASSWD_OUTLOOK,    IDI_SOFTWARE,   FALSE, TRUE, NULL, SOFTWARE_PasswdOutlookInfo,    StdColumnList, NULL },
-    { IDS_CAT_PASSWD_CHROME,     IDI_SOFTWARE,   FALSE, TRUE, NULL, SOFTWARE_PasswdChromeInfo,     StdColumnList, NULL },
-    { IDS_CAT_PASSWD_FIREFOX,    IDI_FIREFOX,    FALSE, TRUE, NULL, SOFTWARE_PasswdFirefoxInfo,    StdColumnList, NULL },
-    { IDS_CAT_PASSWD_THUNDERBIRD,IDI_THUNDERBIRD,FALSE, TRUE, NULL, SOFTWARE_PasswdThunderbirdInfo,StdColumnList, NULL },
-    { IDS_CAT_PASSWD_OPERA,      IDI_OPERA,      FALSE, TRUE, NULL, SOFTWARE_PasswdOperaInfo,      StdColumnList, NULL },
-    { IDS_CAT_PASSWD_RAS,        IDI_RAS,        FALSE, TRUE, NULL, SOFTWARE_PasswdRASInfo,        StdColumnList, NULL },
-    { IDS_CAT_PASSWD_MSRDP,      IDI_COMPUTER,   FALSE, TRUE, NULL, SOFTWARE_PasswdMsRDPInfo,      StdColumnList, NULL },
-    { 0 }
-};
-
 CATEGORY_LIST SoftwareCategoryList[] =
 {
     { IDS_CAT_SOFTWARE_UPD_SFT,  IDI_SOFTWARE, FALSE, TRUE, NULL, NULL,                  NULL,               UpdSftCategoryList },
     { IDS_CAT_SOFTWARE_SERVICES, IDI_SERVICES, FALSE, TRUE, NULL, SOFTWARE_ServicesInfo, ServicesColumnList, NULL },
     { IDS_CAT_SOFTWARE_DRIVERS,  IDI_HW,       FALSE, TRUE, NULL, SOFTWARE_DriversInfo,  DriversColumnList,  NULL },
-    { IDS_CAT_SOFTWARE_PASSWORDS,IDI_PASSWORDS,FALSE, TRUE, NULL, NULL,                  NULL,               PasswdCategoryList },
     { IDS_CAT_SOFTWARE_TASKMGR,  IDI_TASKMGR,  FALSE, TRUE, NULL, SOFTWARE_TaskMgr,      TaskMgrColumnList,  NULL },
     { IDS_CAT_SOFTWARE_LICENSES, IDI_CONTACT,  FALSE, TRUE, NULL, SOFTWARE_LicensesInfo, LicensesColumnList, NULL },
     { 0 }

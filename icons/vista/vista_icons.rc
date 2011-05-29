@@ -71,10 +71,6 @@ IDI_SETTINGS      ICON DISCARDABLE "res/settings.ico"
 IDI_CHECK_ALL     ICON DISCARDABLE "res/check_all.ico"
 IDI_UNCHECK_ALL   ICON DISCARDABLE "res/uncheck_all.ico"
 IDI_FIREWALL      ICON DISCARDABLE "res/firewall.ico"
-IDI_PASSWORDS     ICON DISCARDABLE "res/passwords.ico"
-IDI_FIREFOX       ICON DISCARDABLE "res/firefox.ico"
-IDI_THUNDERBIRD   ICON DISCARDABLE "res/thunderbird.ico"
-IDI_OPERA         ICON DISCARDABLE "res/opera.ico"
 
 STRINGTABLE DISCARDABLE
 BEGIN

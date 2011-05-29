@@ -215,16 +215,6 @@ VOID SOFTWARE_InstalledAppInfo(VOID);
 VOID SOFTWARE_TaskMgr(VOID);
 VOID SOFTWARE_LicensesInfo(VOID);
 
-/* passwords.c */
-VOID SOFTWARE_PasswdIEInfo(VOID);
-VOID SOFTWARE_PasswdOutlookInfo(VOID);
-VOID SOFTWARE_PasswdChromeInfo(VOID);
-VOID SOFTWARE_PasswdFirefoxInfo(VOID);
-VOID SOFTWARE_PasswdOperaInfo(VOID);
-VOID SOFTWARE_PasswdThunderbirdInfo(VOID);
-VOID SOFTWARE_PasswdRASInfo(VOID);
-VOID SOFTWARE_PasswdMsRDPInfo(VOID);
-
 /* network.c */
 VOID NETWORK_CardsInfo(VOID);
 VOID NETWORK_SharedInfo(VOID);
