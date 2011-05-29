@@ -102,14 +102,6 @@ DriverIoControl(IN PDEVICE_OBJECT DeviceObject,
                                      (PULONG)&Irp->IoStatus.Information);
             break;
 
-        case IOCTL_READ_MEMORY:
-            Status = IOCTL_ReadMemory(InputBuffer,
-                                      InputSize,
-                                      OutputBuffer,
-                                      OutputSize,
-                                      (PULONG)&Irp->IoStatus.Information);
-            break;
-
         default:
             Status = STATUS_INVALID_DEVICE_REQUEST;
             break;

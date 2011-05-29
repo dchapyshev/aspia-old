@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include <tchar.h>
+#include <wchar.h>
 
-#define VER_FILEVERSION             1,0,0,0
-#define VER_FILEVERSION_STR         _T("1.0.0\0")
+#define VER_FILEVERSION             1,1,0,0
+#define VER_FILEVERSION_STR         L"1.1.0\0"
 
 #define VER_PRODUCTVERSION          VER_FILEVERSION
 #define VER_PRODUCTVERSION_STR      VER_FILEVERSION_STR
