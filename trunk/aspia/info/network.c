@@ -13,6 +13,10 @@
 #include <ras.h>
 #include <raserror.h>
 #include <netfw.h>
+#include <ntsecapi.h>
+#include <sddl.h>
+
+#define NT_SUCCESS(Status) (((NTSTATUS)(Status)) >= 0)
 
 
 static VOID

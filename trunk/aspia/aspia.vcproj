@@ -342,10 +342,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\info\passwords\chrome.c"
-				>
-			</File>
-			<File
 				RelativePath=".\controls.c"
 				>
 			</File>
@@ -390,10 +386,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\info\passwords\firefox.c"
-				>
-			</File>
-			<File
 				RelativePath=".\report\html.c"
 				>
 			</File>
@@ -403,10 +395,6 @@
 			</File>
 			<File
 				RelativePath=".\info\spd\infolists.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\passwords\internet_explorer.c"
 				>
 			</File>
 			<File
@@ -422,10 +410,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\info\passwords\msrdp.c"
-				>
-			</File>
-			<File
 				RelativePath=".\info\netstat.c"
 				>
 			</File>
@@ -434,19 +418,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\info\passwords\opera.c"
-				>
-			</File>
-			<File
 				RelativePath=".\info\os.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\passwords\outlook_express.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\passwords\ras.c"
 				>
 			</File>
 			<File
@@ -495,14 +467,6 @@
 			</File>
 			<File
 				RelativePath=".\report\text.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\passwords\thunderbird.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\passwords\windows_mail.c"
 				>
 			</File>
 			<File
