@@ -4,9 +4,10 @@
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Shevchuk Maksim (maksim.shevchuk@gmail.com)
  *                  Dmitry Chapyshev (dmitry@aspia.ru)
+                    ntldr (ntldr@diskcryptor.net, PGP key ID 0xC48251EB4F8E4E6)
  */
 
-#include <ntddk.h>
+#include <ntifs.h>
 
 #include "version.h"
 #include "ioctl_funct.h"
@@ -120,8 +121,16 @@ DriverDispatcher(IN PDEVICE_OBJECT DeviceObject,
                  IN PIRP Irp)
 {
     NTSTATUS Status = STATUS_SUCCESS;
+    SECURITY_SUBJECT_CONTEXT  subjContext;
 
     PAGED_CODE();
+
+    SeCaptureSubjectContext(&subjContext);
+
+    if (!SeTokenIsAdmin(SeQuerySubjectContextToken(&subjContext)))
+        Status = STATUS_ACCESS_DENIED;
+
+    SeReleaseSubjectContext(&subjContext);
 
     Irp->IoStatus.Information = 0;
     Irp->IoStatus.Status = Status;

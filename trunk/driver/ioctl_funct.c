@@ -4,16 +4,18 @@
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Shevchuk Maksim (maksim.shevchuk@gmail.com)
  *                  Dmitry Chapyshev (dmitry@aspia.ru)
+                    ntldr (ntldr@diskcryptor.net, PGP key ID 0xC48251EB4F8E4E6)
  */
 
-#include <ntddk.h>
+#include <ntifs.h>
 #include <stddef.h>
 
 #include "ioctl_funct.h"
 
 
-NTSTATUS (NTAPI *_KeSetAffinityThread)(IN PKTHREAD Thread, IN KAFFINITY Affinity);
+KAFFINITY (NTAPI *_KeSetSystemAffinityThread)(IN KAFFINITY Affinity);
 KAFFINITY (NTAPI *_KeSetSystemAffinityThreadEx)(IN KAFFINITY Affinity);
+VOID (NTAPI *_KeRevertToUserAffinityThreadEx)(IN KAFFINITY  Affinity);
 
 
 /* Read MSR register value for specified CPU */ 
@@ -23,59 +25,38 @@ ReadMsrByRegisterAndCpuIndex(IN UINT32 CpuIndex,
                              IN UINT32 Register,
                              OUT UINT64* Output)
 {
-    NTSTATUS Status = STATUS_UNSUCCESSFUL;
+    NTSTATUS Status;
     KAFFINITY ActiveAffinity;
-    KAFFINITY Affinity;
-    PKTHREAD ActiveThread;
+    KAFFINITY ReqAffinity;
 
     /* Get active CPU mask */
     ActiveAffinity = KeQueryActiveProcessors();
-    Affinity = ActiveAffinity & (1i64 << CpuIndex);
+    /* calc requested mask */
+    ReqAffinity = ActiveAffinity & ((KAFFINITY)1 << CpuIndex);
 
-    /* If available the specified CPU */
-    if (Affinity)
-    {
-        if (_KeSetSystemAffinityThreadEx)
-        {
-            /* Set specified CPU as the current processor */
-            _KeSetSystemAffinityThreadEx(Affinity);
+    /* If not available the specified CPU, return STATUS_UNSUCCESSFUL */
+    if (ReqAffinity == 0) return STATUS_UNSUCCESSFUL;
 
-            __try
-            {
-                /* Get MSR Reg value */
-                *Output = __readmsr(Register);
-            }
-            __except(EXCEPTION_EXECUTE_HANDLER)
-            {
-                return STATUS_UNSUCCESSFUL;
-            }
-
-            /* Set default CPU mask */
-            _KeSetSystemAffinityThreadEx(ActiveAffinity);
-            Status = STATUS_SUCCESS;
-        }
-        else if (_KeSetAffinityThread)
-        {
-            ActiveThread = KeGetCurrentThread();
-            /* Set the specified processors, as the current processor to the current thread */
-            _KeSetAffinityThread(ActiveThread, Affinity);
-
-            __try
-            {
-                /* Get MSR Reg value */
-                *Output = __readmsr(Register);
-            }
-            __except(EXCEPTION_EXECUTE_HANDLER)
-            {
-                return STATUS_UNSUCCESSFUL;
-            }
-
-            /* Set default CPU mask to the current thread */
-            _KeSetAffinityThread(ActiveThread, ActiveAffinity);
-            Status = STATUS_SUCCESS;
-        }
+    /* Use KeSetSystemAffinityThreadEx instead of the KeSetSystemAffinityThread routine whenever possible */
+    if (_KeSetSystemAffinityThreadEx && _KeRevertToUserAffinityThreadEx) {
+        ActiveAffinity = _KeSetSystemAffinityThreadEx(ReqAffinity);
+    } else {
+        _KeSetSystemAffinityThread(ReqAffinity);
     }
-
+    __try {
+        /* Get MSR Reg value */
+        *Output = __readmsr(Register);
+        Status = STATUS_SUCCESS;
+    }
+    __except(EXCEPTION_EXECUTE_HANDLER) {
+        Status = GetExceptionCode();
+    }
+    /* Set default CPU mask to the current thread */
+    if (_KeSetSystemAffinityThreadEx && _KeRevertToUserAffinityThreadEx) {
+        _KeRevertToUserAffinityThreadEx(ActiveAffinity);
+    } else {
+        _KeSetSystemAffinityThread(ActiveAffinity);
+    }
     return Status;
 }
 
@@ -193,59 +174,38 @@ ReadPmcByRegisterAndCpuIndex(IN UINT32 CpuIndex,
                              IN ULONG Counter,
                              OUT UINT64* Output)
 {
-    NTSTATUS Status = STATUS_UNSUCCESSFUL;
+    NTSTATUS Status;
     KAFFINITY ActiveAffinity;
-    KAFFINITY Affinity;
-    PKTHREAD ActiveThread;
+    KAFFINITY ReqAffinity;
 
     /* Get active CPU mask */
     ActiveAffinity = KeQueryActiveProcessors();
-    Affinity = ActiveAffinity & (1i64 << CpuIndex);
+    /* calc requested mask */
+    ReqAffinity = ActiveAffinity & ((KAFFINITY)1 << CpuIndex);
 
-    /* If available the specified CPU */
-    if (Affinity)
-    {
-        if (_KeSetSystemAffinityThreadEx)
-        {
-            /* Set specified CPU as the current processor */
-            _KeSetSystemAffinityThreadEx(Affinity);
+    /* If not available the specified CPU, return STATUS_UNSUCCESSFUL */
+    if (ReqAffinity == 0) return STATUS_UNSUCCESSFUL;
 
-            __try
-            {
-                /* Get PMC Reg value */
-                *Output = __readpmc(Counter);
-            }
-            __except(EXCEPTION_EXECUTE_HANDLER)
-            {
-                return STATUS_UNSUCCESSFUL;
-            }
-
-            /* Set default CPU mask */
-            _KeSetSystemAffinityThreadEx(ActiveAffinity);
-            Status = STATUS_SUCCESS;
-        }
-        else if (_KeSetAffinityThread)
-        {
-            ActiveThread = KeGetCurrentThread();
-            /* Set the specified processors, as the current processor to the current thread */
-            _KeSetAffinityThread(ActiveThread, Affinity);
-
-            __try
-            {
-                /* Get PMC value */
-                *Output = __readpmc(Counter);
-            }
-            __except(EXCEPTION_EXECUTE_HANDLER)
-            {
-                return STATUS_UNSUCCESSFUL;
-            }
-
-            /* Set default CPU mask to the current thread */
-            _KeSetAffinityThread(ActiveThread, ActiveAffinity);
-            Status = STATUS_SUCCESS;
-        }
+    /* Use KeSetSystemAffinityThreadEx instead of the KeSetSystemAffinityThread routine whenever possible */
+    if (_KeSetSystemAffinityThreadEx && _KeRevertToUserAffinityThreadEx) {
+        ActiveAffinity = _KeSetSystemAffinityThreadEx(ReqAffinity);
+    } else {
+        _KeSetSystemAffinityThread(ReqAffinity);
     }
-
+    __try {
+        /* Get PMC Reg value */
+        *Output = __readpmc(Counter);
+        Status = STATUS_SUCCESS;
+    }
+    __except(EXCEPTION_EXECUTE_HANDLER) {
+        Status = GetExceptionCode();
+    }
+    /* Set default CPU mask to the current thread */
+    if (_KeSetSystemAffinityThreadEx && _KeRevertToUserAffinityThreadEx) {
+        _KeRevertToUserAffinityThreadEx(ActiveAffinity);
+    } else {
+        _KeSetSystemAffinityThread(ActiveAffinity);
+    }
     return Status;
 }
 
@@ -482,17 +442,17 @@ IOCTL_Init()
     NTSTATUS Status = STATUS_INTERNAL_ERROR;
     UNICODE_STRING FunctionName;
 
-    RtlInitUnicodeString(&FunctionName, L"KeSetAffinityThread");
-    *(PVOID*)&_KeSetAffinityThread = MmGetSystemRoutineAddress(&FunctionName);
+    RtlInitUnicodeString(&FunctionName, L"KeSetSystemAffinityThread");
+    _KeSetSystemAffinityThread = MmGetSystemRoutineAddress(&FunctionName);
 
     RtlInitUnicodeString(&FunctionName, L"KeSetSystemAffinityThreadEx");
-    *(PVOID*)&_KeSetSystemAffinityThreadEx = MmGetSystemRoutineAddress(&FunctionName);
+    _KeSetSystemAffinityThreadEx = MmGetSystemRoutineAddress(&FunctionName);
 
-    if (_KeSetAffinityThread || 
-        _KeSetSystemAffinityThreadEx)
-    {
+    RtlInitUnicodeString(&FunctionName, L"KeRevertToUserAffinityThreadEx");
+    _KeRevertToUserAffinityThreadEx = MmGetSystemRoutineAddress(&FunctionName);
+
+    if (_KeSetSystemAffinityThread || (_KeSetSystemAffinityThreadEx && _KeRevertToUserAffinityThreadEx))
         Status = STATUS_SUCCESS;
-    }
-
+   
     return Status;
 }
