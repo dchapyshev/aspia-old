@@ -11,6 +11,40 @@
 #include "../smart/smart.h"
 //#include "scsi/scsi.h"
 
+#define DETAILED_TIMING_DESCRIPTIONS_START      0x36
+#define DETAILED_TIMING_DESCRIPTION_SIZE        18
+#define NO_DETAILED_TIMING_DESCRIPTIONS         4
+#define ID_MANUFACTURER_NAME                    0x08
+#define DESCRIPTOR_DATA         5
+#define MONITOR_NAME            0xfc
+#define MONITOR_LIMITS          0xfd
+#define ID_MODEL                0x0a
+#define UNKNOWN_DESCRIPTOR      -1
+#define DETAILED_TIMING_BLOCK   -2
+
+#define UPPER_NIBBLE(x) (((128|64|32|16) & (x)) >> 4)
+#define COMBINE_HI_8LO(hi, lo) ((((unsigned)hi) << 8) | (unsigned)lo)
+
+#define H_ACTIVE_LO  (unsigned)Block[2]
+#define H_ACTIVE_HI  UPPER_NIBBLE((unsigned)Block[ 4 ])
+#define H_ACTIVE     COMBINE_HI_8LO(H_ACTIVE_HI, H_ACTIVE_LO)
+
+#define V_ACTIVE_LO  (unsigned)Block[ 5 ]
+#define V_ACTIVE_HI  UPPER_NIBBLE((unsigned)Block[7])
+#define V_ACTIVE     COMBINE_HI_8LO(V_ACTIVE_HI, V_ACTIVE_LO)
+
+#define DPMS_FLAGS          0x18
+#define DPMS_ACTIVE_OFF     (1 << 5)
+#define DPMS_SUSPEND        (1 << 6)
+#define DPMS_STANDBY        (1 << 7)
+
+#define MANUFACTURE_WEEK       0x10
+#define MANUFACTURE_YEAR       0x11
+#define EDID_STRUCT_VERSION    0x12
+#define EDID_STRUCT_REVISION   0x13
+
+const BYTE EdidV1DescriptorFlag[] = { 0x00, 0x00 };
+
 
 VOID
 HW_CPUInfo(VOID)
@@ -273,22 +307,10 @@ HW_HDDSMARTInfo(VOID)
     DebugEndReceiving();
 }
 
-#define DETAILED_TIMING_DESCRIPTIONS_START      0x36
-#define DETAILED_TIMING_DESCRIPTION_SIZE        18
-#define NO_DETAILED_TIMING_DESCRIPTIONS         4
-#define ID_MANUFACTURER_NAME                    0x08
-#define DESCRIPTOR_DATA         5
-#define MONITOR_NAME            0xfc
-#define ID_MODEL                0x0a
-#define UNKNOWN_DESCRIPTOR      -1
-#define DETAILED_TIMING_BLOCK   -2
-#define COMBINE_HI_8LO( hi, lo ) \
-        ( (((unsigned)hi) << 8) | (unsigned)lo )
-
-char*
-GetVendorSign(BYTE const *block)
+WCHAR*
+GetVendorSign(BYTE const *Block)
 {
-    static CHAR sign[4];
+    static WCHAR sign[4];
     USHORT h;
 
 /*
@@ -297,46 +319,44 @@ GetVendorSign(BYTE const *block)
     bits 9-5: second letter
     bits 4-0: third letter
 */
-    h = COMBINE_HI_8LO(block[0], block[1]);
-    sign[0] = ((h >> 10) & 0x1f) + 'A' - 1;
-    sign[1] = ((h >> 5) & 0x1f) + 'A' - 1;
-    sign[2] = (h & 0x1f) + 'A' - 1;
+    h = COMBINE_HI_8LO(Block[0], Block[1]);
+    sign[0] = ((h >> 10) & 0x1f) + L'A' - 1;
+    sign[1] = ((h >> 5) & 0x1f) + L'A' - 1;
+    sign[2] = (h & 0x1f) + L'A' - 1;
     sign[3] = 0;
     return sign;
 }
 
-char*
-GetMonitorName(BYTE const *block)
+WCHAR*
+GetMonitorName(BYTE const *Block)
 {
-    static CHAR name[13];
-    unsigned i;
-    BYTE const *ptr = block + DESCRIPTOR_DATA;
+    BYTE const *ptr = Block + DESCRIPTOR_DATA;
+    static WCHAR szName[13];
+    UINT Index;
 
-    for (i = 0; i < 13; i++, ptr++)
+    for (Index = 0; Index < 13; Index++, ptr++)
     {
         if (*ptr == 0xa)
         {
-            name[i] = 0;
-            return name;
+            szName[Index] = 0;
+            return szName;
         }
 
-        name[i] = *ptr;
+        szName[Index] = *ptr;
     }
 
-    return name;
+    return szName;
 }
 
-const byte edid_v1_descriptor_flag[] = { 0x00, 0x00 };
-
-int
-block_type(byte* block)
+INT
+BlockType(BYTE* Block)
 {
-    if (!strncmp(edid_v1_descriptor_flag, block, 2))
+    if (!wcsncmp(EdidV1DescriptorFlag, Block, 2))
     {
         /* descriptor */
-        if (block[2] != 0)
+        if (Block[2] != 0)
             return UNKNOWN_DESCRIPTOR;
-        return block[ 3 ];
+        return Block[3];
     }
     else
     {
@@ -345,49 +365,149 @@ block_type(byte* block)
     }
 }
 
+double
+GetDiagonalSize(INT Horiz, INT Vert)
+{
+    /* Находим диагональ монитора по теореме Пифагора
+       и переводим из сантиметров в дюймы */
+    return (double)(sqrt((Horiz * Horiz) + (Vert * Vert))) / 2.54;
+}
+
 VOID
 ParseAndShowEDID(BYTE *Edid)
 {
-    char monitor_alt_name[100];
-    char* monitor_name = NULL;
-    char *vendor_sign;
-    unsigned i;
-    byte checksum = 0;
-    byte* block;
+    WCHAR szText[MAX_STR_LEN], szIniPath[MAX_PATH];
+    WCHAR szMonitorId[MAX_STR_LEN];
+    WCHAR *pVendorSign, *pMonitorModel = NULL;
+    UINT Index;
+    BYTE Checksum = 0;
+    BYTE* Block;
+    INT ItemIndex;
 
-    for(i = 0; i < 0x80; i++)
-        checksum += Edid[i];
+    IoAddIcon(IDI_MONITOR);
 
-    if (checksum != 0)
-        return;
+    StringCbPrintf(szIniPath, sizeof(szIniPath),
+                   L"%s%s",
+                   SettingsInfo.szCurrentPath,
+                   L"mon_dev.ini");
 
-    vendor_sign = GetVendorSign(Edid + ID_MANUFACTURER_NAME);
-
-    block = Edid + DETAILED_TIMING_DESCRIPTIONS_START;
-
-    for (i = 0; i < NO_DETAILED_TIMING_DESCRIPTIONS; i++,
-        block += DETAILED_TIMING_DESCRIPTION_SIZE)
+    for (Index = 0; Index < 0x80; Index++)
+        Checksum += Edid[Index];
+    if (Checksum != 0)
     {
+        DebugTrace(L"EDID checksum failed");
+        return;
+    }
 
-        if (block_type(block) == MONITOR_NAME)
+    pVendorSign = GetVendorSign(Edid + ID_MANUFACTURER_NAME);
+
+    Block = Edid + DETAILED_TIMING_DESCRIPTIONS_START;
+    for (Index = 0; Index < NO_DETAILED_TIMING_DESCRIPTIONS; Index++,
+        Block += DETAILED_TIMING_DESCRIPTION_SIZE)
+    {
+        if (BlockType(Block) == MONITOR_NAME)
         {
-            monitor_name = GetMonitorName(block);
+            pMonitorModel = GetMonitorName(Block);
             break;
         }
     }
 
-    if (!monitor_name)
+    swprintf_s(szMonitorId, sizeof(szMonitorId), L"%s%02x%02x",
+               pVendorSign, Edid[ID_MODEL + 1], Edid[ID_MODEL]);
+    _wcsupr_s(szMonitorId, MAX_STR_LEN);
+
+    GetPrivateProfileString(L"devices", szMonitorId, L"Unknown",
+                            szText, MAX_STR_LEN, szIniPath);
+    IoAddHeaderString(szText, 0);
+
+    /* Monitor ID */
+    ItemIndex = IoAddValueName(IDS_DISPLAY_ID, -1);
+    IoSetItemText(ItemIndex, 1, szMonitorId);
+
+    /* Monitor Model */
+    if (pMonitorModel)
     {
-        /* Stupid djgpp hasn't snprintf so we have to hack something together */
-        if(strlen(vendor_sign) + 10 > sizeof(monitor_alt_name))
-            vendor_sign[3] = 0;
-    
-        sprintf(monitor_alt_name, "%s:%02x%02x",
-                vendor_sign, Edid[ID_MODEL], Edid[ID_MODEL+1]);
-        monitor_name = monitor_alt_name;
+        ItemIndex = IoAddValueName(IDS_DISPLAY_MODEL, -1);
+        IoSetItemText(ItemIndex, 1, pMonitorModel);
     }
 
-  //MessageBoxA(0, monitor_name, vendor_sign, 0);
+    /* Manufacture Date */
+    ItemIndex = IoAddValueName(IDS_DISPLAY_MANUFACTURE_DATE, -1);
+    StringCbPrintf(szText, sizeof(szText), L"%d Week / %d Year",
+                   (INT)Edid[MANUFACTURE_WEEK],
+                   (INT)Edid[MANUFACTURE_YEAR] + 1990);
+    IoSetItemText(ItemIndex, 1, szText);
+
+    /* Max/ Visible Display Size */
+    ItemIndex = IoAddValueName(IDS_DISPLAY_MAX_VISIBLE_SIZE, -1);
+
+    StringCbPrintf(szText, sizeof(szText), L"%d cm / %d cm (%.1f\")",
+                   (INT)Edid[0x15], (INT)Edid[0x16],
+                   GetDiagonalSize(Edid[0x15], Edid[0x16]));
+    IoSetItemText(ItemIndex, 1, szText);
+
+    Block = Edid + DETAILED_TIMING_DESCRIPTIONS_START;
+    for (Index = 0; Index < NO_DETAILED_TIMING_DESCRIPTIONS; Index++,
+         Block += DETAILED_TIMING_DESCRIPTION_SIZE)
+    {
+        if (BlockType(Block) == DETAILED_TIMING_BLOCK)
+        {
+            /* Max. Resolution */
+            ItemIndex = IoAddValueName(IDS_DISPLAY_MAX_RESOLUTION, -1);
+            StringCbPrintf(szText, sizeof(szText),
+                           L"%dx%d",
+                           H_ACTIVE, V_ACTIVE);
+            IoSetItemText(ItemIndex, 1, szText);
+        }
+    }
+
+    Block = Edid + DETAILED_TIMING_DESCRIPTIONS_START;
+    for(Index = 0; Index < NO_DETAILED_TIMING_DESCRIPTIONS; Index++,
+        Block += DETAILED_TIMING_DESCRIPTION_SIZE)
+    {
+        if (BlockType(Block) == MONITOR_LIMITS)
+        {
+            ItemIndex = IoAddValueName(IDS_DISPLAY_HORIZ_FREQ, -1);
+            StringCbPrintf(szText, sizeof(szText),
+                           L"%u - %u kHz",
+                           Block[7], Block[8]);
+            IoSetItemText(ItemIndex, 1, szText);
+
+            ItemIndex = IoAddValueName(IDS_DISPLAY_VERT_FREQ, -1);
+            StringCbPrintf(szText, sizeof(szText),
+                           L"%u - %u Hz",
+                           Block[5], Block[6]);
+            IoSetItemText(ItemIndex, 1, szText);
+        }
+    }
+
+    /* Gamma */
+    ItemIndex = IoAddValueName(IDS_DISPLAY_GAMMA, -1);
+    StringCbPrintf(szText, sizeof(szText), L"%.1f",
+                   (double)(((double)Edid[23] / 100.0) + 1.0));
+    IoSetItemText(ItemIndex, 1, szText);
+
+    /* DPMS Mode Support */
+    szText[0] = 0;
+    ItemIndex = IoAddValueName(IDS_DISPLAY_DPMS_MODE, -1);
+    if ((Edid[DPMS_FLAGS] & DPMS_ACTIVE_OFF))
+        StringCbCat(szText, sizeof(szText), L"Active-Off, ");
+    if (Edid[DPMS_FLAGS] & DPMS_SUSPEND)
+        StringCbCat(szText, sizeof(szText), L"Suspend, ");
+    if (Edid[DPMS_FLAGS] & DPMS_STANDBY)
+        StringCbCat(szText, sizeof(szText), L"Standby, ");
+    if (wcslen(szText) > 0)
+        szText[wcslen(szText) - 2] = 0;
+    else
+        StringCbCopy(szText, sizeof(szText), L"None");
+    IoSetItemText(ItemIndex, 1, szText);
+
+    /* EDID Version */
+    ItemIndex = IoAddValueName(IDS_DISPLAY_EDID_VERSION, -1);
+    StringCbPrintf(szText, sizeof(szText), L"%d.%d",
+                   (INT)Edid[EDID_STRUCT_VERSION],
+                   (INT)Edid[EDID_STRUCT_REVISION]);
+    IoSetItemText(ItemIndex, 1, szText);
 }
 
 VOID
@@ -432,9 +552,10 @@ HW_MonitorInfo(VOID)
 
         if (GetBinaryFromRegistry(HKEY_LOCAL_MACHINE,
                                   szKeyPath, L"EDID",
-                                  &Edid, sizeof(Edid)))
+                                  (LPBYTE)&Edid, sizeof(Edid)))
         {
             ParseAndShowEDID(Edid);
+            IoAddFooter();
         }
     }
 

@@ -531,6 +531,25 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         }
         break;
 
+        case WM_SETTINGCHANGE:
+        {
+            INT SxSmIcon = GetSystemMetrics(SM_CXSMICON);
+            INT SySmIcon = GetSystemMetrics(SM_CYSMICON);
+            INT SysColorDepth = GetSystemColorDepth();
+
+            if (SettingsInfo.SxSmIcon != SxSmIcon ||
+                SettingsInfo.SySmIcon != SySmIcon ||
+                SettingsInfo.SysColorDepth != SysColorDepth)
+            {
+                SettingsInfo.SxSmIcon = SxSmIcon;
+                SettingsInfo.SySmIcon = SySmIcon;
+                SettingsInfo.SysColorDepth = SysColorDepth;
+
+                ReInitControls();
+            }
+        }
+        break;
+
         case WM_SYSCOLORCHANGE:
         {
             /* Forward WM_SYSCOLORCHANGE to common controls */
