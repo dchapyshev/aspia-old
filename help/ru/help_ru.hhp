@@ -1,0 +1,29 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=help_ru.chm
+Contents file=help_ru.hhc
+Index file=help_ru.hhk
+Binary Index=Yes
+Full-text search=Yes
+Language=0x0419
+Title=Справка Aspia
+Error log file=Errlog.txt
+Default Window=main
+
+[WINDOWS]
+main="Справка Aspia","help_ru.hhc","help_ru.hhk","cmd.htm","index.htm",,,,,0x41520,240,0x384E,[262,184,762,584],,,,0,0,0,0
+
+[FILES]
+cmd.htm
+dev_report.htm
+donate.htm
+index.htm
+report.htm
+settings.htm
+images\hw.png
+images\logo.png
+images\network.png
+images\os.png
+images\software.png
+images\Thumbs.db
+template.css
