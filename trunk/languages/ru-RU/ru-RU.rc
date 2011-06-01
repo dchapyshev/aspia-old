@@ -190,10 +190,10 @@ STYLE DS_SHELLFONT | WS_BORDER | WS_DLGFRAME | WS_SYSMENU | DS_MODALFRAME | DS_C
 CAPTION "Отправка отчета"
 FONT 8, "MS Shell Dlg"
 BEGIN
-    LTEXT "Aspia обнаружила, что у вас есть устройства, которых нет в нашей базе данных. Отправив нам отчет, вы поможете сделать Aspia лучше.", -1, 6, 5, 221, 27
+    LTEXT "Aspia обнаружила, что у вас есть устройства, которых нет в нашей базе данных. Отправив нам отчет, вы поможете сделать Aspia лучше.", -1, 6, 5, 215, 27
     LTEXT "В отчет будут включены данные о следующих устройствах:", -1, 6, 31, 212, 10
     CONTROL "", IDC_REPORT_DATA_LIST, "SysListView32", LVS_REPORT | LVS_SORTASCENDING | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP, 6, 43, 213, 112
-    AUTOCHECKBOX "Никогда не предлагать отправить отчет", IDC_NEVER_SEND_REPORT, 11, 163, 154, 8
+    AUTOCHECKBOX "Предлагать отправить отчет", IDC_NEVER_SEND_REPORT, 11, 163, 154, 8
 
     PUSHBUTTON "&Отправить", IDOK, 94, 178, 60, 14
     PUSHBUTTON "&Закрыть", IDCANCEL, 159, 178, 60, 14

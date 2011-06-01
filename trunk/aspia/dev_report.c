@@ -6,11 +6,143 @@
  */
 
 #include "main.h"
+#include <wininet.h>
+#include <urlmon.h>
 
 typedef VOID (CALLBACK *DEVICESENUMPROC)(HWND hList, INT IconIndex, LPWSTR lpName, LPTSTR lpId);
+#define INTERNET_FLAGS (INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_UI | INTERNET_FLAG_NO_COOKIES)
 
 HIMAGELIST hDevImageList = NULL;
 
+
+CHAR*
+http_receive(HINTERNET h_req, ULONG *d_size)
+{
+    ULONG bytes  = sizeof(ULONG);
+    ULONG qsize  = 0;
+    ULONG readed = 0;
+    CHAR  *data   = NULL;
+    CHAR   buff[4096];
+
+    if (HttpQueryInfo(h_req, HTTP_QUERY_CONTENT_LENGTH | HTTP_QUERY_FLAG_NUMBER, &qsize, &bytes, NULL) != 0)
+    {
+        data = malloc(qsize + 1);
+    }
+
+    do
+    {
+        if (InternetReadFile(h_req, buff, sizeof(buff), &bytes) == 0)
+            break;
+
+        if ((readed + bytes) > qsize)
+        {
+            data = realloc(data, readed + bytes + 1);
+            if (!data) break;
+            qsize += bytes;
+        }
+        memcpy(data + readed, buff, bytes);
+        readed += bytes;
+    }
+    while (bytes != 0);
+
+    if (data && readed != qsize)
+    {
+        free(data);
+        data = NULL;
+    }
+    else
+    {
+        if (d_size) *d_size = readed;
+        data[readed] = 0;
+    }
+
+    return data;
+}
+
+LPVOID
+http_get(WCHAR *url, ULONG *d_size)
+{
+    HINTERNET h_inet = NULL;
+    HINTERNET h_req  = NULL;
+    CHAR     *replay = NULL;
+    
+    for (;;)
+    {
+        h_inet = InternetOpen(NULL, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+        if (!h_inet) break;
+        
+        h_req = InternetOpenUrl(h_inet, url, NULL, 0, INTERNET_FLAGS, 0);
+        if (!h_req) break;
+
+        replay = http_receive(h_req, d_size);
+    }
+
+    if (h_req) InternetCloseHandle(h_req);
+    if (h_inet) InternetCloseHandle(h_inet);
+
+    return replay;
+}
+
+LPVOID
+http_post(WCHAR *url, LPVOID data, INT size, ULONG *d_size)
+{
+    URL_COMPONENTS url_cm = {0};
+    HINTERNET      h_inet = NULL;
+    HINTERNET      h_conn = NULL;
+    HINTERNET      h_req  = NULL;
+    CHAR          *q_data = NULL;
+    CHAR          *replay = NULL;
+    WCHAR        host[MAX_PATH];
+    WCHAR        path[MAX_PATH];
+    UCHAR *p, *d = data;
+
+    for (;;)
+    {
+        q_data = malloc(size * 3 + 10);
+        if (!q_data) break;
+
+        StringCbCopyA(q_data, size * 3 + 10, "data=");
+        p = (UCHAR*)(q_data + 5);
+
+        while (size--)
+            p += sprintf(p, "%%%0.2x", (ULONG)*d++);
+
+        url_cm.dwStructSize     = sizeof(url_cm);
+        url_cm.lpszHostName     = host;
+        url_cm.dwHostNameLength = sizeof(host);
+        url_cm.lpszUrlPath      = path;
+        url_cm.dwUrlPathLength  = sizeof(path);
+
+        if (InternetCrackUrl(url, 0, 0, &url_cm) == 0)
+            break;
+
+        h_inet = InternetOpen(NULL, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+        if (!h_inet) break;
+
+        h_conn = InternetConnect(h_inet, host, url_cm.nPort, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
+        if (!h_conn) break;
+
+        h_req = HttpOpenRequest(h_conn, L"POST", path, NULL, NULL, NULL, INTERNET_FLAGS, 0);
+        if (!h_req) break;
+
+        HttpAddRequestHeaders(h_req,
+                              L"Content-Type: application/x-www-form-urlencoded",
+                              47 * 2, HTTP_ADDREQ_FLAG_ADD);
+
+        if (HttpSendRequest(h_req, NULL, 0, q_data, strlen(q_data)) == 0)
+            break;
+
+        replay = http_receive(h_req, d_size);
+    }
+
+    if (h_req) InternetCloseHandle(h_req);
+    if (h_conn) InternetCloseHandle(h_conn);
+    if (h_inet) InternetCloseHandle(h_inet);
+
+    if (q_data) free(q_data);
+
+    return replay;
+}
 
 INT
 AddImageListIcon(HIMAGELIST hImgList, UINT IconID)
@@ -101,12 +233,15 @@ EnumUnknownDevices(HWND hList, DEVICESENUMPROC lpEnumProc)
             }
         }
 
-        _wcslwr(DeviceID);
+        _wcslwr_s(DeviceID, MAX_STR_LEN);
 
         if (IsPCIDevice(DeviceID))
         {
-            GetPCIVendorID(DeviceID, szVendorID, sizeof(szVendorID));
-            GetPCIDeviceID(DeviceID, szDeviceID, sizeof(szDeviceID));
+            if (!GetPCIVendorID(DeviceID, szVendorID, sizeof(szVendorID)) ||
+                !GetPCIDeviceID(DeviceID, szDeviceID, sizeof(szDeviceID)))
+            {
+                continue;
+            }
 
             StringCbCat(szVendorID, sizeof(szVendorID), L"-");
             StringCbCat(szVendorID, sizeof(szVendorID), szDeviceID);
@@ -120,8 +255,11 @@ EnumUnknownDevices(HWND hList, DEVICESENUMPROC lpEnumProc)
         }
         else if (IsUSBDevice(DeviceID))
         {
-            GetUSBVendorID(DeviceID, szVendorID, sizeof(szVendorID));
-            GetUSBDeviceID(DeviceID, szDeviceID, sizeof(szDeviceID));
+            if (!GetUSBVendorID(DeviceID, szVendorID, sizeof(szVendorID)) ||
+                !GetUSBDeviceID(DeviceID, szDeviceID, sizeof(szDeviceID)))
+            {
+                continue;
+            }
 
             StringCbCat(szVendorID, sizeof(szVendorID), L"-");
             StringCbCat(szVendorID, sizeof(szVendorID), szDeviceID);
@@ -135,7 +273,8 @@ EnumUnknownDevices(HWND hList, DEVICESENUMPROC lpEnumProc)
         }
         else if (IsMonitorDevice(DeviceID))
         {
-            GetMonitorID(DeviceID, szDeviceID, sizeof(szDeviceID));
+            if (!GetMonitorID(DeviceID, szDeviceID, sizeof(szDeviceID)))
+                continue;
 
             GetPrivateProfileString(L"devices", szDeviceID, L"\0",
                                     szDeviceName, MAX_STR_LEN, szMonIniPath);
@@ -241,7 +380,7 @@ DevReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 VOID
 DetectUnknownDevices(VOID)
 {
-    if (!SettingsInfo.SendDevReport)
+    if (SettingsInfo.SendDevReport)
         return;
 
     if (EnumUnknownDevices(NULL, NULL))

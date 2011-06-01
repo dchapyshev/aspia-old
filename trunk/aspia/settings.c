@@ -222,16 +222,16 @@ LoadSettings(VOID)
     /* Sensor Colors */
     GetPrivateProfileString(L"sensor_colors", L"cpu_font_color", L"0",
                             szText, MAX_STR_LEN, szIniPath);
-    SettingsInfo.CpuFontColor = StrToHex(szText);
+    SettingsInfo.CpuFontColor = StrToHex(szText, MAX_STR_LEN);
     GetPrivateProfileString(L"sensor_colors", L"cpu_background", L"80ffff",
                             szText, MAX_STR_LEN, szIniPath);
-    SettingsInfo.CpuBackground = StrToHex(szText);
+    SettingsInfo.CpuBackground = StrToHex(szText, MAX_STR_LEN);
     GetPrivateProfileString(L"sensor_colors", L"hdd_font_color", L"ffffff",
                             szText, MAX_STR_LEN, szIniPath);
-    SettingsInfo.HddFontColor = StrToHex(szText);
+    SettingsInfo.HddFontColor = StrToHex(szText, MAX_STR_LEN);
     GetPrivateProfileString(L"sensor_colors", L"hdd_background", L"0",
                             szText, MAX_STR_LEN, szIniPath);
-    SettingsInfo.HddBackground = StrToHex(szText);
+    SettingsInfo.HddBackground = StrToHex(szText, MAX_STR_LEN);
 
     /* Sensors Refresh Rate */
     SettingsInfo.SensorsRefreshRate =

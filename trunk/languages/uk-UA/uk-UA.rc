@@ -191,10 +191,10 @@ STYLE DS_SHELLFONT | WS_BORDER | WS_DLGFRAME | WS_SYSMENU | DS_MODALFRAME | DS_C
 CAPTION "Report Sending"
 FONT 8, "MS Shell Dlg"
 BEGIN
-    LTEXT "Aspia discovered that you have devices that do not exist in our database. By sending us a report, you'll help to make Aspia better.", -1, 6, 5, 221, 27
+    LTEXT "Aspia discovered that you have devices that do not exist in our database. By sending us a report, you'll help to make Aspia better.", -1, 6, 5, 215, 27
     LTEXT "Your report will include data on the following devices:", -1, 6, 31, 212, 10
     CONTROL "", IDC_REPORT_DATA_LIST, "SysListView32", LVS_REPORT | LVS_SORTASCENDING | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP, 6, 43, 213, 112
-    AUTOCHECKBOX "Never offer to send a report", IDC_NEVER_SEND_REPORT, 11, 163, 154, 8
+    AUTOCHECKBOX "Offer to send a report", IDC_NEVER_SEND_REPORT, 11, 163, 154, 8
 
     PUSHBUTTON "&Send Report", IDOK, 94, 178, 60, 14
     PUSHBUTTON "&Close", IDCANCEL, 159, 178, 60, 14

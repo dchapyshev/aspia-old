@@ -30,7 +30,7 @@ DebugWriteLog(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, ...)
     if (!GetFileSizeEx(hDebugLog, &FileSize))
         return;
 
-    LockFile(hDebugLog, NewPos.QuadPart, 0, FileSize.QuadPart, 0);
+    LockFile(hDebugLog, (DWORD_PTR)NewPos.QuadPart, 0, (DWORD_PTR)FileSize.QuadPart, 0);
 
     GetTimeFormat(LOCALE_USER_DEFAULT,
                   0, NULL, NULL, szTime,
@@ -48,7 +48,7 @@ DebugWriteLog(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, ...)
               SafeStrLen(szText) * sizeof(WCHAR),
               &dwBytesWritten, NULL);
 
-    UnlockFile(hDebugLog, NewPos.QuadPart, 0, FileSize.QuadPart, 0);
+    UnlockFile(hDebugLog, (DWORD_PTR)NewPos.QuadPart, 0, (DWORD_PTR)FileSize.QuadPart, 0);
 }
 
 BOOL

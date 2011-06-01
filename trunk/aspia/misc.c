@@ -44,7 +44,7 @@ MyPow(SIZE_T x, SIZE_T y)
 }
 
 SIZE_T
-StrToHex(LPWSTR lpszStr)
+StrToHex(LPWSTR lpszStr, SIZE_T StrLen)
 {
     SIZE_T dwVal, dwRes = 0;
     SIZE_T Index = 0;
@@ -53,7 +53,7 @@ StrToHex(LPWSTR lpszStr)
     if (!lpszStr || Pos == 0)
         return 0;
 
-    _wcsupr(lpszStr);
+    _wcsupr_s(lpszStr, StrLen);
 
     if (lpszStr[0] == L'0' && lpszStr[1] == L'X')
     {
@@ -61,7 +61,7 @@ StrToHex(LPWSTR lpszStr)
         Pos -= 2;
     }
 
-    for (; Index < SafeStrLen(lpszStr); ++Index)
+    for (; Index < (SIZE_T)SafeStrLen(lpszStr); ++Index)
     {
         switch (lpszStr[Index])
         {
@@ -274,11 +274,14 @@ CopyTextToClipboard(LPCTSTR lpszText)
 
     if (OpenClipboard(NULL))
     {
+        SIZE_T BufSize = (SafeStrLen(lpszText) + 1) * sizeof(WCHAR);
         EmptyClipboard();
 
-        ClipBuffer = GlobalAlloc(GMEM_DDESHARE, (SafeStrLen(lpszText) + 1) * sizeof(WCHAR));
+        ClipBuffer = GlobalAlloc(GMEM_DDESHARE, BufSize);
         Buffer = (WCHAR*)GlobalLock(ClipBuffer);
-        wcscpy(Buffer, lpszText);
+
+        StringCbCopy(Buffer, BufSize, lpszText);
+
         GlobalUnlock(ClipBuffer);
 
         SetClipboardData(CF_UNICODETEXT, ClipBuffer);
@@ -388,20 +391,27 @@ ChopSpaces(LPWSTR s, SIZE_T size)
     StringCbCopy(s, size, szNew);
 }
 
-WCHAR*
-TimeToString(time_t Time)
+BOOL
+TimeToString(time_t Time, LPWSTR lpTimeStr, SIZE_T Size)
 {
-    struct tm *t = localtime(&Time);
-    WCHAR *time;
+    struct tm t;
+    WCHAR time[MAX_STR_LEN];
+    INT len;
 
-    if (!t) return NULL;
+    if (localtime_s(&t, &Time) != 0)
+        return FALSE;
 
-    time = _wasctime(t);
-    if (!time) return NULL;
+    if (_wasctime_s(time, MAX_STR_LEN, &t) != 0)
+        return FALSE;
+
+    len = SafeStrLen(time);
+    if (len == 0) return FALSE;
 
     time[SafeStrLen(time) - 1] = 0;
 
-    return time;
+    StringCbCopy(lpTimeStr, Size, time);
+
+    return TRUE;
 }
 
 /* http://social.msdn.microsoft.com/Forums/en-US/vclanguage/thread/348a99cb-758e-4cff-858c-10d09710f784/ */
@@ -493,7 +503,7 @@ GetMSProductKey(BOOL is64, LPSTR lpszKeyPath, LPWSTR lpszKey, INT iSize)
         for (k = 14; k >= 0; --k)
         {
             nCur = (nCur * 256) ^ ProductKeyExtract[k];
-            ProductKeyExtract[k] = nCur / 24;
+            ProductKeyExtract[k] = (BYTE)(nCur / 24);
             nCur %= 24;
         }
         StringCbCatA((STRSAFE_LPSTR)sCDKey,

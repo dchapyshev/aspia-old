@@ -325,7 +325,7 @@ InsertKeySep(LPWSTR szIn, LPWSTR szOut)
 {
     SIZE_T i = 0, j, c = 0;
 
-    for (j = 0; i < SafeStrLen(szIn); j++)
+    for (j = 0; i < (SIZE_T)SafeStrLen(szIn); j++)
     {
         if (c == 5)
         {
