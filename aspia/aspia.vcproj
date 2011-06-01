@@ -370,6 +370,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\dev_report.c"
+				>
+			</File>
+			<File
 				RelativePath=".\info\devices.c"
 				>
 			</File>

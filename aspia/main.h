@@ -89,6 +89,34 @@ VOID InitControls(HWND);
 INT AddImageToImageList(HIMAGELIST, UINT);
 VOID ReInitControls(VOID);
 
+__inline VOID
+AddColumn(HWND hList, SIZE_T Index, INT Width, LPWSTR lpszText)
+{
+    LV_COLUMN Column = {0};
+
+    Column.mask = LVCF_FMT | LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
+    Column.iSubItem = Index;
+    Column.pszText = lpszText;
+    Column.cx  = Width;
+    Column.fmt = LVCFMT_LEFT;
+
+    ListView_InsertColumn(hList, Index, &Column);
+}
+
+__inline INT
+AddItem(HWND hList, INT IconIndex, LPWSTR lpText, LPARAM lParam)
+{
+    LV_ITEM Item = {0};
+
+    Item.mask = LVIF_TEXT | LVIF_STATE | LVIF_IMAGE | LVIF_PARAM;
+    Item.pszText = lpText;
+    Item.iItem = ListView_GetItemCount(hList);
+    Item.iImage = IconIndex;
+    Item.lParam = lParam;
+
+    return ListView_InsertItem(hList, &Item);
+}
+
 /* TreeView */
 HTREEITEM AddCategory(HWND, HIMAGELIST, HTREEITEM, UINT, UINT);
 VOID InitColumnsList(COLUMN_LIST*);
@@ -96,7 +124,7 @@ VOID InitColumnsList(COLUMN_LIST*);
 /* ListView */
 VOID ListViewDelAllColumns(VOID);
 VOID ListViewClear(VOID);
-PVOID ListViewGetlParam(INT);
+PVOID ListViewGetlParam(HWND, INT);
 
 /* categories.c */
 typedef VOID (*PINFOFUNC)(VOID);
@@ -137,6 +165,14 @@ BOOL Is64BitCpu(VOID);
 /* devices.c */
 VOID HW_DevicesInfo(VOID);
 VOID HW_UnknownDevicesInfo(VOID);
+BOOL IsPCIDevice(LPWSTR lpszDevice);
+BOOL GetPCIVendorID(LPWSTR lpszDevice, LPWSTR lpszVendorID, SIZE_T Size);
+BOOL GetPCIDeviceID(LPWSTR lpszDevice, LPWSTR lpszDeviceID, SIZE_T Size);
+BOOL IsUSBDevice(LPWSTR lpszDevice);
+BOOL GetUSBVendorID(LPWSTR lpszDevice, LPWSTR lpszVendorID, SIZE_T Size);
+BOOL GetUSBDeviceID(LPWSTR lpszDevice, LPWSTR lpszDeviceID, SIZE_T Size);
+BOOL IsMonitorDevice(LPWSTR lpszDevice);
+BOOL GetMonitorID(LPWSTR lpszDevice, LPWSTR lpszID, SIZE_T Size);
 
 /* os.c */
 VOID OS_EnvironInfo(VOID);
@@ -378,6 +414,8 @@ typedef struct
 
     UINT SensorsRefreshRate;
 
+    BOOL SendDevReport;
+
     BOOL DebugMode;
 
     INT SxSmIcon;
@@ -401,6 +439,9 @@ BOOL LoadSettings(VOID);
 BOOL SaveSettings(VOID);
 INT_PTR CALLBACK SettingsDlgProc(HWND, UINT, WPARAM, LPARAM);
 BOOL GetIniFilePath(OUT LPWSTR lpszPath, IN SIZE_T PathLen);
+
+/* dev_report.c */
+VOID DetectUnknownDevices(VOID);
 
 /* systray.c */
 extern BOOL IsMainWindowHiden;

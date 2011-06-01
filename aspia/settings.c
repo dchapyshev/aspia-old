@@ -237,6 +237,11 @@ LoadSettings(VOID)
     SettingsInfo.SensorsRefreshRate =
         GetPrivateProfileInt(L"settings", L"SensorsRefreshRate", 30, szIniPath);
 
+    SettingsInfo.SendDevReport =
+        (GetPrivateProfileInt(L"settings",
+                              L"SendDevReport",
+                              1, szIniPath) == 0) ? FALSE : TRUE;
+
     /* Report */
     SettingsInfo.IsAddContent =
         (GetPrivateProfileInt(L"settings",
@@ -370,6 +375,11 @@ SaveSettings(VOID)
     WritePrivateProfileInt(L"settings",
                            L"SensorsRefreshRate",
                            (INT)SettingsInfo.SensorsRefreshRate,
+                           szIniPath);
+
+    WritePrivateProfileInt(L"settings",
+                           L"SendDevReport",
+                           (INT)SettingsInfo.SendDevReport,
                            szIniPath);
 
     /* Report */
@@ -620,35 +630,8 @@ FreeLangCombo(HWND hCombo)
     {
         FileName = (WCHAR*)SendMessage(hCombo, CB_GETITEMDATA, Count, 0);
         if (FileName) Free(FileName);
-        Count--;
+        --Count;
     }
-}
-
-VOID
-AddColumn(HWND hList, SIZE_T Index, INT Width, LPWSTR lpszText)
-{
-    LV_COLUMN Column = {0};
-
-    Column.mask = LVCF_FMT | LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
-    Column.iSubItem = Index;
-    Column.pszText = lpszText;
-    Column.cx  = Width;
-    Column.fmt = LVCFMT_LEFT;
-
-    ListView_InsertColumn(hList, Index, &Column);
-}
-
-INT
-AddItem(HWND hList, INT IconIndex, LPWSTR lpText)
-{
-    LV_ITEM Item = {0};
-
-    Item.mask = LVIF_TEXT | LVIF_STATE | LVIF_IMAGE;
-    Item.pszText = lpText;
-    Item.iItem = ListView_GetItemCount(hList);
-    Item.iImage = IconIndex;
-
-    return ListView_InsertItem(hList, &Item);
 }
 
 VOID
@@ -682,7 +665,7 @@ ShowSensorsList(HWND hList)
 
             if (SafeStrLen(szText) > 3)
             {
-                ItemIndex = AddItem(hList, -1, szText);
+                ItemIndex = AddItem(hList, -1, szText, (LPARAM)0);
                 if (GetPrivateProfileInt(L"sensors", szText, 0, szIniPath) > 0)
                 {
                     ListView_SetCheckState(hList, ItemIndex, TRUE);
@@ -696,7 +679,7 @@ ShowSensorsList(HWND hList)
     /* CPUs */
     if (GetCPUName(szText, sizeof(szText)))
     {
-        ItemIndex = AddItem(hList, -1, szText);
+        ItemIndex = AddItem(hList, -1, szText, (LPARAM)0);
         if (GetPrivateProfileInt(L"sensors", szText, 0, szIniPath) > 0)
         {
             ListView_SetCheckState(hList, ItemIndex, TRUE);
@@ -764,6 +747,8 @@ GeneralPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                            SettingsInfo.SaveWindowPos ? BST_CHECKED : BST_UNCHECKED);
             CheckDlgButton(hDlg, IDC_START_WITH_WINDOWS,
                            SettingsInfo.Autorun ? BST_CHECKED : BST_UNCHECKED);
+            CheckDlgButton(hDlg, IDC_DEV_REPORT_SEND,
+                           SettingsInfo.SendDevReport ? BST_UNCHECKED : BST_CHECKED);
 
             /* Init languages combobox */
             InitLangCombo(hLangList);
@@ -1038,6 +1023,8 @@ SaveSettingsFromDialog(HWND hDlg)
         (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_SAVE_WINDOW_POS) == BST_CHECKED) ? TRUE : FALSE;
     SettingsInfo.Autorun =
         (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_START_WITH_WINDOWS) == BST_CHECKED) ? TRUE : FALSE;
+    SettingsInfo.SendDevReport =
+        (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_DEV_REPORT_SEND) == BST_CHECKED) ? FALSE : TRUE;
     SettingsInfo.HideToTray =
         (IsDlgButtonChecked(hDialogs[SYSTRAY_DIALOG], IDC_START_MINIMIZED) == BST_CHECKED) ? TRUE : FALSE;
     SettingsInfo.ShowProgIcon =
