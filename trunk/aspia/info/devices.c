@@ -87,6 +87,31 @@ GetUSBDeviceID(LPWSTR lpszDevice, LPWSTR lpszDeviceID, SIZE_T Size)
     return TRUE;
 }
 
+BOOL
+IsMonitorDevice(LPWSTR lpszDevice)
+{
+    if (wcsncmp(lpszDevice, L"display\\", 8) == 0)
+        return TRUE;
+    return FALSE;
+}
+
+BOOL
+GetMonitorID(LPWSTR lpDevice, LPWSTR lpID, SIZE_T Size)
+{
+    WCHAR *p, dev[MAX_PATH];
+
+    if (lpID) lpID[0] = 0;
+
+    StringCbCopy(dev, sizeof(dev), lpDevice);
+
+    p = wcsstr(dev, L"display\\");
+    if (!p) return FALSE;
+
+    p += 8, p[7] = 0;
+    StringCbCopy(lpID, Size, p);
+    return TRUE;
+}
+
 VOID
 HW_DevicesInfo(VOID)
 {
@@ -139,7 +164,7 @@ HW_DevicesInfo(VOID)
                                  DeviceIndex,
                                  &DeviceInfoData))
     {
-        DeviceIndex++;
+        ++DeviceIndex;
 
         if (!SetupDiGetDeviceInstanceId(hDevInfo,
                                         &DeviceInfoData,

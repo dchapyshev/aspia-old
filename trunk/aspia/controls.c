@@ -45,14 +45,14 @@ ListViewClear(VOID)
 }
 
 PVOID
-ListViewGetlParam(INT Index)
+ListViewGetlParam(HWND hList, INT Index)
 {
     INT ItemIndex;
     LVITEM Item = {0};
 
     if (Index == -1)
     {
-        ItemIndex = ListView_GetNextItem(hListView, -1, LVNI_FOCUSED);
+        ItemIndex = ListView_GetNextItem(hList, -1, LVNI_FOCUSED);
         if (ItemIndex == -1)
             return NULL;
     }
@@ -63,7 +63,7 @@ ListViewGetlParam(INT Index)
 
     Item.mask = LVIF_PARAM;
     Item.iItem = ItemIndex;
-    if (!ListView_GetItem(hListView, &Item))
+    if (!ListView_GetItem(hList, &Item))
         return NULL;
 
     return (PVOID)Item.lParam;

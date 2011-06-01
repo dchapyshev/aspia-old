@@ -411,6 +411,7 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         case WM_CREATE:
             InitControls(hwnd);
             _beginthread(GUIInfoThread, 0, (LPVOID)SettingsInfo.StartupCategory);
+            DetectUnknownDevices();
             break;
 
         case WM_COMMAND:
@@ -456,7 +457,8 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
                     if (data->hwndFrom == hListView)
                     {
                         if (IsRootCategory(CurrentCategory, RootCategoryList))
-                            _beginthread(GUIInfoThread, 0, (LPVOID)ListViewGetlParam(-1));
+                            _beginthread(GUIInfoThread, 0,
+                                         (LPVOID)ListViewGetlParam(hListView, -1));
                         else
                             ShowPopupMenu(IDR_POPUP);
                     }

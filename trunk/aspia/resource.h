@@ -86,6 +86,7 @@
 #define IDI_UNCHECK_ALL   167
 #define IDC_STATUS_ICON   168
 #define IDI_FIREWALL      169
+#define IDI_USB_DEV       170
 
 /* Dialogs */
 #define IDD_ABOUT_DIALOG         5000
@@ -95,6 +96,7 @@
 #define IDD_SETTINGS_GENERAL     5004
 #define IDD_SETTINGS_FILTER      5005
 #define IDD_SETTINGS_SYSTRAY     5006
+#define IDD_UNKNOWN_DEV_REPORT   5007
 
 /* Menu */
 #define IDR_POPUP           500
@@ -158,6 +160,9 @@
 #define IDC_FILTER_IE_HTTP      135
 #define IDC_FILTER_IE_FTP       136
 #define IDC_SETTINGS_TREE       137
+#define IDC_REPORT_DATA_LIST    138
+#define IDC_NEVER_SEND_REPORT   139
+#define IDC_DEV_REPORT_SEND     140
 
 /* Strings */
 #define IDS_APPTITLE                100
