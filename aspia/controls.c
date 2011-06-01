@@ -217,7 +217,6 @@ VOID
 ToolBarOnGetDispInfo(LPTOOLTIPTEXT lpttt)
 {
     UINT idButton = (UINT)lpttt->hdr.idFrom;
-    WCHAR szText[MAX_STR_LEN];
     UINT StringID;
 
     switch (idButton)
@@ -238,8 +237,7 @@ ToolBarOnGetDispInfo(LPTOOLTIPTEXT lpttt)
             return;
     }
 
-    LoadMUIString(StringID, szText, MAX_STR_LEN);
-    wcscpy(lpttt->lpszText, szText);
+    LoadMUIString(StringID, lpttt->szText, 80);
 }
 
 HTREEITEM

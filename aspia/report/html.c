@@ -85,7 +85,8 @@ HtmlAppendStringToFile(LPWSTR lpszString)
 BOOL
 HtmlCreateReport(LPWSTR lpszFile)
 {
-    hReport = _wfopen(lpszFile, L"wt+,ccs=UTF-8");
+    if (_wfopen_s(&hReport, lpszFile, L"wt+,ccs=UTF-8") != 0)
+        return FALSE;
 
     if (!hReport) return FALSE;
 

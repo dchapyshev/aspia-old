@@ -38,6 +38,7 @@ ShowRegInfo(UINT StringID, LPWSTR lpszKeyName)
 VOID
 ShowInstallDate(VOID)
 {
+    TCHAR szText[MAX_STR_LEN];
     DWORD dwInstallDate;
     INT Index;
 
@@ -47,12 +48,10 @@ ShowInstallDate(VOID)
                               (LPBYTE)&dwInstallDate,
                               sizeof(dwInstallDate)))
     {
-        WCHAR *time = TimeToString((time_t)dwInstallDate);
-
-        if (time)
+        if (TimeToString((time_t)dwInstallDate, szText, sizeof(szText)))
         {
             Index = IoAddValueName(IDS_OS_INSTALL_DATE, -1);
-            IoSetItemText(Index, 1, time);
+            IoSetItemText(Index, 1, szText);
         }
     }
 }
@@ -151,8 +150,7 @@ OS_UsersInfo(VOID)
                 }
                 else
                 {
-                    StringCbCopy(szText, sizeof(szText),
-                                 TimeToString(pBuffer[i].usri3_last_logon));
+                    TimeToString(pBuffer[i].usri3_last_logon, szText, sizeof(szText));
                 }
                 IoSetItemText(Index, 8, szText);
 

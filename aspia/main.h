@@ -273,7 +273,7 @@ VOID ShowSummaryInfo(VOID);
 
 /* misc.c */
 BOOL IsUserAdmin(VOID);
-SIZE_T StrToHex(LPWSTR);
+SIZE_T StrToHex(LPWSTR, SIZE_T);
 BOOL GetStringFromRegistry(HKEY, LPWSTR, LPWSTR, LPWSTR, DWORD);
 BOOL GetBinaryFromRegistry(HKEY, LPWSTR, LPWSTR, LPBYTE, DWORD);
 HICON GetFolderAssocIcon(LPWSTR);
@@ -285,7 +285,7 @@ BOOL IsWin64System(VOID);
 VOID ConvertSecondsToString(LONGLONG, LPWSTR, SIZE_T);
 BOOL SaveFileDialog(HWND, LPWSTR, SIZE_T);
 VOID ChopSpaces(LPWSTR, SIZE_T);
-WCHAR* TimeToString(time_t);
+BOOL TimeToString(time_t, LPWSTR, SIZE_T);
 BOOL GetMSProductKey(BOOL, LPSTR, LPWSTR, INT);
 VOID ChangeByteOrder(PCHAR, USHORT);
 INT LoadMUIString(UINT, LPWSTR, INT);

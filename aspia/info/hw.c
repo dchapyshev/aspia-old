@@ -351,7 +351,7 @@ GetMonitorName(BYTE const *Block)
 INT
 BlockType(BYTE* Block)
 {
-    if (!wcsncmp(EdidV1DescriptorFlag, Block, 2))
+    if (!wcsncmp((WCHAR*)EdidV1DescriptorFlag, (WCHAR*)Block, 2))
     {
         /* descriptor */
         if (Block[2] != 0)

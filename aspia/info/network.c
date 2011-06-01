@@ -308,15 +308,17 @@ NETWORK_CardsInfo(VOID)
                                pAdapter->DhcpServer.IpAddress.String);
                 IoSetItemText(Index, 1, szText);
 
-                Index = IoAddValueName(IDS_NIC_DHCP_OBTAINED, -1);
-                StringCbPrintf(szText, sizeof(szText), L"%s",
-                               TimeToString(pAdapter->LeaseObtained));
-                IoSetItemText(Index, 1, szText);
+                if (TimeToString(pAdapter->LeaseObtained, szText, sizeof(szText)))
+                {
+                    Index = IoAddValueName(IDS_NIC_DHCP_OBTAINED, -1);
+                    IoSetItemText(Index, 1, szText);
+                }
 
-                Index = IoAddValueName(IDS_NIC_DHCP_EXPIRES, -1);
-                StringCbPrintf(szText, sizeof(szText), L"%s",
-                               TimeToString(pAdapter->LeaseExpires));
-                IoSetItemText(Index, 1, szText);
+                if (TimeToString(pAdapter->LeaseExpires, szText, sizeof(szText)))
+                {
+                    Index = IoAddValueName(IDS_NIC_DHCP_EXPIRES, -1);
+                    IoSetItemText(Index, 1, szText);
+                }
             }
         }
         else
@@ -488,15 +490,15 @@ IpToStr(IN IN_ADDR in, LPWSTR p, SIZE_T size)
 {
     WCHAR b[10];
 
-    _itow(in.S_un.S_addr & 0xFF, b, 10);
+    _itow_s(in.S_un.S_addr & 0xFF, b, 10, 10);
     StringCbCopy(p, size, b);
-    _itow((in.S_un.S_addr >> 8) & 0xFF, b, 10);
+    _itow_s((in.S_un.S_addr >> 8) & 0xFF, b, 10, 10);
     StringCbCat(p, size, L".");
     StringCbCat(p, size, b);
-    _itow((in.S_un.S_addr >> 16) & 0xFF, b, 10);
+    _itow_s((in.S_un.S_addr >> 16) & 0xFF, b, 10, 10);
     StringCbCat(p, size, L".");
     StringCbCat(p, size, b);
-    _itow((in.S_un.S_addr >> 24) & 0xFF, b, 10);
+    _itow_s((in.S_un.S_addr >> 24) & 0xFF, b, 10, 10);
     StringCbCat(p, size, L".");
     StringCbCat(p, size, b);
 }

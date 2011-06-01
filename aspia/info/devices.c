@@ -276,7 +276,7 @@ HW_DevicesInfo(VOID)
                 IoSetItemText(ItemIndex, i, L"-");
         }
 
-        _wcslwr(DeviceID);
+        _wcslwr_s(DeviceID, MAX_STR_LEN);
 
         if (IsPCIDevice(DeviceID))
         {
@@ -391,7 +391,7 @@ HW_UnknownDevicesInfo(VOID)
             ItemIndex = IoAddItem(0, DeviceID);
         }
 
-        _wcslwr(DeviceID);
+        _wcslwr_s(DeviceID, MAX_STR_LEN);
 
         if (IsPCIDevice(DeviceID))
         {

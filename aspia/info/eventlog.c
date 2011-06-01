@@ -134,7 +134,7 @@ GetEventMessageFileDLL(IN LPCWSTR lpLogName,
                        OUT LPWSTR ExpandedName)
 {
     DWORD dwSize;
-    BYTE szModuleName[MAX_PATH];
+    WCHAR szModuleName[MAX_PATH];
     WCHAR szKeyName[MAX_PATH];
     HKEY hAppKey = NULL;
     HKEY hSourceKey = NULL;
@@ -254,7 +254,7 @@ GetEventMessage(IN LPCTSTR KeyName,
                                           hLibrary,
                                           pevlr->EventID,
                                           MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                                          &lpMsgBuf,
+                                          (LPWSTR)&lpMsgBuf,
                                           0,
                                           (va_list*)szArguments);
                 }
@@ -324,7 +324,7 @@ GetEventCategory(IN LPCTSTR KeyName,
                               hLibrary,
                               pevlr->EventCategory,
                               MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                              &lpMsgBuf,
+                              (LPWSTR)&lpMsgBuf,
                               EVENT_MESSAGE_FILE_BUFFER,
                               NULL) != 0)
             {

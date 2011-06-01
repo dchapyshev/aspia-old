@@ -35,7 +35,7 @@ GetSpdManufacturer(BYTE *Spd, LPWSTR lpszString, SIZE_T Size)
         }
     }
 
-    dwJEID = StrToHex(szJEID);
+    dwJEID = StrToHex(szJEID, 16);
 
     Index = 0;
     do
