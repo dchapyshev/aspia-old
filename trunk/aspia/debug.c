@@ -55,6 +55,7 @@ BOOL
 DebugCreateLog(VOID)
 {
     WCHAR szPath[MAX_PATH], szMsg[MAX_STR_LEN];
+    DWORD dwBytesWritten;
 
     StringCbPrintf(szPath, sizeof(szPath),
                    L"%s%s",
@@ -70,6 +71,8 @@ DebugCreateLog(VOID)
                            NULL);
     if (hDebugLog == INVALID_HANDLE_VALUE)
         return FALSE;
+    
+    WriteFile(hDebugLog, "\xFF\xFE", 2, &dwBytesWritten, NULL);
 
     StringCbPrintf(szMsg, sizeof(szMsg),
                    L"Log file created, Aspia %s",
