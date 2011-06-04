@@ -160,134 +160,29 @@ SaveAutostartState(BOOL IsAutostart)
 BOOL
 LoadSettings(VOID)
 {
-    WCHAR szText[MAX_STR_LEN], szIniPath[MAX_PATH];
+    WCHAR szIniPath[MAX_PATH];
+    BOOL Result;
 
     if (!GetIniFilePath(szIniPath, MAX_PATH))
         return FALSE;
 
-    /* Window position settings */
-    SettingsInfo.SaveWindowPos =
-        (GetPrivateProfileInt(L"window_pos",
-                              L"SaveWindowPos",
-                              0, szIniPath) == 0) ? FALSE : TRUE;
-    SettingsInfo.IsMaximized =
-        (GetPrivateProfileInt(L"window_pos",
-                              L"IsMaximized",
-                              0, szIniPath) == 0) ? FALSE : TRUE;
-    SettingsInfo.Left =
-        GetPrivateProfileInt(L"window_pos",
-                             L"Left", 20, szIniPath);
-    SettingsInfo.Top = GetPrivateProfileInt(L"window_pos",
-                                            L"Top",
-                                            20, szIniPath);
-    SettingsInfo.Right = GetPrivateProfileInt(L"window_pos",
-                                              L"Right",
-                                              870, szIniPath);
-    SettingsInfo.Bottom = GetPrivateProfileInt(L"window_pos",
-                                               L"Bottom",
-                                               660, szIniPath);
-    SettingsInfo.SplitterPos = GetPrivateProfileInt(L"window_pos",
-                                                    L"SplitterPos",
-                                                    200, szIniPath);
-
-    /* Language */
-    GetPrivateProfileString(L"settings", L"LangFile", L"\0",
-                            SettingsInfo.szLangFile,
-                            sizeof(SettingsInfo.szLangFile)/sizeof(WCHAR),
-                            szIniPath);
-
-    /* Icons */
-    GetPrivateProfileString(L"settings", L"IconsFile", L"\0",
-                            SettingsInfo.szIconsFile,
-                            sizeof(SettingsInfo.szIconsFile)/sizeof(WCHAR),
-                            szIniPath);
-
-    SettingsInfo.StartupCategory =
-        GetPrivateProfileInt(L"settings",
-                             L"StartupCategory",
-                             IDS_CAT_SUMMARY, szIniPath);
-
-    SettingsInfo.HideToTray =
-        (GetPrivateProfileInt(L"settings",
-                              L"HideToTray",
-                              0, szIniPath) == 0) ? FALSE : TRUE;
-    SettingsInfo.ShowProgIcon =
-        (GetPrivateProfileInt(L"settings",
-                              L"ShowProgIcon",
-                              0, szIniPath) == 0) ? FALSE : TRUE;
-    SettingsInfo.ShowSensorIcons =
-        (GetPrivateProfileInt(L"settings",
-                              L"ShowSensorIcons",
-                              0, szIniPath) == 0) ? FALSE : TRUE;
-
-    /* Sensor Colors */
-    GetPrivateProfileString(L"sensor_colors", L"cpu_font_color", L"0",
-                            szText, MAX_STR_LEN, szIniPath);
-    SettingsInfo.CpuFontColor = StrToHex(szText, MAX_STR_LEN);
-    GetPrivateProfileString(L"sensor_colors", L"cpu_background", L"80ffff",
-                            szText, MAX_STR_LEN, szIniPath);
-    SettingsInfo.CpuBackground = StrToHex(szText, MAX_STR_LEN);
-    GetPrivateProfileString(L"sensor_colors", L"hdd_font_color", L"ffffff",
-                            szText, MAX_STR_LEN, szIniPath);
-    SettingsInfo.HddFontColor = StrToHex(szText, MAX_STR_LEN);
-    GetPrivateProfileString(L"sensor_colors", L"hdd_background", L"0",
-                            szText, MAX_STR_LEN, szIniPath);
-    SettingsInfo.HddBackground = StrToHex(szText, MAX_STR_LEN);
-
-    /* Sensors Refresh Rate */
-    SettingsInfo.SensorsRefreshRate =
-        GetPrivateProfileInt(L"settings", L"SensorsRefreshRate", 30, szIniPath);
-
-    SettingsInfo.SendDevReport =
-        (GetPrivateProfileInt(L"settings",
-                              L"SendDevReport",
-                              1, szIniPath) == 0) ? FALSE : TRUE;
-
-    /* Report */
-    SettingsInfo.IsAddContent =
-        (GetPrivateProfileInt(L"settings",
-                              L"IsAddContent",
-                              1, szIniPath) == 0) ? FALSE : TRUE;
-    SettingsInfo.ELogShowError =
-        (GetPrivateProfileInt(L"report_filter",
-                              L"ELogShowError",
-                              1, szIniPath) == 0) ? FALSE : TRUE;
-    SettingsInfo.ELogShowWarning =
-        (GetPrivateProfileInt(L"report_filter",
-                              L"ELogShowWarning",
-                              1, szIniPath) == 0) ? FALSE : TRUE;
-    SettingsInfo.ELogShowInfo =
-        (GetPrivateProfileInt(L"report_filter",
-                              L"ELogShowInfo",
-                              0, szIniPath) == 0) ? FALSE : TRUE;
-    SettingsInfo.IEShowHttp =
-        (GetPrivateProfileInt(L"report_filter",
-                              L"IEShowHttp",
-                              1, szIniPath) == 0) ? FALSE : TRUE;
-    SettingsInfo.IEShowFtp =
-        (GetPrivateProfileInt(L"report_filter",
-                              L"IEShowFtp",
-                              1, szIniPath) == 0) ? FALSE : TRUE;
-    SettingsInfo.IEShowFile =
-        (GetPrivateProfileInt(L"report_filter",
-                              L"IEShowFile",
-                              1, szIniPath) == 0) ? FALSE : TRUE;
-    GetPrivateProfileString(L"settings", L"ReportPath", L"\0",
-                            SettingsInfo.szReportPath,
-                            MAX_PATH,
-                            szIniPath);
+    Result = GetPrivateProfileStruct(L"general",
+                                     L"settings",
+                                     &SettingsInfo,
+                                     sizeof(SettingsInfo),
+                                     szIniPath);
 
     LoadCategoriesSelections(szIniPath, RootCategoryList);
 
     SettingsInfo.Autorun = GetAutostartState();
 
-    return TRUE;
+    return Result;
 }
 
 BOOL
 SaveSettings(VOID)
 {
-    WCHAR szIniPath[MAX_PATH], szText[MAX_STR_LEN];
+    WCHAR szIniPath[MAX_PATH];
     WINDOWPLACEMENT wp;
 
     if (!GetIniFilePath(szIniPath, MAX_PATH))
@@ -309,112 +204,10 @@ SaveSettings(VOID)
         SettingsInfo.Bottom = wp.rcNormalPosition.bottom;
     }
 
-    /* Window position settings */
-    WritePrivateProfileInt(L"window_pos",
-                           L"SaveWindowPos",
-                           SettingsInfo.SaveWindowPos,
-                           szIniPath);
-    WritePrivateProfileInt(L"window_pos",
-                           L"IsMaximized",
-                           SettingsInfo.IsMaximized,
-                           szIniPath);
-    if (!SettingsInfo.IsMaximized)
-    {
-        WritePrivateProfileInt(L"window_pos", L"Left", SettingsInfo.Left, szIniPath);
-        WritePrivateProfileInt(L"window_pos", L"Top", SettingsInfo.Top, szIniPath);
-        WritePrivateProfileInt(L"window_pos", L"Right", SettingsInfo.Right, szIniPath);
-        WritePrivateProfileInt(L"window_pos", L"Bottom", SettingsInfo.Bottom, szIniPath);
-    }
-    WritePrivateProfileInt(L"window_pos",
-                           L"SplitterPos",
-                           SettingsInfo.SplitterPos,
-                           szIniPath);
-
-    /* Language */
-    WritePrivateProfileString(L"settings",
-                              L"LangFile",
-                              SettingsInfo.szLangFile,
-                              szIniPath);
-    WritePrivateProfileString(L"settings",
-                              L"IconsFile",
-                              SettingsInfo.szIconsFile,
-                              szIniPath);
-    WritePrivateProfileInt(L"settings",
-                           L"StartupCategory",
-                           SettingsInfo.StartupCategory,
-                           szIniPath);
-
-    WritePrivateProfileInt(L"settings",
-                           L"HideToTray",
-                           (INT)SettingsInfo.HideToTray,
-                           szIniPath);
-    WritePrivateProfileInt(L"settings",
-                           L"ShowProgIcon",
-                           (INT)SettingsInfo.ShowProgIcon,
-                           szIniPath);
-    WritePrivateProfileInt(L"settings",
-                           L"ShowSensorIcons",
-                           (INT)SettingsInfo.ShowSensorIcons,
-                           szIniPath);
-
-    /* Sensor Colors */
-    StringCbPrintf(szText, sizeof(szText), L"%x", SettingsInfo.CpuFontColor);
-    WritePrivateProfileString(L"sensor_colors", L"cpu_font_color", szText, szIniPath);
-
-    StringCbPrintf(szText, sizeof(szText), L"%x", SettingsInfo.CpuBackground);
-    WritePrivateProfileString(L"sensor_colors", L"cpu_background", szText, szIniPath);
-
-    StringCbPrintf(szText, sizeof(szText), L"%x", SettingsInfo.HddFontColor);
-    WritePrivateProfileString(L"sensor_colors", L"hdd_font_color", szText, szIniPath);
-
-    StringCbPrintf(szText, sizeof(szText), L"%x", SettingsInfo.HddBackground);
-    WritePrivateProfileString(L"sensor_colors", L"hdd_background", szText, szIniPath);
-
-    /* Sensors Refresh Rate */
-    if (SettingsInfo.SensorsRefreshRate > MAX_SENSORS_REFRESH_RATE)
-        SettingsInfo.SensorsRefreshRate = MAX_SENSORS_REFRESH_RATE;
-    WritePrivateProfileInt(L"settings",
-                           L"SensorsRefreshRate",
-                           (INT)SettingsInfo.SensorsRefreshRate,
-                           szIniPath);
-
-    WritePrivateProfileInt(L"settings",
-                           L"SendDevReport",
-                           (INT)SettingsInfo.SendDevReport,
-                           szIniPath);
-
-    /* Report */
-    WritePrivateProfileInt(L"settings",
-                           L"IsAddContent",
-                           (INT)SettingsInfo.IsAddContent,
-                           szIniPath);
-    WritePrivateProfileInt(L"report_filter",
-                           L"ELogShowError",
-                           (INT)SettingsInfo.ELogShowError,
-                           szIniPath);
-    WritePrivateProfileInt(L"report_filter",
-                           L"ELogShowWarning",
-                           (INT)SettingsInfo.ELogShowWarning,
-                           szIniPath);
-    WritePrivateProfileInt(L"report_filter",
-                           L"ELogShowInfo",
-                           (INT)SettingsInfo.ELogShowInfo,
-                           szIniPath);
-    WritePrivateProfileInt(L"report_filter",
-                           L"IEShowFile",
-                           (INT)SettingsInfo.IEShowFile,
-                           szIniPath);
-    WritePrivateProfileInt(L"report_filter",
-                           L"IEShowFtp",
-                           (INT)SettingsInfo.IEShowFtp,
-                           szIniPath);
-    WritePrivateProfileInt(L"report_filter",
-                           L"IEShowHttp",
-                           (INT)SettingsInfo.IEShowHttp,
-                           szIniPath);
-    WritePrivateProfileString(L"settings",
-                              L"ReportPath",
-                              SettingsInfo.szReportPath,
+    WritePrivateProfileStruct(L"general",
+                              L"settings",
+                              &SettingsInfo,
+                              sizeof(SettingsInfo),
                               szIniPath);
 
     SaveCategoriesSelections(szIniPath, RootCategoryList);
@@ -480,7 +273,7 @@ InitIconsCombo(IN HWND hCombo)
 
     StringCbPrintf(szIconDir, sizeof(szIconDir),
                    L"%sicons\\",
-                   SettingsInfo.szCurrentPath);
+                   ParamsInfo.szCurrentPath);
 
     StringCbPrintf(szPath, sizeof(szPath), L"%s*.dll", szIconDir);
 
@@ -569,7 +362,7 @@ InitLangCombo(IN HWND hCombo)
 
 #else
 
-    StringCbCopy(szLangDir, sizeof(szLangDir), SettingsInfo.szCurrentPath);
+    StringCbCopy(szLangDir, sizeof(szLangDir), ParamsInfo.szCurrentPath);
 
 #endif /* _ASPIA_PORTABLE_ */
 
@@ -992,8 +785,8 @@ AddSettingsCategory(HWND hTree,
     hIcon = (HICON)LoadImage(hIconsInst,
                              MAKEINTRESOURCE(IconIndex),
                              IMAGE_ICON,
-                             SettingsInfo.SxSmIcon,
-                             SettingsInfo.SySmIcon,
+                             ParamsInfo.SxSmIcon,
+                             ParamsInfo.SySmIcon,
                              LR_CREATEDIBSECTION);
 
     Index = ImageList_AddIcon(hSettingsImageList, hIcon);
@@ -1016,9 +809,9 @@ VOID
 InitSettingsControls(HWND hDlg, HWND hTree)
 {
     hSettingsImageList =
-        ImageList_Create(SettingsInfo.SxSmIcon,
-                         SettingsInfo.SySmIcon,
-                         SettingsInfo.SysColorDepth | ILC_MASK,
+        ImageList_Create(ParamsInfo.SxSmIcon,
+                         ParamsInfo.SySmIcon,
+                         ParamsInfo.SysColorDepth | ILC_MASK,
                          0, 1);
 
     TreeView_SelectItem(hTree,

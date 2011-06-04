@@ -59,7 +59,7 @@ DebugCreateLog(VOID)
 
     StringCbPrintf(szPath, sizeof(szPath),
                    L"%s%s",
-                   SettingsInfo.szCurrentPath,
+                   ParamsInfo.szCurrentPath,
                    L"debug.log");
 
     hDebugLog = CreateFile(szPath,

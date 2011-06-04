@@ -233,7 +233,7 @@ DRIVER_Load(VOID)
 
     StringCbPrintf(szCurrent, sizeof(szCurrent),
                    L"%s%s",
-                   SettingsInfo.szCurrentPath,
+                   ParamsInfo.szCurrentPath,
                    IsWin64System() ? L"aspia_x64.sys" : L"aspia_x32.sys");
 
 	StringCbPrintf(szDriverExec, sizeof(szDriverExec), L"%saspia.sys", szTemp);

@@ -255,8 +255,8 @@ AddCategory(HWND hTree,
     hIcon = (HICON)LoadImage(hIconsInst,
                              MAKEINTRESOURCE(IconIndex),
                              IMAGE_ICON,
-                             SettingsInfo.SxSmIcon,
-                             SettingsInfo.SySmIcon,
+                             ParamsInfo.SxSmIcon,
+                             ParamsInfo.SySmIcon,
                              LR_CREATEDIBSECTION);
 
     Index = ImageList_AddIcon(hImageList, hIcon);
@@ -352,7 +352,7 @@ InitToolBar(HWND hwnd)
     /* Create image list for ToolBar */
     hImageList = ImageList_Create(TOOLBAR_HEIGHT,
                                   TOOLBAR_HEIGHT,
-                                  ILC_MASK | SettingsInfo.SysColorDepth,
+                                  ILC_MASK | ParamsInfo.SysColorDepth,
                                   1, 1);
     if (!hImageList)
         return;
@@ -388,9 +388,9 @@ ReInitControls(VOID)
     DestroyWindow(hToolBar);
 
     /* Create image list */
-    hImageTreeView = ImageList_Create(SettingsInfo.SxSmIcon,
-                                      SettingsInfo.SySmIcon,
-                                      SettingsInfo.SysColorDepth | ILC_MASK,
+    hImageTreeView = ImageList_Create(ParamsInfo.SxSmIcon,
+                                      ParamsInfo.SySmIcon,
+                                      ParamsInfo.SysColorDepth | ILC_MASK,
                                       0, 1);
     hSelectedItem = InitCategoriesList(RootCategoryList, TVI_ROOT);
     ExpandCategoriesList(RootCategoryList);
@@ -442,9 +442,9 @@ InitControls(HWND hwnd)
     SendMessage(hTreeView, TVM_SETEXTENDEDSTYLE, (WPARAM)hTreeView, TVS_EX_DOUBLEBUFFER);
 
     /* Create image list */
-    hImageTreeView = ImageList_Create(SettingsInfo.SxSmIcon,
-                                      SettingsInfo.SySmIcon,
-                                      SettingsInfo.SysColorDepth | ILC_MASK,
+    hImageTreeView = ImageList_Create(ParamsInfo.SxSmIcon,
+                                      ParamsInfo.SySmIcon,
+                                      ParamsInfo.SysColorDepth | ILC_MASK,
                                       0, 1);
     hSelectedItem = InitCategoriesList(RootCategoryList, TVI_ROOT);
     ExpandCategoriesList(RootCategoryList);
@@ -467,9 +467,9 @@ InitControls(HWND hwnd)
     ListView_SetExtendedListViewStyle(hListView,
                                       LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
 
-    hListViewImageList = ImageList_Create(SettingsInfo.SxSmIcon,
-                                          SettingsInfo.SySmIcon,
-                                          ILC_MASK | SettingsInfo.SysColorDepth,
+    hListViewImageList = ImageList_Create(ParamsInfo.SxSmIcon,
+                                          ParamsInfo.SySmIcon,
+                                          ILC_MASK | ParamsInfo.SysColorDepth,
                                           1, 1);
 
     ListView_SetImageList(hListView,

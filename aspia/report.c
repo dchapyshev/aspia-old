@@ -507,9 +507,9 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                            SettingsInfo.IsAddContent ? BST_CHECKED : BST_UNCHECKED);
 
             /* Initialize TreeView */
-            hReportImageList = ImageList_Create(SettingsInfo.SxSmIcon,
-                                                SettingsInfo.SySmIcon,
-                                                ILC_MASK | SettingsInfo.SysColorDepth,
+            hReportImageList = ImageList_Create(ParamsInfo.SxSmIcon,
+                                                ParamsInfo.SySmIcon,
+                                                ILC_MASK | ParamsInfo.SysColorDepth,
                                                 1, 1);
             AddTreeViewItems(hTree, RootCategoryList, TVI_ROOT);
             TreeView_SetImageList(hTree, hReportImageList, LVSIL_NORMAL);
@@ -521,8 +521,8 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             hCheckAllIcon = (HICON)LoadImage(hIconsInst,
                                              MAKEINTRESOURCE(IDI_CHECK_ALL),
                                              IMAGE_ICON,
-                                             SettingsInfo.SxSmIcon,
-                                             SettingsInfo.SySmIcon,
+                                             ParamsInfo.SxSmIcon,
+                                             ParamsInfo.SySmIcon,
                                              LR_DEFAULTCOLOR);
             SendMessage(GetDlgItem(hDlg, IDC_SELECT_ALL),
                         BM_SETIMAGE, IMAGE_ICON, (LPARAM)hCheckAllIcon);
@@ -530,8 +530,8 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             hUnCheckAllIcon = (HICON)LoadImage(hIconsInst,
                                                MAKEINTRESOURCE(IDI_UNCHECK_ALL),
                                                IMAGE_ICON,
-                                               SettingsInfo.SxSmIcon,
-                                               SettingsInfo.SySmIcon,
+                                               ParamsInfo.SxSmIcon,
+                                               ParamsInfo.SySmIcon,
                                                LR_DEFAULTCOLOR);
             SendMessage(GetDlgItem(hDlg, IDC_UNSELECT_ALL),
                         BM_SETIMAGE, IMAGE_ICON, (LPARAM)hUnCheckAllIcon);

@@ -39,20 +39,20 @@ CreateTrayIcon(LPWSTR szText, COLORREF crBackground, COLORREF crFont)
     hdcsrc = GetDC(NULL);
     hdc = CreateCompatibleDC(hdcsrc);
     hBitmap = CreateCompatibleBitmap(hdcsrc,
-                                     SettingsInfo.SxSmIcon,
-                                     SettingsInfo.SySmIcon);
+                                     ParamsInfo.SxSmIcon,
+                                     ParamsInfo.SySmIcon);
     ReleaseDC(NULL, hdcsrc);
 
     if (hdc && hBitmap)
     {
-        hBmpNew = (HBITMAP)CreateBitmap(SettingsInfo.SxSmIcon,
-                                        SettingsInfo.SySmIcon,
+        hBmpNew = (HBITMAP)CreateBitmap(ParamsInfo.SxSmIcon,
+                                        ParamsInfo.SySmIcon,
                                         1, 1, NULL);
         if (hBmpNew)
         {
             hBmpOld = (HBITMAP)SelectObject(hdc, hBitmap);
-            rect.right = SettingsInfo.SxSmIcon;
-            rect.bottom = SettingsInfo.SySmIcon;
+            rect.right = ParamsInfo.SxSmIcon;
+            rect.bottom = ParamsInfo.SySmIcon;
 
             SetBkColor(hdc, crBackground);
             SetTextColor(hdc, crFont);
@@ -63,8 +63,8 @@ CreateTrayIcon(LPWSTR szText, COLORREF crBackground, COLORREF crFont)
 
             SelectObject(hdc, hBmpNew);
             PatBlt(hdc, 0, 0,
-                   SettingsInfo.SxSmIcon,
-                   SettingsInfo.SySmIcon,
+                   ParamsInfo.SxSmIcon,
+                   ParamsInfo.SySmIcon,
                    BLACKNESS);
             SelectObject(hdc, hBmpOld);
             SelectObject(hdc, hFontOld);
@@ -323,8 +323,8 @@ AddMainWindowToTray(VOID)
     hIcon = (HICON)LoadImage(hInstance,
                              MAKEINTRESOURCE(IDI_MAINICON),
                              IMAGE_ICON,
-                             SettingsInfo.SxSmIcon,
-                             SettingsInfo.SySmIcon,
+                             ParamsInfo.SxSmIcon,
+                             ParamsInfo.SySmIcon,
                              LR_CREATEDIBSECTION);
     if (!hIcon) return;
 
