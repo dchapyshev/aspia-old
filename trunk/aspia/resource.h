@@ -97,6 +97,7 @@
 #define IDD_SETTINGS_FILTER      5005
 #define IDD_SETTINGS_SYSTRAY     5006
 #define IDD_UNKNOWN_DEV_REPORT   5007
+#define IDD_SETTINGS_DEVREPORT   5008
 
 /* Menu */
 #define IDR_POPUP           500
@@ -163,6 +164,10 @@
 #define IDC_REPORT_DATA_LIST    138
 #define IDC_NEVER_SEND_REPORT   139
 #define IDC_DEV_REPORT_SEND     140
+#define IDC_USE_PROXY_SERVER    141
+#define IDC_PROXY_ADDRESS_EDIT  142
+#define IDC_PROXY_USER_EDIT     143
+#define IDC_PROXY_PASS_EDIT     144
 
 /* Strings */
 #define IDS_APPTITLE                100
@@ -801,6 +806,7 @@
 #define IDS_DISPLAY_SUPPORTED_MODES      693
 #define IDS_DISPLAY_MODEL                694
 #define IDS_DISPLAY_EDID_VERSION         695
+#define IDS_SETTINGS_DEVREPORT           696
 
 #define IDS_CAT_SUMMARY           1000
 
