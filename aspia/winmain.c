@@ -806,6 +806,18 @@ wWinMain(HINSTANCE hInst,
         SettingsInfo.IEShowFtp = TRUE;
         SettingsInfo.IEShowHttp = TRUE;
 
+        /* Sensors Icons */
+        SettingsInfo.CpuBackground = 0x80ffff;
+        SettingsInfo.CpuFontColor = 0;
+        SettingsInfo.HddBackground = 0;
+        SettingsInfo.HddFontColor = 0xffffff;
+
+        SettingsInfo.SensorsRefreshRate = 30;
+
+        SettingsInfo.UseProxyForDevReport = FALSE;
+
+        SettingsInfo.IsAddContent = TRUE;
+
         ParamsInfo.DebugMode = FALSE;
     }
     ParamsInfo.SxSmIcon = GetSystemMetrics(SM_CXSMICON);

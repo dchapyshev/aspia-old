@@ -733,6 +733,12 @@ DevReportPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
         {
             CheckDlgButton(hDlg, IDC_DEV_REPORT_SEND,
                            SettingsInfo.SendDevReport ? BST_UNCHECKED : BST_CHECKED);
+            CheckDlgButton(hDlg, IDC_USE_PROXY_SERVER,
+                           SettingsInfo.UseProxyForDevReport ? BST_CHECKED : BST_UNCHECKED);
+
+            SetWindowText(GetDlgItem(hDlg, IDC_PROXY_ADDRESS_EDIT), SettingsInfo.szProxyAddress);
+            SetWindowText(GetDlgItem(hDlg, IDC_PROXY_USER_EDIT), SettingsInfo.szProxyUser);
+            SetWindowText(GetDlgItem(hDlg, IDC_PROXY_PASS_EDIT), SettingsInfo.szProxyPass);
 
             SetDevReportState(hDlg);
         }
@@ -892,6 +898,18 @@ SaveSettingsFromDialog(HWND hDlg)
         (IsDlgButtonChecked(hDialogs[FILTER_DIALOG], IDC_FILTER_IE_FTP) == BST_CHECKED) ? TRUE : FALSE;
     SettingsInfo.SendDevReport =
         (IsDlgButtonChecked(hDialogs[DEVREP_DIALOG], IDC_DEV_REPORT_SEND) == BST_CHECKED) ? FALSE : TRUE;
+    SettingsInfo.UseProxyForDevReport =
+        (IsDlgButtonChecked(hDialogs[DEVREP_DIALOG], IDC_USE_PROXY_SERVER) == BST_CHECKED) ? FALSE : TRUE;
+
+    GetWindowText(GetDlgItem(hDialogs[DEVREP_DIALOG], IDC_PROXY_ADDRESS_EDIT),
+                  SettingsInfo.szProxyAddress,
+                  sizeof(SettingsInfo.szProxyAddress)/sizeof(WCHAR));
+    GetWindowText(GetDlgItem(hDialogs[DEVREP_DIALOG], IDC_PROXY_USER_EDIT),
+                  SettingsInfo.szProxyUser,
+                  sizeof(SettingsInfo.szProxyUser)/sizeof(WCHAR));
+    GetWindowText(GetDlgItem(hDialogs[DEVREP_DIALOG], IDC_PROXY_PASS_EDIT),
+                  SettingsInfo.szProxyPass,
+                  sizeof(SettingsInfo.szProxyPass)/sizeof(WCHAR));
 
     /* Находим текущий выделенный элемент. Если язык был изменен,
        то реинициализируем элементы управления */
