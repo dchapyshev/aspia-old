@@ -19,6 +19,7 @@ HANDLE hFillThread = NULL;
 HANDLE hProcessHeap = NULL;
 CRITICAL_SECTION CriticalSection;
 BOOL IsLoadingDone = TRUE;
+PARAMS_STRUCT ParamsInfo = {0};
 
 
 static VOID
@@ -539,13 +540,13 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
             INT SySmIcon = GetSystemMetrics(SM_CYSMICON);
             INT SysColorDepth = GetSystemColorDepth();
 
-            if (SettingsInfo.SxSmIcon != SxSmIcon ||
-                SettingsInfo.SySmIcon != SySmIcon ||
-                SettingsInfo.SysColorDepth != SysColorDepth)
+            if (ParamsInfo.SxSmIcon != SxSmIcon ||
+                ParamsInfo.SySmIcon != SySmIcon ||
+                ParamsInfo.SysColorDepth != SysColorDepth)
             {
-                SettingsInfo.SxSmIcon = SxSmIcon;
-                SettingsInfo.SySmIcon = SySmIcon;
-                SettingsInfo.SysColorDepth = SysColorDepth;
+                ParamsInfo.SxSmIcon = SxSmIcon;
+                ParamsInfo.SySmIcon = SySmIcon;
+                ParamsInfo.SysColorDepth = SysColorDepth;
 
                 ReInitControls();
             }
@@ -613,7 +614,7 @@ HandleCommandLine(VOID)
             }
             else if (wcscmp(ptr, L"debug") == 0)
             {
-				SettingsInfo.DebugMode = TRUE;
+                ParamsInfo.DebugMode = TRUE;
             }
             else if (wcscmp(ptr, L"nonav") == 0)
             {
@@ -629,7 +630,7 @@ HandleCommandLine(VOID)
         ptr = lpCmd[Index];
     }
 
-    if (SettingsInfo.DebugMode && NumArgs == 2)
+    if (ParamsInfo.DebugMode && NumArgs == 2)
         return FALSE;
 
     DRIVER_Load();
@@ -670,7 +671,7 @@ LoadLanguage(VOID)
 
 #else
 
-        StringCbCopy(szPath, sizeof(szPath), SettingsInfo.szCurrentPath);
+        StringCbCopy(szPath, sizeof(szPath), ParamsInfo.szCurrentPath);
 
 #endif /* _ASPIA_PORTABLE_ */
 
@@ -700,7 +701,7 @@ LoadIcons(VOID)
 
         StringCbPrintf(szPath, sizeof(szPath),
                        L"%sicons\\%s",
-                       SettingsInfo.szCurrentPath,
+                       ParamsInfo.szCurrentPath,
                        SettingsInfo.szIconsFile);
 
         DebugTrace(L"Loading icon file: %s", szPath);
@@ -784,18 +785,18 @@ wWinMain(HINSTANCE hInst,
 
         /* Window Position */
         SettingsInfo.SaveWindowPos = FALSE;
-        SettingsInfo.Bottom = 0;
-        SettingsInfo.Left = 0;
-        SettingsInfo.Right = 0;
-        SettingsInfo.Top = 0;
+        SettingsInfo.Bottom = 660;
+        SettingsInfo.Left = 20;
+        SettingsInfo.Right = 870;
+        SettingsInfo.Top = 20;
         SettingsInfo.IsMaximized = FALSE;
         SettingsInfo.SplitterPos = 200;
 
         /* Autorun */
         SettingsInfo.Autorun = FALSE;
-        SettingsInfo.HideToTray = TRUE;
+        SettingsInfo.HideToTray = FALSE;
         SettingsInfo.ShowProgIcon = FALSE;
-        SettingsInfo.ShowSensorIcons = TRUE;
+        SettingsInfo.ShowSensorIcons = FALSE;
 
         /* Report: Content Filtering */
         SettingsInfo.ELogShowError = TRUE;
@@ -805,13 +806,13 @@ wWinMain(HINSTANCE hInst,
         SettingsInfo.IEShowFtp = TRUE;
         SettingsInfo.IEShowHttp = TRUE;
 
-        SettingsInfo.DebugMode = FALSE;
+        ParamsInfo.DebugMode = FALSE;
     }
-    SettingsInfo.SxSmIcon = GetSystemMetrics(SM_CXSMICON);
-    SettingsInfo.SySmIcon = GetSystemMetrics(SM_CYSMICON);
-    SettingsInfo.SysColorDepth = GetSystemColorDepth();
+    ParamsInfo.SxSmIcon = GetSystemMetrics(SM_CXSMICON);
+    ParamsInfo.SySmIcon = GetSystemMetrics(SM_CYSMICON);
+    ParamsInfo.SysColorDepth = GetSystemColorDepth();
 
-    GetCurrentPath(SettingsInfo.szCurrentPath, MAX_PATH);
+    GetCurrentPath(ParamsInfo.szCurrentPath, MAX_PATH);
 
     hInstance = hInst;
 
@@ -830,10 +831,10 @@ wWinMain(HINSTANCE hInst,
 
 	/* если у нас дебаг билд, то всегда включаем DebugMode */
 #ifdef _DEBUG
-	SettingsInfo.DebugMode = TRUE;
+    ParamsInfo.DebugMode = TRUE;
 #endif
-	if (SettingsInfo.DebugMode) 
-		SettingsInfo.DebugMode = DebugCreateLog();
+    if (ParamsInfo.DebugMode) 
+        ParamsInfo.DebugMode = DebugCreateLog();
 
     DebugTrace(L"Start with debug mode");
 

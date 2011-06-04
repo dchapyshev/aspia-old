@@ -133,11 +133,11 @@ HW_DevicesInfo(VOID)
 
     StringCbPrintf(szPCIIniPath, sizeof(szPCIIniPath),
                    L"%s%s",
-                   SettingsInfo.szCurrentPath,
+                   ParamsInfo.szCurrentPath,
                    L"pci_dev.ini");
     StringCbPrintf(szUSBIniPath, sizeof(szUSBIniPath),
                    L"%s%s",
-                   SettingsInfo.szCurrentPath,
+                   ParamsInfo.szCurrentPath,
                    L"usb_dev.ini");
 
     if (IoGetTarget() == IO_TARGET_LISTVIEW)
@@ -347,11 +347,11 @@ HW_UnknownDevicesInfo(VOID)
 
     StringCbPrintf(szPCIIniPath, sizeof(szPCIIniPath),
                    L"%s%s",
-                   SettingsInfo.szCurrentPath,
+                   ParamsInfo.szCurrentPath,
                    L"pci_dev.ini");
     StringCbPrintf(szUSBIniPath, sizeof(szUSBIniPath),
                    L"%s%s",
-                   SettingsInfo.szCurrentPath,
+                   ParamsInfo.szCurrentPath,
                    L"usb_dev.ini");
 
     hDevInfo = SetupDiGetClassDevs(NULL,

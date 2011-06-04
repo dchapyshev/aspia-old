@@ -116,8 +116,8 @@ AddImageListIcon(HIMAGELIST hImgList, UINT IconID)
     hIcon = (HICON)LoadImage(hIconsInst,
                              MAKEINTRESOURCE(IconID),
                              IMAGE_ICON,
-                             SettingsInfo.SxSmIcon,
-                             SettingsInfo.SySmIcon,
+                             ParamsInfo.SxSmIcon,
+                             ParamsInfo.SySmIcon,
                              LR_CREATEDIBSECTION);
 
     if (!hIcon) return -1;
@@ -143,15 +143,15 @@ EnumUnknownDevices(HWND hList, DEVICESENUMPROC lpEnumProc)
 
     StringCbPrintf(szPCIIniPath, sizeof(szPCIIniPath),
                    L"%s%s",
-                   SettingsInfo.szCurrentPath,
+                   ParamsInfo.szCurrentPath,
                    L"pci_dev.ini");
     StringCbPrintf(szUSBIniPath, sizeof(szUSBIniPath),
                    L"%s%s",
-                   SettingsInfo.szCurrentPath,
+                   ParamsInfo.szCurrentPath,
                    L"usb_dev.ini");
     StringCbPrintf(szMonIniPath, sizeof(szMonIniPath),
                    L"%s%s",
-                   SettingsInfo.szCurrentPath,
+                   ParamsInfo.szCurrentPath,
                    L"mon_dev.ini");
 
     hDevInfo = SetupDiGetClassDevs(NULL, NULL, NULL,
@@ -350,9 +350,9 @@ DevReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                            SettingsInfo.SendDevReport ? BST_UNCHECKED : BST_CHECKED);
 
             hDevImageList =
-                ImageList_Create(SettingsInfo.SxSmIcon,
-                                 SettingsInfo.SySmIcon,
-                                 ILC_MASK | SettingsInfo.SysColorDepth,
+                ImageList_Create(ParamsInfo.SxSmIcon,
+                                 ParamsInfo.SySmIcon,
+                                 ILC_MASK | ParamsInfo.SysColorDepth,
                                  1, 1);
 
             AddImageListIcon(hDevImageList, IDI_MONITOR); /* Icon for monitors */

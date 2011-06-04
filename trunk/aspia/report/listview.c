@@ -68,8 +68,8 @@ ListViewAddImageListIcon(UINT IconID)
     hIcon = (HICON)LoadImage(hIconsInst,
                              MAKEINTRESOURCE(IconID),
                              IMAGE_ICON,
-                             SettingsInfo.SxSmIcon,
-                             SettingsInfo.SySmIcon,
+                             ParamsInfo.SxSmIcon,
+                             ParamsInfo.SySmIcon,
                              LR_CREATEDIBSECTION);
 
     if (!hIcon) return -1;

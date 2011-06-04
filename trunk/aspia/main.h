@@ -51,6 +51,17 @@
 #define ReAlloc(a, b) HeapReAlloc(hProcessHeap, 0, a, b)
 
 /* winmain.c */
+typedef struct
+{
+    BOOL DebugMode;
+
+    INT SxSmIcon;
+    INT SySmIcon;
+    INT SysColorDepth;
+
+    WCHAR szCurrentPath[MAX_PATH];
+} PARAMS_STRUCT, *PPARAMS_STRUCT;
+
 extern HINSTANCE hInstance;
 extern HINSTANCE hIconsInst;
 extern HINSTANCE hLangInst;
@@ -60,6 +71,7 @@ extern HIMAGELIST hListViewImageList;
 extern HANDLE hProcessHeap;
 extern CRITICAL_SECTION CriticalSection;
 extern BOOL IsLoadingDone;
+extern PARAMS_STRUCT ParamsInfo;
 
 VOID GUIInfoThread(LPVOID lpParameter);
 BOOL IsRootCategory(UINT Category, PVOID List);
@@ -415,14 +427,6 @@ typedef struct
     UINT SensorsRefreshRate;
 
     BOOL SendDevReport;
-
-    BOOL DebugMode;
-
-    INT SxSmIcon;
-    INT SySmIcon;
-    INT SysColorDepth;
-
-    WCHAR szCurrentPath[MAX_PATH];
 } SETTINGS_STRUCT, *PSETTINGS_STRUCT;
 
 typedef struct

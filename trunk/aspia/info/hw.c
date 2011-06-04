@@ -388,7 +388,7 @@ ParseAndShowEDID(BYTE *Edid)
 
     StringCbPrintf(szIniPath, sizeof(szIniPath),
                    L"%s%s",
-                   SettingsInfo.szCurrentPath,
+                   ParamsInfo.szCurrentPath,
                    L"mon_dev.ini");
 
     for (Index = 0; Index < 0x80; Index++)
