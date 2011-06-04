@@ -11,10 +11,11 @@
 
 SETTINGS_STRUCT SettingsInfo = {0};
 
-#define DIALOGS_COUNT   3
+#define DIALOGS_COUNT   4
 #define GENERAL_DIALOG  0
 #define FILTER_DIALOG   1
 #define SYSTRAY_DIALOG  2
+#define DEVREP_DIALOG   3
 
 HIMAGELIST hSettingsImageList;
 HWND hDialogs[DIALOGS_COUNT];
@@ -747,8 +748,6 @@ GeneralPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                            SettingsInfo.SaveWindowPos ? BST_CHECKED : BST_UNCHECKED);
             CheckDlgButton(hDlg, IDC_START_WITH_WINDOWS,
                            SettingsInfo.Autorun ? BST_CHECKED : BST_UNCHECKED);
-            CheckDlgButton(hDlg, IDC_DEV_REPORT_SEND,
-                           SettingsInfo.SendDevReport ? BST_UNCHECKED : BST_CHECKED);
 
             /* Init languages combobox */
             InitLangCombo(hLangList);
@@ -913,6 +912,56 @@ SysTrayPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 }
 
 VOID
+SetDevReportState(HWND hDlg)
+{
+    BOOL ProxyState =
+        (IsDlgButtonChecked(hDlg, IDC_USE_PROXY_SERVER) == BST_CHECKED) ? TRUE : FALSE;
+    BOOL State =
+        (IsDlgButtonChecked(hDlg, IDC_DEV_REPORT_SEND) == BST_CHECKED) ? TRUE : FALSE;
+
+    EnableWindow(GetDlgItem(hDlg, IDC_USE_PROXY_SERVER), State);
+
+    if (State && !ProxyState) State = FALSE;
+
+    EnableWindow(GetDlgItem(hDlg, IDC_PROXY_ADDRESS_EDIT), State);
+    EnableWindow(GetDlgItem(hDlg, IDC_PROXY_USER_EDIT), State);
+    EnableWindow(GetDlgItem(hDlg, IDC_PROXY_PASS_EDIT), State);
+}
+
+INT_PTR CALLBACK
+DevReportPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(lParam);
+    UNREFERENCED_PARAMETER(wParam);
+
+    switch (Msg)
+    {
+        case WM_INITDIALOG:
+        {
+            CheckDlgButton(hDlg, IDC_DEV_REPORT_SEND,
+                           SettingsInfo.SendDevReport ? BST_UNCHECKED : BST_CHECKED);
+
+            SetDevReportState(hDlg);
+        }
+        break;
+
+        case WM_COMMAND:
+        {
+            switch (LOWORD(wParam))
+            {
+                case IDC_USE_PROXY_SERVER:
+                case IDC_DEV_REPORT_SEND:
+                    SetDevReportState(hDlg);
+                    break;
+            }
+        }
+        break;
+    }
+
+    return FALSE;
+}
+
+VOID
 OnSelCategoryChange(INT CurSel)
 {
     INT Index;
@@ -976,6 +1025,7 @@ InitSettingsControls(HWND hDlg, HWND hTree)
                         AddSettingsCategory(hTree, IDS_SETTINGS_GENERAL, IDI_COMPUTER, 0));
     AddSettingsCategory(hTree, IDS_SETTINGS_FILTER, IDI_APPS, 1);
     AddSettingsCategory(hTree, IDS_SETTINGS_SYSTRAY, IDI_SERVICES, 2);
+    AddSettingsCategory(hTree, IDS_SETTINGS_DEVREPORT, IDI_NETWORK, 3);
 
     TreeView_SetImageList(hTree, hSettingsImageList, TVSIL_NORMAL);
 
@@ -994,6 +1044,11 @@ InitSettingsControls(HWND hDlg, HWND hTree)
                      MAKEINTRESOURCE(IDD_SETTINGS_SYSTRAY),
                      hDlg,
                      SysTrayPageWndProc);
+    hDialogs[DEVREP_DIALOG] =
+        CreateDialog(hLangInst,
+                     MAKEINTRESOURCE(IDD_SETTINGS_DEVREPORT),
+                     hDlg,
+                     DevReportPageWndProc);
 
     OnSelCategoryChange(0);
 }
@@ -1023,8 +1078,6 @@ SaveSettingsFromDialog(HWND hDlg)
         (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_SAVE_WINDOW_POS) == BST_CHECKED) ? TRUE : FALSE;
     SettingsInfo.Autorun =
         (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_START_WITH_WINDOWS) == BST_CHECKED) ? TRUE : FALSE;
-    SettingsInfo.SendDevReport =
-        (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_DEV_REPORT_SEND) == BST_CHECKED) ? FALSE : TRUE;
     SettingsInfo.HideToTray =
         (IsDlgButtonChecked(hDialogs[SYSTRAY_DIALOG], IDC_START_MINIMIZED) == BST_CHECKED) ? TRUE : FALSE;
     SettingsInfo.ShowProgIcon =
@@ -1044,6 +1097,8 @@ SaveSettingsFromDialog(HWND hDlg)
         (IsDlgButtonChecked(hDialogs[FILTER_DIALOG], IDC_FILTER_IE_HTTP) == BST_CHECKED) ? TRUE : FALSE;
     SettingsInfo.IEShowFtp =
         (IsDlgButtonChecked(hDialogs[FILTER_DIALOG], IDC_FILTER_IE_FTP) == BST_CHECKED) ? TRUE : FALSE;
+    SettingsInfo.SendDevReport =
+        (IsDlgButtonChecked(hDialogs[DEVREP_DIALOG], IDC_DEV_REPORT_SEND) == BST_CHECKED) ? FALSE : TRUE;
 
     /* Находим текущий выделенный элемент. Если язык был изменен,
        то реинициализируем элементы управления */

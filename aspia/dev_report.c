@@ -9,139 +9,102 @@
 #include <wininet.h>
 #include <urlmon.h>
 
+
 typedef VOID (CALLBACK *DEVICESENUMPROC)(HWND hList, INT IconIndex, LPWSTR lpName, LPTSTR lpId);
 #define INTERNET_FLAGS (INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_UI | INTERNET_FLAG_NO_COOKIES)
 
 HIMAGELIST hDevImageList = NULL;
 
 
-CHAR*
-http_receive(HINTERNET h_req, ULONG *d_size)
+VOID
+SendFileToServer(LPWSTR lpServer, LPWSTR lpFilePath, LPWSTR lpFileName)
 {
-    ULONG bytes  = sizeof(ULONG);
-    ULONG qsize  = 0;
-    ULONG readed = 0;
-    CHAR  *data   = NULL;
-    CHAR   buff[4096];
+    LPWSTR hdrs = L"Content-Type: multipart/form-data, boundary=Jfbvjwj3489078yuyetu";
+    static LPWSTR accept[2] = { L"*/*", NULL };
+    HINTERNET hOpenHandle;
+    HANDLE hFile;
+    DWORD dwFileSize, dwRead;
+    LPBYTE pBuf = NULL;
+    LPBYTE pDataStart = NULL;
+    DWORD dwDataToSend = 0;
+    long x;
 
-    if (HttpQueryInfo(h_req, HTTP_QUERY_CONTENT_LENGTH | HTTP_QUERY_FLAG_NUMBER, &qsize, &bytes, NULL) != 0)
+    LPWSTR szFnamePrefix = L"--Jfbvjwj3489078yuyetu\r\nContent-Disposition: form-data; name=\"fname\"\r\n\r\n";
+    LPWSTR szDataPrefix = L"\r\n--Jfbvjwj3489078yuyetu\r\nContent-Disposition: form-data; name=\"data\"; filename=\"report.ini\"\r\nContent-Type: application/octet-stream\r\n\r\n";
+    LPWSTR szDataPostfix = L"\r\n--Jfbvjwj3489078yuyetu--";
+
+    hFile = CreateFile(lpFilePath, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, 0);
+    if (hFile == INVALID_HANDLE_VALUE)
+        return;
+
+    dwFileSize = GetFileSize(hFile, NULL);
+    if (dwFileSize == INVALID_FILE_SIZE)
     {
-        data = malloc(qsize + 1);
+        CloseHandle(hFile);
+        return;
     }
 
-    do
+    pBuf = (LPBYTE)HeapAlloc(hProcessHeap, 0, dwFileSize + 2048);
+    if (!pBuf)
     {
-        if (InternetReadFile(h_req, buff, sizeof(buff), &bytes) == 0)
-            break;
+        CloseHandle(hFile);
+        return;
+    }
 
-        if ((readed + bytes) > qsize)
+    pDataStart = pBuf;
+    x = lstrlen(szFnamePrefix);
+    lstrcpyn((LPWSTR)pDataStart, szFnamePrefix, x + 1);
+    pDataStart += x;
+
+    x = lstrlen(lpFileName);
+    lstrcpyn((LPWSTR)pDataStart, lpFileName, x + 1);
+    pDataStart += x;
+
+    x = lstrlen(szDataPrefix);
+    lstrcpyn((LPWSTR)pDataStart, szDataPrefix, x + 1);
+    pDataStart += x;
+
+    if (!ReadFile(hFile, pDataStart, dwFileSize, &dwRead, NULL))
+    {
+        HeapFree(hProcessHeap, 0, pBuf);
+        CloseHandle(hFile);
+        return;
+    }
+
+    pDataStart += dwRead;
+
+    x = lstrlen(szDataPostfix);
+    lstrcpyn((LPWSTR)pDataStart, szDataPostfix, x + 1);
+    pDataStart += x;
+
+    dwDataToSend = pDataStart - pBuf;
+
+    hOpenHandle = InternetOpen(L"Aspia 0.2.5", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+
+    if (hOpenHandle)
+    {
+        HINTERNET hConnectHandle =
+            InternetConnect(hOpenHandle, lpServer,
+                            INTERNET_DEFAULT_HTTP_PORT,
+                            NULL, NULL, INTERNET_SERVICE_HTTP, 0, 1);
+
+        if (hConnectHandle)
         {
-            data = realloc(data, readed + bytes + 1);
-            if (!data) break;
-            qsize += bytes;
+            HANDLE hResourceHandle =
+                HttpOpenRequest(hConnectHandle, L"POST", L"/hw_report.php", NULL, NULL, (LPCWSTR*)accept, 0, 1);
+
+            if (hResourceHandle)
+            {
+                HttpSendRequest(hResourceHandle, hdrs, wcslen(hdrs), pBuf, dwDataToSend);
+                InternetCloseHandle(hResourceHandle);
+            }
+            InternetCloseHandle(hConnectHandle);
         }
-        memcpy(data + readed, buff, bytes);
-        readed += bytes;
-    }
-    while (bytes != 0);
-
-    if (data && readed != qsize)
-    {
-        free(data);
-        data = NULL;
-    }
-    else
-    {
-        if (d_size) *d_size = readed;
-        data[readed] = 0;
+        InternetCloseHandle(hOpenHandle);
     }
 
-    return data;
-}
-
-LPVOID
-http_get(WCHAR *url, ULONG *d_size)
-{
-    HINTERNET h_inet = NULL;
-    HINTERNET h_req  = NULL;
-    CHAR     *replay = NULL;
-    
-    for (;;)
-    {
-        h_inet = InternetOpen(NULL, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
-        if (!h_inet) break;
-        
-        h_req = InternetOpenUrl(h_inet, url, NULL, 0, INTERNET_FLAGS, 0);
-        if (!h_req) break;
-
-        replay = http_receive(h_req, d_size);
-    }
-
-    if (h_req) InternetCloseHandle(h_req);
-    if (h_inet) InternetCloseHandle(h_inet);
-
-    return replay;
-}
-
-LPVOID
-http_post(WCHAR *url, LPVOID data, INT size, ULONG *d_size)
-{
-    URL_COMPONENTS url_cm = {0};
-    HINTERNET      h_inet = NULL;
-    HINTERNET      h_conn = NULL;
-    HINTERNET      h_req  = NULL;
-    CHAR          *q_data = NULL;
-    CHAR          *replay = NULL;
-    WCHAR        host[MAX_PATH];
-    WCHAR        path[MAX_PATH];
-    UCHAR *p, *d = data;
-
-    for (;;)
-    {
-        q_data = malloc(size * 3 + 10);
-        if (!q_data) break;
-
-        StringCbCopyA(q_data, size * 3 + 10, "data=");
-        p = (UCHAR*)(q_data + 5);
-
-        while (size--)
-            p += sprintf(p, "%%%0.2x", (ULONG)*d++);
-
-        url_cm.dwStructSize     = sizeof(url_cm);
-        url_cm.lpszHostName     = host;
-        url_cm.dwHostNameLength = sizeof(host);
-        url_cm.lpszUrlPath      = path;
-        url_cm.dwUrlPathLength  = sizeof(path);
-
-        if (InternetCrackUrl(url, 0, 0, &url_cm) == 0)
-            break;
-
-        h_inet = InternetOpen(NULL, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
-        if (!h_inet) break;
-
-        h_conn = InternetConnect(h_inet, host, url_cm.nPort, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
-        if (!h_conn) break;
-
-        h_req = HttpOpenRequest(h_conn, L"POST", path, NULL, NULL, NULL, INTERNET_FLAGS, 0);
-        if (!h_req) break;
-
-        HttpAddRequestHeaders(h_req,
-                              L"Content-Type: application/x-www-form-urlencoded",
-                              47 * 2, HTTP_ADDREQ_FLAG_ADD);
-
-        if (HttpSendRequest(h_req, NULL, 0, q_data, strlen(q_data)) == 0)
-            break;
-
-        replay = http_receive(h_req, d_size);
-    }
-
-    if (h_req) InternetCloseHandle(h_req);
-    if (h_conn) InternetCloseHandle(h_conn);
-    if (h_inet) InternetCloseHandle(h_inet);
-
-    if (q_data) free(q_data);
-
-    return replay;
+    HeapFree(hProcessHeap, 0, pBuf);
+    CloseHandle(hFile);
 }
 
 INT
@@ -249,7 +212,7 @@ EnumUnknownDevices(HWND hList, DEVICESENUMPROC lpEnumProc)
                                     szDeviceName, MAX_STR_LEN, szPCIIniPath);
             if (wcslen(szDeviceName) == 0)
             {
-                if (lpEnumProc) lpEnumProc(hList, 2, DeviceName, DeviceID);
+                if (lpEnumProc) lpEnumProc(hList, 2, DeviceName, szVendorID);
                 Result = TRUE;
             }
         }
@@ -267,7 +230,7 @@ EnumUnknownDevices(HWND hList, DEVICESENUMPROC lpEnumProc)
                                     szDeviceName, MAX_STR_LEN, szUSBIniPath);
             if (wcslen(szDeviceName) == 0)
             {
-                if (lpEnumProc) lpEnumProc(hList, 1, DeviceName, DeviceID);
+                if (lpEnumProc) lpEnumProc(hList, 1, DeviceName, szVendorID);
                 Result = TRUE;
             }
         }
@@ -280,7 +243,7 @@ EnumUnknownDevices(HWND hList, DEVICESENUMPROC lpEnumProc)
                                     szDeviceName, MAX_STR_LEN, szMonIniPath);
             if (wcslen(szDeviceName) == 0)
             {
-                if (lpEnumProc) lpEnumProc(hList, 0, DeviceName, DeviceID);
+                if (lpEnumProc) lpEnumProc(hList, 0, DeviceName, szDeviceID);
                 Result = TRUE;
             }
         }
@@ -297,10 +260,12 @@ EnumUnknownDevices(HWND hList, DEVICESENUMPROC lpEnumProc)
 VOID CALLBACK
 DevicesEnumProc(HWND hList, INT IconIndex, LPWSTR lpName, LPWSTR lpId)
 {
-    WCHAR *pId = Alloc((SafeStrLen(lpId) + 1) * sizeof(WCHAR));
+    SIZE_T Size = (SafeStrLen(lpId) + 1) * sizeof(WCHAR);
+    WCHAR *pId = Alloc(Size);
 
     if (!pId) return;
 
+    StringCbCopy(pId, Size, lpId);
     AddItem(hList, IconIndex, lpName, (LPARAM)pId);
 }
 
@@ -310,12 +275,64 @@ FreeItems(HWND hList)
     INT Count = ListView_GetItemCount(hList) - 1;
     WCHAR *pDevId;
 
-    while (Count > 0)
+    while (Count >= 0)
     {
         pDevId = (WCHAR*)ListViewGetlParam(hList, Count);
         if (pDevId) Free(pDevId);
         --Count;
     }
+}
+
+VOID
+SaveDevReportFile(HWND hList)
+{
+    INT Count = ListView_GetItemCount(hList) - 1;
+    WCHAR szPath[MAX_PATH],szName[MAX_STR_LEN], *pDevId;
+    LVITEM Item = {0};
+
+    if (!GetTempPath(MAX_PATH, szPath))
+        return;
+
+    StringCbCat(szPath, sizeof(szPath), L"report.ini");
+
+    DeleteFile(szPath);
+
+    while (Count >= 0)
+    {
+        ZeroMemory(&Item, sizeof(LVITEM));
+
+        Item.mask = LVIF_PARAM | LVIF_IMAGE | LVIF_TEXT;
+        Item.cchTextMax = MAX_STR_LEN;
+        Item.pszText = szName;
+        Item.iItem = Count;
+
+        if (ListView_GetItem(hList, &Item))
+        {
+            pDevId = (WCHAR*)Item.lParam;
+
+            if (pDevId && wcslen(szName) > 0)
+            {
+                switch (Item.iImage)
+                {
+                    case 0:
+                        WritePrivateProfileString(L"mon_dev", pDevId, szName, szPath);
+                        break;
+                    case 1:
+                        WritePrivateProfileString(L"usb_dev", pDevId, szName, szPath);
+                        break;
+                    case 2:
+                        WritePrivateProfileString(L"pci_dev", pDevId, szName, szPath);
+                        break;
+                }
+            }
+        }
+
+        --Count;
+    }
+
+    SendFileToServer(L"aspia.ru", szPath, L"report.ini");
+
+    DeleteFile(szPath);
 }
 
 INT_PTR CALLBACK
@@ -368,6 +385,8 @@ DevReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                     break;
 
                 case IDOK:
+                    SaveDevReportFile(GetDlgItem(hDlg, IDC_REPORT_DATA_LIST));
+                    PostMessage(hDlg, WM_CLOSE, 0, 0);
                     break;
             }
         }
