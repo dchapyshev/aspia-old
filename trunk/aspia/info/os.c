@@ -30,7 +30,7 @@ ShowRegInfo(UINT StringID, LPWSTR lpszKeyName)
 
     if (SafeStrLen(szText) > 0)
     {
-        Index = IoAddValueName(0, StringID, -1);
+        Index = IoAddValueName(1, StringID, 0);
         IoSetItemText(Index, 1, szText);
     }
 }
@@ -50,7 +50,7 @@ ShowInstallDate(VOID)
     {
         if (TimeToString((time_t)dwInstallDate, szText, sizeof(szText)))
         {
-            Index = IoAddValueName(0, IDS_OS_INSTALL_DATE, -1);
+            Index = IoAddValueName(1, IDS_OS_INSTALL_DATE, 0);
             IoSetItemText(Index, 1, szText);
         }
     }
@@ -68,7 +68,7 @@ OS_RegInformation(VOID)
     IoAddHeader(0, IDS_CAT_OS_REGDATA, 0);
 
     /* Product Key */
-    Index = IoAddValueName(0, IDS_PRODUCT_KEY, -1);
+    Index = IoAddValueName(1, IDS_PRODUCT_KEY, 0);
     GetMSProductKey(FALSE,
                     "SOFTWARE\\MICROSOFT\\Windows NT\\CurrentVersion",
                     szText, MAX_STR_LEN);
@@ -999,7 +999,7 @@ OS_DesktopInfo(VOID)
     IoAddHeader(0, IDS_CAT_OS_DESKTOP, 0);
 
     /* Resolution */
-    Index = IoAddValueName(0, IDS_DESK_RESOLUTION, -1);
+    Index = IoAddValueName(1, IDS_DESK_RESOLUTION, 0);
     StringCbPrintf(szText, sizeof(szText),
                    L"%ld x %ld",
                    DevMode.dmPelsWidth,
@@ -1007,7 +1007,7 @@ OS_DesktopInfo(VOID)
     IoSetItemText(Index, 1, szText);
 
     /* Color depth */
-    Index = IoAddValueName(0, IDS_DESK_COLOR_DEPTH, -1);
+    Index = IoAddValueName(1, IDS_DESK_COLOR_DEPTH, 0);
     StringCbPrintf(szText, sizeof(szText),
                    L"%ld bit",
                    DevMode.dmBitsPerPel);
@@ -1017,7 +1017,7 @@ OS_DesktopInfo(VOID)
     // TODO
 
     /* Refresh rate */
-    Index = IoAddValueName(0, IDS_DESK_REFRESH_RATE, -1);
+    Index = IoAddValueName(1, IDS_DESK_REFRESH_RATE, 0);
     StringCbPrintf(szText, sizeof(szText),
                    L"%ld Hz",
                    DevMode.dmDisplayFrequency);
@@ -1030,7 +1030,7 @@ OS_DesktopInfo(VOID)
                               szText,
                               MAX_STR_LEN))
     {
-        Index = IoAddValueName(0, IDS_DESK_WALLPAPER, -1);
+        Index = IoAddValueName(1, IDS_DESK_WALLPAPER, 0);
         IoSetItemText(Index, 1, szText);
     }
 
@@ -1039,7 +1039,7 @@ OS_DesktopInfo(VOID)
     {
         UINT Type;
 
-        Index = IoAddValueName(0, IDS_DESK_FONT_SMOOTHING, -1);
+        Index = IoAddValueName(1, IDS_DESK_FONT_SMOOTHING, 0);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
 
         /* Smoothing type */
@@ -1047,7 +1047,7 @@ OS_DesktopInfo(VOID)
         {
             UINT StringID = IDS_SMOOTHING_STANDARD;
 
-            Index = IoAddValueName(0, IDS_DESK_FONT_SMOOTHING_TYPE, -1);
+            Index = IoAddValueName(1, IDS_DESK_FONT_SMOOTHING_TYPE, 0);
             if (Type == FE_FONTSMOOTHINGCLEARTYPE)
                 StringID = IDS_SMOOTHING_CLEARTYPE;
 
@@ -1064,7 +1064,7 @@ OS_DesktopInfo(VOID)
     /* Speed */
     if (SystemParametersInfo(SPI_GETMOUSESPEED, 0, &IntParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_MOUSE_SPEED, -1);
+        Index = IoAddValueName(1, IDS_DESK_MOUSE_SPEED, 1);
         StringCbPrintf(szText, sizeof(szText), L"%d", IntParam);
         IoSetItemText(Index, 1, szText);
     }
@@ -1072,14 +1072,14 @@ OS_DesktopInfo(VOID)
     /* Trails */
     if (SystemParametersInfo(SPI_GETMOUSETRAILS, 0, &IntParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_MOUSE_TRAILS, -1);
+        Index = IoAddValueName(1, IDS_DESK_MOUSE_TRAILS, 1);
         IoSetItemText(Index, 1, IntParam ? szYes : szNo);
     }
 
     /* Scroll lines */
     if (SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &UintParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_WHELL_SCROLL_LINES, -1);
+        Index = IoAddValueName(1, IDS_DESK_WHELL_SCROLL_LINES, 1);
         StringCbPrintf(szText, sizeof(szText), L"%ld", UintParam);
         IoSetItemText(Index, 1, szText);
     }
@@ -1092,7 +1092,7 @@ OS_DesktopInfo(VOID)
     /* Speed */
     if (SystemParametersInfo(SPI_GETKEYBOARDSPEED, 0, &DwordParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_KEYBOARD_SPEED, -1);
+        Index = IoAddValueName(1, IDS_DESK_KEYBOARD_SPEED, 2);
         StringCbPrintf(szText, sizeof(szText), L"%ld", DwordParam);
         IoSetItemText(Index, 1, szText);
     }
@@ -1100,7 +1100,7 @@ OS_DesktopInfo(VOID)
     /* Delay */
     if (SystemParametersInfo(SPI_GETKEYBOARDDELAY, 0, &IntParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_KEYBOARD_DELAY, -1);
+        Index = IoAddValueName(1, IDS_DESK_KEYBOARD_DELAY, 2);
         StringCbPrintf(szText, sizeof(szText), L"%ld", IntParam);
         IoSetItemText(Index, 1, szText);
     }
@@ -1113,42 +1113,42 @@ OS_DesktopInfo(VOID)
     /* Combobox animation */
     if (SystemParametersInfo(SPI_GETCOMBOBOXANIMATION, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_COMBOBOX_ANIMATION, -1);
+        Index = IoAddValueName(1, IDS_DESK_COMBOBOX_ANIMATION, 3);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
     /* Cursor shadow */
     if (SystemParametersInfo(SPI_GETCURSORSHADOW, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_CURSOR_SHADOW, -1);
+        Index = IoAddValueName(1, IDS_DESK_CURSOR_SHADOW, 3);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
     /* Gradient captions */
     if (SystemParametersInfo(SPI_GETGRADIENTCAPTIONS, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_GRADIENT_CAPTIONS, -1);
+        Index = IoAddValueName(1, IDS_DESK_GRADIENT_CAPTIONS, 3);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
     /* Listbox smooth scrolling */
     if (SystemParametersInfo(SPI_GETLISTBOXSMOOTHSCROLLING, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_LISTBOXSMOOTHSCROLLING, -1);
+        Index = IoAddValueName(1, IDS_DESK_LISTBOXSMOOTHSCROLLING, 3);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
     /* Menu animation */
     if (SystemParametersInfo(SPI_GETMENUANIMATION, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_MENUANIMATION, -1);
+        Index = IoAddValueName(1, IDS_DESK_MENUANIMATION, 3);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
     /* Tooltip animation */
     if (SystemParametersInfo(SPI_GETTOOLTIPANIMATION, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_TOOLTIPANIMATION, -1);
+        Index = IoAddValueName(1, IDS_DESK_TOOLTIPANIMATION, 3);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
@@ -1161,14 +1161,14 @@ OS_DesktopInfo(VOID)
     AnimationInfo.cbSize = sizeof(ANIMATIONINFO);
     if (SystemParametersInfo(SPI_GETANIMATION, sizeof(ANIMATIONINFO), &AnimationInfo, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_WND_ANIMATION, -1);
+        Index = IoAddValueName(1, IDS_DESK_WND_ANIMATION, 4);
         IoSetItemText(Index, 1, AnimationInfo.iMinAnimate ? szYes : szNo);
     }
 
     /* Border */
     if (SystemParametersInfo(SPI_GETBORDER, 0, &IntParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_WND_BORDER, -1);
+        Index = IoAddValueName(1, IDS_DESK_WND_BORDER, 4);
         StringCbPrintf(szText, sizeof(szText), L"%ld", IntParam);
         IoSetItemText(Index, 1, szText);
     }
@@ -1176,14 +1176,14 @@ OS_DesktopInfo(VOID)
     /* Drag full */
     if (SystemParametersInfo(SPI_GETDRAGFULLWINDOWS, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_WND_DRAG_FULL, -1);
+        Index = IoAddValueName(1, IDS_DESK_WND_DRAG_FULL, 4);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
     /* Drops shadow */
     if (SystemParametersInfo(SPI_GETDROPSHADOW, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_DROPS_SHADOW, -1);
+        Index = IoAddValueName(1, IDS_DESK_DROPS_SHADOW, 4);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
@@ -1195,14 +1195,14 @@ OS_DesktopInfo(VOID)
     /* Menu animation */
     if (SystemParametersInfo(SPI_GETMENUFADE, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_MENU_FADE_ANIMATION, -1);
+        Index = IoAddValueName(1, IDS_DESK_MENU_FADE_ANIMATION, 5);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
     /* Menu show delay */
     if (SystemParametersInfo(SPI_GETMENUSHOWDELAY, 0, &DwordParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_MENU_SHOW_DELAY, -1);
+        Index = IoAddValueName(1, IDS_DESK_MENU_SHOW_DELAY, 5);
         StringCbPrintf(szText, sizeof(szText), L"%ld", DwordParam);
         IoSetItemText(Index, 1, szText);
     }
@@ -1210,7 +1210,7 @@ OS_DesktopInfo(VOID)
     /* Flat menu */
     if (SystemParametersInfo(SPI_GETFLATMENU, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_FLAT_MENU, -1);
+        Index = IoAddValueName(1, IDS_DESK_FLAT_MENU, 5);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
@@ -1222,13 +1222,13 @@ OS_DesktopInfo(VOID)
     /* Active */
     if (SystemParametersInfo(SPI_GETSCREENSAVEACTIVE, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(0, IDS_DESK_SS_ACTIVE, -1);
+        Index = IoAddValueName(1, IDS_DESK_SS_ACTIVE, 6);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
 
         /* Timeout */
         if (BoolParam && SystemParametersInfo(SPI_GETSCREENSAVETIMEOUT, 0, &IntParam, 0))
         {
-            Index = IoAddValueName(0, IDS_DESK_SS_TIMEOUT, -1);
+            Index = IoAddValueName(1, IDS_DESK_SS_TIMEOUT, 6);
             StringCbPrintf(szText, sizeof(szText), L"%ld", IntParam);
             IoSetItemText(Index, 1, szText);
         }
@@ -1304,7 +1304,7 @@ OS_TaskSchedulerInfo(VOID)
             {
                 UINT StatusID;
 
-                Index = IoAddValueName(0, IDS_STATUS, -1);
+                Index = IoAddValueName(1, IDS_STATUS, 0);
                 switch (Status)
                 {
                     case SCHED_S_TASK_READY:
@@ -1340,7 +1340,7 @@ OS_TaskSchedulerInfo(VOID)
             hr = pITask->lpVtbl->GetApplicationName(pITask, &lpszText);
             if (SUCCEEDED(hr))
             {
-                Index = IoAddValueName(0, IDS_TASK_APP_NAME, -1);
+                Index = IoAddValueName(1, IDS_TASK_APP_NAME, 0);
                 IoSetItemText(Index, 1, lpszText);
                 CoTaskMemFree(lpszText);
             }
@@ -1349,7 +1349,7 @@ OS_TaskSchedulerInfo(VOID)
             hr = pITask->lpVtbl->GetParameters(pITask, &lpszText);
             if (SUCCEEDED(hr))
             {
-                Index = IoAddValueName(0, IDS_TASK_APP_PARAMS, -1);
+                Index = IoAddValueName(1, IDS_TASK_APP_PARAMS, 0);
                 IoSetItemText(Index, 1, lpszText);
                 CoTaskMemFree(lpszText);
             }
@@ -1358,7 +1358,7 @@ OS_TaskSchedulerInfo(VOID)
             hr = pITask->lpVtbl->GetWorkingDirectory(pITask, &lpszText);
             if (SUCCEEDED(hr))
             {
-                Index = IoAddValueName(0, IDS_TASK_WORK_DIR, -1);
+                Index = IoAddValueName(1, IDS_TASK_WORK_DIR, 0);
                 IoSetItemText(Index, 1, lpszText);
                 CoTaskMemFree(lpszText);
             }
@@ -1367,7 +1367,7 @@ OS_TaskSchedulerInfo(VOID)
             hr = pITask->lpVtbl->GetComment(pITask, &lpszText);
             if (SUCCEEDED(hr))
             {
-                Index = IoAddValueName(0, IDS_TASK_COMMENT, -1);
+                Index = IoAddValueName(1, IDS_TASK_COMMENT, 0);
                 IoSetItemText(Index, 1, lpszText);
                 CoTaskMemFree(lpszText);
             }
@@ -1376,7 +1376,7 @@ OS_TaskSchedulerInfo(VOID)
             hr = pITask->lpVtbl->GetAccountInformation(pITask, &lpszText);
             if (SUCCEEDED(hr))
             {
-                Index = IoAddValueName(0, IDS_TASK_ACCAUNT, -1);
+                Index = IoAddValueName(1, IDS_TASK_ACCAUNT, 0);
                 IoSetItemText(Index, 1, lpszText);
                 CoTaskMemFree(lpszText);
             }
@@ -1385,7 +1385,7 @@ OS_TaskSchedulerInfo(VOID)
             hr = pITask->lpVtbl->GetCreator(pITask, &lpszText);
             if (SUCCEEDED(hr))
             {
-                Index = IoAddValueName(0, IDS_TASK_CREATOR, -1);
+                Index = IoAddValueName(1, IDS_TASK_CREATOR, 0);
                 IoSetItemText(Index, 1, lpszText);
                 CoTaskMemFree(lpszText);
             }
@@ -1394,7 +1394,7 @@ OS_TaskSchedulerInfo(VOID)
             hr = pITask->lpVtbl->GetMostRecentRunTime(pITask, &stTime);
             if (SUCCEEDED(hr))
             {
-                Index = IoAddValueName(0, IDS_TASK_LAST_RUN_TIME, -1);
+                Index = IoAddValueName(1, IDS_TASK_LAST_RUN_TIME, 0);
                 StringCbPrintf(szText,
                                sizeof(szText),
                                L"%02u.%02u.%u %u:%02u",
@@ -1410,7 +1410,7 @@ OS_TaskSchedulerInfo(VOID)
             hr = pITask->lpVtbl->GetNextRunTime(pITask, &stTime);
             if (SUCCEEDED(hr))
             {
-                Index = IoAddValueName(0, IDS_TASK_NEXT_RUN_TIME, -1);
+                Index = IoAddValueName(1, IDS_TASK_NEXT_RUN_TIME, 0);
                 StringCbPrintf(szText,
                                sizeof(szText),
                                L"%02u.%02u.%u %u:%02u",
@@ -1437,7 +1437,7 @@ OS_TaskSchedulerInfo(VOID)
                                   szFormat, MAX_STR_LEN);
                     StringCbPrintf(szText, sizeof(szText),
                                    szFormat, wTriggerIndex + 1);
-                    Index = IoAddItem(0, -1, szText);
+                    Index = IoAddItem(1, 0, szText);
                     IoSetItemText(Index, 1, lpszText);
                     CoTaskMemFree(lpszText);
                 }
@@ -1481,7 +1481,7 @@ AddPreventItem(UINT ValueName, HKEY hRootKey, LPWSTR lpPath, LPWSTR lpKeyName)
     LoadMUIString(IsAllowed ? IDS_PREV_ALLOWED : IDS_PREV_NOT_ALLOWED,
                   szText, MAX_STR_LEN);
 
-    Index = IoAddValueName(0, ValueName, IsAllowed ? 0 : 1);
+    Index = IoAddValueName(1, ValueName, IsAllowed ? 0 : 1);
     IoSetItemText(Index, 1, szText);
 }
 

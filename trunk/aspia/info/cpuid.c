@@ -142,7 +142,7 @@ EnumSupportedFeatures(const FEATURE_INFO_STRUCT *List, DWORD dwFlag)
                        L"%s (%s)",
                        List[Index].lpszDesc,
                        List[Index].lpszFeature);
-        ItemIndex = IoAddItem(0, (List[Index].dwFlag & dwFlag) ? 1 : 2, szText);
+        ItemIndex = IoAddItem(1, (List[Index].dwFlag & dwFlag) ? 1 : 2, szText);
         IoSetItemText(ItemIndex, 1,
                       (List[Index].dwFlag & dwFlag) ? szSupported : szUnsupported);
     }
@@ -264,31 +264,31 @@ CPUIDInfo(VOID)
     /* Get CPU Name */
     if (GetCPUName(szText, sizeof(szText)))
     {
-        Index = IoAddValueName(0, IDS_CPUID_NAME, -1);
+        Index = IoAddValueName(1, IDS_CPUID_NAME, 0);
         IoSetItemText(Index, 1, szText);
     }
 
     /* Get CPU Vendor */
     GetCPUVendor(szText, sizeof(szText));
-    Index = IoAddValueName(0, IDS_MANUFACTURER, -1);
+    Index = IoAddValueName(1, IDS_MANUFACTURER, 0);
     IoSetItemText(Index, 1, szText);
 
     GetProcessorIDs(&CpuIds);
 
     /* Stepping ID */
-    Index = IoAddValueName(0, IDS_CPUID_STEPPINGID, -1);
+    Index = IoAddValueName(1, IDS_CPUID_STEPPINGID, 0);
     StringCbPrintf(szText, sizeof(szText), L"%d (%xh)",
                    CpuIds.Stepping, CpuIds.Stepping);
     IoSetItemText(Index, 1, szText);
 
     /* Model */
-    Index = IoAddValueName(0, IDS_CPUID_MODEL, -1);
+    Index = IoAddValueName(1, IDS_CPUID_MODEL, 0);
     StringCbPrintf(szText, sizeof(szText), L"%d (%xh)",
                    CpuIds.Model, CpuIds.Model);
     IoSetItemText(Index, 1, szText);
 
     /* Family */
-    Index = IoAddValueName(0, IDS_CPUID_FAMILY, -1);
+    Index = IoAddValueName(1, IDS_CPUID_FAMILY, 0);
     StringCbPrintf(szText, sizeof(szText), L"%d (%xh)",
                    CpuIds.Family, CpuIds.Family);
     IoSetItemText(Index, 1, szText);
@@ -296,7 +296,7 @@ CPUIDInfo(VOID)
     /* Logical processors count */
     if (GetLogicalProcessorsCount() > 0)
     {
-        Index = IoAddValueName(0, IDS_CPUID_LOGICAL_COUNT, -1);
+        Index = IoAddValueName(1, IDS_CPUID_LOGICAL_COUNT, 0);
         StringCbPrintf(szText, sizeof(szText), L"%d",
                        GetLogicalProcessorsCount());
         IoSetItemText(Index, 1, szText);
