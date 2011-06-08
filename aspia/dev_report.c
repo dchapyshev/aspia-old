@@ -11,16 +11,15 @@
 
 
 typedef VOID (CALLBACK *DEVICESENUMPROC)(HWND hList, INT IconIndex, LPWSTR lpName, LPTSTR lpId);
-#define INTERNET_FLAGS (INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_UI | INTERNET_FLAG_NO_COOKIES)
 
 HIMAGELIST hDevImageList = NULL;
 
 
 VOID
-SendFileToServer(LPWSTR lpServer, LPWSTR lpFilePath, LPWSTR lpFileName)
+SendFileToServer(LPWSTR lpServer, LPWSTR lpFilePath, char *lpFileName)
 {
-    LPWSTR hdrs = L"Content-Type: multipart/form-data, boundary=Jfbvjwj3489078yuyetu";
-    static LPWSTR accept[2] = { L"*/*", NULL };
+    char hdrs[] = "Content-Type: multipart/form-data, boundary=Jfbvjwj3489078yuyetu";
+    static LPSTR accept[2] = { "*/*", NULL };
     HINTERNET hOpenHandle;
     HANDLE hFile;
     DWORD dwFileSize, dwRead;
@@ -29,9 +28,9 @@ SendFileToServer(LPWSTR lpServer, LPWSTR lpFilePath, LPWSTR lpFileName)
     DWORD dwDataToSend = 0;
     long x;
 
-    LPWSTR szFnamePrefix = L"--Jfbvjwj3489078yuyetu\r\nContent-Disposition: form-data; name=\"fname\"\r\n\r\n";
-    LPWSTR szDataPrefix = L"\r\n--Jfbvjwj3489078yuyetu\r\nContent-Disposition: form-data; name=\"data\"; filename=\"report.ini\"\r\nContent-Type: application/octet-stream\r\n\r\n";
-    LPWSTR szDataPostfix = L"\r\n--Jfbvjwj3489078yuyetu--";
+    char szFnamePrefix[] = "--Jfbvjwj3489078yuyetu\r\nContent-Disposition: form-data; name=\"fname\"\r\n\r\n";
+    char szDataPrefix[] = "\r\n--Jfbvjwj3489078yuyetu\r\nContent-Disposition: form-data; name=\"data\"; filename=\"report.ini\"\r\nContent-Type: application/octet-stream\r\n\r\n";
+    char szDataPostfix[] = "\r\n--Jfbvjwj3489078yuyetu--";
 
     hFile = CreateFile(lpFilePath, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, 0);
     if (hFile == INVALID_HANDLE_VALUE)
@@ -52,16 +51,16 @@ SendFileToServer(LPWSTR lpServer, LPWSTR lpFilePath, LPWSTR lpFileName)
     }
 
     pDataStart = pBuf;
-    x = lstrlen(szFnamePrefix);
-    lstrcpyn((LPWSTR)pDataStart, szFnamePrefix, x + 1);
+    x = strlen(szFnamePrefix);
+    lstrcpynA((char*)pDataStart, szFnamePrefix, x + 1);
     pDataStart += x;
 
-    x = lstrlen(lpFileName);
-    lstrcpyn((LPWSTR)pDataStart, lpFileName, x + 1);
+    x = lstrlenA(lpFileName);
+    lstrcpynA((char*)pDataStart, lpFileName, x + 1);
     pDataStart += x;
 
-    x = lstrlen(szDataPrefix);
-    lstrcpyn((LPWSTR)pDataStart, szDataPrefix, x + 1);
+    x = strlen(szDataPrefix);
+    lstrcpynA((char*)pDataStart, szDataPrefix, x + 1);
     pDataStart += x;
 
     if (!ReadFile(hFile, pDataStart, dwFileSize, &dwRead, NULL))
@@ -73,8 +72,8 @@ SendFileToServer(LPWSTR lpServer, LPWSTR lpFilePath, LPWSTR lpFileName)
 
     pDataStart += dwRead;
 
-    x = lstrlen(szDataPostfix);
-    lstrcpyn((LPWSTR)pDataStart, szDataPostfix, x + 1);
+    x = strlen(szDataPostfix);
+    lstrcpynA((char*)pDataStart, szDataPostfix, x + 1);
     pDataStart += x;
 
     dwDataToSend = pDataStart - pBuf;
@@ -91,11 +90,11 @@ SendFileToServer(LPWSTR lpServer, LPWSTR lpFilePath, LPWSTR lpFileName)
         if (hConnectHandle)
         {
             HANDLE hResourceHandle =
-                HttpOpenRequest(hConnectHandle, L"POST", L"/hw_report.php", NULL, NULL, (LPCWSTR*)accept, 0, 1);
+                HttpOpenRequestA(hConnectHandle, "POST", "/hw_report.php", NULL, NULL, (LPCSTR*)accept, 0, 1);
 
             if (hResourceHandle)
             {
-                HttpSendRequest(hResourceHandle, hdrs, wcslen(hdrs), pBuf, dwDataToSend);
+                HttpSendRequestA(hResourceHandle, hdrs, strlen(hdrs), pBuf, dwDataToSend);
                 InternetCloseHandle(hResourceHandle);
             }
             InternetCloseHandle(hConnectHandle);
@@ -287,8 +286,14 @@ VOID
 SaveDevReportFile(HWND hList)
 {
     INT Count = ListView_GetItemCount(hList) - 1;
-    WCHAR szPath[MAX_PATH],szName[MAX_STR_LEN], *pDevId;
+    WCHAR szPath[MAX_PATH], szName[MAX_STR_LEN], *pDevId;
+    WCHAR szResult[MAX_STR_LEN * 2];
+    char *lpSend;
+    LARGE_INTEGER FileSize, MoveTo, NewPos;
+    DWORD dwBytesWritten;
     LVITEM Item = {0};
+    HANDLE hDB;
+    INT len, buf_len;
 
     if (!GetTempPath(MAX_PATH, szPath))
         return;
@@ -296,6 +301,16 @@ SaveDevReportFile(HWND hList)
     StringCbCat(szPath, sizeof(szPath), L"report.ini");
 
     DeleteFile(szPath);
+
+    hDB = CreateFile(szPath,
+                     GENERIC_WRITE,
+                     FILE_SHARE_READ | FILE_SHARE_WRITE,
+                     NULL,
+                     CREATE_ALWAYS,
+                     FILE_ATTRIBUTE_NORMAL,
+                     NULL);
+    if (hDB == INVALID_HANDLE_VALUE)
+        return;
 
     while (Count >= 0)
     {
@@ -312,25 +327,60 @@ SaveDevReportFile(HWND hList)
 
             if (pDevId && wcslen(szName) > 0)
             {
+                MoveTo.QuadPart = 0;
+                if (!SetFilePointerEx(hDB, MoveTo, &NewPos, FILE_END))
+                    break;
+
+                if (!GetFileSizeEx(hDB, &FileSize))
+                    break;
+
+                LockFile(hDB, (DWORD_PTR)NewPos.QuadPart, 0,
+                         (DWORD_PTR)FileSize.QuadPart, 0);
+
                 switch (Item.iImage)
                 {
                     case 0:
-                        WritePrivateProfileString(L"mon_dev", pDevId, szName, szPath);
+                        StringCbPrintf(szResult, sizeof(szResult),
+                                       L"MON:%s:%s\r\n",
+                                       pDevId, szName);
                         break;
                     case 1:
-                        WritePrivateProfileString(L"usb_dev", pDevId, szName, szPath);
+                        StringCbPrintf(szResult, sizeof(szResult),
+                                       L"USB:%s:%s\r\n",
+                                       pDevId, szName);
                         break;
                     case 2:
-                        WritePrivateProfileString(L"pci_dev", pDevId, szName, szPath);
+                        StringCbPrintf(szResult, sizeof(szResult),
+                                       L"PCI:%s:%s\r\n",
+                                       pDevId, szName);
                         break;
                 }
+
+                buf_len = WideCharToMultiByte(CP_UTF8, 0,
+                                              szResult, wcslen(szResult),
+                                              NULL, 0, 0, 0);
+                lpSend = Alloc(buf_len);
+                if (lpSend)
+                {
+                    len = WideCharToMultiByte(CP_UTF8, 0,
+                                              szResult, wcslen(szResult),
+                                              lpSend, buf_len, 0, 0);
+
+                    WriteFile(hDB, lpSend, len,
+                              &dwBytesWritten, NULL);
+                    Free(lpSend);
+                }
+
+                UnlockFile(hDB, (DWORD_PTR)NewPos.QuadPart, 0,
+                           (DWORD_PTR)FileSize.QuadPart, 0);
             }
         }
 
         --Count;
     }
+    CloseHandle(hDB);
 
-    SendFileToServer(L"aspia.ru", szPath, L"report.ini");
+    SendFileToServer(L"aspia.ru", szPath, "report.ini");
 
     DeleteFile(szPath);
 }
@@ -369,6 +419,7 @@ DevReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 
         case WM_CLOSE:
         {
+            ImageList_Destroy(hDevImageList);
             SettingsInfo.SendDevReport =
                 (IsDlgButtonChecked(hDlg, IDC_NEVER_SEND_REPORT) == BST_CHECKED) ? FALSE : TRUE;
             FreeItems(GetDlgItem(hDlg, IDC_REPORT_DATA_LIST));
