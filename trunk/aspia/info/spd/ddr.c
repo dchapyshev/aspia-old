@@ -203,29 +203,29 @@ ShowSpdDataForDDR(BYTE *Spd)
                    Spd[0x4E], Spd[0x4F], Spd[0x50], Spd[0x51], Spd[0x52],
                    Spd[0x53], Spd[0x54], Spd[0x55], Spd[0x56], Spd[0x57],
                    Spd[0x58], Spd[0x59], Spd[0x5A]);
-    IoAddHeaderString(szText, 0);
+    IoAddHeaderString(0, szText, 0);
 
-    ItemIndex = IoAddValueName(IDS_MANUFACTURER, -1);
+    ItemIndex = IoAddValueName(0, IDS_MANUFACTURER, -1);
     GetSpdManufacturer(Spd, szText, sizeof(szText));
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SERIAL_NUMBER, -1);
+    ItemIndex = IoAddValueName(0, IDS_SERIAL_NUMBER, -1);
     StringCbPrintf(szText, sizeof(szText), L"%02X%02X%02X%02X",
                    Spd[0x5F], Spd[0x60], Spd[0x61], Spd[0x62]);
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_PRODUCT_DATE, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_PRODUCT_DATE, -1);
     StringCbPrintf(szText, sizeof(szText), L"Week %ld, Year 20%ld",
                    Spd[0x5E], Spd[0x5D]);
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_MEMORY_TYPE, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_MEMORY_TYPE, -1);
     GetSpdModuleType(Spd, szText, sizeof(szText));
     IoSetItemText(ItemIndex, 1, szText);
 
     Rank = (Spd[0x05] & 0x07);
 
-    ItemIndex = IoAddValueName(IDS_SPD_MODULE_SIZE, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_MODULE_SIZE, -1);
     StringCbPrintf(szText, sizeof(szText),
                    L"%ld MB (%ld ranks, %ld banks)",
                    GetSpdDensity(Spd[0x1F]) * Rank,
@@ -234,40 +234,40 @@ ShowSpdDataForDDR(BYTE *Spd)
 
     CycleTime = GetSpdCycleTime(Spd[0x09]);
 
-    ItemIndex = IoAddValueName(IDS_SPD_FREQUENT, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_FREQUENT, -1);
     StringCbPrintf(szText, sizeof(szText),
                    L"%.1f MHz", (double)(1000 / CycleTime));
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_VOLTAGE, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_VOLTAGE, -1);
     GetSpdVoltage(Spd, szText, sizeof(szText));
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_MODULE_WIDTH, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_MODULE_WIDTH, -1);
     GetSpdModuleWidth(Spd, szText, sizeof(szText));
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_ERROR_DETECTION, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_ERROR_DETECTION, -1);
     GetSpdErrorDetection(Spd, szText, sizeof(szText));
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_FET_SWITCH_EXT, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_FET_SWITCH_EXT, -1);
     if ((Spd[0x15] & 0x10) >> 3)
         StringCbCopy(szText, sizeof(szText), L"Enabled");
     else
         StringCbCopy(szText, sizeof(szText), L"Disabled");
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_WEAK_DRIVER, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_WEAK_DRIVER, -1);
     if (Spd[0x16] & 0x01)
         StringCbCopy(szText, sizeof(szText), L"Supported");
     else
         StringCbCopy(szText, sizeof(szText), L"Not Supported");
     IoSetItemText(ItemIndex, 1, szText);
 
-    IoAddHeader(IDS_SPD_MEMORY_TIMINGS, 1);
+    IoAddHeader(0, IDS_SPD_MEMORY_TIMINGS, 1);
 
-    ItemIndex = IoAddValueName(IDS_SPD_BURST_LENGTHS, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_BURST_LENGTHS, -1);
     szText[0] = 0;
     if ((Spd[0x10] & 0x08) >> 2)
         StringCbCat(szText, sizeof(szText), L"8, ");
@@ -280,11 +280,11 @@ ShowSpdDataForDDR(BYTE *Spd)
     szText[SafeStrLen(szText) - 2] = 0;
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_REFRESH_RATE, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_REFRESH_RATE, -1);
     GetSpdRefreshRate(Spd, szText, sizeof(szText));
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_SUPPORTED_CAS_LATENCIES, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_SUPPORTED_CAS_LATENCIES, -1);
     szText[0] = 0;
     if ((Spd[0x12] & 0x40) >> 5)
         StringCbCat(szText, sizeof(szText), L"4.0, ");
@@ -303,46 +303,46 @@ ShowSpdDataForDDR(BYTE *Spd)
     szText[SafeStrLen(szText) - 2] = 0;
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_TIMING_RCD, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_TIMING_RCD, -1);
     StringCbPrintf(szText, sizeof(szText), L"%.2f ns", GetSpdTime(Spd[0x1D]));
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_TIMING_RP, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_TIMING_RP, -1);
     StringCbPrintf(szText, sizeof(szText), L"%.2f ns", GetSpdTime(Spd[0x1B]));
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_TIMING_RAS, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_TIMING_RAS, -1);
     StringCbPrintf(szText, sizeof(szText), L"%ld ns", Spd[0x1E]);
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_TIMING_RRD, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_TIMING_RRD, -1);
     StringCbPrintf(szText, sizeof(szText), L"%0.2f ns", GetSpdTime(Spd[0x1C]));
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_TIMING_RFC, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_TIMING_RFC, -1);
     StringCbPrintf(szText, sizeof(szText), L"%0.2f ns", Spd[0x2a]);
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_TIMING_RC, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_TIMING_RC, -1);
     StringCbPrintf(szText, sizeof(szText), L"%0.2f ns", Spd[0x29]);
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_TIMING_IS, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_TIMING_IS, -1);
     StringCbPrintf(szText, sizeof(szText), L"%0.2f ns",
                    ((double)(Spd[0x20] >> 4) / 10.00) + ((double)(Spd[0x20] & 0x0F) / 100.00));
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_TIMING_IH, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_TIMING_IH, -1);
     StringCbPrintf(szText, sizeof(szText), L"%0.2f ns",
                    ((double)(Spd[0x21] >> 4) / 10.00) + ((double)(Spd[0x21] & 0x0F) / 100.00));
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_TIMING_DS, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_TIMING_DS, -1);
     StringCbPrintf(szText, sizeof(szText), L"%0.2f ns",
                    ((double)(Spd[0x22] >> 4) / 10.00) + ((double)(Spd[0x22] & 0x0F) / 100.00));
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(IDS_SPD_TIMING_DH, -1);
+    ItemIndex = IoAddValueName(0, IDS_SPD_TIMING_DH, -1);
     StringCbPrintf(szText, sizeof(szText), L"%0.2f ns",
                    ((double)(Spd[0x23] >> 4) / 10.00) + ((double)(Spd[0x23] & 0x0F) / 100.00));
     IoSetItemText(ItemIndex, 1, szText);

@@ -23,7 +23,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
                    Spd[0x85], Spd[0x86], Spd[0x87], Spd[0x88], Spd[0x89],
                    Spd[0x8A], Spd[0x8B], Spd[0x8C], Spd[0x8D], Spd[0x8E],
                    Spd[0x8F], Spd[0x90], Spd[0x91]);
-    IoAddHeaderString(szText, 0);
+    IoAddHeaderString(0, szText, 0);
 
     IoAddFooter();
 }

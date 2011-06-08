@@ -275,7 +275,7 @@ SOFTWARE_ServicesInfo(VOID)
             if (!pService) return;
 
             /* Display name */
-            ItemIndex = IoAddItem(0, pService->lpDisplayName);
+            ItemIndex = IoAddItem(0, 0, pService->lpDisplayName);
 
             /* Name */
             IoSetItemText(ItemIndex, 1, pService->lpServiceName);
@@ -348,7 +348,7 @@ SOFTWARE_DriversInfo(VOID)
             if (!pService) return;
 
             /* Display name */
-            ItemIndex = IoAddItem(0, pService->lpDisplayName);
+            ItemIndex = IoAddItem(0, 0, pService->lpDisplayName);
 
             /* Name */
             IoSetItemText(ItemIndex, 1, pService->lpServiceName);

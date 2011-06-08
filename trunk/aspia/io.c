@@ -24,7 +24,7 @@ VOID HtmlEndContentTable(VOID);
 VOID HtmlContentTableItem(UINT ID, LPWSTR lpszName, BOOL IsRootItem);
 VOID HtmlContentTableEndRootItem(VOID);
 
-INT ListViewAddItem(INT IconIndex, LPWSTR lpText);
+INT ListViewAddItem(INT Indent, INT IconIndex, LPWSTR lpText);
 INT ListViewAddHeaderString(LPWSTR lpszText, INT IconIndex);
 VOID ListViewAddHeader(UINT StringID, INT IconIndex);
 VOID ListViewSetItemText(INT i, INT iSubItem, LPWSTR pszText);
@@ -49,42 +49,41 @@ IoGetTarget(VOID)
 }
 
 INT
-IoAddHeaderString(LPWSTR lpszText, INT IconIndex)
+IoAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex)
 {
     switch (IoTarget)
     {
         case IO_TARGET_LISTVIEW:
-            return ListViewAddHeaderString(lpszText, IconIndex);
+            return ListViewAddHeaderString(Indent, lpszText, IconIndex);
 
         case IO_TARGET_HTML:
             HtmlWriteItemString(lpszText, TRUE);
             HtmlAppendStringToFile(L"<td>&nbsp;</td></tr>");
-            return -1;
+            break;
     }
 
     return -1;
 }
 
 VOID
-IoAddHeader(UINT StringID, INT IconIndex)
+IoAddHeader(INT Indent, UINT StringID, INT IconIndex)
 {
     WCHAR szText[MAX_STR_LEN];
 
     LoadMUIString(StringID, szText, MAX_STR_LEN);
-    IoAddHeaderString(szText, IconIndex);
+    IoAddHeaderString(Indent, szText, IconIndex);
 }
 
 INT
-IoAddItem(INT IconIndex, LPWSTR lpText)
+IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
 {
     switch (IoTarget)
     {
         case IO_TARGET_LISTVIEW:
-            return ListViewAddItem(IconIndex, lpText);
-            break;
+            return ListViewAddItem(Indent, IconIndex, lpText);
+
         case IO_TARGET_HTML:
             HtmlWriteItemString(lpText, FALSE);
-            return -1;
             break;
     }
 
@@ -92,12 +91,12 @@ IoAddItem(INT IconIndex, LPWSTR lpText)
 }
 
 INT
-IoAddValueName(UINT ValueID, INT IconIndex)
+IoAddValueName(INT Indent, UINT ValueID, INT IconIndex)
 {
     WCHAR szText[MAX_STR_LEN];
 
     LoadMUIString(ValueID, szText, MAX_STR_LEN);
-    return IoAddItem(IconIndex, szText);
+    return IoAddItem(Indent, IconIndex, szText);
 }
 
 VOID
@@ -122,7 +121,7 @@ IoAddFooter(VOID)
     switch (IoTarget)
     {
         case IO_TARGET_LISTVIEW:
-            ListViewAddItem(-1, L" ");
+            ListViewAddItem(0, -1, L" ");
             break;
         case IO_TARGET_HTML:
             HtmlWriteItemString(L"&nbsp;", TRUE);
@@ -212,7 +211,6 @@ IoAddIcon(UINT IconID)
     {
         case IO_TARGET_LISTVIEW:
             return ListViewAddImageListIcon(IconID);
-            break;
     }
 
     return -1;
@@ -225,7 +223,6 @@ IoCreateReport(LPWSTR lpszFile)
     {
         case IO_TARGET_HTML:
             return HtmlCreateReport(lpszFile);
-            break;
     }
 
     return FALSE;

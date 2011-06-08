@@ -359,10 +359,10 @@ VOID IoSetTarget(UINT);
 UINT IoGetTarget(VOID);
 BOOL IoCreateReport(LPWSTR);
 VOID IoCloseReport(VOID);
-VOID IoAddHeader(UINT, INT);
-INT IoAddHeaderString(LPWSTR, INT);
-INT IoAddValueName(UINT, INT);
-INT IoAddItem(INT, LPWSTR);
+VOID IoAddHeader(INT, UINT, INT);
+INT IoAddHeaderString(INT, LPWSTR, INT);
+INT IoAddValueName(INT, UINT, INT);
+INT IoAddItem(INT, INT, LPWSTR);
 VOID IoAddFooter(VOID);
 VOID IoSetItemText(INT, INT, LPWSTR);
 VOID IoAddColumnsList(COLUMN_LIST*);
@@ -379,7 +379,7 @@ VOID IoWriteContentTableEndRootItem(VOID);
 VOID IoRunInfoFunc(UINT, LPVOID);
 
 /* report/listview.c */
-INT ListViewAddItem(INT, LPWSTR);
+INT ListViewAddItem(INT, INT, LPWSTR);
 VOID ListViewAddHeader(UINT, INT);
 
 /* settings.c */
