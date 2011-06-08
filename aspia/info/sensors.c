@@ -164,13 +164,13 @@ GetIntelCpuInfo(VOID)
 
             if (bIndex == 0)
             {
-                IoAddHeaderString(szText, 1);
+                IoAddHeaderString(0, szText, 1);
             }
 
             LoadMUIString(IDS_SENSOR_CORE_TEMPERATURE,
                           szFormat, MAX_STR_LEN);
             StringCbPrintf(szText, sizeof(szText), szFormat, bIndex + 1);
-            Index = IoAddItem(-1, szText);
+            Index = IoAddItem(0, -1, szText);
 
             Tjmax = GetTjmaxTemperature(bIndex);
 
@@ -205,10 +205,10 @@ GetAmd10CpuInfo(VOID)
 
     if (GetCPUName(szText, sizeof(szText)))
     {
-        IoAddHeaderString(szText, 1);
+        IoAddHeaderString(0, szText, 1);
 
         LoadMUIString(IDS_SENSOR_TEMPERATURE, szText, MAX_STR_LEN);
-        Index = IoAddItem(-1, szText);
+        Index = IoAddItem(0, -1, szText);
 
         ThermValue = ReadPciConfigDword(Device, 0xA4);
 
@@ -239,12 +239,12 @@ GetAmd0FCpuInfo(VOID)
         {
             if (Count == 0)
             {
-                IoAddHeaderString(szText, 1);
+                IoAddHeaderString(0, szText, 1);
             }
 
             LoadMUIString(IDS_SENSOR_CORE_TEMPERATURE, szFormat, MAX_STR_LEN);
             StringCbPrintf(szText, sizeof(szText), szFormat, Count + 1);
-            Index = IoAddItem(-1, szText);
+            Index = IoAddItem(0, -1, szText);
 
             GetProcessorIDs(&CpuIds);
 
@@ -307,13 +307,13 @@ HW_SensorInfo(VOID)
             StringCbPrintf(szText, sizeof(szText),
                            L"%S", DriveInfo.sModelNumber);
             ChopSpaces(szText, sizeof(szText));
-            IoAddHeaderString(szText, 0);
+            IoAddHeaderString(0, szText, 0);
 
             StringCbPrintf(szText, sizeof(szText),
                            L"%ld °C",
                            SMART_GetHDDTemperature(hHandle, bIndex));
 
-            Index = IoAddValueName(IDS_SENSOR_TEMPERATURE, -1);
+            Index = IoAddValueName(0, IDS_SENSOR_TEMPERATURE, -1);
             IoSetItemText(Index, 1, szText);
 
             IoAddFooter();

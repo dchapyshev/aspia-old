@@ -513,7 +513,7 @@ QueryEventMessages(LPWSTR lpMachineName,
                                L"%u",
                                (DWORD)(pevlr->EventCategory));
 
-                ItemIndex = IoAddItem(IconIndex, szEventTypeText);
+                ItemIndex = IoAddItem(0, IconIndex, szEventTypeText);
 
                 IoSetItemText(ItemIndex, 1, szLocalDate);
                 IoSetItemText(ItemIndex, 2, szLocalTime);

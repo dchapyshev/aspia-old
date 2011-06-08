@@ -434,7 +434,7 @@ NETWORK_NetStatInfo(VOID)
                                   TcpTableEx->table[dwIndex].dwProcessId,
                                   szText, sizeof(szText)))
                 StringCbCopy(szText, sizeof(szText), szUnknown);
-            ItemIndex = IoAddItem(0, szText);
+            ItemIndex = IoAddItem(0, 0, szText);
 
             IoSetItemText(ItemIndex, 1, L"TCP");
 
@@ -463,7 +463,7 @@ NETWORK_NetStatInfo(VOID)
         {
             for (dwIndex = 0; dwIndex < TcpTable->dwNumEntries; dwIndex++)
             {
-                ItemIndex = IoAddItem(0, szUnknown);
+                ItemIndex = IoAddItem(0, 0, szUnknown);
                 IoSetItemText(ItemIndex, 1, L"TCP");
 
                 GetIpHostName(TRUE, TcpTable->table[dwIndex].dwLocalAddr,
@@ -500,7 +500,7 @@ NETWORK_NetStatInfo(VOID)
                                   UdpTableEx->table[dwIndex].dwProcessId,
                                   szText, sizeof(szText)))
                 StringCbCopy(szText, sizeof(szText), szUnknown);
-            ItemIndex = IoAddItem(0, szText);
+            ItemIndex = IoAddItem(0, 0, szText);
 
             IoSetItemText(ItemIndex, 1, L"UDP");
 
@@ -524,7 +524,7 @@ NETWORK_NetStatInfo(VOID)
         {
             for (dwIndex = 0; dwIndex < UdpTable->dwNumEntries; dwIndex++)
             {
-                ItemIndex = IoAddItem(0, szUnknown);
+                ItemIndex = IoAddItem(0, 0, szUnknown);
                 IoSetItemText(ItemIndex, 1, L"UDP");
 
                 GetIpHostName(TRUE, UdpTable->table[dwIndex].dwLocalAddr,

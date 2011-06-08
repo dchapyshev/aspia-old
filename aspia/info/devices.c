@@ -205,7 +205,7 @@ HW_DevicesInfo(VOID)
             IconIndex = 24;
         }
 
-        ItemIndex = IoAddItem(IconIndex, DeviceName);
+        ItemIndex = IoAddItem(0, IconIndex, DeviceName);
 
         KeyClass = SetupDiOpenClassRegKeyEx(&DeviceInfoData.ClassGuid,
                                             MAXIMUM_ALLOWED,
@@ -388,7 +388,7 @@ HW_UnknownDevicesInfo(VOID)
         }
         else
         {
-            ItemIndex = IoAddItem(0, DeviceID);
+            ItemIndex = IoAddItem(0, 0, DeviceID);
         }
 
         _wcslwr_s(DeviceID, MAX_STR_LEN);

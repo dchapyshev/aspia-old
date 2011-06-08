@@ -63,7 +63,7 @@ EnumSmartDataProc(SMART_RESULT *Result)
     /* Attribute ID */
     StringCbPrintf(szText, sizeof(szText),
                    L"%02X", Result->dwAttrID);
-    Index = IoAddItem(-1, szText);
+    Index = IoAddItem(0, -1, szText);
 
     /* Name */
     IoSetItemText(Index, 1, Result->szName);
@@ -149,12 +149,12 @@ HW_HDDATAInfo(VOID)
             StringCbPrintf(szText, sizeof(szText),
                            L"%S", DriveInfo.sModelNumber);
             ChopSpaces(szText, sizeof(szText));
-            IoAddHeaderString(szText, 0);
+            IoAddHeaderString(0, szText, 0);
 
-            Index = IoAddValueName(IDS_HDD_ID, -1);
+            Index = IoAddValueName(0, IDS_HDD_ID, -1);
             IoSetItemText(Index, 1, szText);
 
-            Index = IoAddValueName(IDS_SERIAL_NUMBER, -1);
+            Index = IoAddValueName(0, IDS_SERIAL_NUMBER, -1);
             ChangeByteOrder((PCHAR)DriveInfo.sSerialNumber,
                             sizeof(DriveInfo.sSerialNumber));
             StringCbPrintf(szText, sizeof(szText),
@@ -162,7 +162,7 @@ HW_HDDATAInfo(VOID)
             ChopSpaces(szText, sizeof(szText));
             IoSetItemText(Index, 1, szText);
 
-            Index = IoAddValueName(IDS_VERSION, -1);
+            Index = IoAddValueName(0, IDS_VERSION, -1);
             ChangeByteOrder((PCHAR)DriveInfo.sFirmwareRev,
                             sizeof(DriveInfo.sFirmwareRev));
             StringCbPrintf(szText, sizeof(szText),
@@ -173,7 +173,7 @@ HW_HDDATAInfo(VOID)
             {
                 ULONGLONG DiskSize;
 
-                Index = IoAddValueName(IDS_HDD_PARAMS, -1);
+                Index = IoAddValueName(0, IDS_HDD_PARAMS, -1);
                 LoadMUIString(IDS_HDD_PARAMS_FORMAT, szFormat, MAX_STR_LEN);
                 StringCbPrintf(szText, sizeof(szText), szFormat,
                                (ULONG)DiskGeometry.Cylinders.QuadPart * (ULONG)DriveInfo.wNumHeads,
@@ -185,7 +185,7 @@ HW_HDDATAInfo(VOID)
                 DiskSize = DiskGeometry.Cylinders.QuadPart * (ULONG)DiskGeometry.TracksPerCylinder *
                            (ULONG)DiskGeometry.SectorsPerTrack * (ULONG)DiskGeometry.BytesPerSector;
 
-                Index = IoAddValueName(IDS_HDD_SIZE, -1);
+                Index = IoAddValueName(0, IDS_HDD_SIZE, -1);
                 StringCbPrintf(szText, sizeof(szText),
                                L"%I64d MB (%I64d GB)",
                                DiskSize / (1024 * 1024),
@@ -193,22 +193,22 @@ HW_HDDATAInfo(VOID)
                 IoSetItemText(Index, 1, szText);
             }
 
-            Index = IoAddValueName(IDS_HDD_BUFFER_SIZE, -1);
+            Index = IoAddValueName(0, IDS_HDD_BUFFER_SIZE, -1);
             StringCbPrintf(szText, sizeof(szText), L"%d MB",
                            (DriveInfo.wBufferSize * 512)/(1024 * 1024));
             IoSetItemText(Index, 1, szText);
 
-            Index = IoAddValueName(IDS_HDD_MULTISECTORS, -1);
+            Index = IoAddValueName(0, IDS_HDD_MULTISECTORS, -1);
             StringCbPrintf(szText, sizeof(szText), L"%d",
                            DriveInfo.wMultSectorStuff);
             IoSetItemText(Index, 1, szText);
 
-            Index = IoAddValueName(IDS_HDD_ECC_BYTES, -1);
+            Index = IoAddValueName(0, IDS_HDD_ECC_BYTES, -1);
             StringCbPrintf(szText, sizeof(szText), L"%d",
                            DriveInfo.wECCSize);
             IoSetItemText(Index, 1, szText);
 
-            Index = IoAddValueName(IDS_TYPE, -1);
+            Index = IoAddValueName(0, IDS_TYPE, -1);
             if (DriveInfo.wGenConfig & 0x80)
                 StringCbCopy(szText, sizeof(szText), L"Removable");
             else if (DriveInfo.wGenConfig & 0x40)
@@ -286,7 +286,7 @@ HW_HDDSMARTInfo(VOID)
 
         if (SMART_ReadDriveInformation(hHandle, bIndex, &DriveInfo))
         {
-            Index = IoAddHeaderString(L"\0", 0);
+            Index = IoAddHeaderString(0, L"\0", 0);
             ChangeByteOrder((PCHAR)DriveInfo.sModelNumber,
                             sizeof(DriveInfo.sModelNumber));
             StringCbPrintf(szText, sizeof(szText),
@@ -418,28 +418,28 @@ ParseAndShowEDID(BYTE *Edid)
 
     GetPrivateProfileString(L"devices", szMonitorId, L"Unknown",
                             szText, MAX_STR_LEN, szIniPath);
-    IoAddHeaderString(szText, 0);
+    IoAddHeaderString(0, szText, 0);
 
     /* Monitor ID */
-    ItemIndex = IoAddValueName(IDS_DISPLAY_ID, -1);
+    ItemIndex = IoAddValueName(0, IDS_DISPLAY_ID, -1);
     IoSetItemText(ItemIndex, 1, szMonitorId);
 
     /* Monitor Model */
     if (pMonitorModel)
     {
-        ItemIndex = IoAddValueName(IDS_DISPLAY_MODEL, -1);
+        ItemIndex = IoAddValueName(0, IDS_DISPLAY_MODEL, -1);
         IoSetItemText(ItemIndex, 1, pMonitorModel);
     }
 
     /* Manufacture Date */
-    ItemIndex = IoAddValueName(IDS_DISPLAY_MANUFACTURE_DATE, -1);
+    ItemIndex = IoAddValueName(0, IDS_DISPLAY_MANUFACTURE_DATE, -1);
     StringCbPrintf(szText, sizeof(szText), L"%d Week / %d Year",
                    (INT)Edid[MANUFACTURE_WEEK],
                    (INT)Edid[MANUFACTURE_YEAR] + 1990);
     IoSetItemText(ItemIndex, 1, szText);
 
     /* Max/ Visible Display Size */
-    ItemIndex = IoAddValueName(IDS_DISPLAY_MAX_VISIBLE_SIZE, -1);
+    ItemIndex = IoAddValueName(0, IDS_DISPLAY_MAX_VISIBLE_SIZE, -1);
 
     StringCbPrintf(szText, sizeof(szText), L"%d cm / %d cm (%.1f\")",
                    (INT)Edid[0x15], (INT)Edid[0x16],
@@ -453,7 +453,7 @@ ParseAndShowEDID(BYTE *Edid)
         if (BlockType(Block) == DETAILED_TIMING_BLOCK)
         {
             /* Max. Resolution */
-            ItemIndex = IoAddValueName(IDS_DISPLAY_MAX_RESOLUTION, -1);
+            ItemIndex = IoAddValueName(0, IDS_DISPLAY_MAX_RESOLUTION, -1);
             StringCbPrintf(szText, sizeof(szText),
                            L"%dx%d",
                            H_ACTIVE, V_ACTIVE);
@@ -467,13 +467,13 @@ ParseAndShowEDID(BYTE *Edid)
     {
         if (BlockType(Block) == MONITOR_LIMITS)
         {
-            ItemIndex = IoAddValueName(IDS_DISPLAY_HORIZ_FREQ, -1);
+            ItemIndex = IoAddValueName(0, IDS_DISPLAY_HORIZ_FREQ, -1);
             StringCbPrintf(szText, sizeof(szText),
                            L"%u - %u kHz",
                            Block[7], Block[8]);
             IoSetItemText(ItemIndex, 1, szText);
 
-            ItemIndex = IoAddValueName(IDS_DISPLAY_VERT_FREQ, -1);
+            ItemIndex = IoAddValueName(0, IDS_DISPLAY_VERT_FREQ, -1);
             StringCbPrintf(szText, sizeof(szText),
                            L"%u - %u Hz",
                            Block[5], Block[6]);
@@ -482,14 +482,14 @@ ParseAndShowEDID(BYTE *Edid)
     }
 
     /* Gamma */
-    ItemIndex = IoAddValueName(IDS_DISPLAY_GAMMA, -1);
+    ItemIndex = IoAddValueName(0, IDS_DISPLAY_GAMMA, -1);
     StringCbPrintf(szText, sizeof(szText), L"%.1f",
                    (double)(((double)Edid[23] / 100.0) + 1.0));
     IoSetItemText(ItemIndex, 1, szText);
 
     /* DPMS Mode Support */
     szText[0] = 0;
-    ItemIndex = IoAddValueName(IDS_DISPLAY_DPMS_MODE, -1);
+    ItemIndex = IoAddValueName(0, IDS_DISPLAY_DPMS_MODE, -1);
     if ((Edid[DPMS_FLAGS] & DPMS_ACTIVE_OFF))
         StringCbCat(szText, sizeof(szText), L"Active-Off, ");
     if (Edid[DPMS_FLAGS] & DPMS_SUSPEND)
@@ -503,7 +503,7 @@ ParseAndShowEDID(BYTE *Edid)
     IoSetItemText(ItemIndex, 1, szText);
 
     /* EDID Version */
-    ItemIndex = IoAddValueName(IDS_DISPLAY_EDID_VERSION, -1);
+    ItemIndex = IoAddValueName(0, IDS_DISPLAY_EDID_VERSION, -1);
     StringCbPrintf(szText, sizeof(szText), L"%d.%d",
                    (INT)Edid[EDID_STRUCT_VERSION],
                    (INT)Edid[EDID_STRUCT_REVISION]);
@@ -599,14 +599,14 @@ HW_WinVideoInfo(VOID)
         ZeroMemory(&DispDevice2, sizeof(DISPLAY_DEVICE));
         DispDevice2.cb = sizeof(DISPLAY_DEVICE);
         if (!EnumDisplayDevices(DispDevice.DeviceName, 0, &DispDevice2, 0))
-            IoAddHeaderString(L"Mirror Monitor", 0);
+            IoAddHeaderString(0, L"Mirror Monitor", 0);
         else
-            IoAddHeaderString(DispDevice2.DeviceString, 0);
+            IoAddHeaderString(0, DispDevice2.DeviceString, 0);
 
         /* Adapter name */
         if (SafeStrLen(DispDevice.DeviceString) > 0)
         {
-            Index = IoAddValueName(IDS_MONITOR_ADAPTER, -1);
+            Index = IoAddValueName(0, IDS_MONITOR_ADAPTER, -1);
             IoSetItemText(Index, 1, DispDevice.DeviceString);
         }
 
@@ -617,7 +617,7 @@ HW_WinVideoInfo(VOID)
                                   szText, MAX_STR_LEN) &&
             SafeStrLen(szText) > 0)
         {
-            Index = IoAddValueName(IDS_MONITOR_CHIP_TYPE, -1);
+            Index = IoAddValueName(0, IDS_MONITOR_CHIP_TYPE, -1);
             IoSetItemText(Index, 1, szText);
         }
 
@@ -628,7 +628,7 @@ HW_WinVideoInfo(VOID)
                                   szText, MAX_STR_LEN) &&
             SafeStrLen(szText) > 0)
         {
-            Index = IoAddValueName(IDS_MONITOR_DAC_TYPE, -1);
+            Index = IoAddValueName(0, IDS_MONITOR_DAC_TYPE, -1);
             IoSetItemText(Index, 1, szText);
         }
 
@@ -640,14 +640,14 @@ HW_WinVideoInfo(VOID)
                                   sizeof(dwValue)) &&
             dwValue > 0)
         {
-            Index = IoAddValueName(IDS_MONITOR_MEM_SIZE, -1);
+            Index = IoAddValueName(0, IDS_MONITOR_MEM_SIZE, -1);
             StringCbPrintf(szText, sizeof(szText), L"%ld MB",
                            dwValue / (1024 * 1024));
             IoSetItemText(Index, 1, szText);
         }
 
         /* retrieve current display mode */
-        Index = IoAddValueName(IDS_MONITOR_MODE, -1);
+        Index = IoAddValueName(0, IDS_MONITOR_MODE, -1);
         DevMode.dmSize = sizeof(DEVMODE);
         if (EnumDisplaySettings(DispDevice.DeviceName,
                                 ENUM_CURRENT_SETTINGS,
@@ -685,7 +685,7 @@ HW_WinVideoInfo(VOID)
                                                  sizeof(szText),
                                                  NULL))
             {
-                Index = IoAddValueName(IDS_MONITOR_DRIVER_VENDOR, -1);
+                Index = IoAddValueName(0, IDS_MONITOR_DRIVER_VENDOR, -1);
                 IoSetItemText(Index, 1, szText);
             }
         }
@@ -712,11 +712,11 @@ HW_PowerInfo(VOID)
     IoAddIcon(IDI_POWERICO);
     IoAddIcon(IDI_BATTERY);
 
-    IoAddHeader(IDS_POWER_MANAGMT_PROP, 0);
+    IoAddHeader(0, IDS_POWER_MANAGMT_PROP, 0);
 
     if (GetSystemPowerStatus(&PowerStatus))
     {
-        Index = IoAddValueName(IDS_CURRENT_POWER_SOURCE, -1);
+        Index = IoAddValueName(0, IDS_CURRENT_POWER_SOURCE, -1);
         switch (PowerStatus.ACLineStatus)
         {
             case 0:
@@ -732,7 +732,7 @@ HW_PowerInfo(VOID)
         LoadMUIString(StringID, szText, MAX_STR_LEN);
         IoSetItemText(Index, 1, szText);
 
-        Index = IoAddValueName(IDS_BATTERY_STATUS, -1);
+        Index = IoAddValueName(0, IDS_BATTERY_STATUS, -1);
         switch (PowerStatus.BatteryFlag)
         {
             case 1:
@@ -767,7 +767,7 @@ HW_PowerInfo(VOID)
             IoSetItemText(Index, 1, szResult);
         }
 
-        Index = IoAddValueName(IDS_FULL_BATTERY_LIFETIME, -1);
+        Index = IoAddValueName(0, IDS_FULL_BATTERY_LIFETIME, -1);
         if (PowerStatus.BatteryFullLifeTime != -1)
         {
             ConvertSecondsToString(PowerStatus.BatteryFullLifeTime,
@@ -780,7 +780,7 @@ HW_PowerInfo(VOID)
         }
         IoSetItemText(Index, 1, szText);
 
-        Index = IoAddValueName(IDS_REMAINING_BAT_LIFETIME, -1);
+        Index = IoAddValueName(0, IDS_REMAINING_BAT_LIFETIME, -1);
         if (PowerStatus.BatteryLifeTime != -1)
         {
             ConvertSecondsToString(PowerStatus.BatteryLifeTime,
@@ -800,7 +800,7 @@ HW_PowerInfo(VOID)
     }
     IoAddFooter();
 
-    IoAddHeader(IDS_BAT_BATTERYS, 1);
+    IoAddHeader(0, IDS_BAT_BATTERYS, 1);
     GetBatteryInformation();
 
     DebugEndReceiving();
@@ -845,10 +845,10 @@ EnumPrintersInfo(DWORD dwFlag)
         pDevMode = pPrinterInfo[dwIndex].pDevMode;
 
         /* Printer name */
-        IoAddHeaderString(pPrinterInfo[dwIndex].pPrinterName, 0);
+        IoAddHeaderString(0, pPrinterInfo[dwIndex].pPrinterName, 0);
 
         /* Default? */
-        Index = IoAddValueName(IDS_PRINTER_DEFAULT, -1);
+        Index = IoAddValueName(0, IDS_PRINTER_DEFAULT, -1);
         if (SafeStrCmp(szDefPrinter, pPrinterInfo[dwIndex].pPrinterName) == 0)
             LoadMUIString(IDS_YES, szText, MAX_STR_LEN);
         else
@@ -857,7 +857,7 @@ EnumPrintersInfo(DWORD dwFlag)
         IoSetItemText(Index, 1, szText);
 
         /* Shared? */
-        Index = IoAddValueName(IDS_PRINTER_SHARED, -1);
+        Index = IoAddValueName(0, IDS_PRINTER_SHARED, -1);
         if (pPrinterInfo[dwIndex].Attributes & PRINTER_ATTRIBUTE_SHARED)
             LoadMUIString(IDS_YES, szText, MAX_STR_LEN);
         else
@@ -868,39 +868,39 @@ EnumPrintersInfo(DWORD dwFlag)
         /* Share name */
         if (SafeStrLen(pPrinterInfo[dwIndex].pShareName) > 1)
         {
-            Index = IoAddValueName(IDS_PRINTER_SHARENAME, -1);
+            Index = IoAddValueName(0, IDS_PRINTER_SHARENAME, -1);
             IoSetItemText(Index, 1, pPrinterInfo[dwIndex].pShareName);
         }
 
         /* Port name */
         if (SafeStrLen(pPrinterInfo[dwIndex].pPortName) > 1)
         {
-            Index = IoAddValueName(IDS_PRINTER_PORT, -1);
+            Index = IoAddValueName(0, IDS_PRINTER_PORT, -1);
             IoSetItemText(Index, 1, pPrinterInfo[dwIndex].pPortName);
         }
 
         /* Driver name */
         if (SafeStrLen(pPrinterInfo[dwIndex].pDriverName) > 1)
         {
-            Index = IoAddValueName(IDS_PRINTER_DRIVER, -1);
+            Index = IoAddValueName(0, IDS_PRINTER_DRIVER, -1);
             IoSetItemText(Index, 1, pPrinterInfo[dwIndex].pDriverName);
         }
 
         /* Device name */
-        Index = IoAddValueName(IDS_PRINTER_DEVICENAME, -1);
+        Index = IoAddValueName(0, IDS_PRINTER_DEVICENAME, -1);
         IoSetItemText(Index, 1, pDevMode->dmDeviceName);
 
         /* Print processor */
         if (SafeStrLen(pPrinterInfo[dwIndex].pPrintProcessor) > 1)
         {
-            Index = IoAddValueName(IDS_PRINTER_PROCESSOR, -1);
+            Index = IoAddValueName(0, IDS_PRINTER_PROCESSOR, -1);
             IoSetItemText(Index, 1, pPrinterInfo[dwIndex].pPrintProcessor);
         }
 
         /* Data type */
         if (SafeStrLen(pPrinterInfo[dwIndex].pDatatype) > 1)
         {
-            Index = IoAddValueName(IDS_PRINTER_DATATYPE, -1);
+            Index = IoAddValueName(0, IDS_PRINTER_DATATYPE, -1);
             IoSetItemText(Index, 1, pPrinterInfo[dwIndex].pDatatype);
         }
 
@@ -908,46 +908,46 @@ EnumPrintersInfo(DWORD dwFlag)
         if (pPrinterInfo[dwIndex].pServerName &&
             SafeStrLen(pPrinterInfo[dwIndex].pServerName) > 1)
         {
-            Index = IoAddValueName(IDS_PRINTER_SERVER, -1);
+            Index = IoAddValueName(0, IDS_PRINTER_SERVER, -1);
             IoSetItemText(Index, 1, pPrinterInfo[dwIndex].pServerName);
         }
 
         /* Location */
         if (SafeStrLen(pPrinterInfo[dwIndex].pLocation) > 1)
         {
-            Index = IoAddValueName(IDS_PRINTER_LOCATION, -1);
+            Index = IoAddValueName(0, IDS_PRINTER_LOCATION, -1);
             IoSetItemText(Index, 1, pPrinterInfo[dwIndex].pLocation);
         }
 
         /* Comment */
         if (SafeStrLen(pPrinterInfo[dwIndex].pComment) > 1)
         {
-            Index = IoAddValueName(IDS_PRINTER_COMMENT, -1);
+            Index = IoAddValueName(0, IDS_PRINTER_COMMENT, -1);
             IoSetItemText(Index, 1, pPrinterInfo[dwIndex].pComment);
         }
 
         /* Jobs count */
-        Index = IoAddValueName(IDS_PRINTER_JOBS_COUNT, -1);
+        Index = IoAddValueName(0, IDS_PRINTER_JOBS_COUNT, -1);
         StringCbPrintf(szText, sizeof(szText), L"%d",
                        pPrinterInfo[dwIndex].cJobs);
         IoSetItemText(Index, 1, szText);
 
         /* Paper size */
-        Index = IoAddValueName(IDS_PRINTER_PAPER_SIZE, -1);
+        Index = IoAddValueName(0, IDS_PRINTER_PAPER_SIZE, -1);
         StringCbPrintf(szText, sizeof(szText), L"%ld x %ld mm",
                        pDevMode->dmPaperWidth / 10,
                        pDevMode->dmPaperLength / 10);
         IoSetItemText(Index, 1, szText);
 
         /* Quality */
-        Index = IoAddValueName(IDS_PRINTER_QUALITY, -1);
+        Index = IoAddValueName(0, IDS_PRINTER_QUALITY, -1);
         StringCbPrintf(szText, sizeof(szText), L"%ld x %ld dpi",
                        pDevMode->dmPrintQuality,
                        pDevMode->dmPrintQuality);
         IoSetItemText(Index, 1, szText);
 
         /* Orientation */
-        Index = IoAddValueName(IDS_PRINTER_ORIENTATION, -1);
+        Index = IoAddValueName(0, IDS_PRINTER_ORIENTATION, -1);
         if (pDevMode->dmOrientation == DMORIENT_PORTRAIT)
             LoadMUIString(IDS_PRINTER_PORTRAIT, szText, MAX_STR_LEN);
         else

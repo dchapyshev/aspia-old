@@ -30,7 +30,7 @@ ShowRegInfo(UINT StringID, LPWSTR lpszKeyName)
 
     if (SafeStrLen(szText) > 0)
     {
-        Index = IoAddValueName(StringID, -1);
+        Index = IoAddValueName(0, StringID, -1);
         IoSetItemText(Index, 1, szText);
     }
 }
@@ -50,7 +50,7 @@ ShowInstallDate(VOID)
     {
         if (TimeToString((time_t)dwInstallDate, szText, sizeof(szText)))
         {
-            Index = IoAddValueName(IDS_OS_INSTALL_DATE, -1);
+            Index = IoAddValueName(0, IDS_OS_INSTALL_DATE, -1);
             IoSetItemText(Index, 1, szText);
         }
     }
@@ -65,10 +65,10 @@ OS_RegInformation(VOID)
     DebugStartReceiving();
 
     IoAddIcon(IDI_COMPUTER);
-    IoAddHeader(IDS_CAT_OS_REGDATA, 0);
+    IoAddHeader(0, IDS_CAT_OS_REGDATA, 0);
 
     /* Product Key */
-    Index = IoAddValueName(IDS_PRODUCT_KEY, -1);
+    Index = IoAddValueName(0, IDS_PRODUCT_KEY, -1);
     GetMSProductKey(FALSE,
                     "SOFTWARE\\MICROSOFT\\Windows NT\\CurrentVersion",
                     szText, MAX_STR_LEN);
@@ -132,7 +132,7 @@ OS_UsersInfo(VOID)
         {
             __try
             {
-                Index = IoAddItem((pBuffer[i].usri3_flags & UF_ACCOUNTDISABLE) ? 1 : 0,
+                Index = IoAddItem(0, (pBuffer[i].usri3_flags & UF_ACCOUNTDISABLE) ? 1 : 0,
                                   pBuffer[i].usri3_name);
 
                 IoSetItemText(Index, 1, pBuffer[i].usri3_full_name);
@@ -206,7 +206,7 @@ OS_UsersGroupsInfo(VOID)
         {
             __try
             {
-                Index = IoAddItem(0, pBuffer[i].lgrpi1_name);
+                Index = IoAddItem(0, 0, pBuffer[i].lgrpi1_name);
                 IoSetItemText(Index, 1, pBuffer[i].lgrpi1_comment);
             }
             __except(EXCEPTION_EXECUTE_HANDLER)
@@ -259,7 +259,7 @@ OS_ActiveUsersInfo(VOID)
         }
 
         /* User Name */
-        ItemIndex = IoAddItem(0, lpUserName);
+        ItemIndex = IoAddItem(0, 0, lpUserName);
 
         /* Domain */
         if (WTSQuerySessionInformation(WTS_CURRENT_SERVER_HANDLE,
@@ -407,7 +407,7 @@ OS_FontsInfo(VOID)
         dwSize = sizeof(szText);
         GetFontResourceInfo(FindFileData.cFileName, &dwSize, szText, 1);
 
-        Index = IoAddItem(0, szText);
+        Index = IoAddItem(0, 0, szText);
         IoSetItemText(Index, 1, FindFileData.cFileName);
 
         StringCbPrintf(szSize, sizeof(szSize), L"%ld KB",
@@ -460,7 +460,7 @@ AutorunShowRegPath(HKEY hRootKey, LPWSTR lpszPath)
 
         if (SafeStrLen(szName) >= 1)
         {
-            Index = IoAddItem(-1, szName);
+            Index = IoAddItem(0, -1, szName);
             IoSetItemText(Index, 1, szPath);
             ++Count;
         }
@@ -470,7 +470,7 @@ None:
     if (!Count)
     {
         LoadMUIString(IDS_NONE, szPath, MAX_PATH);
-        Index = IoAddItem(-1, szPath);
+        Index = IoAddItem(0, -1, szPath);
         IoSetItemText(Index, 1, L"\0");
     }
 
@@ -569,7 +569,7 @@ AutorunShowFolderContent(LPWSTR lpszPath)
             if (wcscmp(FindFileData.cFileName, L"desktop.ini") == 0)
                 continue;
 
-            Index = IoAddItem(-1, FindFileData.cFileName);
+            Index = IoAddItem(0, -1, FindFileData.cFileName);
 
             StringCbCopy(szFilePath, sizeof(szFilePath), lpszPath);
             StringCbCat(szFilePath, sizeof(szFilePath), L"\\");
@@ -585,7 +585,7 @@ AutorunShowFolderContent(LPWSTR lpszPath)
     if (!Count)
     {
         LoadMUIString(IDS_NONE, szPath, MAX_PATH);
-        Index = IoAddItem(-1, szPath);
+        Index = IoAddItem(0, -1, szPath);
         IoSetItemText(Index, 1, L"\0");
     }
 
@@ -604,49 +604,49 @@ OS_AutorunInfo(VOID)
     IoAddIcon(IDI_FOLDER);
 
     /* HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run */
-    IoAddHeaderString(L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", 0);
+    IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", 0);
     AutorunShowRegPath(HKEY_LOCAL_MACHINE,
                        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
 
     IoAddFooter();
 
     /* HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce */
-    IoAddHeaderString(L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce", 0);
+    IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce", 0);
     AutorunShowRegPath(HKEY_LOCAL_MACHINE,
                        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce");
 
     IoAddFooter();
 
     /* HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnceEx */
-    IoAddHeaderString(L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx", 0);
+    IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx", 0);
     AutorunShowRegPath(HKEY_LOCAL_MACHINE,
                        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx");
 
     IoAddFooter();
 
     /* HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\RunServices */
-    IoAddHeaderString(L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServices", 0);
+    IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServices", 0);
     AutorunShowRegPath(HKEY_LOCAL_MACHINE,
                        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServices");
 
     IoAddFooter();
 
     /* HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\RunServicesOnce */
-    IoAddHeaderString(L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce", 0);
+    IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce", 0);
     AutorunShowRegPath(HKEY_LOCAL_MACHINE,
                        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce");
 
     IoAddFooter();
 
     /* HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run */
-    IoAddHeaderString(L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", 0);
+    IoAddHeaderString(0, L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", 0);
     AutorunShowRegPath(HKEY_CURRENT_USER,
                        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
 
     IoAddFooter();
 
     /* HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce */
-    IoAddHeaderString(L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce", 0);
+    IoAddHeaderString(0, L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce", 0);
     AutorunShowRegPath(HKEY_CURRENT_USER,
                        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce");
 
@@ -654,37 +654,37 @@ OS_AutorunInfo(VOID)
 
     /* Autorun folder for all users */
     SHGetSpecialFolderPath(hMainWnd, szPath, CSIDL_COMMON_STARTUP, FALSE);
-    IoAddHeaderString(szPath, 1);
+    IoAddHeaderString(0, szPath, 1);
     AutorunShowFolderContent(szPath);
 
     IoAddFooter();
 
     /* Autorun folder for current user */
     SHGetSpecialFolderPath(hMainWnd, szPath, CSIDL_STARTUP, FALSE);
-    IoAddHeaderString(szPath, 1);
+    IoAddHeaderString(0, szPath, 1);
     AutorunShowFolderContent(szPath);
 
     IoAddFooter();
 
     /* HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Polices\Explorer\Run */
-    IoAddHeaderString(L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run", 0);
+    IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run", 0);
     AutorunShowRegPath(HKEY_LOCAL_MACHINE,
                        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run");
 
     IoAddFooter();
 
     /* HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Polices\Explorer\Run */
-    IoAddHeaderString(L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run", 0);
+    IoAddHeaderString(0, L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run", 0);
     AutorunShowRegPath(HKEY_CURRENT_USER,
                        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run");
 
     IoAddFooter();
 
     /* HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon */
-    IoAddHeaderString(L"HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", 0);
+    IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", 0);
 
     /* winlogon shell for all users */
-    Index = IoAddItem(-1, L"Shell");
+    Index = IoAddItem(0, -1, L"Shell");
     GetStringFromRegistry(HKEY_LOCAL_MACHINE,
                           L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon",
                           L"Shell",
@@ -693,7 +693,7 @@ OS_AutorunInfo(VOID)
     IoSetItemText(Index, 1, szPath);
 
     /* winlogon userinit for all users */
-    Index = IoAddItem(-1, L"Userinit");
+    Index = IoAddItem(0, -1, L"Userinit");
     GetStringFromRegistry(HKEY_LOCAL_MACHINE,
                           L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon",
                           L"Userinit",
@@ -704,10 +704,10 @@ OS_AutorunInfo(VOID)
     IoAddFooter();
 
     /* HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon */
-    IoAddHeaderString(L"HKCU\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", 0);
+    IoAddHeaderString(0, L"HKCU\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", 0);
 
     /* winlogon shell for current user */
-    Index = IoAddItem(-1, L"Shell");
+    Index = IoAddItem(0, -1, L"Shell");
     if (GetStringFromRegistry(HKEY_CURRENT_USER,
                               L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon",
                               L"Shell",
@@ -792,7 +792,7 @@ AddFolderInfoToListView(UINT uiNameID, INT nFolder)
                                           hIcon);
         }
 
-        Index = IoAddValueName(uiNameID, IconIndex);
+        Index = IoAddValueName(0, uiNameID, IconIndex);
         IoSetItemText(Index, 1, szPath);
 
         if (IoGetTarget() == IO_TARGET_LISTVIEW)
@@ -818,7 +818,7 @@ OS_SysFoldersInfo(VOID)
     }
     while (ShellFolders[++Index].NameIndex != 0);
 
-    ItemIndex = IoAddValueName(IDS_DIR_TEMP, 0);
+    ItemIndex = IoAddValueName(0, IDS_DIR_TEMP, 0);
     ExpandEnvironmentStrings(L"%TEMP%", szText, MAX_STR_LEN);
     IoSetItemText(ItemIndex, 1, szText);
 
@@ -914,7 +914,7 @@ EnumEnvironmentVariables(HKEY hRootKey,
 
         ExpandEnvironmentStrings(lpData, lpExpandData, 2048);
 
-        ItemIndex = IoAddItem(0, lpName);
+        ItemIndex = IoAddItem(0, 0, lpName);
         IoSetItemText(ItemIndex, 1, lpExpandData);
     }
 
@@ -940,23 +940,23 @@ OS_EnvironInfo(VOID)
     EnumEnvironmentVariables(HKEY_LOCAL_MACHINE,
                              L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment");
 
-    Index = IoAddItem(0, L"ALLUSERSPROFILE");
+    Index = IoAddItem(0, 0, L"ALLUSERSPROFILE");
     ExpandEnvironmentStrings(L"%ALLUSERSPROFILE%", szText, MAX_STR_LEN);
     IoSetItemText(Index, 1, szText);
 
-    Index = IoAddItem(0, L"APPDATA");
+    Index = IoAddItem(0, 0, L"APPDATA");
     ExpandEnvironmentStrings(L"%APPDATA%", szText, MAX_STR_LEN);
     IoSetItemText(Index, 1, szText);
 
-    Index = IoAddItem(0, L"COMPUTERNAME");
+    Index = IoAddItem(0, 0, L"COMPUTERNAME");
     ExpandEnvironmentStrings(L"%COMPUTERNAME%", szText, MAX_STR_LEN);
     IoSetItemText(Index, 1, szText);
 
-    Index = IoAddItem(0, L"HOMEPATH");
+    Index = IoAddItem(0, 0, L"HOMEPATH");
     ExpandEnvironmentStrings(L"%HOMEPATH%", szText, MAX_STR_LEN);
     IoSetItemText(Index, 1, szText);
 
-    Index = IoAddItem(0, L"LOCALAPPDATA");
+    Index = IoAddItem(0, 0, L"LOCALAPPDATA");
     ExpandEnvironmentStrings(L"%LOCALAPPDATA%", szText, MAX_STR_LEN);
     IoSetItemText(Index, 1, szText);
 
@@ -996,10 +996,10 @@ OS_DesktopInfo(VOID)
         return;
 
     /* DESKTOP */
-    IoAddHeader(IDS_CAT_OS_DESKTOP, 0);
+    IoAddHeader(0, IDS_CAT_OS_DESKTOP, 0);
 
     /* Resolution */
-    Index = IoAddValueName(IDS_DESK_RESOLUTION, -1);
+    Index = IoAddValueName(0, IDS_DESK_RESOLUTION, -1);
     StringCbPrintf(szText, sizeof(szText),
                    L"%ld x %ld",
                    DevMode.dmPelsWidth,
@@ -1007,7 +1007,7 @@ OS_DesktopInfo(VOID)
     IoSetItemText(Index, 1, szText);
 
     /* Color depth */
-    Index = IoAddValueName(IDS_DESK_COLOR_DEPTH, -1);
+    Index = IoAddValueName(0, IDS_DESK_COLOR_DEPTH, -1);
     StringCbPrintf(szText, sizeof(szText),
                    L"%ld bit",
                    DevMode.dmBitsPerPel);
@@ -1017,7 +1017,7 @@ OS_DesktopInfo(VOID)
     // TODO
 
     /* Refresh rate */
-    Index = IoAddValueName(IDS_DESK_REFRESH_RATE, -1);
+    Index = IoAddValueName(0, IDS_DESK_REFRESH_RATE, -1);
     StringCbPrintf(szText, sizeof(szText),
                    L"%ld Hz",
                    DevMode.dmDisplayFrequency);
@@ -1030,7 +1030,7 @@ OS_DesktopInfo(VOID)
                               szText,
                               MAX_STR_LEN))
     {
-        Index = IoAddValueName(IDS_DESK_WALLPAPER, -1);
+        Index = IoAddValueName(0, IDS_DESK_WALLPAPER, -1);
         IoSetItemText(Index, 1, szText);
     }
 
@@ -1039,7 +1039,7 @@ OS_DesktopInfo(VOID)
     {
         UINT Type;
 
-        Index = IoAddValueName(IDS_DESK_FONT_SMOOTHING, -1);
+        Index = IoAddValueName(0, IDS_DESK_FONT_SMOOTHING, -1);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
 
         /* Smoothing type */
@@ -1047,7 +1047,7 @@ OS_DesktopInfo(VOID)
         {
             UINT StringID = IDS_SMOOTHING_STANDARD;
 
-            Index = IoAddValueName(IDS_DESK_FONT_SMOOTHING_TYPE, -1);
+            Index = IoAddValueName(0, IDS_DESK_FONT_SMOOTHING_TYPE, -1);
             if (Type == FE_FONTSMOOTHINGCLEARTYPE)
                 StringID = IDS_SMOOTHING_CLEARTYPE;
 
@@ -1059,12 +1059,12 @@ OS_DesktopInfo(VOID)
     IoAddFooter();
 
     /* MOUSE */
-    IoAddHeader(IDS_DESK_MOUSE, 1);
+    IoAddHeader(0, IDS_DESK_MOUSE, 1);
 
     /* Speed */
     if (SystemParametersInfo(SPI_GETMOUSESPEED, 0, &IntParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_MOUSE_SPEED, -1);
+        Index = IoAddValueName(0, IDS_DESK_MOUSE_SPEED, -1);
         StringCbPrintf(szText, sizeof(szText), L"%d", IntParam);
         IoSetItemText(Index, 1, szText);
     }
@@ -1072,14 +1072,14 @@ OS_DesktopInfo(VOID)
     /* Trails */
     if (SystemParametersInfo(SPI_GETMOUSETRAILS, 0, &IntParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_MOUSE_TRAILS, -1);
+        Index = IoAddValueName(0, IDS_DESK_MOUSE_TRAILS, -1);
         IoSetItemText(Index, 1, IntParam ? szYes : szNo);
     }
 
     /* Scroll lines */
     if (SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &UintParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_WHELL_SCROLL_LINES, -1);
+        Index = IoAddValueName(0, IDS_DESK_WHELL_SCROLL_LINES, -1);
         StringCbPrintf(szText, sizeof(szText), L"%ld", UintParam);
         IoSetItemText(Index, 1, szText);
     }
@@ -1087,12 +1087,12 @@ OS_DesktopInfo(VOID)
     IoAddFooter();
 
     /* KEYBOARD */
-    IoAddHeader(IDS_DESK_KEYBOARD, 2);
+    IoAddHeader(0, IDS_DESK_KEYBOARD, 2);
 
     /* Speed */
     if (SystemParametersInfo(SPI_GETKEYBOARDSPEED, 0, &DwordParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_KEYBOARD_SPEED, -1);
+        Index = IoAddValueName(0, IDS_DESK_KEYBOARD_SPEED, -1);
         StringCbPrintf(szText, sizeof(szText), L"%ld", DwordParam);
         IoSetItemText(Index, 1, szText);
     }
@@ -1100,7 +1100,7 @@ OS_DesktopInfo(VOID)
     /* Delay */
     if (SystemParametersInfo(SPI_GETKEYBOARDDELAY, 0, &IntParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_KEYBOARD_DELAY, -1);
+        Index = IoAddValueName(0, IDS_DESK_KEYBOARD_DELAY, -1);
         StringCbPrintf(szText, sizeof(szText), L"%ld", IntParam);
         IoSetItemText(Index, 1, szText);
     }
@@ -1108,67 +1108,67 @@ OS_DesktopInfo(VOID)
     IoAddFooter();
 
     /* UI EFFECTS */
-    IoAddHeader(IDS_DESK_UI_EFFECTS, 3);
+    IoAddHeader(0, IDS_DESK_UI_EFFECTS, 3);
 
     /* Combobox animation */
     if (SystemParametersInfo(SPI_GETCOMBOBOXANIMATION, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_COMBOBOX_ANIMATION, -1);
+        Index = IoAddValueName(0, IDS_DESK_COMBOBOX_ANIMATION, -1);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
     /* Cursor shadow */
     if (SystemParametersInfo(SPI_GETCURSORSHADOW, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_CURSOR_SHADOW, -1);
+        Index = IoAddValueName(0, IDS_DESK_CURSOR_SHADOW, -1);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
     /* Gradient captions */
     if (SystemParametersInfo(SPI_GETGRADIENTCAPTIONS, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_GRADIENT_CAPTIONS, -1);
+        Index = IoAddValueName(0, IDS_DESK_GRADIENT_CAPTIONS, -1);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
     /* Listbox smooth scrolling */
     if (SystemParametersInfo(SPI_GETLISTBOXSMOOTHSCROLLING, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_LISTBOXSMOOTHSCROLLING, -1);
+        Index = IoAddValueName(0, IDS_DESK_LISTBOXSMOOTHSCROLLING, -1);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
     /* Menu animation */
     if (SystemParametersInfo(SPI_GETMENUANIMATION, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_MENUANIMATION, -1);
+        Index = IoAddValueName(0, IDS_DESK_MENUANIMATION, -1);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
     /* Tooltip animation */
     if (SystemParametersInfo(SPI_GETTOOLTIPANIMATION, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_TOOLTIPANIMATION, -1);
+        Index = IoAddValueName(0, IDS_DESK_TOOLTIPANIMATION, -1);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
     IoAddFooter();
 
     /* WINDOW */
-    IoAddHeader(IDS_DESK_WINDOW, 4);
+    IoAddHeader(0, IDS_DESK_WINDOW, 4);
 
     /* Window animation */
     AnimationInfo.cbSize = sizeof(ANIMATIONINFO);
     if (SystemParametersInfo(SPI_GETANIMATION, sizeof(ANIMATIONINFO), &AnimationInfo, 0))
     {
-        Index = IoAddValueName(IDS_DESK_WND_ANIMATION, -1);
+        Index = IoAddValueName(0, IDS_DESK_WND_ANIMATION, -1);
         IoSetItemText(Index, 1, AnimationInfo.iMinAnimate ? szYes : szNo);
     }
 
     /* Border */
     if (SystemParametersInfo(SPI_GETBORDER, 0, &IntParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_WND_BORDER, -1);
+        Index = IoAddValueName(0, IDS_DESK_WND_BORDER, -1);
         StringCbPrintf(szText, sizeof(szText), L"%ld", IntParam);
         IoSetItemText(Index, 1, szText);
     }
@@ -1176,33 +1176,33 @@ OS_DesktopInfo(VOID)
     /* Drag full */
     if (SystemParametersInfo(SPI_GETDRAGFULLWINDOWS, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_WND_DRAG_FULL, -1);
+        Index = IoAddValueName(0, IDS_DESK_WND_DRAG_FULL, -1);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
     /* Drops shadow */
     if (SystemParametersInfo(SPI_GETDROPSHADOW, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_DROPS_SHADOW, -1);
+        Index = IoAddValueName(0, IDS_DESK_DROPS_SHADOW, -1);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
     IoAddFooter();
 
     /* MENU */
-    IoAddHeader(IDS_DESK_MENU, 5);
+    IoAddHeader(0, IDS_DESK_MENU, 5);
 
     /* Menu animation */
     if (SystemParametersInfo(SPI_GETMENUFADE, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_MENU_FADE_ANIMATION, -1);
+        Index = IoAddValueName(0, IDS_DESK_MENU_FADE_ANIMATION, -1);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
     /* Menu show delay */
     if (SystemParametersInfo(SPI_GETMENUSHOWDELAY, 0, &DwordParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_MENU_SHOW_DELAY, -1);
+        Index = IoAddValueName(0, IDS_DESK_MENU_SHOW_DELAY, -1);
         StringCbPrintf(szText, sizeof(szText), L"%ld", DwordParam);
         IoSetItemText(Index, 1, szText);
     }
@@ -1210,25 +1210,25 @@ OS_DesktopInfo(VOID)
     /* Flat menu */
     if (SystemParametersInfo(SPI_GETFLATMENU, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_FLAT_MENU, -1);
+        Index = IoAddValueName(0, IDS_DESK_FLAT_MENU, -1);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
     }
 
     IoAddFooter();
 
     /* SCREEN SAVER */
-    IoAddHeader(IDS_DESK_SS, 6);
+    IoAddHeader(0, IDS_DESK_SS, 6);
 
     /* Active */
     if (SystemParametersInfo(SPI_GETSCREENSAVEACTIVE, 0, &BoolParam, 0))
     {
-        Index = IoAddValueName(IDS_DESK_SS_ACTIVE, -1);
+        Index = IoAddValueName(0, IDS_DESK_SS_ACTIVE, -1);
         IoSetItemText(Index, 1, BoolParam ? szYes : szNo);
 
         /* Timeout */
         if (BoolParam && SystemParametersInfo(SPI_GETSCREENSAVETIMEOUT, 0, &IntParam, 0))
         {
-            Index = IoAddValueName(IDS_DESK_SS_TIMEOUT, -1);
+            Index = IoAddValueName(0, IDS_DESK_SS_TIMEOUT, -1);
             StringCbPrintf(szText, sizeof(szText), L"%ld", IntParam);
             IoSetItemText(Index, 1, szText);
         }
@@ -1286,7 +1286,7 @@ OS_TaskSchedulerInfo(VOID)
         while (dwFetchedTasks)
         {
             /* Task name */
-            Index = IoAddHeaderString(lpszNames[--dwFetchedTasks], 0);
+            Index = IoAddHeaderString(0, lpszNames[--dwFetchedTasks], 0);
 
             hr = pITS->lpVtbl->Activate(pITS,
                                         lpszNames[dwFetchedTasks],
@@ -1304,7 +1304,7 @@ OS_TaskSchedulerInfo(VOID)
             {
                 UINT StatusID;
 
-                Index = IoAddValueName(IDS_STATUS, -1);
+                Index = IoAddValueName(0, IDS_STATUS, -1);
                 switch (Status)
                 {
                     case SCHED_S_TASK_READY:
@@ -1340,7 +1340,7 @@ OS_TaskSchedulerInfo(VOID)
             hr = pITask->lpVtbl->GetApplicationName(pITask, &lpszText);
             if (SUCCEEDED(hr))
             {
-                Index = IoAddValueName(IDS_TASK_APP_NAME, -1);
+                Index = IoAddValueName(0, IDS_TASK_APP_NAME, -1);
                 IoSetItemText(Index, 1, lpszText);
                 CoTaskMemFree(lpszText);
             }
@@ -1349,7 +1349,7 @@ OS_TaskSchedulerInfo(VOID)
             hr = pITask->lpVtbl->GetParameters(pITask, &lpszText);
             if (SUCCEEDED(hr))
             {
-                Index = IoAddValueName(IDS_TASK_APP_PARAMS, -1);
+                Index = IoAddValueName(0, IDS_TASK_APP_PARAMS, -1);
                 IoSetItemText(Index, 1, lpszText);
                 CoTaskMemFree(lpszText);
             }
@@ -1358,7 +1358,7 @@ OS_TaskSchedulerInfo(VOID)
             hr = pITask->lpVtbl->GetWorkingDirectory(pITask, &lpszText);
             if (SUCCEEDED(hr))
             {
-                Index = IoAddValueName(IDS_TASK_WORK_DIR, -1);
+                Index = IoAddValueName(0, IDS_TASK_WORK_DIR, -1);
                 IoSetItemText(Index, 1, lpszText);
                 CoTaskMemFree(lpszText);
             }
@@ -1367,7 +1367,7 @@ OS_TaskSchedulerInfo(VOID)
             hr = pITask->lpVtbl->GetComment(pITask, &lpszText);
             if (SUCCEEDED(hr))
             {
-                Index = IoAddValueName(IDS_TASK_COMMENT, -1);
+                Index = IoAddValueName(0, IDS_TASK_COMMENT, -1);
                 IoSetItemText(Index, 1, lpszText);
                 CoTaskMemFree(lpszText);
             }
@@ -1376,7 +1376,7 @@ OS_TaskSchedulerInfo(VOID)
             hr = pITask->lpVtbl->GetAccountInformation(pITask, &lpszText);
             if (SUCCEEDED(hr))
             {
-                Index = IoAddValueName(IDS_TASK_ACCAUNT, -1);
+                Index = IoAddValueName(0, IDS_TASK_ACCAUNT, -1);
                 IoSetItemText(Index, 1, lpszText);
                 CoTaskMemFree(lpszText);
             }
@@ -1385,7 +1385,7 @@ OS_TaskSchedulerInfo(VOID)
             hr = pITask->lpVtbl->GetCreator(pITask, &lpszText);
             if (SUCCEEDED(hr))
             {
-                Index = IoAddValueName(IDS_TASK_CREATOR, -1);
+                Index = IoAddValueName(0, IDS_TASK_CREATOR, -1);
                 IoSetItemText(Index, 1, lpszText);
                 CoTaskMemFree(lpszText);
             }
@@ -1394,7 +1394,7 @@ OS_TaskSchedulerInfo(VOID)
             hr = pITask->lpVtbl->GetMostRecentRunTime(pITask, &stTime);
             if (SUCCEEDED(hr))
             {
-                Index = IoAddValueName(IDS_TASK_LAST_RUN_TIME, -1);
+                Index = IoAddValueName(0, IDS_TASK_LAST_RUN_TIME, -1);
                 StringCbPrintf(szText,
                                sizeof(szText),
                                L"%02u.%02u.%u %u:%02u",
@@ -1410,7 +1410,7 @@ OS_TaskSchedulerInfo(VOID)
             hr = pITask->lpVtbl->GetNextRunTime(pITask, &stTime);
             if (SUCCEEDED(hr))
             {
-                Index = IoAddValueName(IDS_TASK_NEXT_RUN_TIME, -1);
+                Index = IoAddValueName(0, IDS_TASK_NEXT_RUN_TIME, -1);
                 StringCbPrintf(szText,
                                sizeof(szText),
                                L"%02u.%02u.%u %u:%02u",
@@ -1437,7 +1437,7 @@ OS_TaskSchedulerInfo(VOID)
                                   szFormat, MAX_STR_LEN);
                     StringCbPrintf(szText, sizeof(szText),
                                    szFormat, wTriggerIndex + 1);
-                    Index = IoAddItem(-1, szText);
+                    Index = IoAddItem(0, -1, szText);
                     IoSetItemText(Index, 1, lpszText);
                     CoTaskMemFree(lpszText);
                 }
@@ -1481,7 +1481,7 @@ AddPreventItem(UINT ValueName, HKEY hRootKey, LPWSTR lpPath, LPWSTR lpKeyName)
     LoadMUIString(IsAllowed ? IDS_PREV_ALLOWED : IDS_PREV_NOT_ALLOWED,
                   szText, MAX_STR_LEN);
 
-    Index = IoAddValueName(ValueName, IsAllowed ? 0 : 1);
+    Index = IoAddValueName(0, ValueName, IsAllowed ? 0 : 1);
     IoSetItemText(Index, 1, szText);
 }
 
@@ -1497,7 +1497,7 @@ OS_PreventsInfo(VOID)
     IoAddIcon(IDI_REG);
     IoAddIcon(IDI_PREVENT);
 
-    IoAddHeader(IDS_PREV_TOOLS, 2);
+    IoAddHeader(0, IDS_PREV_TOOLS, 2);
 
     AddPreventItem(IDS_PREV_TASKMGR, HKEY_CURRENT_USER,
                    L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
@@ -1513,7 +1513,7 @@ OS_PreventsInfo(VOID)
 
     IoAddFooter();
 
-    IoAddHeader(IDS_PREV_EXPLORER, 3);
+    IoAddHeader(0, IDS_PREV_EXPLORER, 3);
 
     AddPreventItem(IDS_PREV_DESKTOP_ITEMS, HKEY_CURRENT_USER,
                    L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
@@ -1554,7 +1554,7 @@ OS_PreventsInfo(VOID)
 
     IoAddFooter();
 
-    IoAddHeader(IDS_PREV_AUTORUN, 4);
+    IoAddHeader(0, IDS_PREV_AUTORUN, 4);
 
     AddPreventItem(IDS_PREV_HKLM_RUN, HKEY_CURRENT_USER,
                    L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
@@ -1571,7 +1571,7 @@ OS_PreventsInfo(VOID)
 
     IoAddFooter();
 
-    IoAddHeader(IDS_PREV_OTHER, 5);
+    IoAddHeader(0, IDS_PREV_OTHER, 5);
 
     AddPreventItem(IDS_PREV_DISABLE_GPO, HKEY_LOCAL_MACHINE,
                    L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",

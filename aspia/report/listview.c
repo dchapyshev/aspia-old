@@ -8,14 +8,15 @@
 #include "../main.h"
 
 INT
-ListViewAddItem(INT IconIndex, LPWSTR lpText)
+ListViewAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
 {
     LV_ITEM Item = {0};
 
-    Item.mask = LVIF_TEXT | LVIF_STATE | LVIF_IMAGE;
+    Item.mask = LVIF_TEXT | LVIF_STATE | LVIF_IMAGE | LVIF_INDENT;
     Item.pszText = lpText;
     Item.iItem = ListView_GetItemCount(hListView);
     Item.iImage = IconIndex;
+    Item.iIndent = Indent;
 
     return ListView_InsertItem(hListView, &Item);
 }
@@ -27,16 +28,16 @@ ListViewSetItemText(INT i, INT iSubItem, LPWSTR pszText)
 }
 
 INT
-ListViewAddHeaderString(LPWSTR lpszText, INT IconIndex)
+ListViewAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex)
 {
     LV_ITEM Item = {0};
-    INT Index = 0;
+    INT Index;
 
-    Item.mask = LVIF_TEXT | LVIF_PARAM | LVIF_STATE | LVIF_IMAGE;
+    Item.mask = LVIF_TEXT | LVIF_STATE | LVIF_IMAGE | LVIF_INDENT;
     Item.pszText = lpszText;
-    Item.lParam = (LPARAM)NULL;
     Item.iItem = ListView_GetItemCount(hListView);
     Item.iImage = IconIndex;
+    Item.iIndent = Indent;
 
     Index = ListView_InsertItem(hListView, &Item);
 
@@ -50,13 +51,13 @@ ListViewAddHeader(UINT StringID, INT IconIndex)
     WCHAR szText[MAX_STR_LEN];
 
     LoadMUIString(StringID, szText, MAX_STR_LEN);
-    ListViewAddHeaderString(szText, IconIndex);
+    ListViewAddHeaderString(0, szText, IconIndex);
 }
 
 INT
 ListViewAddValueName(LPWSTR lpszName, INT IconIndex)
 {
-    return ListViewAddItem(IconIndex, lpszName);
+    return ListViewAddItem(0, IconIndex, lpszName);
 }
 
 INT

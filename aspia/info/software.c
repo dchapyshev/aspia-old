@@ -125,7 +125,7 @@ EnumInstalledAppProc(LPWSTR lpName, HKEY hAppKey)
     SIZE_T TextSize = sizeof(szText);
     INT Index;
 
-    Index = IoAddItem(0, lpName);
+    Index = IoAddItem(0, 0, lpName);
 
     /* Get version info */
     GetApplicationString(hAppKey,
@@ -188,7 +188,7 @@ EnumInstalledUpdProc(LPWSTR lpName, HKEY hAppKey)
     SIZE_T TextSize = sizeof(szText);
     INT Index;
 
-    Index = IoAddItem(0, lpName);
+    Index = IoAddItem(0, 0, lpName);
 
     /* Get URL update info */
     GetApplicationString(hAppKey,
@@ -281,7 +281,7 @@ SOFTWARE_TaskMgr(VOID)
             IconIndex = IoAddIcon(IDI_APPS);
         }
 
-        Index = IoAddItem(IconIndex, pe32.szExeFile);
+        Index = IoAddItem(0, IconIndex, pe32.szExeFile);
 
         IoSetItemText(Index, 1,
                       (SafeStrLen(szFilePath) > 0) ? szFilePath : L"-");
@@ -355,7 +355,7 @@ SOFTWARE_LicensesInfo(VOID)
                         "SOFTWARE\\MICROSOFT\\Windows NT\\CurrentVersion",
                         szText, sizeof(szText)/sizeof(WCHAR)))
     {
-        Index = IoAddItem(0, L"Microsoft Windows");
+        Index = IoAddItem(0, 0, L"Microsoft Windows");
         IoSetItemText(Index, 1, szText);
     }
 
@@ -364,7 +364,7 @@ SOFTWARE_LicensesInfo(VOID)
                         "SOFTWARE\\Microsoft\\Office\\14.0\\Registration\\{90140000-0057-0000-0000-0000000FF1CE}",
                         szText, sizeof(szText)/sizeof(WCHAR)))
     {
-        Index = IoAddItem(0, L"Microsoft Office 2010");
+        Index = IoAddItem(0, 0, L"Microsoft Office 2010");
         IoSetItemText(Index, 1, szText);
     }
 
@@ -373,7 +373,7 @@ SOFTWARE_LicensesInfo(VOID)
                         "SOFTWARE\\Microsoft\\Office\\12.0\\Registration\\{90120000-0030-0000-0000-0000000FF1CE}",
                         szText, sizeof(szText)/sizeof(WCHAR)))
     {
-        Index = IoAddItem(0, L"Microsoft Office 2007");
+        Index = IoAddItem(0, 0, L"Microsoft Office 2007");
         IoSetItemText(Index, 1, szText);
     }
 
@@ -382,7 +382,7 @@ SOFTWARE_LicensesInfo(VOID)
                         "SOFTWARE\\Microsoft\\Office\\11.0\\Registration\\{90170409-6000-11D3-8CFE-0150048383C9}",
                         szText, sizeof(szText)/sizeof(WCHAR)))
     {
-        Index = IoAddItem(0, L"Microsoft Office 2003");
+        Index = IoAddItem(0, 0, L"Microsoft Office 2003");
         IoSetItemText(Index, 1, szText);
     }
 
@@ -391,7 +391,7 @@ SOFTWARE_LicensesInfo(VOID)
                         "SOFTWARE\\Microsoft\\Office\\10.0\\Registration\\{90280409-6000-11D3-8CFE-0050048383C9}",
                         szText, sizeof(szText)/sizeof(WCHAR)))
     {
-        Index = IoAddItem(0, L"Microsoft Office XP");
+        Index = IoAddItem(0, 0, L"Microsoft Office XP");
         IoSetItemText(Index, 1, szText);
     }
 
@@ -400,7 +400,7 @@ SOFTWARE_LicensesInfo(VOID)
                         "SOFTWARE\\Microsoft\\Office\\12.0\\Registration\\{90120000-0021-0000-0000-0000000FF1CE}",
                         szText, sizeof(szText)/sizeof(WCHAR)))
     {
-        Index = IoAddItem(0, L"Microsoft Office Visual Web Developer 2007");
+        Index = IoAddItem(0, 0, L"Microsoft Office Visual Web Developer 2007");
         IoSetItemText(Index, 1, szText);
     }
 
@@ -409,7 +409,7 @@ SOFTWARE_LicensesInfo(VOID)
                         "SOFTWARE\\Microsoft\\Windows Mobile Device Center\\6.1\\Registration",
                         szText, sizeof(szText)/sizeof(WCHAR)))
     {
-        Index = IoAddItem(0, L"Windows Mobile Device Center 6.1");
+        Index = IoAddItem(0, 0, L"Windows Mobile Device Center 6.1");
         IoSetItemText(Index, 1, szText);
     }
 
@@ -418,7 +418,7 @@ SOFTWARE_LicensesInfo(VOID)
                         "SOFTWARE\\Microsoft\\Internet Explorer\\Registration",
                         szText, sizeof(szText)/sizeof(WCHAR)))
     {
-        Index = IoAddItem(0, L"Internet Explorer");
+        Index = IoAddItem(0, 0, L"Internet Explorer");
         IoSetItemText(Index, 1, szText);
     }
 
@@ -430,7 +430,7 @@ SOFTWARE_LicensesInfo(VOID)
                               sizeof(szTemp)/sizeof(WCHAR)))
     {
         InsertKeySep(szTemp, szText);
-        Index = IoAddItem(0, L"Microsoft Visual Studio 2010");
+        Index = IoAddItem(0, 0, L"Microsoft Visual Studio 2010");
         IoSetItemText(Index, 1, szText);
     }
 
@@ -442,7 +442,7 @@ SOFTWARE_LicensesInfo(VOID)
                               sizeof(szTemp)/sizeof(WCHAR)))
     {
         InsertKeySep(szTemp, szText);
-        Index = IoAddItem(0, L"Microsoft Visual Studio 2008");
+        Index = IoAddItem(0, 0, L"Microsoft Visual Studio 2008");
         IoSetItemText(Index, 1, szText);
     }
 
@@ -454,7 +454,7 @@ SOFTWARE_LicensesInfo(VOID)
                               sizeof(szTemp)/sizeof(WCHAR)))
     {
         InsertKeySep(szTemp, szText);
-        Index = IoAddItem(0, L"Microsoft Visual Studio 2005");
+        Index = IoAddItem(0, 0, L"Microsoft Visual Studio 2005");
         IoSetItemText(Index, 1, szText);
     }
 
