@@ -39,21 +39,21 @@ EnumProcessorsProc(SMBIOS_PROCESSORINFO Info)
     IoAddHeaderString(0, Info.Version, 0);
 
     /* Manufacturer */
-    Index = IoAddValueName(0, IDS_MANUFACTURER, -1);
+    Index = IoAddValueName(1, IDS_MANUFACTURER, 0);
     IoSetItemText(Index, 1, Info.Manufacturer);
 
     /* Family */
-    Index = IoAddValueName(0, IDS_CPU_FAMILY, -1);
+    Index = IoAddValueName(1, IDS_CPU_FAMILY, 0);
     SMBIOS_ProcessorFamilyToText(Info.ProcessorFamily, szText, sizeof(szText));
     IoSetItemText(Index, 1, szText);
 
     /* Type */
-    Index = IoAddValueName(0, IDS_TYPE, -1);
+    Index = IoAddValueName(1, IDS_TYPE, 0);
     SMBIOS_ProcessorTypeToText(Info.ProcessorType, szText, sizeof(szText));
     IoSetItemText(Index, 1, szText);
 
     /* Status */
-    Index = IoAddValueName(0, IDS_STATUS, -1);
+    Index = IoAddValueName(1, IDS_STATUS, 0);
     SMBIOS_ProcessorStatusToText(Info.Status, szText, sizeof(szText));
     if (SafeStrLen(szText) == 0)
     {
@@ -62,28 +62,28 @@ EnumProcessorsProc(SMBIOS_PROCESSORINFO Info)
     IoSetItemText(Index, 1, szText);
 
     /* Socket */
-    Index = IoAddValueName(0, IDS_CPU_SOCKET, -1);
+    Index = IoAddValueName(1, IDS_CPU_SOCKET, 0);
     IoSetItemText(Index, 1, Info.SocketDesignation);
 
     /* Upgrade */
-    Index = IoAddValueName(0, IDS_CPU_UPGRADE, -1);
+    Index = IoAddValueName(1, IDS_CPU_UPGRADE, 0);
     SMBIOS_ProcessorUpgradeToText(Info.Upgrade, szText, sizeof(szText));
     IoSetItemText(Index, 1, szText);
 
     /* External clock */
-    Index = IoAddValueName(0, IDS_CPU_EXTCLOCK, -1);
+    Index = IoAddValueName(1, IDS_CPU_EXTCLOCK, 0);
     StringCbPrintf(szText, sizeof(szText),
                    L"%d MHz", Info.ExternalClock);
     IoSetItemText(Index, 1, szText);
 
     /* Current speed */
-    Index = IoAddValueName(0, IDS_CPU_CURRENTSPEED, -1);
+    Index = IoAddValueName(1, IDS_CPU_CURRENTSPEED, 0);
     StringCbPrintf(szText, sizeof(szText),
                    L"%d MHz", Info.CurentSpeed);
     IoSetItemText(Index, 1, szText);
 
     /* Max speed */
-    Index = IoAddValueName(0, IDS_CPU_MAXSPEED, -1);
+    Index = IoAddValueName(1, IDS_CPU_MAXSPEED, 0);
     StringCbPrintf(szText, sizeof(szText),
                    L"%d MHz", Info.MaxSpeed);
     IoSetItemText(Index, 1, szText);
@@ -115,7 +115,7 @@ EnumProcessorsProc(SMBIOS_PROCESSORINFO Info)
     }
 
     /* Voltage */
-    Index = IoAddValueName(0, IDS_CPU_VOLTAGE, -1);
+    Index = IoAddValueName(1, IDS_CPU_VOLTAGE, 0);
     StringCbPrintf(szText, sizeof(szText),
                    L"%2.2f Volts", (FLOAT)Voltage);
     IoSetItemText(Index, 1, szText);
@@ -145,7 +145,7 @@ EnumMemoryDevicesProc(SMBIOS_MEMINFO Info)
     IoAddHeaderString(0, Info.DeviceLocator, 0);
 
     /* Size */
-    Index = IoAddValueName(0, IDS_MEM_SIZE, -1);
+    Index = IoAddValueName(1, IDS_MEM_SIZE, 0);
     StringCbPrintf(szText, sizeof(szText),
                    L"%d MB", (Info.Size & MEM_SIZE_MASK));
     IoSetItemText(Index, 1, szText);
@@ -153,7 +153,7 @@ EnumMemoryDevicesProc(SMBIOS_MEMINFO Info)
     /* Type */
     if (Info.MemoryType != 0x02)
     {
-        Index = IoAddValueName(0, IDS_TYPE, -1);
+        Index = IoAddValueName(1, IDS_TYPE, 0);
         SMBIOS_MemoryDeviceToText(Info.MemoryType, szText, sizeof(szText));
         IoSetItemText(Index, 1, szText);
     }
@@ -161,13 +161,13 @@ EnumMemoryDevicesProc(SMBIOS_MEMINFO Info)
     /* Speed */
     if (Info.Speed > 0)
     {
-        Index = IoAddValueName(0, IDS_MEM_SPEED, -1);
+        Index = IoAddValueName(1, IDS_MEM_SPEED, 0);
         StringCbPrintf(szText, sizeof(szText), L"%d MHz", Info.Speed);
         IoSetItemText(Index, 1, szText);
     }
 
     /* Form factor */
-    Index = IoAddValueName(0, IDS_MEM_FORMFACTOR, -1);
+    Index = IoAddValueName(1, IDS_MEM_FORMFACTOR, 0);
     SMBIOS_FormFactorToText(Info.FormFactor, szText, sizeof(szText));
     IoSetItemText(Index, 1, szText);
 
@@ -175,7 +175,7 @@ EnumMemoryDevicesProc(SMBIOS_MEMINFO Info)
     ChopSpaces(Info.SerialNumber, sizeof(Info.SerialNumber));
     if (SafeStrLen(Info.SerialNumber) > 0)
     {
-        Index = IoAddValueName(0, IDS_SERIAL_NUMBER, -1);
+        Index = IoAddValueName(1, IDS_SERIAL_NUMBER, 0);
         IoSetItemText(Index, 1, Info.SerialNumber);
     }
 
@@ -183,7 +183,7 @@ EnumMemoryDevicesProc(SMBIOS_MEMINFO Info)
     ChopSpaces(Info.PartNumber, sizeof(Info.PartNumber));
     if (SafeStrLen(Info.PartNumber) > 0)
     {
-        Index = IoAddValueName(0, IDS_MEM_PARTNUMBER, -1);
+        Index = IoAddValueName(1, IDS_MEM_PARTNUMBER, 0);
         IoSetItemText(Index, 1, Info.PartNumber);
     }
 
@@ -191,21 +191,21 @@ EnumMemoryDevicesProc(SMBIOS_MEMINFO Info)
     ChopSpaces(Info.Manufactuer, sizeof(Info.Manufactuer));
     if (SafeStrLen(Info.Manufactuer) > 0)
     {
-        Index = IoAddValueName(0, IDS_MANUFACTURER, -1);
+        Index = IoAddValueName(1, IDS_MANUFACTURER, 0);
         IoSetItemText(Index, 1, Info.Manufactuer);
     }
 
     /* Bank */
-    Index = IoAddValueName(0, IDS_MEM_BANK, -1);
+    Index = IoAddValueName(1, IDS_MEM_BANK, 0);
     IoSetItemText(Index, 1, Info.Bank);
 
     /* Total width */
-    Index = IoAddValueName(0, IDS_MEM_TOTALWIDTH, -1);
+    Index = IoAddValueName(1, IDS_MEM_TOTALWIDTH, 0);
     StringCbPrintf(szText, sizeof(szText), L"%d bit", Info.TotalWidth);
     IoSetItemText(Index, 1, szText);
 
     /* Data width */
-    Index = IoAddValueName(0, IDS_MEM_DATAWIDTH, -1);
+    Index = IoAddValueName(1, IDS_MEM_DATAWIDTH, 0);
     StringCbPrintf(szText, sizeof(szText), L"%d bit", Info.DataWidth);
     IoSetItemText(Index, 1, szText);
 
@@ -243,19 +243,19 @@ DMI_BIOSInfo(VOID)
     IoAddHeader(0, IDS_CAT_HW_DMI_BIOS, 0);
 
     /* Manufacturer */
-    Index = IoAddValueName(0, IDS_MANUFACTURER, -1);
+    Index = IoAddValueName(1, IDS_MANUFACTURER, 0);
     IoSetItemText(Index, 1, Info.Vendor);
 
     /* Version */
-    Index = IoAddValueName(0, IDS_VERSION, -1);
+    Index = IoAddValueName(1, IDS_VERSION, 0);
     IoSetItemText(Index, 1, Info.BiosVersion);
 
     /* Date */
-    Index = IoAddValueName(0, IDS_BIOS_DATE, -1);
+    Index = IoAddValueName(1, IDS_BIOS_DATE, 0);
     IoSetItemText(Index, 1, Info.BiosReleaseDate);
 
     /* Size */
-    Index = IoAddValueName(0, IDS_BIOS_SIZE, -1);
+    Index = IoAddValueName(1, IDS_BIOS_SIZE, 0);
     StringCbPrintf(szText, sizeof(szText),
                    L"0x%02x", Info.BiosRomSize);
     IoSetItemText(Index, 1, szText);
@@ -273,12 +273,12 @@ DMI_BIOSInfo(VOID)
     szText[SafeStrLen(szText) - 2] = L'\0';
     if (SafeStrLen(szText) > 0)
     {
-        Index = IoAddValueName(0, IDS_BIOS_BOOT_DEVICES, -1);
+        Index = IoAddValueName(1, IDS_BIOS_BOOT_DEVICES, 0);
         IoSetItemText(Index, 1, szText);
     }
 
     /* Fatures */
-    Index = IoAddValueName(0, IDS_BIOS_FATURES, -1);
+    Index = IoAddValueName(1, IDS_BIOS_FATURES, 0);
 
     StringCbCopy(szText, sizeof(szText), L"");
     if (Info.BiosCharacteristics & BIOS_FLASHABLE)
@@ -295,7 +295,7 @@ DMI_BIOSInfo(VOID)
     IoSetItemText(Index, 1, szText);
 
     /* Supported standards */
-    Index = IoAddValueName(0, IDS_BIOS_STANDATDS, -1);
+    Index = IoAddValueName(1, IDS_BIOS_STANDATDS, 0);
 
     StringCbCopy(szText, sizeof(szText), L"");
     if (Info.BiosCharacteristics & BIOS_APM_SUPPORTED)
@@ -310,7 +310,7 @@ DMI_BIOSInfo(VOID)
     IoSetItemText(Index, 1, szText);
 
     /* Slots */
-    Index = IoAddValueName(0, IDS_BIOS_SLOTS, -1);
+    Index = IoAddValueName(1, IDS_BIOS_SLOTS, 0);
 
     StringCbCopy(szText, sizeof(szText), L"");
     if (Info.BiosCharacteristics & BIOS_ISA_SUPPORTED)
@@ -353,18 +353,18 @@ DMI_SystemInfo(VOID)
     IoAddHeader(0, IDS_CAT_HW_DMI_SYSTEM, 0);
 
     /* Vendor */
-    Index = IoAddValueName(0, IDS_MANUFACTURER, -1);
+    Index = IoAddValueName(1, IDS_MANUFACTURER, 0);
     IoSetItemText(Index, 1, Info.Manufacturer);
 
     /* Product */
-    Index = IoAddValueName(0, IDS_PRODUCT, -1);
+    Index = IoAddValueName(1, IDS_PRODUCT, 0);
     IoSetItemText(Index, 1, Info.ProductName);
 
     /* Version */
     ChopSpaces(Info.Version, sizeof(Info.Version));
     if (SafeStrLen(Info.Version) > 0)
     {
-        Index = IoAddValueName(0, IDS_VERSION, -1);
+        Index = IoAddValueName(1, IDS_VERSION, 0);
         IoSetItemText(Index, 1, Info.Version);
     }
 
@@ -372,14 +372,14 @@ DMI_SystemInfo(VOID)
     ChopSpaces(Info.SerialNumber, sizeof(Info.SerialNumber));
     if (SafeStrLen(Info.SerialNumber) > 0)
     {
-        Index = IoAddValueName(0, IDS_SERIAL_NUMBER, -1);
+        Index = IoAddValueName(1, IDS_SERIAL_NUMBER, 0);
         IoSetItemText(Index, 1, Info.SerialNumber);
     }
 
     /* ID */
     if (Info.Uuid.TimeLow && Info.Uuid.TimeHiAndVersion && Info.Uuid.TimeMid)
     {
-        Index = IoAddValueName(0, IDS_SYS_ID, -1);
+        Index = IoAddValueName(1, IDS_SYS_ID, 0);
         StringCbPrintf(szText,
                        sizeof(szText),
                        L"%08x-%04x%04x-%02x%02x%02x%02x-%02x%02x%02x%02x",
@@ -398,7 +398,7 @@ DMI_SystemInfo(VOID)
     }
 
     /* Wakeup type */
-    Index = IoAddValueName(0, IDS_SYS_WAKEUP, -1);
+    Index = IoAddValueName(1, IDS_SYS_WAKEUP, 0);
     SMBIOS_WakeupTypeToText(Info.Wakeup, szText, sizeof(szText));
     IoSetItemText(Index, 1, szText);
 
@@ -423,22 +423,22 @@ DMI_BoardInfo(VOID)
     SMBIOS_GetBoardInformation(&Info);
 
     /* Vendor */
-    Index = IoAddValueName(0, IDS_MANUFACTURER, -1);
+    Index = IoAddValueName(1, IDS_MANUFACTURER, 0);
     IoSetItemText(Index, 1, Info.Manufacturer);
 
     /* Product */
-    Index = IoAddValueName(0, IDS_PRODUCT, -1);
+    Index = IoAddValueName(1, IDS_PRODUCT, 0);
     IoSetItemText(Index, 1, Info.Product);
 
     /* Version */
-    Index = IoAddValueName(0, IDS_VERSION, -1);
+    Index = IoAddValueName(1, IDS_VERSION, 0);
     IoSetItemText(Index, 1, Info.Version);
 
     /* Serial number */
     ChopSpaces(Info.SerialNumber, sizeof(Info.SerialNumber));
     if (SafeStrLen(Info.SerialNumber) != 0)
     {
-        Index = IoAddValueName(0, IDS_SERIAL_NUMBER, -1);
+        Index = IoAddValueName(1, IDS_SERIAL_NUMBER, 0);
         IoSetItemText(Index, 1, Info.SerialNumber);
     }
 
@@ -458,7 +458,7 @@ EnumCacheDevicesProc(SMBIOS_CACHEINFO Info)
     IoAddHeaderString(0, Info.SocketDesignation, 0);
 
     /* Cache type */
-    Index = IoAddValueName(0, IDS_TYPE, -1);
+    Index = IoAddValueName(1, IDS_TYPE, 0);
 
     Config = (Info.Configuration & CACHE_LOCATION_MASK) >> 5;
     if (Config == CACHE_INTERNAL)
@@ -472,7 +472,7 @@ EnumCacheDevicesProc(SMBIOS_CACHEINFO Info)
     IoSetItemText(Index, 1, szText);
 
     /* Cache status */
-    Index = IoAddValueName(0, IDS_STATUS, -1);
+    Index = IoAddValueName(1, IDS_STATUS, 0);
 
     Config = (Info.Configuration & CACHE_ENABLED_MASK) >> 7;
     if (Config == CACHE_ENABLED)
@@ -482,7 +482,7 @@ EnumCacheDevicesProc(SMBIOS_CACHEINFO Info)
     IoSetItemText(Index, 1, szText);
 
     /* Cache mode */
-    Index = IoAddValueName(0, IDS_DMI_CACHE_MODE, -1);
+    Index = IoAddValueName(1, IDS_DMI_CACHE_MODE, 0);
 
     Config = (Info.Configuration & CACHE_OPERATIONAL_MODE_MASK) >> 8;
     if (Config == CACHE_WRITE_THRU)
@@ -498,7 +498,7 @@ EnumCacheDevicesProc(SMBIOS_CACHEINFO Info)
     /* Max cache size */
     if ((Info.MaxCacheSize & CACHE_SIZE_MASK) > 0)
     {
-        Index = IoAddValueName(0, IDS_DMI_CACHE_MAX_SIZE, -1);
+        Index = IoAddValueName(1, IDS_DMI_CACHE_MAX_SIZE, 0);
         StringCbPrintf(szText, sizeof(szText), L"%d KB",
                        Info.MaxCacheSize & CACHE_SIZE_MASK);
         IoSetItemText(Index, 1, szText);
@@ -507,14 +507,14 @@ EnumCacheDevicesProc(SMBIOS_CACHEINFO Info)
     /* Max cache size */
     if ((Info.InstalledSize & CACHE_SIZE_MASK) > 0)
     {
-        Index = IoAddValueName(0, IDS_DMI_CACHE_CURRENT_SIZE, -1);
+        Index = IoAddValueName(1, IDS_DMI_CACHE_CURRENT_SIZE, 0);
         StringCbPrintf(szText, sizeof(szText), L"%d KB",
                        Info.InstalledSize & CACHE_SIZE_MASK);
         IoSetItemText(Index, 1, szText);
     }
 
     /* Supported SRAM type */
-    Index = IoAddValueName(0, IDS_DMI_CACHE_SRAM_TYPES, -1);
+    Index = IoAddValueName(1, IDS_DMI_CACHE_SRAM_TYPES, 0);
 
     szText[0] = 0;
     if (SramType & CACHE_OTHER)
@@ -540,12 +540,12 @@ EnumCacheDevicesProc(SMBIOS_CACHEINFO Info)
     ChopSpaces(szText, sizeof(szText));
     if (SafeStrLen(szText) > 0)
     {
-        Index = IoAddValueName(0, IDS_DMI_CACHE_SRAM_CURRENT, -1);
+        Index = IoAddValueName(1, IDS_DMI_CACHE_SRAM_CURRENT, 0);
         IoSetItemText(Index, 1, szText);
     }
 
     /* Cache level */
-    Index = IoAddValueName(0, IDS_DMI_CACHE_LEVEL, -1);
+    Index = IoAddValueName(1, IDS_DMI_CACHE_LEVEL, 0);
 
     Config = Info.Configuration & CACHE_LEVEL_MASK;
     if (Config == CACHE_L1)
@@ -581,18 +581,18 @@ EnumSlotInformationProc(SMBIOS_SLOTINFO Info)
     IoAddHeaderString(0, Info.SlotDesignation, 0);
 
     /* Type */
-    Index = IoAddValueName(0, IDS_TYPE, -1);
+    Index = IoAddValueName(1, IDS_TYPE, 0);
     SMBIOS_SlotTypeToText(Info.SlotType, szText, sizeof(szText));
     IoSetItemText(Index, 1, szText);
 
     /* Bus width */
-    Index = IoAddValueName(0, IDS_SLOT_BUS_WIDTH, -1);
+    Index = IoAddValueName(1, IDS_SLOT_BUS_WIDTH, 0);
     SMBIOS_BusWidthToText(Info.SlotDataBusWidth,
                           szText, sizeof(szText));
     IoSetItemText(Index, 1, szText);
 
     /* Length */
-    Index = IoAddValueName(0, IDS_SLOT_LENGTH, -1);
+    Index = IoAddValueName(1, IDS_SLOT_LENGTH, 0);
     SMBIOS_SlotLengthToText(Info.SlotLength, szText, sizeof(szText));
     IoSetItemText(Index, 1, szText);
 
@@ -625,7 +625,7 @@ EnumPortsInformationProc(SMBIOS_PORTINFO Info)
         IoAddHeaderString(0, Info.IntRefDesignation, 0);
 
     /* Type */
-    Index = IoAddValueName(0, IDS_PORT_TYPE, -1);
+    Index = IoAddValueName(1, IDS_PORT_TYPE, 0);
     SMBIOS_PortTypesToText(Info.PortType,
                            szText, sizeof(szText));
     if (SafeStrLen(szText) < 1)
@@ -633,7 +633,7 @@ EnumPortsInformationProc(SMBIOS_PORTINFO Info)
     IoSetItemText(Index, 1, szText);
 
     /* Internal designation */
-    Index = IoAddValueName(0, IDS_PORT_INT_DESIGNATION, -1);
+    Index = IoAddValueName(1, IDS_PORT_INT_DESIGNATION, 0);
     if (SafeStrLen(Info.IntRefDesignation) >= 1)
     {
         IoSetItemText(Index, 1, Info.IntRefDesignation);
@@ -645,7 +645,7 @@ EnumPortsInformationProc(SMBIOS_PORTINFO Info)
     }
 
     /* Internal connector type */
-    Index = IoAddValueName(0, IDS_PORT_INT_CONNECTOR, -1);
+    Index = IoAddValueName(1, IDS_PORT_INT_CONNECTOR, 0);
     SMBIOS_PortConnectorToText(Info.IntConnectorType,
                                szText, sizeof(szText));
     if (SafeStrLen(szText) < 1)
@@ -653,7 +653,7 @@ EnumPortsInformationProc(SMBIOS_PORTINFO Info)
     IoSetItemText(Index, 1, szText);
 
     /* External designation */
-    Index = IoAddValueName(0, IDS_PORT_EXT_DESIGNATION, -1);
+    Index = IoAddValueName(1, IDS_PORT_EXT_DESIGNATION, 0);
     if (SafeStrLen(Info.ExtRefDesignation) > 0)
     {
         IoSetItemText(Index, 1, Info.ExtRefDesignation);
@@ -665,7 +665,7 @@ EnumPortsInformationProc(SMBIOS_PORTINFO Info)
     }
 
     /* External connector type */
-    Index = IoAddValueName(0, IDS_PORT_EXT_CONNECTOR, -1);
+    Index = IoAddValueName(1, IDS_PORT_EXT_CONNECTOR, 0);
 
     SMBIOS_PortConnectorToText(Info.ExtConnectorType,
                                szText, sizeof(szText));
@@ -698,14 +698,14 @@ EnclosureEnumProc(SMBIOS_ENCLINFO Info)
     IoAddHeader(0, IDS_ENCL_ID, 0);
 
     /* Vendor */
-    Index = IoAddValueName(0, IDS_MANUFACTURER, -1);
+    Index = IoAddValueName(1, IDS_MANUFACTURER, 0);
     IoSetItemText(Index, 1, Info.Manufacturer);
 
     /* Version */
     ChopSpaces(Info.Version, sizeof(Info.Version));
     if (SafeStrLen(Info.Version) > 0)
     {
-        Index = IoAddValueName(0, IDS_VERSION, -1);
+        Index = IoAddValueName(1, IDS_VERSION, 0);
         IoSetItemText(Index, 1, Info.Version);
     }
 
@@ -713,12 +713,12 @@ EnclosureEnumProc(SMBIOS_ENCLINFO Info)
     ChopSpaces(Info.SerialNumber, sizeof(Info.SerialNumber));
     if (SafeStrLen(Info.SerialNumber) != 0)
     {
-        Index = IoAddValueName(0, IDS_SERIAL_NUMBER, -1);
+        Index = IoAddValueName(1, IDS_SERIAL_NUMBER, 0);
         IoSetItemText(Index, 1, Info.SerialNumber);
     }
 
     /* Type */
-    Index = IoAddValueName(0, IDS_ENCL_TYPE, -1);
+    Index = IoAddValueName(1, IDS_ENCL_TYPE, 0);
     SMBIOS_EnclTypeToText(Info.Type, szText, sizeof(szText));
     if (SafeStrLen(szText) == 0)
     {
@@ -729,7 +729,7 @@ EnclosureEnumProc(SMBIOS_ENCLINFO Info)
     /* OS Load status */
     if (Info.BootUpState != 0x02)
     {
-        Index = IoAddValueName(0, IDS_ENCL_OSLOAD_STATUS, -1);
+        Index = IoAddValueName(1, IDS_ENCL_OSLOAD_STATUS, 0);
         SMBIOS_EnclStateToText(Info.BootUpState, szText, sizeof(szText));
         IoSetItemText(Index, 1, szText);
     }
@@ -737,7 +737,7 @@ EnclosureEnumProc(SMBIOS_ENCLINFO Info)
     /* Power source status */
     if (Info.PowerSupplyState != 0x02)
     {
-        Index = IoAddValueName(0, IDS_ENCL_POWER_STATUS, -1);
+        Index = IoAddValueName(1, IDS_ENCL_POWER_STATUS, 0);
         SMBIOS_EnclStateToText(Info.PowerSupplyState, szText, sizeof(szText));
         IoSetItemText(Index, 1, szText);
     }
@@ -745,7 +745,7 @@ EnclosureEnumProc(SMBIOS_ENCLINFO Info)
     /* Temperature status */
     if (Info.ThermalState != 0x02)
     {
-        Index = IoAddValueName(0, IDS_ENCL_TEMPERATURE_STATUS, -1);
+        Index = IoAddValueName(1, IDS_ENCL_TEMPERATURE_STATUS, 0);
         SMBIOS_EnclStateToText(Info.ThermalState, szText, sizeof(szText));
         IoSetItemText(Index, 1, szText);
     }
@@ -753,7 +753,7 @@ EnclosureEnumProc(SMBIOS_ENCLINFO Info)
     /* Security status */
     if (Info.SecurityStatus != 0x02)
     {
-        Index = IoAddValueName(0, IDS_ENCL_SECURITY_STATUS, -1);
+        Index = IoAddValueName(1, IDS_ENCL_SECURITY_STATUS, 0);
         SMBIOS_EnclSecStatusToText(Info.SecurityStatus, szText, sizeof(szText));
         IoSetItemText(Index, 1, szText);
     }
@@ -783,16 +783,16 @@ OnboardEnumProc(SMBIOS_ONBOARDINFO Info)
     IoAddHeaderString(0, Info.Description, 0);
 
     /* Desc */
-    Index = IoAddValueName(0, IDS_DMI_ONBOARD_DESC, -1);
+    Index = IoAddValueName(1, IDS_DMI_ONBOARD_DESC, 0);
     IoSetItemText(Index, 1, Info.Description);
 
     /* Type */
-    Index = IoAddValueName(0, IDS_DMI_ONBOARD_TYPE, -1);
+    Index = IoAddValueName(1, IDS_DMI_ONBOARD_TYPE, 0);
     SMBIOS_OnboardDeviceTypeToText(Info.DeviceType, szText, sizeof(szText));
     IoSetItemText(Index, 1, szText);
 
     /* Status */
-    Index = IoAddValueName(0, IDS_DMI_ONBOARD_STATUS, -1);
+    Index = IoAddValueName(1, IDS_DMI_ONBOARD_STATUS, 0);
     IoSetItemText(Index, 1, Info.DeviceStatus ? L"Enabled" : L"Disabled");
 
     return TRUE;
@@ -820,63 +820,63 @@ BatteryEnumProc(SMBIOS_BATTERYINFO Info)
     IoAddHeader(0, IDS_BAT_BATTERYS, 0);
 
     /* Location */
-    Index = IoAddValueName(0, IDS_DMI_BATTERY_LOCATION, -1);
+    Index = IoAddValueName(1, IDS_DMI_BATTERY_LOCATION, 0);
     IoSetItemText(Index, 1, Info.Location);
 
     /* Manufacturer */
-    Index = IoAddValueName(0, IDS_DMI_BATTERY_MANUFACTURER, -1);
+    Index = IoAddValueName(1, IDS_DMI_BATTERY_MANUFACTURER, 0);
     IoSetItemText(Index, 1, Info.Manufacturer);
 
     /* Manufacture Date */
     if (SafeStrLen(Info.MenufDate) > 0)
     {
-        Index = IoAddValueName(0, IDS_DMI_BATTERY_MANUFDATE, -1);
+        Index = IoAddValueName(1, IDS_DMI_BATTERY_MANUFDATE, 0);
         IoSetItemText(Index, 1, Info.MenufDate);
     }
 
     /* Serial Number */
     if (SafeStrLen(Info.SerialNumber) > 0)
     {
-        Index = IoAddValueName(0, IDS_DMI_BATTERY_SERIAL, -1);
+        Index = IoAddValueName(1, IDS_DMI_BATTERY_SERIAL, 0);
         IoSetItemText(Index, 1, Info.SerialNumber);
     }
 
     /* Device Name */
-    Index = IoAddValueName(0, IDS_DMI_BATTERY_DEVICE_NAME, -1);
+    Index = IoAddValueName(1, IDS_DMI_BATTERY_DEVICE_NAME, 0);
     IoSetItemText(Index, 1, Info.DeviceName);
 
     /* Device Chemistry */
-    Index = IoAddValueName(0, IDS_DMI_BATTERY_DEVICE_CHEMISTRY, -1);
+    Index = IoAddValueName(1, IDS_DMI_BATTERY_DEVICE_CHEMISTRY, 0);
     SMBIOS_BatteryChemistryToText(Info.DeviceChemistry, szText, sizeof(szText));
     IoSetItemText(Index, 1, szText);
 
     /* Design Capacity */
-    Index = IoAddValueName(0, IDS_DMI_BATTERY_DESIGN_CAPACITY, -1);
+    Index = IoAddValueName(1, IDS_DMI_BATTERY_DESIGN_CAPACITY, 0);
     StringCbPrintf(szText, sizeof(szText), L"%u mWh",
         Info.DesignCapacityMultiplier ? Info.DesignCapacity * Info.DesignCapacityMultiplier : Info.DesignCapacity);
     IoSetItemText(Index, 1, szText);
 
     /* Design Voltage */
-    Index = IoAddValueName(0, IDS_DMI_BATTERY_DESIGN_VOLTAGE, -1);
+    Index = IoAddValueName(1, IDS_DMI_BATTERY_DESIGN_VOLTAGE, 0);
     StringCbPrintf(szText, sizeof(szText), L"%u mV", Info.DesignVoltage);
     IoSetItemText(Index, 1, szText);
 
     /* SBDS Version Number */
-    Index = IoAddValueName(0, IDS_DMI_BATTERY_SBDS_VERSION, -1);
+    Index = IoAddValueName(1, IDS_DMI_BATTERY_SBDS_VERSION, 0);
     IoSetItemText(Index, 1, Info.SBDSVersionNumber);
 
     /* Max. Error in Battery Data */
-    Index = IoAddValueName(0, IDS_DMI_BATTERY_MAXERROR_IN_DATA, -1);
+    Index = IoAddValueName(1, IDS_DMI_BATTERY_MAXERROR_IN_DATA, 0);
     StringCbPrintf(szText, sizeof(szText), L"%u", Info.MaxErrorInData);
     IoSetItemText(Index, 1, szText);
 
     /* SBDS Serial Number */
-    Index = IoAddValueName(0, IDS_DMI_BATTERY_SBDS_SERIAL, -1);
+    Index = IoAddValueName(1, IDS_DMI_BATTERY_SBDS_SERIAL, 0);
     StringCbPrintf(szText, sizeof(szText), L"%u", Info.SBDSSerialNumber);
     IoSetItemText(Index, 1, szText);
 
     /* SBDS Manufacture Date */
-    Index = IoAddValueName(0, IDS_DMI_BATTERY_SBDS_MANUFDATE, -1);
+    Index = IoAddValueName(1, IDS_DMI_BATTERY_SBDS_MANUFDATE, 0);
     StringCbPrintf(szText, sizeof(szText), L"%d/%d/%d",
                    (Info.SBDSManufDate & 0x10), /* Bits 4:0 */
                    (Info.SBDSManufDate & 0x100) >> 0x4, /* Bits 8:5 */
@@ -884,7 +884,7 @@ BatteryEnumProc(SMBIOS_BATTERYINFO Info)
     IoSetItemText(Index, 1, szText);
 
     /* SBDS Device Chemistry */
-    Index = IoAddValueName(0, IDS_DMI_BATTERY_SBDS_DEV_CHEMIST, -1);
+    Index = IoAddValueName(1, IDS_DMI_BATTERY_SBDS_DEV_CHEMIST, 0);
     IoSetItemText(Index, 1, Info.SBDSDeviceChemistry);
 
     return TRUE;

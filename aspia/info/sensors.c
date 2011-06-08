@@ -170,7 +170,7 @@ GetIntelCpuInfo(VOID)
             LoadMUIString(IDS_SENSOR_CORE_TEMPERATURE,
                           szFormat, MAX_STR_LEN);
             StringCbPrintf(szText, sizeof(szText), szFormat, bIndex + 1);
-            Index = IoAddItem(0, -1, szText);
+            Index = IoAddItem(1, 1, szText);
 
             Tjmax = GetTjmaxTemperature(bIndex);
 
@@ -208,7 +208,7 @@ GetAmd10CpuInfo(VOID)
         IoAddHeaderString(0, szText, 1);
 
         LoadMUIString(IDS_SENSOR_TEMPERATURE, szText, MAX_STR_LEN);
-        Index = IoAddItem(0, -1, szText);
+        Index = IoAddItem(1, 1, szText);
 
         ThermValue = ReadPciConfigDword(Device, 0xA4);
 
@@ -244,7 +244,7 @@ GetAmd0FCpuInfo(VOID)
 
             LoadMUIString(IDS_SENSOR_CORE_TEMPERATURE, szFormat, MAX_STR_LEN);
             StringCbPrintf(szText, sizeof(szText), szFormat, Count + 1);
-            Index = IoAddItem(0, -1, szText);
+            Index = IoAddItem(1, 1, szText);
 
             GetProcessorIDs(&CpuIds);
 
@@ -313,7 +313,7 @@ HW_SensorInfo(VOID)
                            L"%ld °C",
                            SMART_GetHDDTemperature(hHandle, bIndex));
 
-            Index = IoAddValueName(0, IDS_SENSOR_TEMPERATURE, -1);
+            Index = IoAddValueName(1, IDS_SENSOR_TEMPERATURE, 0);
             IoSetItemText(Index, 1, szText);
 
             IoAddFooter();
