@@ -803,6 +803,11 @@
 #define IDS_DISPLAY_SUPPORTED_MODES      693
 #define IDS_DISPLAY_MODEL                694
 #define IDS_DISPLAY_EDID_VERSION         695
+#define IDS_TYPE_HTML                    696
+#define IDS_TYPE_TEXT                    697
+#define IDS_TYPE_CSV                     698
+#define IDS_TYPE_XML                     699
+#define IDS_TYPE_INI                     700
 
 #define IDS_CAT_SUMMARY           1000
 

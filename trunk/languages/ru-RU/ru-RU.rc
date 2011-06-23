@@ -880,6 +880,11 @@ BEGIN
     IDS_DISPLAY_SUPPORTED_MODES, "Поддерживаемые видеорежимы"
     IDS_DISPLAY_MODEL, "Модель"
     IDS_DISPLAY_EDID_VERSION, "Верия EDID"
+    IDS_TYPE_HTML, "HTML-файл (*.htm)"
+    IDS_TYPE_TEXT, "Текстовый файл (*.txt)"
+    IDS_TYPE_CSV, "CSV-файл (*.csv)"
+    IDS_TYPE_XML, "XML-файл (*.xml)"
+    IDS_TYPE_INI, "INI-файл (*.ini)"
 
     IDS_CAT_SUMMARY, "Общая информация"
 

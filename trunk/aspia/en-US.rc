@@ -876,6 +876,11 @@ BEGIN
     IDS_DISPLAY_SUPPORTED_MODES, "Supported Video Modes"
     IDS_DISPLAY_MODEL, "Model"
     IDS_DISPLAY_EDID_VERSION, "EDID Version"
+    IDS_TYPE_HTML, "HTML File (*.htm)"
+    IDS_TYPE_TEXT, "Plain Text File (*.txt)"
+    IDS_TYPE_CSV, "CSV File (*.csv)"
+    IDS_TYPE_XML, "XML File (*.xml)"
+    IDS_TYPE_INI, "INI File (*.ini)"
 
     IDS_CAT_SUMMARY, "Summary Information"
 

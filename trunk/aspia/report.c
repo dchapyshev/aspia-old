@@ -487,10 +487,28 @@ GetCheckBoxesState(HWND hDlg)
        (IsDlgButtonChecked(hDlg, IDC_FILTER_IE_FTP) == BST_CHECKED) ? TRUE : FALSE;
 }
 
+INT
+AddFileTypeToComboBox(HWND hCombo, UINT StringID)
+{
+    WCHAR szText[MAX_STR_LEN];
+    INT Index;
+
+    LoadMUIString(StringID, szText, MAX_STR_LEN);
+
+    Index = SendMessage(hCombo,
+                        CB_ADDSTRING, 0,
+                        (LPARAM)szText);
+
+    SendMessage(hCombo, CB_SETITEMDATA, Index, StringID);
+
+    return Index;
+}
+
 INT_PTR CALLBACK
 ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
     HWND hTree = GetDlgItem(hDlg, IDC_CATEGORIES_TREE);
+    HWND hCombo = GetDlgItem(hDlg, IDC_FILE_TYPE_COMBO);
 
     UNREFERENCED_PARAMETER(lParam);
 
@@ -557,6 +575,15 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             SetWindowText(GetDlgItem(hDlg, IDC_FILEPATH_EDIT),
                           SettingsInfo.szReportPath);
 
+            SendMessage(hCombo, CB_SETCURSEL,
+                        AddFileTypeToComboBox(hCombo, IDS_TYPE_HTML),
+                        0);
+
+            AddFileTypeToComboBox(hCombo, IDS_TYPE_TEXT);
+            AddFileTypeToComboBox(hCombo, IDS_TYPE_CSV);
+            AddFileTypeToComboBox(hCombo, IDS_TYPE_XML);
+            AddFileTypeToComboBox(hCombo, IDS_TYPE_INI);
+
             SetTimer(hTree, IDT_UPDATE_TIMER, 10, UpdateProc);
         }
         break;
@@ -586,6 +613,53 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
         {
             switch (LOWORD(wParam))
             {
+                case IDC_FILE_TYPE_COMBO:
+                {
+                    if (HIWORD(wParam) == CBN_SELCHANGE)
+                    {
+                        INT Index = SendMessage(hCombo, CB_GETCURSEL, 0, 0);
+                        UINT Data = (UINT)SendMessage(hCombo, CB_GETITEMDATA, Index, 0);
+                        HWND hEdit = GetDlgItem(hDlg, IDC_FILEPATH_EDIT);
+                        WCHAR szPath[MAX_PATH];
+                        LPWSTR lpExt;
+
+                        switch (Data)
+                        {
+                            case IDS_TYPE_HTML:
+                                lpExt = L".htm";
+                                break;
+                            case IDS_TYPE_TEXT:
+                                lpExt = L".txt";
+                                break;
+                            case IDS_TYPE_CSV:
+                                lpExt = L".csv";
+                                break;
+                            case IDS_TYPE_XML:
+                                lpExt = L".xml";
+                                break;
+                            case IDS_TYPE_INI:
+                                lpExt = L".ini";
+                                break;
+                            default:
+                                lpExt = L".htm";
+                                break;
+                        }
+
+                        GetWindowText(hEdit, szPath, MAX_PATH);
+                        for (Index = wcslen(szPath); Index > 0; Index--)
+                        {
+                            if (szPath[Index] == L'.')
+                            {
+                                szPath[Index] = L'\0';
+                                break;
+                            }
+                        }
+                        StringCbCat(szPath, sizeof(szPath), lpExt);
+                        SetWindowText(hEdit, szPath);
+                    }
+                }
+                break;
+
                 case IDC_SELECT_ALL:
                     SetAllItemsStateTreeView(hTree, TRUE, RootCategoryList);
                     break;
