@@ -87,6 +87,7 @@
 #define IDC_STATUS_ICON   168
 #define IDI_FIREWALL      169
 #define IDI_USB_DEV       170
+#define IDI_ENCLOSURE     171
 
 /* Dialogs */
 #define IDD_ABOUT_DIALOG         5000
@@ -97,7 +98,6 @@
 #define IDD_SETTINGS_FILTER      5005
 #define IDD_SETTINGS_SYSTRAY     5006
 #define IDD_UNKNOWN_DEV_REPORT   5007
-#define IDD_SETTINGS_DEVREPORT   5008
 
 /* Menu */
 #define IDR_POPUP           500
@@ -164,10 +164,7 @@
 #define IDC_REPORT_DATA_LIST    138
 #define IDC_NEVER_SEND_REPORT   139
 #define IDC_DEV_REPORT_SEND     140
-#define IDC_USE_PROXY_SERVER    141
-#define IDC_PROXY_ADDRESS_EDIT  142
-#define IDC_PROXY_USER_EDIT     143
-#define IDC_PROXY_PASS_EDIT     144
+#define IDC_FILE_TYPE_COMBO     141
 
 /* Strings */
 #define IDS_APPTITLE                100
@@ -806,7 +803,6 @@
 #define IDS_DISPLAY_SUPPORTED_MODES      693
 #define IDS_DISPLAY_MODEL                694
 #define IDS_DISPLAY_EDID_VERSION         695
-#define IDS_SETTINGS_DEVREPORT           696
 
 #define IDS_CAT_SUMMARY           1000
 

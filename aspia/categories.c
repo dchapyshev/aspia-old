@@ -252,7 +252,7 @@ CATEGORY_LIST DMICategoryList[] =
     { IDS_CAT_HW_DMI_BIOS,      IDI_CPU,      FALSE, TRUE, NULL, DMI_BIOSInfo,      StdColumnList, NULL },
     { IDS_CAT_HW_DMI_SYSTEM,    IDI_COMPUTER, FALSE, TRUE, NULL, DMI_SystemInfo,    StdColumnList, NULL },
     { IDS_CAT_HW_DMI_BOARD,     IDI_HW,       FALSE, TRUE, NULL, DMI_BoardInfo,     StdColumnList, NULL },
-    { IDS_CAT_HW_DMI_ENCLOSURE, IDI_COMPUTER, FALSE, TRUE, NULL, DMI_EnclosureInfo, StdColumnList, NULL },
+    { IDS_CAT_HW_DMI_ENCLOSURE, IDI_ENCLOSURE,FALSE, TRUE, NULL, DMI_EnclosureInfo, StdColumnList, NULL },
     { IDS_CAT_HW_DMI_CACHE,     IDI_SENSOR,   FALSE, TRUE, NULL, DMI_CacheInfo,     StdColumnList, NULL },
     { IDS_CAT_HW_DMI_PROCESSOR, IDI_CPU,      FALSE, TRUE, NULL, DMI_CPUInfo,       StdColumnList, NULL },
     { IDS_CAT_HW_DMI_MEM,       IDI_HW,       FALSE, TRUE, NULL, DMI_RAMInfo,       StdColumnList, NULL },

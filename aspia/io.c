@@ -25,7 +25,7 @@ VOID HtmlContentTableItem(UINT ID, LPWSTR lpszName, BOOL IsRootItem);
 VOID HtmlContentTableEndRootItem(VOID);
 
 INT ListViewAddItem(INT Indent, INT IconIndex, LPWSTR lpText);
-INT ListViewAddHeaderString(LPWSTR lpszText, INT IconIndex);
+INT ListViewAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex);
 VOID ListViewAddHeader(UINT StringID, INT IconIndex);
 VOID ListViewSetItemText(INT i, INT iSubItem, LPWSTR pszText);
 INT ListViewAddValueName(LPWSTR lpszName, INT IconIndex);
