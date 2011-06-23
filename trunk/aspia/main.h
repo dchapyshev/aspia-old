@@ -427,10 +427,6 @@ typedef struct
     UINT SensorsRefreshRate;
 
     BOOL SendDevReport;
-    BOOL UseProxyForDevReport;
-    WCHAR szProxyAddress[256];
-    WCHAR szProxyUser[32];
-    WCHAR szProxyPass[32];
 } SETTINGS_STRUCT, *PSETTINGS_STRUCT;
 
 typedef struct

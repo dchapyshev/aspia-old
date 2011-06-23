@@ -814,8 +814,6 @@ wWinMain(HINSTANCE hInst,
 
         SettingsInfo.SensorsRefreshRate = 30;
 
-        SettingsInfo.UseProxyForDevReport = FALSE;
-
         SettingsInfo.IsAddContent = TRUE;
 
         ParamsInfo.DebugMode = FALSE;

@@ -43,7 +43,7 @@ SendFileToServer(LPWSTR lpServer, LPWSTR lpFilePath, char *lpFileName)
         return;
     }
 
-    pBuf = (LPBYTE)HeapAlloc(hProcessHeap, 0, dwFileSize + 2048);
+    pBuf = (LPBYTE)Alloc(dwFileSize + 2048);
     if (!pBuf)
     {
         CloseHandle(hFile);
@@ -65,7 +65,7 @@ SendFileToServer(LPWSTR lpServer, LPWSTR lpFilePath, char *lpFileName)
 
     if (!ReadFile(hFile, pDataStart, dwFileSize, &dwRead, NULL))
     {
-        HeapFree(hProcessHeap, 0, pBuf);
+        Free(pBuf);
         CloseHandle(hFile);
         return;
     }
@@ -102,7 +102,7 @@ SendFileToServer(LPWSTR lpServer, LPWSTR lpFilePath, char *lpFileName)
         InternetCloseHandle(hOpenHandle);
     }
 
-    HeapFree(hProcessHeap, 0, pBuf);
+    Free(pBuf);
     CloseHandle(hFile);
 }
 
@@ -341,17 +341,17 @@ SaveDevReportFile(HWND hList)
                 {
                     case 0:
                         StringCbPrintf(szResult, sizeof(szResult),
-                                       L"MON:%s:%s\r\n",
+                                       L"MON::%s::%s\r\n",
                                        pDevId, szName);
                         break;
                     case 1:
                         StringCbPrintf(szResult, sizeof(szResult),
-                                       L"USB:%s:%s\r\n",
+                                       L"USB::%s::%s\r\n",
                                        pDevId, szName);
                         break;
                     case 2:
                         StringCbPrintf(szResult, sizeof(szResult),
-                                       L"PCI:%s:%s\r\n",
+                                       L"PCI::%s::%s\r\n",
                                        pDevId, szName);
                         break;
                 }
@@ -420,8 +420,6 @@ DevReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
         case WM_CLOSE:
         {
             ImageList_Destroy(hDevImageList);
-            SettingsInfo.SendDevReport =
-                (IsDlgButtonChecked(hDlg, IDC_NEVER_SEND_REPORT) == BST_CHECKED) ? FALSE : TRUE;
             FreeItems(GetDlgItem(hDlg, IDC_REPORT_DATA_LIST));
             EndDialog(hDlg, LOWORD(wParam));
         }
@@ -432,11 +430,14 @@ DevReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             switch (LOWORD(wParam))
             {
                 case IDCANCEL:
+                    SettingsInfo.SendDevReport =
+                        (IsDlgButtonChecked(hDlg, IDC_NEVER_SEND_REPORT) == BST_CHECKED) ? FALSE : TRUE;
                     PostMessage(hDlg, WM_CLOSE, 0, 0);
                     break;
 
                 case IDOK:
                     SaveDevReportFile(GetDlgItem(hDlg, IDC_REPORT_DATA_LIST));
+                    SettingsInfo.SendDevReport = TRUE;
                     PostMessage(hDlg, WM_CLOSE, 0, 0);
                     break;
             }

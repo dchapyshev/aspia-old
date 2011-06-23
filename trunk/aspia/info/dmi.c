@@ -767,7 +767,7 @@ DMI_EnclosureInfo(VOID)
     DebugStartReceiving();
 
     if (!IsSmBIOSInitialized) return;
-    IoAddIcon(IDI_COMPUTER);
+    IoAddIcon(IDI_ENCLOSURE);
     SMBIOS_EnumEnclosureInformation(EnclosureEnumProc);
     AddDMIFooter();
 
