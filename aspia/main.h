@@ -350,10 +350,8 @@ GetWindowHeight(IN HWND hwnd)
 #define IO_TARGET_HTML     1
 #define IO_TARGET_CVS      2
 #define IO_TARGET_TXT      3
-#define IO_TARGET_RTF      4
-#define IO_TARGET_XML      5
-#define IO_TARGET_CONSOLE  6
-#define IO_TARGET_SERVER   7
+#define IO_TARGET_XML      4
+#define IO_TARGET_INI      4
 
 VOID IoSetTarget(UINT);
 UINT IoGetTarget(VOID);
