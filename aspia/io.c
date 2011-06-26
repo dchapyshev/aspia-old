@@ -32,6 +32,23 @@ INT ListViewAddValueName(LPWSTR lpszName, INT IconIndex);
 INT ListViewAddImageListIcon(UINT IconID);
 VOID ListViewAddColumn(SIZE_T Index, INT Width, LPWSTR lpszText);
 
+BOOL CsvAppendStringToFile(LPWSTR lpszString);
+BOOL CsvCreateReport(LPWSTR lpszFile);
+VOID CsvCloseReport(VOID);
+VOID CsvWriteValueString(LPWSTR lpszString);
+VOID CsvWriteItemString(LPWSTR lpszString);
+VOID CsvWriteColumnString(LPWSTR lpszString);
+VOID CsvTableTitle(LPWSTR lpszTitle);
+VOID CsvEndTable(VOID);
+
+BOOL IniAppendStringToFile(LPWSTR lpszString);
+BOOL IniCreateReport(LPWSTR lpszFile);
+VOID IniCloseReport(VOID);
+VOID IniWriteValueString(LPWSTR lpszString);
+VOID IniWriteItemString(LPWSTR lpszString);
+VOID IniTableTitle(LPWSTR lpszTitle);
+VOID IniEndTable(VOID);
+
 static UINT IoTarget = 0;
 static INT ColumnsCount = 0;
 
@@ -62,6 +79,8 @@ IoAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex)
             break;
 
         case IO_TARGET_CSV:
+            CsvAppendStringToFile(L"\n");
+            CsvWriteItemString(lpszText);
             break;
 
         case IO_TARGET_TXT:
@@ -71,6 +90,8 @@ IoAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex)
             break;
 
         case IO_TARGET_INI:
+            IniAppendStringToFile(L"\n");
+            IniWriteItemString(lpszText);
             break;
     }
 
@@ -99,6 +120,7 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
             break;
 
         case IO_TARGET_CSV:
+            CsvWriteItemString(lpText);
             break;
 
         case IO_TARGET_TXT:
@@ -108,6 +130,7 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
             break;
 
         case IO_TARGET_INI:
+            IniWriteItemString(lpText);
             break;
     }
 
@@ -139,6 +162,7 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
             break;
 
         case IO_TARGET_CSV:
+            CsvWriteValueString(pszText);
             break;
 
         case IO_TARGET_TXT:
@@ -148,6 +172,7 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
             break;
 
         case IO_TARGET_INI:
+            IniWriteValueString(pszText);
             break;
     }
 }
@@ -166,6 +191,7 @@ IoAddFooter(VOID)
             break;
 
         case IO_TARGET_CSV:
+            CsvAppendStringToFile(L"\n");
             break;
 
         case IO_TARGET_TXT:
@@ -211,9 +237,6 @@ IoReportEndColumn(VOID)
             HtmlEndColumn();
             break;
 
-        case IO_TARGET_CSV:
-            break;
-
         case IO_TARGET_TXT:
             break;
 
@@ -235,6 +258,7 @@ IoReportWriteColumnString(LPWSTR lpszString)
             break;
 
         case IO_TARGET_CSV:
+            CsvWriteColumnString(lpszString);
             break;
 
         case IO_TARGET_TXT:
@@ -267,19 +291,11 @@ IoAddColumnsList(COLUMN_LIST *List)
                 break;
 
             case IO_TARGET_HTML:
-                IoReportWriteColumnString(szText);
-                break;
-
             case IO_TARGET_CSV:
-                break;
-
             case IO_TARGET_TXT:
-                break;
-
             case IO_TARGET_XML:
-                break;
-
             case IO_TARGET_INI:
+                IoReportWriteColumnString(szText);
                 break;
         }
     }
@@ -323,7 +339,7 @@ IoCreateReport(LPWSTR lpszFile)
             return HtmlCreateReport(lpszFile);
 
         case IO_TARGET_CSV:
-            break;
+            return CsvCreateReport(lpszFile);
 
         case IO_TARGET_TXT:
             break;
@@ -332,7 +348,7 @@ IoCreateReport(LPWSTR lpszFile)
             break;
 
         case IO_TARGET_INI:
-            break;
+            return IniCreateReport(lpszFile);
     }
 
     return FALSE;
@@ -348,6 +364,7 @@ IoCloseReport(VOID)
             break;
 
         case IO_TARGET_CSV:
+            CsvCloseReport();
             break;
 
         case IO_TARGET_TXT:
@@ -357,6 +374,7 @@ IoCloseReport(VOID)
             break;
 
         case IO_TARGET_INI:
+            IniCloseReport();
             break;
     }
 }
@@ -371,6 +389,7 @@ IoReportWriteItemString(LPWSTR lpszString, BOOL bIsHeader)
             break;
 
         case IO_TARGET_CSV:
+            CsvWriteItemString(lpszString);
             break;
 
         case IO_TARGET_TXT:
@@ -380,6 +399,7 @@ IoReportWriteItemString(LPWSTR lpszString, BOOL bIsHeader)
             break;
 
         case IO_TARGET_INI:
+            IniWriteItemString(lpszString);
             break;
     }
 }
@@ -394,6 +414,7 @@ IoWriteTableTitle(LPWSTR lpszTitle, UINT StringID, BOOL WithContentTable)
             break;
 
         case IO_TARGET_CSV:
+            CsvTableTitle(lpszTitle);
             break;
 
         case IO_TARGET_TXT:
@@ -403,6 +424,7 @@ IoWriteTableTitle(LPWSTR lpszTitle, UINT StringID, BOOL WithContentTable)
             break;
 
         case IO_TARGET_INI:
+            IniTableTitle(lpszTitle);
             break;
     }
 }

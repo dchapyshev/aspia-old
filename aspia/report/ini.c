@@ -1,6 +1,6 @@
 /*
  * PROJECT:         Aspia
- * FILE:            aspia/report/csv.c
+ * FILE:            aspia/report/ini.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
@@ -12,7 +12,7 @@ static FILE *hReport = NULL;
 
 
 BOOL
-CsvAppendStringToFile(LPWSTR lpszString)
+IniAppendStringToFile(LPWSTR lpszString)
 {
     DWORD dwLen = SafeStrLen(lpszString);
 
@@ -24,7 +24,7 @@ CsvAppendStringToFile(LPWSTR lpszString)
 }
 
 BOOL
-CsvCreateReport(LPWSTR lpszFile)
+IniCreateReport(LPWSTR lpszFile)
 {
     if (_wfopen_s(&hReport, lpszFile, L"wt+,ccs=UTF-8") != 0)
         return FALSE;
@@ -35,50 +35,41 @@ CsvCreateReport(LPWSTR lpszFile)
 }
 
 VOID
-CsvCloseReport(VOID)
+IniCloseReport(VOID)
 {
     fclose(hReport);
     hReport = NULL;
 }
 
 VOID
-CsvWriteValueString(LPWSTR lpszString)
+IniWriteValueString(LPWSTR lpszString)
 {
     WCHAR szText[MAX_STR_LEN];
 
     StringCbPrintf(szText, sizeof(szText), L"%s;", lpszString);
-    CsvAppendStringToFile(szText);
+    IniAppendStringToFile(szText);
 }
 
 VOID
-CsvWriteItemString(LPWSTR lpszString)
+IniWriteItemString(LPWSTR lpszString)
 {
     WCHAR szText[MAX_STR_LEN];
 
     StringCbPrintf(szText, sizeof(szText), L"\n%s;", lpszString);
-    CsvAppendStringToFile(szText);
+    IniAppendStringToFile(szText);
 }
 
 VOID
-CsvWriteColumnString(LPWSTR lpszString)
+IniTableTitle(LPWSTR lpszTitle)
 {
     WCHAR szText[MAX_STR_LEN];
 
-    StringCbPrintf(szText, sizeof(szText), L"%s;", lpszString);
-    CsvAppendStringToFile(szText);
+    StringCbPrintf(szText, sizeof(szText), L"\n[%s]\n", lpszTitle);
+    IniAppendStringToFile(szText);
 }
 
 VOID
-CsvTableTitle(LPWSTR lpszTitle)
+IniEndTable(VOID)
 {
-    WCHAR szText[MAX_STR_LEN];
-
-    StringCbPrintf(szText, sizeof(szText), L"\n%s\n", lpszTitle);
-    CsvAppendStringToFile(szText);
-}
-
-VOID
-CsvEndTable(VOID)
-{
-    CsvAppendStringToFile(L"\n");
+    IniAppendStringToFile(L"\n");
 }
