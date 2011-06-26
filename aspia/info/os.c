@@ -481,8 +481,9 @@ BOOL
 GetShortcutCommandLine(LPWSTR lpszLnkPath, LPWSTR lpszPath, SIZE_T Size)
 {
     WCHAR szPath[MAX_PATH], szCmd[MAX_PATH];
-    IShellLink *pShellLink;
-    IPersistFile *pPersistFile;
+    IShellLink *pShellLink = NULL;
+    IPersistFile *pPersistFile = NULL;
+    BOOL Result = FALSE;
     HRESULT hr;
 
     CoInitialize(NULL);
@@ -492,42 +493,23 @@ GetShortcutCommandLine(LPWSTR lpszLnkPath, LPWSTR lpszPath, SIZE_T Size)
                           CLSCTX_ALL,
                           &IID_IShellLink,
                           (LPVOID*)&pShellLink);
-    if (FAILED(hr))
-    {
-        CoUninitialize();
-        return FALSE;
-    }
+    if (FAILED(hr)) goto Cleanup;
 
     hr = pShellLink->lpVtbl->QueryInterface(pShellLink,
                                             &IID_IPersistFile,
                                             (LPVOID*)&pPersistFile);
-    if (FAILED(hr))
-    {
-        pShellLink->lpVtbl->Release(pShellLink);
-        CoUninitialize();
-        return FALSE;
-    }
+    if (FAILED(hr)) goto Cleanup;
 
     hr = pPersistFile->lpVtbl->Load(pPersistFile,
                                     (LPCOLESTR)lpszLnkPath,
                                     STGM_READ);
-    if (FAILED(hr))
-    {
-        pShellLink->lpVtbl->Release(pShellLink);
-        CoUninitialize();
-        return FALSE;
-    }
+    if (FAILED(hr)) goto Cleanup;
 
     hr = pShellLink->lpVtbl->GetPath(pShellLink,
                                      szPath,
                                      MAX_PATH,
                                      NULL, 0);
-    if (FAILED(hr))
-    {
-        pShellLink->lpVtbl->Release(pShellLink);
-        CoUninitialize();
-        return FALSE;
-    }
+    if (FAILED(hr)) goto Cleanup;
 
     hr = pShellLink->lpVtbl->GetArguments(pShellLink,
                                           szCmd,
@@ -539,11 +521,15 @@ GetShortcutCommandLine(LPWSTR lpszLnkPath, LPWSTR lpszPath, SIZE_T Size)
     }
 
     StringCbCopy(lpszPath, Size, szPath);
-    pShellLink->lpVtbl->Release(pShellLink);
+    Result = TRUE;
+
+Cleanup:
+    if (pPersistFile) pPersistFile->lpVtbl->Release(pPersistFile);
+    if (pShellLink) pShellLink->lpVtbl->Release(pShellLink);
 
     CoUninitialize();
 
-    return TRUE;
+    return Result;
 }
 
 VOID
