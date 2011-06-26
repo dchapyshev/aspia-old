@@ -150,6 +150,26 @@ ReportAction(LPWSTR lpszRootName, BOOL IsSaveAll, CATEGORY_LIST *List)
     return Result;
 }
 
+UINT
+GetIoTargetById(UINT id)
+{
+    switch (id)
+    {
+        case IDS_TYPE_HTML:
+            return IO_TARGET_HTML;
+        case IDS_TYPE_TEXT:
+            return IO_TARGET_TXT;
+        case IDS_TYPE_CSV:
+            return IO_TARGET_CSV;
+        case IDS_TYPE_XML:
+            return IO_TARGET_XML;
+        case IDS_TYPE_INI:
+            return IO_TARGET_INI;
+        default:
+            return IO_TARGET_HTML;
+    }
+}
+
 VOID
 ReportThread(IN LPVOID lpParameter)
 {
@@ -161,7 +181,7 @@ ReportThread(IN LPVOID lpParameter)
 
     IsCanceled = FALSE;
 
-    IoSetTarget(IO_TARGET_HTML);
+    IoSetTarget(GetIoTargetById(SettingsInfo.ReportFileType));
     OldColumnsCount = IoGetColumnsCount();
 
     IoCreateReport(SettingsInfo.szReportPath);
