@@ -60,6 +60,18 @@ IoAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex)
             HtmlWriteItemString(lpszText, TRUE);
             HtmlAppendStringToFile(L"<td>&nbsp;</td></tr>");
             break;
+
+        case IO_TARGET_CSV:
+            break;
+
+        case IO_TARGET_TXT:
+            break;
+
+        case IO_TARGET_XML:
+            break;
+
+        case IO_TARGET_INI:
+            break;
     }
 
     return -1;
@@ -85,6 +97,18 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
         case IO_TARGET_HTML:
             HtmlWriteItemString(lpText, FALSE);
             break;
+
+        case IO_TARGET_CSV:
+            break;
+
+        case IO_TARGET_TXT:
+            break;
+
+        case IO_TARGET_XML:
+            break;
+
+        case IO_TARGET_INI:
+            break;
     }
 
     return -1;
@@ -107,10 +131,23 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
         case IO_TARGET_LISTVIEW:
             ListViewSetItemText(Index, iSubItem, pszText);
             break;
+
         case IO_TARGET_HTML:
             HtmlWriteValueString(pszText);
             if (IoGetColumnsCount() == iSubItem + 1)
                 HtmlAppendStringToFile(L"</tr>");
+            break;
+
+        case IO_TARGET_CSV:
+            break;
+
+        case IO_TARGET_TXT:
+            break;
+
+        case IO_TARGET_XML:
+            break;
+
+        case IO_TARGET_INI:
             break;
     }
 }
@@ -127,6 +164,18 @@ IoAddFooter(VOID)
             HtmlWriteItemString(L"&nbsp;", TRUE);
             HtmlAppendStringToFile(L"<td>&nbsp;</td></tr>");
             break;
+
+        case IO_TARGET_CSV:
+            break;
+
+        case IO_TARGET_TXT:
+            break;
+
+        case IO_TARGET_XML:
+            break;
+
+        case IO_TARGET_INI:
+            break;
     }
 }
 
@@ -137,6 +186,18 @@ IoReportBeginColumn(VOID)
     {
         case IO_TARGET_HTML:
             HtmlBeginColumn();
+            break;
+
+        case IO_TARGET_CSV:
+            break;
+
+        case IO_TARGET_TXT:
+            break;
+
+        case IO_TARGET_XML:
+            break;
+
+        case IO_TARGET_INI:
             break;
     }
 }
@@ -149,6 +210,18 @@ IoReportEndColumn(VOID)
         case IO_TARGET_HTML:
             HtmlEndColumn();
             break;
+
+        case IO_TARGET_CSV:
+            break;
+
+        case IO_TARGET_TXT:
+            break;
+
+        case IO_TARGET_XML:
+            break;
+
+        case IO_TARGET_INI:
+            break;
     }
 }
 
@@ -159,6 +232,18 @@ IoReportWriteColumnString(LPWSTR lpszString)
     {
         case IO_TARGET_HTML:
             HtmlWriteColumnString(lpszString);
+            break;
+
+        case IO_TARGET_CSV:
+            break;
+
+        case IO_TARGET_TXT:
+            break;
+
+        case IO_TARGET_XML:
+            break;
+
+        case IO_TARGET_INI:
             break;
     }
 }
@@ -180,8 +265,21 @@ IoAddColumnsList(COLUMN_LIST *List)
             case IO_TARGET_LISTVIEW:
                 ListViewAddColumn(Index + 1, List[Index].Width, szText);
                 break;
+
             case IO_TARGET_HTML:
                 IoReportWriteColumnString(szText);
+                break;
+
+            case IO_TARGET_CSV:
+                break;
+
+            case IO_TARGET_TXT:
+                break;
+
+            case IO_TARGET_XML:
+                break;
+
+            case IO_TARGET_INI:
                 break;
         }
     }
@@ -223,6 +321,18 @@ IoCreateReport(LPWSTR lpszFile)
     {
         case IO_TARGET_HTML:
             return HtmlCreateReport(lpszFile);
+
+        case IO_TARGET_CSV:
+            break;
+
+        case IO_TARGET_TXT:
+            break;
+
+        case IO_TARGET_XML:
+            break;
+
+        case IO_TARGET_INI:
+            break;
     }
 
     return FALSE;
@@ -236,6 +346,18 @@ IoCloseReport(VOID)
         case IO_TARGET_HTML:
             HtmlCloseReport();
             break;
+
+        case IO_TARGET_CSV:
+            break;
+
+        case IO_TARGET_TXT:
+            break;
+
+        case IO_TARGET_XML:
+            break;
+
+        case IO_TARGET_INI:
+            break;
     }
 }
 
@@ -246,6 +368,18 @@ IoReportWriteItemString(LPWSTR lpszString, BOOL bIsHeader)
     {
         case IO_TARGET_HTML:
             HtmlWriteItemString(lpszString, bIsHeader);
+            break;
+
+        case IO_TARGET_CSV:
+            break;
+
+        case IO_TARGET_TXT:
+            break;
+
+        case IO_TARGET_XML:
+            break;
+
+        case IO_TARGET_INI:
             break;
     }
 }
@@ -258,6 +392,18 @@ IoWriteTableTitle(LPWSTR lpszTitle, UINT StringID, BOOL WithContentTable)
         case IO_TARGET_HTML:
             HtmlTableTitle(lpszTitle, StringID, WithContentTable);
             break;
+
+        case IO_TARGET_CSV:
+            break;
+
+        case IO_TARGET_TXT:
+            break;
+
+        case IO_TARGET_XML:
+            break;
+
+        case IO_TARGET_INI:
+            break;
     }
 }
 
@@ -268,6 +414,18 @@ IoWriteBeginTable(VOID)
     {
         case IO_TARGET_HTML:
             HtmlBeginTable();
+            break;
+
+        case IO_TARGET_CSV:
+            break;
+
+        case IO_TARGET_TXT:
+            break;
+
+        case IO_TARGET_XML:
+            break;
+
+        case IO_TARGET_INI:
             break;
     }
 }
@@ -280,6 +438,18 @@ IoWriteEndTable(VOID)
         case IO_TARGET_HTML:
             HtmlEndTable();
             break;
+
+        case IO_TARGET_CSV:
+            break;
+
+        case IO_TARGET_TXT:
+            break;
+
+        case IO_TARGET_XML:
+            break;
+
+        case IO_TARGET_INI:
+            break;
     }
 }
 
@@ -290,6 +460,18 @@ IoWriteBeginContentTable(LPWSTR lpszTitle)
     {
         case IO_TARGET_HTML:
             HtmlBeginContentTable(lpszTitle);
+            break;
+
+        case IO_TARGET_CSV:
+            break;
+
+        case IO_TARGET_TXT:
+            break;
+
+        case IO_TARGET_XML:
+            break;
+
+        case IO_TARGET_INI:
             break;
     }
 }
@@ -302,6 +484,18 @@ IoWriteEndContentTable(VOID)
         case IO_TARGET_HTML:
             HtmlEndContentTable();
             break;
+
+        case IO_TARGET_CSV:
+            break;
+
+        case IO_TARGET_TXT:
+            break;
+
+        case IO_TARGET_XML:
+            break;
+
+        case IO_TARGET_INI:
+            break;
     }
 }
 
@@ -313,6 +507,18 @@ IoWriteContentTableItem(UINT ID, LPWSTR lpszName, BOOL IsRootItem)
         case IO_TARGET_HTML:
             HtmlContentTableItem(ID, lpszName, IsRootItem);
             break;
+
+        case IO_TARGET_CSV:
+            break;
+
+        case IO_TARGET_TXT:
+            break;
+
+        case IO_TARGET_XML:
+            break;
+
+        case IO_TARGET_INI:
+            break;
     }
 }
 
@@ -323,6 +529,18 @@ IoWriteContentTableEndRootItem(VOID)
     {
         case IO_TARGET_HTML:
             HtmlContentTableEndRootItem();
+            break;
+
+        case IO_TARGET_CSV:
+            break;
+
+        case IO_TARGET_TXT:
+            break;
+
+        case IO_TARGET_XML:
+            break;
+
+        case IO_TARGET_INI:
             break;
     }
 }
