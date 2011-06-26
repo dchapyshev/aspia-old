@@ -401,6 +401,7 @@ typedef struct
     /* Report */
     WCHAR szReportPath[MAX_PATH];
     BOOL IsAddContent;
+    UINT ReportFileType;
 
     /* Report: Content Filtering */
     BOOL ELogShowError;

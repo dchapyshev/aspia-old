@@ -487,7 +487,7 @@ GetCheckBoxesState(HWND hDlg)
        (IsDlgButtonChecked(hDlg, IDC_FILTER_IE_FTP) == BST_CHECKED) ? TRUE : FALSE;
 }
 
-INT
+VOID
 AddFileTypeToComboBox(HWND hCombo, UINT StringID)
 {
     WCHAR szText[MAX_STR_LEN];
@@ -501,7 +501,37 @@ AddFileTypeToComboBox(HWND hCombo, UINT StringID)
 
     SendMessage(hCombo, CB_SETITEMDATA, Index, StringID);
 
-    return Index;
+    if (SettingsInfo.ReportFileType == StringID)
+        SendMessage(hCombo, CB_SETCURSEL, Index, 0);
+}
+
+VOID
+GetReportExtById(UINT id, LPWSTR lpExt, SIZE_T Size)
+{
+    WCHAR *szExt;
+
+    switch (id)
+    {
+        case IDS_TYPE_HTML:
+            szExt = L".htm";
+            break;
+        case IDS_TYPE_TEXT:
+            szExt = L".txt";
+            break;
+        case IDS_TYPE_CSV:
+            szExt = L".csv";
+            break;
+        case IDS_TYPE_XML:
+            szExt = L".xml";
+            break;
+        case IDS_TYPE_INI:
+            szExt = L".ini";
+            break;
+        default:
+            szExt = L".htm";
+            break;
+    }
+    StringCbCopy(lpExt, Size, szExt);
 }
 
 INT_PTR CALLBACK
@@ -557,6 +587,8 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             /* Set default file path */
             if (SafeStrLen(SettingsInfo.szReportPath) == 0)
             {
+                WCHAR szExt[MAX_STR_LEN];
+
                 SHGetSpecialFolderPath(hDlg,
                                        SettingsInfo.szReportPath,
                                        CSIDL_MYDOCUMENTS, FALSE);
@@ -568,17 +600,17 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                             sizeof(SettingsInfo.szReportPath), L"\\");
                 StringCbCat(SettingsInfo.szReportPath,
                             sizeof(SettingsInfo.szReportPath), szFileName);
+
+                GetReportExtById(SettingsInfo.ReportFileType, szExt, sizeof(szExt));
+
                 StringCbCat(SettingsInfo.szReportPath,
-                            sizeof(SettingsInfo.szReportPath), L".htm");
+                            sizeof(SettingsInfo.szReportPath), szExt);
             }
 
             SetWindowText(GetDlgItem(hDlg, IDC_FILEPATH_EDIT),
                           SettingsInfo.szReportPath);
 
-            SendMessage(hCombo, CB_SETCURSEL,
-                        AddFileTypeToComboBox(hCombo, IDS_TYPE_HTML),
-                        0);
-
+            AddFileTypeToComboBox(hCombo, IDS_TYPE_HTML);
             AddFileTypeToComboBox(hCombo, IDS_TYPE_TEXT);
             AddFileTypeToComboBox(hCombo, IDS_TYPE_CSV);
             AddFileTypeToComboBox(hCombo, IDS_TYPE_XML);
@@ -621,29 +653,13 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                         UINT Data = (UINT)SendMessage(hCombo, CB_GETITEMDATA, Index, 0);
                         HWND hEdit = GetDlgItem(hDlg, IDC_FILEPATH_EDIT);
                         WCHAR szPath[MAX_PATH];
-                        LPWSTR lpExt;
+                        WCHAR szExt[MAX_STR_LEN];
 
-                        switch (Data)
-                        {
-                            case IDS_TYPE_HTML:
-                                lpExt = L".htm";
-                                break;
-                            case IDS_TYPE_TEXT:
-                                lpExt = L".txt";
-                                break;
-                            case IDS_TYPE_CSV:
-                                lpExt = L".csv";
-                                break;
-                            case IDS_TYPE_XML:
-                                lpExt = L".xml";
-                                break;
-                            case IDS_TYPE_INI:
-                                lpExt = L".ini";
-                                break;
-                            default:
-                                lpExt = L".htm";
-                                break;
-                        }
+                        if (Data == CB_ERR) break;
+
+                        SettingsInfo.ReportFileType = Data;
+
+                        GetReportExtById(Data, szExt, sizeof(szExt));
 
                         GetWindowText(hEdit, szPath, MAX_PATH);
                         for (Index = wcslen(szPath); Index > 0; Index--)
@@ -654,8 +670,11 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                                 break;
                             }
                         }
-                        StringCbCat(szPath, sizeof(szPath), lpExt);
+                        StringCbCat(szPath, sizeof(szPath), szExt);
                         SetWindowText(hEdit, szPath);
+                        StringCbCopy(SettingsInfo.szReportPath,
+                                     sizeof(SettingsInfo.szReportPath),
+                                     szPath);
                     }
                 }
                 break;

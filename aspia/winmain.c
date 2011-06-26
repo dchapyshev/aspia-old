@@ -815,6 +815,7 @@ wWinMain(HINSTANCE hInst,
         SettingsInfo.SensorsRefreshRate = 30;
 
         SettingsInfo.IsAddContent = TRUE;
+        SettingsInfo.ReportFileType = IDS_TYPE_HTML;
 
         ParamsInfo.DebugMode = FALSE;
     }
