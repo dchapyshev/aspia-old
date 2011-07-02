@@ -46,7 +46,7 @@ IniWriteValueString(LPWSTR lpszString)
 {
     WCHAR szText[MAX_STR_LEN];
 
-    StringCbPrintf(szText, sizeof(szText), L"%s;", lpszString);
+    StringCbPrintf(szText, sizeof(szText), L"%s,", lpszString);
     IniAppendStringToFile(szText);
 }
 
@@ -55,7 +55,7 @@ IniWriteItemString(LPWSTR lpszString)
 {
     WCHAR szText[MAX_STR_LEN];
 
-    StringCbPrintf(szText, sizeof(szText), L"\n%s;", lpszString);
+    StringCbPrintf(szText, sizeof(szText), L"\n%s=", lpszString);
     IniAppendStringToFile(szText);
 }
 

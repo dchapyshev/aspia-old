@@ -49,6 +49,14 @@ VOID IniWriteItemString(LPWSTR lpszString);
 VOID IniTableTitle(LPWSTR lpszTitle);
 VOID IniEndTable(VOID);
 
+BOOL TextAppendStringToFile(LPWSTR lpszString);
+BOOL TextCreateReport(LPWSTR lpszFile);
+VOID TextCloseReport(VOID);
+VOID TextWriteValueString(LPWSTR lpszString);
+VOID TextWriteItemString(LPWSTR lpszString);
+VOID TextTableTitle(LPWSTR lpszTitle);
+VOID TextEndTable(VOID);
+
 static UINT IoTarget = 0;
 static INT ColumnsCount = 0;
 
@@ -84,6 +92,8 @@ IoAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex)
             break;
 
         case IO_TARGET_TXT:
+            TextAppendStringToFile(L"\n");
+            TextWriteItemString(lpszText);
             break;
 
         case IO_TARGET_XML:
@@ -124,6 +134,7 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
             break;
 
         case IO_TARGET_TXT:
+            TextWriteItemString(lpText);
             break;
 
         case IO_TARGET_XML:
@@ -166,6 +177,7 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
             break;
 
         case IO_TARGET_TXT:
+            TextWriteValueString(pszText);
             break;
 
         case IO_TARGET_XML:
@@ -195,6 +207,7 @@ IoAddFooter(VOID)
             break;
 
         case IO_TARGET_TXT:
+            TextAppendStringToFile(L"\n");
             break;
 
         case IO_TARGET_XML:
@@ -262,6 +275,7 @@ IoReportWriteColumnString(LPWSTR lpszString)
             break;
 
         case IO_TARGET_TXT:
+            TextWriteColumnString(lpszString);
             break;
 
         case IO_TARGET_XML:
@@ -342,7 +356,7 @@ IoCreateReport(LPWSTR lpszFile)
             return CsvCreateReport(lpszFile);
 
         case IO_TARGET_TXT:
-            break;
+            return TextCreateReport(lpszFile);
 
         case IO_TARGET_XML:
             break;
@@ -368,6 +382,7 @@ IoCloseReport(VOID)
             break;
 
         case IO_TARGET_TXT:
+            TextCloseReport();
             break;
 
         case IO_TARGET_XML:
@@ -393,6 +408,7 @@ IoReportWriteItemString(LPWSTR lpszString, BOOL bIsHeader)
             break;
 
         case IO_TARGET_TXT:
+            TextWriteItemString(lpszString);
             break;
 
         case IO_TARGET_XML:
@@ -418,6 +434,7 @@ IoWriteTableTitle(LPWSTR lpszTitle, UINT StringID, BOOL WithContentTable)
             break;
 
         case IO_TARGET_TXT:
+            TextTableTitle(lpszTitle);
             break;
 
         case IO_TARGET_XML:
