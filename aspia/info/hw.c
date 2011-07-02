@@ -374,7 +374,7 @@ GetDiagonalSize(INT Horiz, INT Vert)
 }
 
 VOID
-ParseAndShowEDID(BYTE *Edid)
+ParseAndShowEDID(LPWSTR lpDeviceName, BYTE *Edid)
 {
     WCHAR szText[MAX_STR_LEN], szIniPath[MAX_PATH];
     WCHAR szMonitorId[MAX_STR_LEN];
@@ -414,8 +414,13 @@ ParseAndShowEDID(BYTE *Edid)
                pVendorSign, Edid[ID_MODEL + 1], Edid[ID_MODEL]);
     _wcsupr_s(szMonitorId, MAX_STR_LEN);
 
-    GetPrivateProfileString(L"devices", szMonitorId, L"Unknown",
+    GetPrivateProfileString(L"devices", szMonitorId, L"",
                             szText, MAX_STR_LEN, szIniPath);
+    if (wcslen(szText) == 0)
+    {
+        StringCbPrintf(szText, sizeof(szText), L"%s (NoDB)", lpDeviceName);
+    }
+
     IoAddHeaderString(0, szText, 0);
 
     /* Monitor ID */
@@ -512,7 +517,8 @@ VOID
 HW_MonitorInfo(VOID)
 {
     SP_DEVINFO_DATA DeviceInfoData = {0};
-    WCHAR szDevPath[MAX_PATH], szKeyPath[MAX_PATH];
+    WCHAR szDevPath[MAX_PATH], szKeyPath[MAX_PATH],
+          szDeviceName[MAX_STR_LEN];
     HDEVINFO hDevInfo;
     INT DeviceIndex = 0;
     BYTE Edid[0x80];
@@ -544,6 +550,27 @@ HW_MonitorInfo(VOID)
             continue;
         }
 
+        if (!SetupDiGetDeviceRegistryProperty(hDevInfo,
+                                              &DeviceInfoData,
+                                              SPDRP_FRIENDLYNAME,
+                                              0,
+                                              (BYTE*)szDeviceName,
+                                              MAX_STR_LEN,
+                                              NULL))
+        {
+            if (!SetupDiGetDeviceRegistryProperty(hDevInfo,
+                                                  &DeviceInfoData,
+                                                  SPDRP_DEVICEDESC,
+                                                  0,
+                                                  (BYTE*)szDeviceName,
+                                                  MAX_STR_LEN,
+                                                  NULL))
+            {
+                LoadMUIString(IDS_DEVICE_UNKNOWN_DEVICE,
+                              szDeviceName, MAX_STR_LEN);
+            }
+        }
+
         StringCbPrintf(szKeyPath, sizeof(szKeyPath),
                        L"SYSTEM\\CurrentControlSet\\Enum\\%s\\Device Parameters",
                        szDevPath);
@@ -552,7 +579,7 @@ HW_MonitorInfo(VOID)
                                   szKeyPath, L"EDID",
                                   (LPBYTE)&Edid, sizeof(Edid)))
         {
-            ParseAndShowEDID(Edid);
+            ParseAndShowEDID(szDeviceName, Edid);
             IoAddFooter();
         }
     }
