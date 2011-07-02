@@ -8,22 +8,6 @@
 #include "main.h"
 
 
-BOOL HtmlAppendStringToFile(LPWSTR lpszString);
-BOOL HtmlCreateReport(LPWSTR lpszFile);
-VOID HtmlCloseReport(VOID);
-VOID HtmlBeginColumn(VOID);
-VOID HtmlEndColumn(VOID);
-VOID HtmlWriteItemString(LPWSTR lpszString, BOOL bIsHeader);
-VOID HtmlWriteValueString(LPWSTR lpszString);
-VOID HtmlWriteColumnString(LPWSTR lpszString);
-VOID HtmlTableTitle(LPWSTR lpszTitle, UINT StringID, BOOL WithContentTable);
-VOID HtmlBeginTable(VOID);
-VOID HtmlEndTable(VOID);
-VOID HtmlBeginContentTable(LPWSTR lpszTitle);
-VOID HtmlEndContentTable(VOID);
-VOID HtmlContentTableItem(UINT ID, LPWSTR lpszName, BOOL IsRootItem);
-VOID HtmlContentTableEndRootItem(VOID);
-
 INT ListViewAddItem(INT Indent, INT IconIndex, LPWSTR lpText);
 INT ListViewAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex);
 VOID ListViewAddHeader(UINT StringID, INT IconIndex);
@@ -32,34 +16,82 @@ INT ListViewAddValueName(LPWSTR lpszName, INT IconIndex);
 INT ListViewAddImageListIcon(UINT IconID);
 VOID ListViewAddColumn(SIZE_T Index, INT Width, LPWSTR lpszText);
 
-BOOL CsvAppendStringToFile(LPWSTR lpszString);
-BOOL CsvCreateReport(LPWSTR lpszFile);
-VOID CsvCloseReport(VOID);
-VOID CsvWriteValueString(LPWSTR lpszString);
-VOID CsvWriteItemString(LPWSTR lpszString);
-VOID CsvWriteColumnString(LPWSTR lpszString);
-VOID CsvTableTitle(LPWSTR lpszTitle);
-VOID CsvEndTable(VOID);
-
-BOOL IniAppendStringToFile(LPWSTR lpszString);
-BOOL IniCreateReport(LPWSTR lpszFile);
-VOID IniCloseReport(VOID);
-VOID IniWriteValueString(LPWSTR lpszString);
-VOID IniWriteItemString(LPWSTR lpszString);
-VOID IniTableTitle(LPWSTR lpszTitle);
-VOID IniEndTable(VOID);
-
-BOOL TextAppendStringToFile(LPWSTR lpszString);
-BOOL TextCreateReport(LPWSTR lpszFile);
-VOID TextCloseReport(VOID);
-VOID TextWriteValueString(LPWSTR lpszString);
-VOID TextWriteItemString(LPWSTR lpszString);
-VOID TextTableTitle(LPWSTR lpszTitle);
-VOID TextEndTable(VOID);
-
 static UINT IoTarget = 0;
 static INT ColumnsCount = 0;
+static FILE *hReport = NULL;
 
+
+#define lpszHtmlHeader L"<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>\
+<html xmlns='http://www.w3.org/1999/xhtml'><head>\
+<meta http-equiv='content-type' content='text/html; charset=utf-8' />\
+<meta name='rights' content='Aspia Software, Dmitry Chapyshev' />\
+<meta name='generator' content='Aspia' />\
+<title>Aspia</title>\
+<style type='text/css'>\
+body{\
+color:#353535;\
+font-family:Tahoma,Arial,Verdana;\
+}\
+table{\
+background-color:#F9F9F9;\
+border:1px solid #E2E2E0;\
+font-size:12px;\
+}\
+td{\
+padding:5px;\
+margin:5px;\
+height:20px;\
+border-bottom:1px solid #E2E2E0;\
+}\
+.h{\
+color:#000;\
+font-weight:bold;\
+}\
+.c{\
+color:#fff;\
+background-color:#383637;\
+font-weight:bold;\
+}\
+#f{\
+font-size:12px;\
+text-align:center;\
+}\
+a{\
+color:#4475bf;\
+}\
+h1 a{\
+font-size:18px;\
+}\
+h2 a{\
+font-size:16px;\
+}\
+h3 a{\
+font-size:13px;\
+}\
+h1{\
+font-size:18px;\
+}\
+h2{\
+font-size:16px;\
+}\
+h3{\
+font-size:13px;\
+}\
+</style>\
+</head><body>"
+
+
+BOOL
+AppendStringToFile(LPWSTR lpszString)
+{
+    DWORD dwLen = SafeStrLen(lpszString);
+
+    if (!hReport) return FALSE;
+
+    fwrite(lpszString, sizeof(WCHAR), dwLen, hReport);
+
+    return TRUE;
+}
 
 VOID
 IoSetTarget(UINT Target)
@@ -76,34 +108,38 @@ IoGetTarget(VOID)
 INT
 IoAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex)
 {
+    WCHAR szText[MAX_STR_LEN * 5];
+
     switch (IoTarget)
     {
         case IO_TARGET_LISTVIEW:
             return ListViewAddHeaderString(Indent, lpszText, IconIndex);
 
         case IO_TARGET_HTML:
-            HtmlWriteItemString(lpszText, TRUE);
-            HtmlAppendStringToFile(L"<td>&nbsp;</td></tr>");
-            break;
+        {
+            StringCbPrintf(szText, sizeof(szText),
+                           L"<tr><td class='h'>%s</td><td>&nbsp;</td></tr>",
+                           lpszText);
+        }
+        break;
 
         case IO_TARGET_CSV:
-            CsvAppendStringToFile(L"\n");
-            CsvWriteItemString(lpszText);
+            StringCbPrintf(szText, sizeof(szText), L"\n\n%s", lpszText);
             break;
 
         case IO_TARGET_TXT:
-            TextAppendStringToFile(L"\n");
-            TextWriteItemString(lpszText);
-            break;
-
-        case IO_TARGET_XML:
+            StringCbPrintf(szText, sizeof(szText), L"\n\n%s", lpszText);
             break;
 
         case IO_TARGET_INI:
-            IniAppendStringToFile(L"\n");
-            IniWriteItemString(lpszText);
+            StringCbPrintf(szText, sizeof(szText), L"\n\n%s=", lpszText);
             break;
+
+        default:
+            return -1;
     }
+
+    AppendStringToFile(szText);
 
     return -1;
 }
@@ -120,30 +156,38 @@ IoAddHeader(INT Indent, UINT StringID, INT IconIndex)
 INT
 IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
 {
+    WCHAR szText[MAX_STR_LEN];
+
     switch (IoTarget)
     {
         case IO_TARGET_LISTVIEW:
             return ListViewAddItem(Indent, IconIndex, lpText);
 
         case IO_TARGET_HTML:
-            HtmlWriteItemString(lpText, FALSE);
-            break;
+        {
+            StringCbPrintf(szText, sizeof(szText),
+                           L"<tr><td>%s</td>",
+                           lpText);
+        }
+        break;
 
         case IO_TARGET_CSV:
-            CsvWriteItemString(lpText);
+            StringCbPrintf(szText, sizeof(szText), L"\n%s;", lpText);
             break;
 
         case IO_TARGET_TXT:
-            TextWriteItemString(lpText);
-            break;
-
-        case IO_TARGET_XML:
+            StringCbPrintf(szText, sizeof(szText), L"\n%s ", lpText);
             break;
 
         case IO_TARGET_INI:
-            IniWriteItemString(lpText);
+            StringCbPrintf(szText, sizeof(szText), L"\n%s=", lpText);
             break;
+
+        default:
+            return -1;
     }
+
+    AppendStringToFile(szText);
 
     return -1;
 }
@@ -160,62 +204,77 @@ IoAddValueName(INT Indent, UINT ValueID, INT IconIndex)
 VOID
 IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
 {
+    WCHAR szText[MAX_STR_LEN * 15];
+
     switch (IoTarget)
     {
         case IO_TARGET_LISTVIEW:
             ListViewSetItemText(Index, iSubItem, pszText);
-            break;
+            return;
 
         case IO_TARGET_HTML:
-            HtmlWriteValueString(pszText);
+        {
+            StringCbPrintf(szText, sizeof(szText),
+                           L"<td>%s</td>",
+                           (SafeStrLen(pszText) == 0) ? L"&nbsp;" : pszText);
+
+            AppendStringToFile(szText);
+
             if (IoGetColumnsCount() == iSubItem + 1)
-                HtmlAppendStringToFile(L"</tr>");
-            break;
+                AppendStringToFile(L"</tr>");
+            return;
+        }
 
         case IO_TARGET_CSV:
-            CsvWriteValueString(pszText);
+            StringCbPrintf(szText, sizeof(szText),
+                           (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s;", pszText);
             break;
 
         case IO_TARGET_TXT:
-            TextWriteValueString(pszText);
-            break;
-
-        case IO_TARGET_XML:
+            StringCbPrintf(szText, sizeof(szText),
+                           (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s ", pszText);
             break;
 
         case IO_TARGET_INI:
-            IniWriteValueString(pszText);
+            StringCbPrintf(szText, sizeof(szText),
+                           (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s,", pszText);
+            break;
+
+        default:
             break;
     }
+
+    AppendStringToFile(szText);
 }
 
 VOID
 IoAddFooter(VOID)
 {
+    LPWSTR lpString;
+
     switch (IoTarget)
     {
         case IO_TARGET_LISTVIEW:
             ListViewAddItem(0, -1, L" ");
-            break;
+            return;
+
         case IO_TARGET_HTML:
-            HtmlWriteItemString(L"&nbsp;", TRUE);
-            HtmlAppendStringToFile(L"<td>&nbsp;</td></tr>");
+            lpString = L"<tr><td class='h'>&nbsp;</td><td>&nbsp;</td></tr>";
             break;
 
         case IO_TARGET_CSV:
-            CsvAppendStringToFile(L"\n");
+            lpString = L"\n";
             break;
 
         case IO_TARGET_TXT:
-            TextAppendStringToFile(L"\n");
+            lpString = L"\n";
             break;
 
-        case IO_TARGET_XML:
-            break;
-
-        case IO_TARGET_INI:
-            break;
+        default:
+            return;
     }
+
+    AppendStringToFile(lpString);
 }
 
 VOID
@@ -224,19 +283,7 @@ IoReportBeginColumn(VOID)
     switch (IoTarget)
     {
         case IO_TARGET_HTML:
-            HtmlBeginColumn();
-            break;
-
-        case IO_TARGET_CSV:
-            break;
-
-        case IO_TARGET_TXT:
-            break;
-
-        case IO_TARGET_XML:
-            break;
-
-        case IO_TARGET_INI:
+            AppendStringToFile(L"<tr>");
             break;
     }
 }
@@ -247,16 +294,7 @@ IoReportEndColumn(VOID)
     switch (IoTarget)
     {
         case IO_TARGET_HTML:
-            HtmlEndColumn();
-            break;
-
-        case IO_TARGET_TXT:
-            break;
-
-        case IO_TARGET_XML:
-            break;
-
-        case IO_TARGET_INI:
+            AppendStringToFile(L"</tr>");
             break;
     }
 }
@@ -264,26 +302,31 @@ IoReportEndColumn(VOID)
 VOID
 IoReportWriteColumnString(LPWSTR lpszString)
 {
+    WCHAR szText[MAX_STR_LEN * 3];
+
     switch (IoTarget)
     {
         case IO_TARGET_HTML:
-            HtmlWriteColumnString(lpszString);
-            break;
+        {
+            StringCbPrintf(szText, sizeof(szText),
+                           L"<td class='c'>%s</td>",
+                           lpszString);
+        }
+        break;
 
         case IO_TARGET_CSV:
-            CsvWriteColumnString(lpszString);
+            StringCbPrintf(szText, sizeof(szText), L"%s;", lpszString);
             break;
 
         case IO_TARGET_TXT:
-            TextWriteColumnString(lpszString);
+            StringCbPrintf(szText, sizeof(szText), L"%s ", lpszString);
             break;
 
-        case IO_TARGET_XML:
-            break;
-
-        case IO_TARGET_INI:
-            break;
+        default:
+            return;
     }
+
+    AppendStringToFile(szText);
 }
 
 VOID
@@ -307,7 +350,6 @@ IoAddColumnsList(COLUMN_LIST *List)
             case IO_TARGET_HTML:
             case IO_TARGET_CSV:
             case IO_TARGET_TXT:
-            case IO_TARGET_XML:
             case IO_TARGET_INI:
                 IoReportWriteColumnString(szText);
                 break;
@@ -347,103 +389,119 @@ IoAddIcon(UINT IconID)
 BOOL
 IoCreateReport(LPWSTR lpszFile)
 {
-    switch (IoTarget)
+    if (_wfopen_s(&hReport, lpszFile, L"wt+,ccs=UTF-8") != 0)
+        return FALSE;
+
+    if (!hReport) return FALSE;
+
+    if (IoTarget == IO_TARGET_HTML)
     {
-        case IO_TARGET_HTML:
-            return HtmlCreateReport(lpszFile);
-
-        case IO_TARGET_CSV:
-            return CsvCreateReport(lpszFile);
-
-        case IO_TARGET_TXT:
-            return TextCreateReport(lpszFile);
-
-        case IO_TARGET_XML:
-            break;
-
-        case IO_TARGET_INI:
-            return IniCreateReport(lpszFile);
+        AppendStringToFile(lpszHtmlHeader);
     }
 
-    return FALSE;
+    return TRUE;
 }
 
 VOID
 IoCloseReport(VOID)
 {
-    switch (IoTarget)
+    if (IoTarget == IO_TARGET_HTML)
     {
-        case IO_TARGET_HTML:
-            HtmlCloseReport();
-            break;
-
-        case IO_TARGET_CSV:
-            CsvCloseReport();
-            break;
-
-        case IO_TARGET_TXT:
-            TextCloseReport();
-            break;
-
-        case IO_TARGET_XML:
-            break;
-
-        case IO_TARGET_INI:
-            IniCloseReport();
-            break;
+        AppendStringToFile(L"<br /><div id='f'>Aspia ");
+        AppendStringToFile(VER_FILEVERSION_STR);
+        AppendStringToFile(L"<br />&copy; 2011 <a href='http://www.aspia.ru'>Aspia Software</a></div></body></html>");
     }
+
+    fclose(hReport);
+    hReport = NULL;
 }
 
 VOID
 IoReportWriteItemString(LPWSTR lpszString, BOOL bIsHeader)
 {
+    WCHAR szText[MAX_STR_LEN * 5];
+
     switch (IoTarget)
     {
         case IO_TARGET_HTML:
-            HtmlWriteItemString(lpszString, bIsHeader);
-            break;
+        {
+            StringCbPrintf(szText, sizeof(szText),
+                           L"<tr>%s%s</td>",
+                           bIsHeader ? L"<td class='h'>" : L"<td>",
+                           lpszString);
+        }
+        break;
 
         case IO_TARGET_CSV:
-            CsvWriteItemString(lpszString);
+            StringCbPrintf(szText, sizeof(szText), L"\n%s;", lpszString);
             break;
 
         case IO_TARGET_TXT:
-            TextWriteItemString(lpszString);
-            break;
-
-        case IO_TARGET_XML:
+            StringCbPrintf(szText, sizeof(szText), L"\n%s ", lpszString);
             break;
 
         case IO_TARGET_INI:
-            IniWriteItemString(lpszString);
+            StringCbPrintf(szText, sizeof(szText), L"\n%s=", lpszString);
             break;
+
+        default:
+            return;
     }
+
+    AppendStringToFile(szText);
 }
 
 VOID
 IoWriteTableTitle(LPWSTR lpszTitle, UINT StringID, BOOL WithContentTable)
 {
+    WCHAR szText[MAX_STR_LEN];
+
     switch (IoTarget)
     {
         case IO_TARGET_HTML:
-            HtmlTableTitle(lpszTitle, StringID, WithContentTable);
-            break;
+        {
+            WCHAR szTemp[MAX_STR_LEN];
+
+            StringCbPrintf(szText, sizeof(szText),
+                           L"<h2 id='i%ld'>%s",
+                           StringID, lpszTitle);
+            AppendStringToFile(szText);
+
+            if (!IsRootCategory(StringID, RootCategoryList))
+            {
+                if (WithContentTable)
+                {
+                    LoadMUIString(IDS_REPORT_TOP, szTemp, sizeof(szTemp)/sizeof(WCHAR));
+                    StringCbPrintf(szText, sizeof(szText),
+                                   L"  (<a href='#top'>%s</a>)</h2>",
+                                   szTemp);
+                    AppendStringToFile(szText);
+                    return;
+                }
+            }
+
+            AppendStringToFile(L"</h2>");
+            return;
+        }
+        break;
 
         case IO_TARGET_CSV:
-            CsvTableTitle(lpszTitle);
+            StringCbPrintf(szText, sizeof(szText), L"\n%s\n", lpszTitle);
             break;
 
         case IO_TARGET_TXT:
-            TextTableTitle(lpszTitle);
-            break;
-
-        case IO_TARGET_XML:
+            StringCbPrintf(szText, sizeof(szText), L"\n%s\n", lpszTitle);
             break;
 
         case IO_TARGET_INI:
-            IniTableTitle(lpszTitle);
+            StringCbPrintf(szText, sizeof(szText), L"\n[%s]\n", lpszTitle);
             break;
+
+        default:
+            return;
     }
+
+    AppendStringToFile(szText);
 }
 
 VOID
@@ -452,19 +510,7 @@ IoWriteBeginTable(VOID)
     switch (IoTarget)
     {
         case IO_TARGET_HTML:
-            HtmlBeginTable();
-            break;
-
-        case IO_TARGET_CSV:
-            break;
-
-        case IO_TARGET_TXT:
-            break;
-
-        case IO_TARGET_XML:
-            break;
-
-        case IO_TARGET_INI:
+            AppendStringToFile(L"<table cellspacing='0' cellpadding='0'>");
             break;
     }
 }
@@ -475,19 +521,7 @@ IoWriteEndTable(VOID)
     switch (IoTarget)
     {
         case IO_TARGET_HTML:
-            HtmlEndTable();
-            break;
-
-        case IO_TARGET_CSV:
-            break;
-
-        case IO_TARGET_TXT:
-            break;
-
-        case IO_TARGET_XML:
-            break;
-
-        case IO_TARGET_INI:
+            AppendStringToFile(L"</table>");
             break;
     }
 }
@@ -495,23 +529,18 @@ IoWriteEndTable(VOID)
 VOID
 IoWriteBeginContentTable(LPWSTR lpszTitle)
 {
+    WCHAR szText[MAX_STR_LEN];
+
     switch (IoTarget)
     {
         case IO_TARGET_HTML:
-            HtmlBeginContentTable(lpszTitle);
-            break;
-
-        case IO_TARGET_CSV:
-            break;
-
-        case IO_TARGET_TXT:
-            break;
-
-        case IO_TARGET_XML:
-            break;
-
-        case IO_TARGET_INI:
-            break;
+        {
+            StringCbPrintf(szText, sizeof(szText),
+                           L"<h1 id='top' style='font-size:18px'>%s</h1><ul>",
+                           lpszTitle);
+            AppendStringToFile(szText);
+        }
+        break;
     }
 }
 
@@ -521,19 +550,7 @@ IoWriteEndContentTable(VOID)
     switch (IoTarget)
     {
         case IO_TARGET_HTML:
-            HtmlEndContentTable();
-            break;
-
-        case IO_TARGET_CSV:
-            break;
-
-        case IO_TARGET_TXT:
-            break;
-
-        case IO_TARGET_XML:
-            break;
-
-        case IO_TARGET_INI:
+            AppendStringToFile(L"</ul>");
             break;
     }
 }
@@ -541,23 +558,26 @@ IoWriteEndContentTable(VOID)
 VOID
 IoWriteContentTableItem(UINT ID, LPWSTR lpszName, BOOL IsRootItem)
 {
+    WCHAR szText[MAX_STR_LEN];
+
     switch (IoTarget)
     {
         case IO_TARGET_HTML:
-            HtmlContentTableItem(ID, lpszName, IsRootItem);
-            break;
-
-        case IO_TARGET_CSV:
-            break;
-
-        case IO_TARGET_TXT:
-            break;
-
-        case IO_TARGET_XML:
-            break;
-
-        case IO_TARGET_INI:
-            break;
+        {
+            if (!IsRootItem)
+            {
+                StringCbPrintf(szText, sizeof(szText),
+                               L"<li><a href='#i%ld'>%s</a></li>",
+                               ID, lpszName);
+            }
+            else
+            {
+                StringCbPrintf(szText, sizeof(szText),
+                               L"<li>%s<ul>", lpszName);
+            }
+            AppendStringToFile(szText);
+        }
+        break;
     }
 }
 
@@ -567,19 +587,7 @@ IoWriteContentTableEndRootItem(VOID)
     switch (IoTarget)
     {
         case IO_TARGET_HTML:
-            HtmlContentTableEndRootItem();
-            break;
-
-        case IO_TARGET_CSV:
-            break;
-
-        case IO_TARGET_TXT:
-            break;
-
-        case IO_TARGET_XML:
-            break;
-
-        case IO_TARGET_INI:
+            AppendStringToFile(L"</ul></li>");
             break;
     }
 }

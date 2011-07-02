@@ -350,10 +350,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\report\csv.c"
-				>
-			</File>
-			<File
 				RelativePath=".\info\spd\ddr.c"
 				>
 			</File>
@@ -390,19 +386,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\report\html.c"
-				>
-			</File>
-			<File
 				RelativePath=".\info\hw.c"
 				>
 			</File>
 			<File
 				RelativePath=".\info\spd\infolists.c"
-				>
-			</File>
-			<File
-				RelativePath=".\report\ini.c"
 				>
 			</File>
 			<File
@@ -474,15 +462,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\report\text.c"
-				>
-			</File>
-			<File
 				RelativePath=".\winmain.c"
-				>
-			</File>
-			<File
-				RelativePath=".\report\xml.c"
 				>
 			</File>
 		</Filter>
