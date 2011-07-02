@@ -815,14 +815,14 @@ static VOID
 EnumEnvironmentVariables(HKEY hRootKey,
                          LPWSTR lpSubKeyName)
 {
-    HKEY hKey;
+    HKEY hKey = NULL;
     DWORD dwValues;
     DWORD dwMaxValueNameLength;
     DWORD dwMaxValueDataLength;
     DWORD dwIndex;
-    LPWSTR lpName;
-    LPWSTR lpData;
-    LPWSTR lpExpandData;
+    LPWSTR lpName = NULL;
+    LPWSTR lpData = NULL;
+    LPWSTR lpExpandData = NULL;
     DWORD dwNameLength;
     DWORD dwDataLength;
     DWORD dwType;
@@ -844,35 +844,28 @@ EnumEnvironmentVariables(HKEY hRootKey,
                         &dwMaxValueDataLength,
                         NULL, NULL) != ERROR_SUCCESS)
     {
-        RegCloseKey(hKey);
-        return;
+        goto Cleanup;
     }
 
     lpName = Alloc((dwMaxValueNameLength + 1) * sizeof(WCHAR));
     if (!lpName)
     {
         DebugAllocFailed();
-        RegCloseKey(hKey);
-        return;
+        goto Cleanup;
     }
 
     lpData = Alloc((dwMaxValueDataLength + 1) * sizeof(WCHAR));
     if (!lpData)
     {
         DebugAllocFailed();
-        Free(lpData);
-        RegCloseKey(hKey);
-        return;
+        goto Cleanup;
     }
 
     lpExpandData = Alloc(2048 * sizeof(WCHAR));
     if (!lpExpandData)
     {
         DebugAllocFailed();
-        Free(lpName);
-        Free(lpData);
-        RegCloseKey(hKey);
-        return;
+        goto Cleanup;
     }
 
     for (dwIndex = 0; dwIndex < dwValues; ++dwIndex)
@@ -889,10 +882,7 @@ EnumEnvironmentVariables(HKEY hRootKey,
                          (LPBYTE)lpData,
                          &dwDataLength) != ERROR_SUCCESS)
         {
-            Free(lpName);
-            Free(lpData);
-            RegCloseKey(hKey);
-            return;
+            goto Cleanup;
         }
 
         if (dwType != REG_SZ && dwType != REG_EXPAND_SZ)
@@ -904,10 +894,11 @@ EnumEnvironmentVariables(HKEY hRootKey,
         IoSetItemText(ItemIndex, 1, lpExpandData);
     }
 
-    Free(lpExpandData);
-    Free(lpName);
-    Free(lpData);
-    RegCloseKey(hKey);
+Cleanup:
+    if (lpExpandData) Free(lpExpandData);
+    if (lpName) Free(lpName);
+    if (lpData) Free(lpData);
+    if (hKey) RegCloseKey(hKey);
 }
 
 VOID
@@ -1474,6 +1465,8 @@ AddPreventItem(UINT ValueName, HKEY hRootKey, LPWSTR lpPath, LPWSTR lpKeyName)
 VOID
 OS_PreventsInfo(VOID)
 {
+    LPWSTR lpExplorer = L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer";
+    LPWSTR lpSystem = L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System";
     DebugStartReceiving();
 
     IoAddIcon(IDI_CHECKED);
@@ -1486,15 +1479,15 @@ OS_PreventsInfo(VOID)
     IoAddHeader(0, IDS_PREV_TOOLS, 2);
 
     AddPreventItem(IDS_PREV_TASKMGR, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+                   lpSystem,
                    L"DisableTaskMgr");
 
     AddPreventItem(IDS_PREV_REGEDIT, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+                   lpSystem,
                    L"DisableRegistryTools");
 
     AddPreventItem(IDS_PREV_DISABLE_CMD, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+                   lpSystem,
                    L"DisableCMD");
 
     IoAddFooter();
@@ -1502,40 +1495,40 @@ OS_PreventsInfo(VOID)
     IoAddHeader(0, IDS_PREV_EXPLORER, 3);
 
     AddPreventItem(IDS_PREV_DESKTOP_ITEMS, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+                   lpExplorer,
                    L"NoDesktop");
     AddPreventItem(IDS_PREV_EXPLORER_CONTEXT_MENU, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+                   lpExplorer,
                    L"NoViewContextMenu");
     AddPreventItem(IDS_PREV_TASKBAR_CONTEXT_MENU, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+                   lpExplorer,
                    L"NoTrayContextMenu");
     AddPreventItem(IDS_PREV_HIDE_TRAY, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+                   lpExplorer,
                    L"NoTrayItemsDisplay");
     AddPreventItem(IDS_PREV_TOOLBARS_ON_TASKBAR, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+                   lpExplorer,
                    L"NoToolBarsOnTaskbar");
     AddPreventItem(IDS_PREV_HIDE_CLOCK, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+                   lpExplorer,
                    L"HideClock");
     AddPreventItem(IDS_PREV_RECENT_DOCS, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+                   lpExplorer,
                    L"NoRecentDocsMenu");
     AddPreventItem(IDS_PREV_FAVORITES, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+                   lpExplorer,
                    L"NoFavoritiesMenu");
     AddPreventItem(IDS_PREV_FIND_COMMAND, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+                   lpExplorer,
                    L"NoFind");
     AddPreventItem(IDS_PREV_RUN_COMMAND, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+                   lpExplorer,
                    L"NoRun");
     AddPreventItem(IDS_PREV_LOG_OFF, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+                   lpExplorer,
                    L"NoLogOff");
     AddPreventItem(IDS_PREV_SHUTDOWN, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+                   lpExplorer,
                    L"NoClose");
 
     IoAddFooter();
@@ -1543,16 +1536,16 @@ OS_PreventsInfo(VOID)
     IoAddHeader(0, IDS_PREV_AUTORUN, 4);
 
     AddPreventItem(IDS_PREV_HKLM_RUN, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+                   lpExplorer,
                    L"DisableLocalMachineRun");
     AddPreventItem(IDS_PREV_HKLM_RUNONCE, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+                   lpExplorer,
                    L"DisableLocalMachineRunOnce");
     AddPreventItem(IDS_PREV_HKCU_RUN, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+                   lpExplorer,
                    L"DisableCurrentUserRun");
     AddPreventItem(IDS_PREV_HKCU_RUNONCE, HKEY_CURRENT_USER,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+                   lpExplorer,
                    L"DisableCurrentUserRunOnce");
 
     IoAddFooter();
@@ -1560,7 +1553,7 @@ OS_PreventsInfo(VOID)
     IoAddHeader(0, IDS_PREV_OTHER, 5);
 
     AddPreventItem(IDS_PREV_DISABLE_GPO, HKEY_LOCAL_MACHINE,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+                   lpSystem,
                    L"DisableGPO");
 
     DebugEndReceiving();
