@@ -165,6 +165,8 @@ GetIoTargetById(UINT id)
             return IO_TARGET_XML;
         case IDS_TYPE_INI:
             return IO_TARGET_INI;
+        case IDS_TYPE_RTF:
+            return IO_TARGET_RTF;
         default:
             return IO_TARGET_HTML;
     }
@@ -547,6 +549,9 @@ GetReportExtById(UINT id, LPWSTR lpExt, SIZE_T Size)
         case IDS_TYPE_INI:
             szExt = L".ini";
             break;
+        case IDS_TYPE_RTF:
+            szExt = L".rtf";
+            break;
         default:
             szExt = L".htm";
             break;
@@ -635,6 +640,7 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             AddFileTypeToComboBox(hCombo, IDS_TYPE_CSV);
             AddFileTypeToComboBox(hCombo, IDS_TYPE_XML);
             AddFileTypeToComboBox(hCombo, IDS_TYPE_INI);
+            AddFileTypeToComboBox(hCombo, IDS_TYPE_RTF);
 
             SetTimer(hTree, IDT_UPDATE_TIMER, 10, UpdateProc);
         }

@@ -808,6 +808,7 @@
 #define IDS_TYPE_CSV                     698
 #define IDS_TYPE_XML                     699
 #define IDS_TYPE_INI                     700
+#define IDS_TYPE_RTF                     701
 
 #define IDS_CAT_SUMMARY           1000
 

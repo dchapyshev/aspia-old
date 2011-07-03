@@ -93,6 +93,33 @@ AppendStringToFile(LPWSTR lpszString)
     return TRUE;
 }
 
+BOOL
+AppendStringToFileA(LPWSTR lpszString)
+{
+    DWORD dwLen = SafeStrLen(lpszString);
+    INT buf_len, len;
+    char *result;
+
+    if (!hReport) return FALSE;
+
+    buf_len = WideCharToMultiByte(CP_ACP, 0,
+                                  lpszString, dwLen,
+                                  NULL, 0, 0, 0);
+    result = Alloc(buf_len);
+    if (result)
+    {
+        len = WideCharToMultiByte(CP_ACP, 0,
+                                  lpszString, dwLen,
+                                  result, buf_len, 0, 0);
+
+        fwrite(result, sizeof(char), dwLen, hReport);
+
+        Free(result);
+    }
+
+    return TRUE;
+}
+
 VOID
 IoSetTarget(UINT Target)
 {
@@ -134,6 +161,11 @@ IoAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex)
         case IO_TARGET_INI:
             StringCbPrintf(szText, sizeof(szText), L"\n\n%s=", lpszText);
             break;
+
+        case IO_TARGET_RTF:
+            StringCbPrintf(szText, sizeof(szText), L"\\par\n{\\b %s}", lpszText);
+            AppendStringToFileA(szText);
+            return -1;
 
         default:
             return -1;
@@ -182,6 +214,11 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
         case IO_TARGET_INI:
             StringCbPrintf(szText, sizeof(szText), L"\n%s=", lpText);
             break;
+
+        case IO_TARGET_RTF:
+            StringCbPrintf(szText, sizeof(szText), L"\\par\n%s ", lpText);
+            AppendStringToFileA(szText);
+            return -1;
 
         default:
             return -1;
@@ -240,6 +277,12 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
                            (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s,", pszText);
             break;
 
+        case IO_TARGET_RTF:
+            StringCbPrintf(szText, sizeof(szText),
+                           (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s ", pszText);
+            AppendStringToFileA(szText);
+            return;
+
         default:
             break;
     }
@@ -269,6 +312,10 @@ IoAddFooter(VOID)
         case IO_TARGET_TXT:
             lpString = L"\n";
             break;
+
+        case IO_TARGET_RTF:
+            AppendStringToFileA(L"\\par\n");
+            return;
 
         default:
             return;
@@ -322,6 +369,11 @@ IoReportWriteColumnString(LPWSTR lpszString)
             StringCbPrintf(szText, sizeof(szText), L"%s ", lpszString);
             break;
 
+        case IO_TARGET_RTF:
+            StringCbPrintf(szText, sizeof(szText), L"{\\b %s} ", lpszString);
+            AppendStringToFileA(szText);
+            return;
+
         default:
             return;
     }
@@ -351,6 +403,7 @@ IoAddColumnsList(COLUMN_LIST *List)
             case IO_TARGET_CSV:
             case IO_TARGET_TXT:
             case IO_TARGET_INI:
+            case IO_TARGET_RTF:
                 IoReportWriteColumnString(szText);
                 break;
         }
@@ -389,7 +442,8 @@ IoAddIcon(UINT IconID)
 BOOL
 IoCreateReport(LPWSTR lpszFile)
 {
-    if (_wfopen_s(&hReport, lpszFile, L"wt+,ccs=UTF-8") != 0)
+    if (_wfopen_s(&hReport, lpszFile,
+        (IoTarget == IO_TARGET_RTF) ? L"wt+" : L"wt+,ccs=UTF-8") != 0)
         return FALSE;
 
     if (!hReport) return FALSE;
@@ -397,6 +451,10 @@ IoCreateReport(LPWSTR lpszFile)
     if (IoTarget == IO_TARGET_HTML)
     {
         AppendStringToFile(lpszHtmlHeader);
+    }
+    else if (IoTarget == IO_TARGET_RTF)
+    {
+        AppendStringToFileA(L"{\\rtf1");
     }
 
     return TRUE;
@@ -410,6 +468,10 @@ IoCloseReport(VOID)
         AppendStringToFile(L"<br /><div id='f'>Aspia ");
         AppendStringToFile(VER_FILEVERSION_STR);
         AppendStringToFile(L"<br />&copy; 2011 <a href='http://www.aspia.ru'>Aspia Software</a></div></body></html>");
+    }
+    else if (IoTarget == IO_TARGET_RTF)
+    {
+        AppendStringToFileA(L"\n}");
     }
 
     fclose(hReport);
@@ -497,6 +559,11 @@ IoWriteTableTitle(LPWSTR lpszTitle, UINT StringID, BOOL WithContentTable)
             StringCbPrintf(szText, sizeof(szText), L"\n[%s]\n", lpszTitle);
             break;
 
+        case IO_TARGET_RTF:
+            StringCbPrintf(szText, sizeof(szText), L"\n\\par{\\b\\ul %s}\\par\n", lpszTitle);
+            AppendStringToFileA(szText);
+            return;
+
         default:
             return;
     }
@@ -541,6 +608,13 @@ IoWriteBeginContentTable(LPWSTR lpszTitle)
             AppendStringToFile(szText);
         }
         break;
+
+        case IO_TARGET_RTF:
+            StringCbPrintf(szText, sizeof(szText),
+                L"{\\b %s}\\par",
+                           lpszTitle);
+            AppendStringToFileA(szText);
+            break;
     }
 }
 
@@ -578,6 +652,12 @@ IoWriteContentTableItem(UINT ID, LPWSTR lpszName, BOOL IsRootItem)
             AppendStringToFile(szText);
         }
         break;
+
+        case IO_TARGET_RTF:
+            StringCbPrintf(szText, sizeof(szText),
+                           L"%s\\par", lpszName);
+            AppendStringToFileA(szText);
+            break;
     }
 }
 

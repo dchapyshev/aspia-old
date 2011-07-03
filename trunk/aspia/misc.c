@@ -687,7 +687,7 @@ GetCurrentPath(LPWSTR lpszPath, SIZE_T PathLen)
 }
 
 INT
-SafeStrLen(LPCTSTR lpString)
+SafeStrLen(LPCWSTR lpString)
 {
     INT Ret = 0;
 
