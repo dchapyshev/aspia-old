@@ -885,6 +885,7 @@ BEGIN
     IDS_TYPE_CSV, "CSV-файл (*.csv)"
     IDS_TYPE_XML, "XML-файл (*.xml)"
     IDS_TYPE_INI, "INI-файл (*.ini)"
+    IDS_TYPE_RTF, "RTF-файл (*.rtf)"
 
     IDS_CAT_SUMMARY, "Общая информация"
 
