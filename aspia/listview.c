@@ -5,7 +5,7 @@
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "../main.h"
+#include "main.h"
 
 INT
 ListViewAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
