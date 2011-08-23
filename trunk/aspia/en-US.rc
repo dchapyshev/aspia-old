@@ -810,7 +810,7 @@ BEGIN
 
     IDS_PREV_TOOLS, "System Tools"
     IDS_PREV_TASKMGR, "Task Manager"
-    IDS_PREV_REGEDIT, "Regostry Editor"
+    IDS_PREV_REGEDIT, "Registry Editor"
     IDS_PREV_EXPLORER, "Explorer"
     IDS_PREV_DESKTOP_ITEMS, "Desktop Items"
     IDS_PREV_EXPLORER_CONTEXT_MENU, "Explorer Context Menu"
@@ -966,6 +966,7 @@ BEGIN
                        • Dmitry Chapyshev (dmitry@aspia.ru) (Main program, driver)\r\n\
                        • Maksim Shevchuk (maksim.shevchuk@gmail.com) (Driver)\r\n\r\n\
                        Translators:\r\n\
+                       • Igor Paliychuk (mansonigor@gmail.com) (Ukrainian)\r\n\
                        • Sakara Eugene (vzov@yandex.ua) (Ukrainian)\r\n\r\n\
                        The digital signature for the drivers provided by ReactOS Foundation.\r\n\r\n\
                        In the development we used the following projects:\r\n\
