@@ -325,7 +325,7 @@ OnCommand(UINT Command)
         {
             WCHAR szPath[MAX_PATH];
 
-            if (SaveFileDialog(hMainWnd, szPath, sizeof(szPath)))
+            if (ReportSaveFileDialog(hMainWnd, szPath, sizeof(szPath)))
                 ReportSaveAll(TRUE, szPath, TRUE);
         }
         break;
@@ -334,7 +334,7 @@ OnCommand(UINT Command)
         {
             WCHAR szPath[MAX_PATH];
 
-            if (SaveFileDialog(hMainWnd, szPath, sizeof(szPath)))
+            if (ReportSaveFileDialog(hMainWnd, szPath, sizeof(szPath)))
                 ReportSavePage(szPath, CurrentCategory);
         }
         break;

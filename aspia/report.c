@@ -161,8 +161,8 @@ GetIoTargetById(UINT id)
             return IO_TARGET_TXT;
         case IDS_TYPE_CSV:
             return IO_TARGET_CSV;
-        case IDS_TYPE_XML:
-            return IO_TARGET_XML;
+        case IDS_TYPE_JSON:
+            return IO_TARGET_JSON;
         case IDS_TYPE_INI:
             return IO_TARGET_INI;
         case IDS_TYPE_RTF:
@@ -274,6 +274,36 @@ ReportCreateThread(IN BOOL IsGUI, IN BOOL IsSaveAll)
     }
 }
 
+UINT
+GetIoTargetByFileExt(LPWSTR lpPath)
+{
+    WCHAR szExt[MAX_PATH];
+    INT i, j = 0, len = wcslen(lpPath);
+
+    if (len < 3) return IO_TARGET_HTML;
+
+    for (i = len - 3; i < len; i++, j++)
+    {
+        szExt[j] = lpPath[i];
+    }
+    szExt[3] = 0;
+
+    if (wcscmp(szExt, L"htm") == 0)
+        return IO_TARGET_HTML;
+    else if (wcscmp(szExt, L"jsn") == 0)
+        return IO_TARGET_JSON;
+    else if (wcscmp(szExt, L"ini") == 0)
+        return IO_TARGET_INI;
+    else if (wcscmp(szExt, L"txt") == 0)
+        return IO_TARGET_TXT;
+    else if (wcscmp(szExt, L"csv") == 0)
+        return IO_TARGET_CSV;
+    else if (wcscmp(szExt, L"rtf") == 0)
+        return IO_TARGET_RTF;
+
+    return IO_TARGET_HTML;
+}
+
 VOID
 ReportSaveAll(IN BOOL IsGUI, IN LPWSTR lpszPath, IN BOOL bWithMenu)
 {
@@ -282,6 +312,8 @@ ReportSaveAll(IN BOOL IsGUI, IN LPWSTR lpszPath, IN BOOL bWithMenu)
                  lpszPath);
 
     SettingsInfo.IsAddContent = bWithMenu;
+
+    IoSetTarget(GetIoTargetByFileExt(lpszPath));
 
     ReportCreateThread(IsGUI, TRUE);
 }
@@ -330,7 +362,7 @@ ReportSavePage(IN LPWSTR lpszPath,
 
     OldColumnsCount = IoGetColumnsCount();
 
-    IoSetTarget(IO_TARGET_HTML);
+    IoSetTarget(GetIoTargetByFileExt(lpszPath));
 
     StringCbCopy(SettingsInfo.szReportPath,
                  sizeof(SettingsInfo.szReportPath),
@@ -543,8 +575,8 @@ GetReportExtById(UINT id, LPWSTR lpExt, SIZE_T Size)
         case IDS_TYPE_CSV:
             szExt = L".csv";
             break;
-        case IDS_TYPE_XML:
-            szExt = L".xml";
+        case IDS_TYPE_JSON:
+            szExt = L".jsn";
             break;
         case IDS_TYPE_INI:
             szExt = L".ini";
@@ -557,6 +589,37 @@ GetReportExtById(UINT id, LPWSTR lpExt, SIZE_T Size)
             break;
     }
     StringCbCopy(lpExt, Size, szExt);
+}
+
+BOOL
+ReportSaveFileDialog(HWND hDlg, LPWSTR lpszPath, SIZE_T PathSize)
+{
+    OPENFILENAME saveas = {0};
+    WCHAR szPath[MAX_PATH];
+    DWORD dwSize;
+
+    dwSize = MAX_PATH;
+    GetComputerName(szPath, &dwSize);
+    StringCbCat(szPath, sizeof(szPath), L".htm");
+
+    saveas.lStructSize     = sizeof(OPENFILENAME);
+    saveas.hwndOwner       = hDlg;
+    saveas.hInstance       = hInstance;
+    saveas.lpstrFilter     = L"HTML File (*.htm)\0*.htm\0RTF File (*.rtf)\0*.rtf\0Text File (*.txt)\0*.txt\0XML File (*.xml)\0*.xml\0INI File (*.ini)\0*.ini\0CSV File (*.csv)\0*.csv\0\0";
+    saveas.lpstrFile       = szPath;
+    saveas.nMaxFile        = MAX_PATH;
+    saveas.lpstrInitialDir = NULL;
+    saveas.Flags           = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT |
+                             OFN_HIDEREADONLY | OFN_EXPLORER;
+    saveas.lpstrDefExt     = L"htm";
+
+    if (GetSaveFileName(&saveas))
+    {
+        StringCbCopy(lpszPath, PathSize, szPath);
+        return TRUE;
+    }
+
+    return FALSE;
 }
 
 INT_PTR CALLBACK
@@ -638,7 +701,7 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             AddFileTypeToComboBox(hCombo, IDS_TYPE_HTML);
             AddFileTypeToComboBox(hCombo, IDS_TYPE_TEXT);
             AddFileTypeToComboBox(hCombo, IDS_TYPE_CSV);
-            AddFileTypeToComboBox(hCombo, IDS_TYPE_XML);
+            AddFileTypeToComboBox(hCombo, IDS_TYPE_JSON);
             AddFileTypeToComboBox(hCombo, IDS_TYPE_INI);
             AddFileTypeToComboBox(hCombo, IDS_TYPE_RTF);
 
@@ -715,9 +778,9 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 
                 case IDC_SET_PATH_BTN:
                 {
-                    if (SaveFileDialog(hDlg,
-                                       SettingsInfo.szReportPath,
-                                       sizeof(SettingsInfo.szReportPath)))
+                    if (ReportSaveFileDialog(hDlg,
+                                             SettingsInfo.szReportPath,
+                                             sizeof(SettingsInfo.szReportPath)))
                     {
                         SetWindowText(GetDlgItem(hDlg, IDC_FILEPATH_EDIT),
                                       SettingsInfo.szReportPath);

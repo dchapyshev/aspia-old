@@ -806,7 +806,7 @@
 #define IDS_TYPE_HTML                    696
 #define IDS_TYPE_TEXT                    697
 #define IDS_TYPE_CSV                     698
-#define IDS_TYPE_XML                     699
+#define IDS_TYPE_JSON                    699
 #define IDS_TYPE_INI                     700
 #define IDS_TYPE_RTF                     701
 

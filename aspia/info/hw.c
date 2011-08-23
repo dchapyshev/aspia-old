@@ -229,7 +229,56 @@ HW_HDDATAInfo(VOID)
 VOID
 HW_CDInfo(VOID)
 {
+    SP_DEVINFO_DATA DeviceInfoData = {0};
+    WCHAR szDeviceName[MAX_STR_LEN];
+    HDEVINFO hDevInfo;
+    INT DeviceIndex = 0;
+
+    DebugStartReceiving();
+
     IoAddIcon(IDI_CD);
+
+    hDevInfo = SetupDiGetClassDevs(&GUID_DEVCLASS_CDROM,
+                                   0, 0,
+                                   DIGCF_PRESENT);
+    if (hDevInfo == INVALID_HANDLE_VALUE)
+        return;
+
+    DeviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
+
+    while (SetupDiEnumDeviceInfo(hDevInfo,
+                                 DeviceIndex,
+                                 &DeviceInfoData))
+    {
+        ++DeviceIndex;
+
+        if (!SetupDiGetDeviceRegistryProperty(hDevInfo,
+                                              &DeviceInfoData,
+                                              SPDRP_FRIENDLYNAME,
+                                              0,
+                                              (BYTE*)szDeviceName,
+                                              MAX_STR_LEN,
+                                              NULL))
+        {
+            if (!SetupDiGetDeviceRegistryProperty(hDevInfo,
+                                                  &DeviceInfoData,
+                                                  SPDRP_DEVICEDESC,
+                                                  0,
+                                                  (BYTE*)szDeviceName,
+                                                  MAX_STR_LEN,
+                                                  NULL))
+            {
+                LoadMUIString(IDS_DEVICE_UNKNOWN_DEVICE,
+                              szDeviceName, MAX_STR_LEN);
+            }
+        }
+
+        MessageBox(0, szDeviceName, 0, 0);
+    }
+
+    SetupDiDestroyDeviceInfoList(hDevInfo);
+
+    DebugEndReceiving();
 }
 
 VOID

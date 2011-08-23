@@ -265,7 +265,7 @@ CATEGORY_LIST DMICategoryList[] =
 
 CATEGORY_LIST DataCategoryList[] =
 {
-    { IDS_CAT_HW_DATA_CD,    IDI_CD,  FALSE, TRUE, NULL, HW_CDInfo,       StdColumnList,   NULL },
+    //{ IDS_CAT_HW_DATA_CD,    IDI_CD,  FALSE, TRUE, NULL, HW_CDInfo,       StdColumnList,   NULL },
     //{ IDS_CAT_HW_DATA_SCSI,  IDI_HDD, FALSE, NULL, HW_HDDSCSIInfo, NULL },
     { IDS_CAT_HW_DATA_ATA,   IDI_HDD, FALSE, TRUE, NULL, HW_HDDATAInfo,   StdColumnList,   NULL },
     { IDS_CAT_HW_DATA_SMART, IDI_HDD, FALSE, TRUE, NULL, HW_HDDSMARTInfo, SMARTColumnList, NULL },
@@ -333,7 +333,7 @@ CATEGORY_LIST NetworkCategoryList[] =
     { IDS_CAT_NETWORK_SHARED,  IDI_SHARED,  FALSE, TRUE, NULL, NETWORK_SharedInfo,    SharedColumnList,    NULL },
     { IDS_CAT_NETWORK_FILES,   IDI_SHARED,  FALSE, TRUE, NULL, NETWORK_OpenFilesInfo, OpenFilesColumnList, NULL },
     { IDS_CAT_NETWORK_ROUTE,   IDI_ROUTE,   FALSE, TRUE, NULL, NETWORK_RouteInfo,     RouteColumnList,     NULL },
-    { IDS_CAT_NETWORK_FIREWALL,IDI_FIREWALL,FALSE, TRUE, NULL, NETWORK_FirewallInfo,  FirewallColumnList,  NULL },
+    //{ IDS_CAT_NETWORK_FIREWALL,IDI_FIREWALL,FALSE, TRUE, NULL, NETWORK_FirewallInfo,  FirewallColumnList,  NULL },
     { IDS_CAT_NETWORK_IE,      IDI_IE,      FALSE, TRUE, NULL, NULL,                  NULL,                IECategoryList },
     { 0 }
 };

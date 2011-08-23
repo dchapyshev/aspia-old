@@ -216,6 +216,7 @@ VOID WriteReportValueString(LPWSTR);
 VOID WriteReportColumnString(LPWSTR);
 VOID ReportSaveAll(BOOL, LPWSTR, BOOL);
 VOID ReportSavePage(LPWSTR, UINT);
+BOOL ReportSaveFileDialog(HWND, LPWSTR, SIZE_T);
 
 /* services.c */
 VOID SOFTWARE_ServicesInfo(VOID);
@@ -295,7 +296,6 @@ INT GetDesktopColorDepth(VOID);
 VOID CopyTextToClipboard(LPCWSTR);
 BOOL IsWin64System(VOID);
 VOID ConvertSecondsToString(LONGLONG, LPWSTR, SIZE_T);
-BOOL SaveFileDialog(HWND, LPWSTR, SIZE_T);
 VOID ChopSpaces(LPWSTR, SIZE_T);
 BOOL TimeToString(time_t, LPWSTR, SIZE_T);
 BOOL GetMSProductKey(BOOL, LPSTR, LPWSTR, INT);
@@ -350,7 +350,7 @@ GetWindowHeight(IN HWND hwnd)
 #define IO_TARGET_HTML     1
 #define IO_TARGET_CSV      2
 #define IO_TARGET_TXT      3
-#define IO_TARGET_XML      4
+#define IO_TARGET_JSON     4
 #define IO_TARGET_INI      5
 #define IO_TARGET_RTF      6
 
