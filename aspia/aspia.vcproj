@@ -334,31 +334,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\info\battery.c"
-				>
-			</File>
-			<File
 				RelativePath=".\categories.c"
 				>
 			</File>
 			<File
 				RelativePath=".\controls.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\cpuid.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\spd\ddr.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\spd\ddr2.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\spd\ddr3.c"
 				>
 			</File>
 			<File
@@ -370,27 +350,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\info\devices.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\dmi.c"
-				>
-			</File>
-			<File
 				RelativePath=".\driver.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\eventlog.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\hw.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\spd\infolists.c"
 				>
 			</File>
 			<File
@@ -398,7 +358,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\report\listview.c"
+				RelativePath=".\listview.c"
 				>
 			</File>
 			<File
@@ -406,55 +366,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\info\netstat.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\network.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\os.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\regional.c"
-				>
-			</File>
-			<File
 				RelativePath=".\report.c"
 				>
 			</File>
 			<File
-				RelativePath=".\info\sensors.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\services.c"
-				>
-			</File>
-			<File
 				RelativePath=".\settings.c"
-				>
-			</File>
-			<File
-				RelativePath=".\smart\smart.c"
-				>
-			</File>
-			<File
-				RelativePath=".\smbios\smbios.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\software.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\spd.c"
-				>
-			</File>
-			<File
-				RelativePath=".\info\summary.c"
 				>
 			</File>
 			<File
@@ -465,6 +381,106 @@
 				RelativePath=".\winmain.c"
 				>
 			</File>
+			<Filter
+				Name="info"
+				>
+				<File
+					RelativePath=".\info\battery.c"
+					>
+				</File>
+				<File
+					RelativePath=".\info\cpuid.c"
+					>
+				</File>
+				<File
+					RelativePath=".\info\devices.c"
+					>
+				</File>
+				<File
+					RelativePath=".\info\dmi.c"
+					>
+				</File>
+				<File
+					RelativePath=".\info\eventlog.c"
+					>
+				</File>
+				<File
+					RelativePath=".\info\hw.c"
+					>
+				</File>
+				<File
+					RelativePath=".\info\netstat.c"
+					>
+				</File>
+				<File
+					RelativePath=".\info\network.c"
+					>
+				</File>
+				<File
+					RelativePath=".\info\os.c"
+					>
+				</File>
+				<File
+					RelativePath=".\info\regional.c"
+					>
+				</File>
+				<File
+					RelativePath=".\info\sensors.c"
+					>
+				</File>
+				<File
+					RelativePath=".\info\services.c"
+					>
+				</File>
+				<File
+					RelativePath=".\info\software.c"
+					>
+				</File>
+				<File
+					RelativePath=".\info\spd.c"
+					>
+				</File>
+				<File
+					RelativePath=".\info\summary.c"
+					>
+				</File>
+				<Filter
+					Name="spd"
+					>
+					<File
+						RelativePath=".\info\spd\ddr.c"
+						>
+					</File>
+					<File
+						RelativePath=".\info\spd\ddr2.c"
+						>
+					</File>
+					<File
+						RelativePath=".\info\spd\ddr3.c"
+						>
+					</File>
+					<File
+						RelativePath=".\info\spd\infolists.c"
+						>
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="smbios"
+				>
+				<File
+					RelativePath=".\smbios\smbios.c"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="smart"
+				>
+				<File
+					RelativePath=".\smart\smart.c"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Заголовочные файлы"
@@ -480,22 +496,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\smart\smart.h"
-				>
-			</File>
-			<File
-				RelativePath=".\smbios\smbios.h"
-				>
-			</File>
-			<File
-				RelativePath=".\smbios\smbios_internal.h"
-				>
-			</File>
-			<File
-				RelativePath=".\info\spd.h"
-				>
-			</File>
-			<File
 				RelativePath=".\targetver.h"
 				>
 			</File>
@@ -503,6 +503,34 @@
 				RelativePath=".\version.h"
 				>
 			</File>
+			<Filter
+				Name="smbios"
+				>
+				<File
+					RelativePath=".\smbios\smbios.h"
+					>
+				</File>
+				<File
+					RelativePath=".\smbios\smbios_internal.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="smart"
+				>
+				<File
+					RelativePath=".\smart\smart.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="info"
+				>
+				<File
+					RelativePath=".\info\spd.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Файлы ресурсов"
