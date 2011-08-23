@@ -336,37 +336,6 @@ ConvertSecondsToString(LONGLONG Seconds,
     StringCbPrintf(lpszString, Size, szFormat, Days, Hours, Mins, Secs);
 }
 
-BOOL
-SaveFileDialog(HWND hDlg, LPWSTR lpszPath, SIZE_T PathSize)
-{
-    OPENFILENAME saveas = {0};
-    WCHAR szPath[MAX_PATH];
-    DWORD dwSize;
-
-    dwSize = MAX_PATH;
-    GetComputerName(szPath, &dwSize);
-    StringCbCat(szPath, sizeof(szPath), L".htm");
-
-    saveas.lStructSize     = sizeof(OPENFILENAME);
-    saveas.hwndOwner       = hDlg;
-    saveas.hInstance       = hInstance;
-    saveas.lpstrFilter     = L"*.htm\0";
-    saveas.lpstrFile       = szPath;
-    saveas.nMaxFile        = MAX_PATH;
-    saveas.lpstrInitialDir = NULL;
-    saveas.Flags           = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT |
-                             OFN_HIDEREADONLY | OFN_EXPLORER;
-    saveas.lpstrDefExt     = L"htm";
-
-    if (GetSaveFileName(&saveas))
-    {
-        StringCbCopy(lpszPath, PathSize, szPath);
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
 VOID
 ChopSpaces(LPWSTR s, SIZE_T size)
 {
