@@ -167,6 +167,9 @@ IoAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex)
             AppendStringToFileA(szText);
             return -1;
 
+        case IO_TARGET_JSON:
+            break;
+
         default:
             return -1;
     }
@@ -219,6 +222,10 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
             StringCbPrintf(szText, sizeof(szText), L"\\par\n%s ", lpText);
             AppendStringToFileA(szText);
             return -1;
+
+        case IO_TARGET_JSON:
+            StringCbPrintf(szText, sizeof(szText), L"\n    \"%s\": ", lpText);
+            break;
 
         default:
             return -1;
@@ -283,6 +290,11 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
             AppendStringToFileA(szText);
             return;
 
+        case IO_TARGET_JSON:
+            StringCbPrintf(szText, sizeof(szText),
+                           (IoGetColumnsCount() == iSubItem + 1) ? L"\"%s\"," : L"\"%s\"", pszText);
+            break;
+
         default:
             break;
     }
@@ -293,7 +305,7 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
 VOID
 IoAddFooter(VOID)
 {
-    LPWSTR lpString;
+    LPWSTR lpString = NULL;
 
     switch (IoTarget)
     {
@@ -404,6 +416,7 @@ IoAddColumnsList(COLUMN_LIST *List)
             case IO_TARGET_TXT:
             case IO_TARGET_INI:
             case IO_TARGET_RTF:
+            case IO_TARGET_JSON:
                 IoReportWriteColumnString(szText);
                 break;
         }
@@ -456,6 +469,10 @@ IoCreateReport(LPWSTR lpszFile)
     {
         AppendStringToFileA(L"{\\rtf1");
     }
+    else if (IoTarget == IO_TARGET_JSON)
+    {
+        AppendStringToFile(L"{\n");
+    }
 
     return TRUE;
 }
@@ -472,6 +489,10 @@ IoCloseReport(VOID)
     else if (IoTarget == IO_TARGET_RTF)
     {
         AppendStringToFileA(L"\n}");
+    }
+    else if (IoTarget == IO_TARGET_JSON)
+    {
+        AppendStringToFile(L"\n}");
     }
 
     fclose(hReport);
@@ -506,6 +527,10 @@ IoReportWriteItemString(LPWSTR lpszString, BOOL bIsHeader)
             StringCbPrintf(szText, sizeof(szText), L"\n%s=", lpszString);
             break;
 
+        case IO_TARGET_JSON:
+            StringCbPrintf(szText, sizeof(szText), L"\n\"%s\":", lpszString);
+            break;
+
         default:
             return;
     }
@@ -516,7 +541,7 @@ IoReportWriteItemString(LPWSTR lpszString, BOOL bIsHeader)
 VOID
 IoWriteTableTitle(LPWSTR lpszTitle, UINT StringID, BOOL WithContentTable)
 {
-    WCHAR szText[MAX_STR_LEN];
+    WCHAR szText[MAX_STR_LEN] = {0};
 
     switch (IoTarget)
     {
@@ -564,6 +589,10 @@ IoWriteTableTitle(LPWSTR lpszTitle, UINT StringID, BOOL WithContentTable)
             AppendStringToFileA(szText);
             return;
 
+        case IO_TARGET_JSON:
+            StringCbPrintf(szText, sizeof(szText), L"\n\"%s\": {\n", lpszTitle);
+            break;
+
         default:
             return;
     }
@@ -589,6 +618,10 @@ IoWriteEndTable(VOID)
     {
         case IO_TARGET_HTML:
             AppendStringToFile(L"</table>");
+            break;
+
+        case IO_TARGET_JSON:
+            AppendStringToFile(L"\n    }");
             break;
     }
 }

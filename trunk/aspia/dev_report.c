@@ -209,7 +209,7 @@ EnumUnknownDevices(HWND hList, DEVICESENUMPROC lpEnumProc)
             StringCbCat(szVendorID, sizeof(szVendorID), szDeviceID);
             GetPrivateProfileString(L"devices", szVendorID, L"\0",
                                     szDeviceName, MAX_STR_LEN, szPCIIniPath);
-            if (wcslen(szDeviceName) == 0)
+            if (szDeviceName[0] == L'\0')
             {
                 if (lpEnumProc) lpEnumProc(hList, 2, DeviceName, szVendorID);
                 Result = TRUE;
@@ -227,7 +227,7 @@ EnumUnknownDevices(HWND hList, DEVICESENUMPROC lpEnumProc)
             StringCbCat(szVendorID, sizeof(szVendorID), szDeviceID);
             GetPrivateProfileString(L"devices", szVendorID, L"\0",
                                     szDeviceName, MAX_STR_LEN, szUSBIniPath);
-            if (wcslen(szDeviceName) == 0)
+            if (szDeviceName[0] == L'\0')
             {
                 if (lpEnumProc) lpEnumProc(hList, 1, DeviceName, szVendorID);
                 Result = TRUE;
@@ -240,7 +240,7 @@ EnumUnknownDevices(HWND hList, DEVICESENUMPROC lpEnumProc)
 
             GetPrivateProfileString(L"devices", szDeviceID, L"\0",
                                     szDeviceName, MAX_STR_LEN, szMonIniPath);
-            if (wcslen(szDeviceName) == 0)
+            if (szDeviceName[0] == L'\0')
             {
                 if (lpEnumProc) lpEnumProc(hList, 0, DeviceName, szDeviceID);
                 Result = TRUE;
@@ -325,7 +325,7 @@ SaveDevReportFile(HWND hList)
         {
             pDevId = (WCHAR*)Item.lParam;
 
-            if (pDevId && wcslen(szName) > 0)
+            if (pDevId && szName[0] != L'\0')
             {
                 MoveTo.QuadPart = 0;
                 if (!SetFilePointerEx(hDB, MoveTo, &NewPos, FILE_END))

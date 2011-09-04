@@ -465,7 +465,7 @@ ParseAndShowEDID(LPWSTR lpDeviceName, BYTE *Edid)
 
     GetPrivateProfileString(L"devices", szMonitorId, L"",
                             szText, MAX_STR_LEN, szIniPath);
-    if (wcslen(szText) == 0)
+    if (szText[0] == L'\0')
     {
         StringCbPrintf(szText, sizeof(szText), L"%s (NoDB)", lpDeviceName);
     }
@@ -548,7 +548,7 @@ ParseAndShowEDID(LPWSTR lpDeviceName, BYTE *Edid)
         StringCbCat(szText, sizeof(szText), L"Suspend, ");
     if (Edid[DPMS_FLAGS] & DPMS_STANDBY)
         StringCbCat(szText, sizeof(szText), L"Standby, ");
-    if (wcslen(szText) > 0)
+    if (szText[0] != L'\0')
         szText[wcslen(szText) - 2] = 0;
     else
         StringCbCopy(szText, sizeof(szText), L"None");
