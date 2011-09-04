@@ -278,7 +278,7 @@ NETWORK_CardsInfo(VOID)
             return;
         }
 
-        if (strlen(pPerInfo->DnsServerList.IpAddress.String) > 0)
+        if (pPerInfo->DnsServerList.IpAddress.String[0] != '\0')
         {
             Index = IoAddValueName(1, IDS_DNS1, 0);
 
@@ -301,7 +301,7 @@ NETWORK_CardsInfo(VOID)
             LoadMUIString(IDS_YES, szText, MAX_STR_LEN);
             IoSetItemText(Index, 1, szText);
 
-            if (strlen(pAdapter->DhcpServer.IpAddress.String) > 0)
+            if (pAdapter->DhcpServer.IpAddress.String[0] != '\0')
             {
                 Index = IoAddValueName(1, IDS_NIC_DHCP_ADDR, 0);
                 StringCbPrintf(szText, sizeof(szText), L"%S",

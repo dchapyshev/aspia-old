@@ -605,7 +605,7 @@ ReportSaveFileDialog(HWND hDlg, LPWSTR lpszPath, SIZE_T PathSize)
     saveas.lStructSize     = sizeof(OPENFILENAME);
     saveas.hwndOwner       = hDlg;
     saveas.hInstance       = hInstance;
-    saveas.lpstrFilter     = L"HTML File (*.htm)\0*.htm\0RTF File (*.rtf)\0*.rtf\0Text File (*.txt)\0*.txt\0XML File (*.xml)\0*.xml\0INI File (*.ini)\0*.ini\0CSV File (*.csv)\0*.csv\0\0";
+    saveas.lpstrFilter     = L"HTML File (*.htm)\0*.htm\0RTF File (*.rtf)\0*.rtf\0Text File (*.txt)\0*.txt\0JSON File (*.jsn)\0*.jsn\0INI File (*.ini)\0*.ini\0CSV File (*.csv)\0*.csv\0\0";
     saveas.lpstrFile       = szPath;
     saveas.nMaxFile        = MAX_PATH;
     saveas.lpstrInitialDir = NULL;

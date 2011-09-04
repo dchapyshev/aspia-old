@@ -97,8 +97,7 @@ InitSmBIOSData(VOID)
 static SIZE_T
 GetFormattedSectionLength(SIZE_T Index)
 {
-    if ((SmbiosTableData[Index] < 0) ||
-        (SmbiosTableData[Index] > 127))
+    if (SmbiosTableData[Index] > 127)
         return 0;
 
     return SmbiosTableData[Index + 1];
@@ -855,7 +854,7 @@ SMBIOS_EnumOnboardInformation(SMBIOS_ONBOARDENUMPROC lpOnboardEnumProc)
     UCHAR* pBuf = Buf;
     SIZE_T Len = MAX_DATA;
     SMBIOS_ONBOARDINFO Info = {0};
-    UCHAR Count;
+    CHAR Count;
     UCHAR Type;
 
     if (GetNextDataByType(ONBOARD_INFO, &Buf, &Len, TRUE))
