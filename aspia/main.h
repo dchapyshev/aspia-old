@@ -275,6 +275,7 @@ VOID NETWORK_IEHistoryInfo(VOID);
 VOID NETWORK_IECookieInfo(VOID);
 VOID NETWORK_RasInfo(VOID);
 VOID ShowIEShortInfo(INT IconIndex);
+BOOL GetAdapterFriendlyName(LPWSTR lpszKey, LPWSTR lpszName, INT NameLen);
 
 /* tests.c */
 VOID TESTS_MemTest(VOID);
