@@ -353,6 +353,7 @@ NETWORK_CardsInfo(VOID)
 
         pAdapter = pAdapter->Next;
         Free(pPerInfo);
+        Free(pIfRow);
         ++Count;
     }
 
@@ -585,7 +586,7 @@ VOID
 ShowIEShortInfo(INT IconIndex)
 {
     INTERNET_PER_CONN_OPTION_LIST Info;
-    INTERNET_PER_CONN_OPTION Option[5];
+    INTERNET_PER_CONN_OPTION Option[2];
     WCHAR szText[MAX_STR_LEN];
     DWORD dwSize;
     INT Index;
@@ -642,9 +643,6 @@ ShowIEShortInfo(INT IconIndex)
 VOID
 NETWORK_IEParamsInfo(VOID)
 {
-    LPWSTR lpIEMain = L"Software\\Microsoft\\Internet Explorer\\Main";
-    LPWSTR lpIE = L"Software\\Microsoft\\Internet Explorer";
-
     DebugStartReceiving();
 
     IoAddIcon(IDI_IE);
@@ -653,9 +651,15 @@ NETWORK_IEParamsInfo(VOID)
 
     ShowIEShortInfo(0);
 
-    ShowIERegInfo(IDS_IE_DOWNLOADDIR, lpIE, L"Download Directory", 0);
-    ShowIERegInfo(IDS_IE_SEARCHPAGE, lpIEMain, L"Search Page", 0);
-    ShowIERegInfo(IDS_IE_LOCALPAGE, lpIEMain, L"Local Page", 0);
+    ShowIERegInfo(IDS_IE_DOWNLOADDIR,
+                  L"Software\\Microsoft\\Internet Explorer",
+                  L"Download Directory", 0);
+    ShowIERegInfo(IDS_IE_SEARCHPAGE,
+                  L"Software\\Microsoft\\Internet Explorer\\Main",
+                  L"Search Page", 0);
+    ShowIERegInfo(IDS_IE_LOCALPAGE,
+                  L"Software\\Microsoft\\Internet Explorer\\Main",
+                  L"Local Page", 0);
 
     DebugEndReceiving();
 }

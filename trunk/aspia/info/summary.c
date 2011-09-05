@@ -6,6 +6,9 @@
  */
 
 #include "../main.h"
+#include "edid.h"
+
+#include <iphlpapi.h>
 
 
 static VOID
@@ -130,6 +133,236 @@ ShowUptimeInformation(VOID)
     }
 }
 
+static VOID
+ShowMonitorsInfo(VOID)
+{
+    WCHAR szDevPath[MAX_PATH], szKeyPath[MAX_PATH],
+          szDeviceName[MAX_STR_LEN], szIniPath[MAX_PATH],
+          szMonitorId[MAX_STR_LEN], szText[MAX_STR_LEN];
+    WCHAR *pVendorSign;
+    SP_DEVINFO_DATA DeviceInfoData = {0};
+    HDEVINFO hDevInfo;
+    INT DeviceIndex = 0;
+    BYTE Edid[0x80];
+    BYTE* Block;
+    INT Index, ItemIndex;
+
+    StringCbPrintf(szIniPath, sizeof(szIniPath),
+                   L"%s%s",
+                   ParamsInfo.szCurrentPath,
+                   L"mon_dev.ini");
+
+    hDevInfo = SetupDiGetClassDevs(&GUID_DEVCLASS_MONITOR,
+                                   0, 0,
+                                   DIGCF_PRESENT);
+    if (hDevInfo == INVALID_HANDLE_VALUE)
+        return;
+
+    DeviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
+
+    while (SetupDiEnumDeviceInfo(hDevInfo,
+                                 DeviceIndex,
+                                 &DeviceInfoData))
+    {
+        ++DeviceIndex;
+
+        if (!SetupDiGetDeviceInstanceId(hDevInfo,
+                                        &DeviceInfoData,
+                                        szDevPath,
+                                        MAX_PATH,
+                                        NULL))
+        {
+            continue;
+        }
+
+        if (!SetupDiGetDeviceRegistryProperty(hDevInfo,
+                                              &DeviceInfoData,
+                                              SPDRP_FRIENDLYNAME,
+                                              0,
+                                              (BYTE*)szDeviceName,
+                                              MAX_STR_LEN,
+                                              NULL))
+        {
+            if (!SetupDiGetDeviceRegistryProperty(hDevInfo,
+                                                  &DeviceInfoData,
+                                                  SPDRP_DEVICEDESC,
+                                                  0,
+                                                  (BYTE*)szDeviceName,
+                                                  MAX_STR_LEN,
+                                                  NULL))
+            {
+                LoadMUIString(IDS_DEVICE_UNKNOWN_DEVICE,
+                              szDeviceName, MAX_STR_LEN);
+            }
+        }
+
+        StringCbPrintf(szKeyPath, sizeof(szKeyPath),
+                       L"SYSTEM\\CurrentControlSet\\Enum\\%s\\Device Parameters",
+                       szDevPath);
+
+        if (GetBinaryFromRegistry(HKEY_LOCAL_MACHINE,
+                                  szKeyPath, L"EDID",
+                                  (LPBYTE)&Edid, sizeof(Edid)))
+        {
+            pVendorSign = GetEdidVendorSign(Edid + ID_MANUFACTURER_NAME);
+
+            swprintf_s(szMonitorId, sizeof(szMonitorId), L"%s%02x%02x",
+                       pVendorSign, Edid[ID_MODEL + 1], Edid[ID_MODEL]);
+            _wcsupr_s(szMonitorId, MAX_STR_LEN);
+
+            GetPrivateProfileString(L"devices", szMonitorId, L"",
+                                    szText, MAX_STR_LEN, szIniPath);
+            if (szText[0] == L'\0')
+            {
+                StringCbPrintf(szText, sizeof(szText), L"%s (NoDB)", szDeviceName);
+            }
+
+            ItemIndex = IoAddItem(1, 5, szText);
+
+            Block = Edid + DETAILED_TIMING_DESCRIPTIONS_START;
+            for (Index = 0; Index < NO_DETAILED_TIMING_DESCRIPTIONS; Index++,
+                 Block += DETAILED_TIMING_DESCRIPTION_SIZE)
+            {
+                if (EdidBlockType(Block) == DETAILED_TIMING_BLOCK)
+                {
+                    /* Max. Resolution */
+                    StringCbPrintf(szText, sizeof(szText),
+                                   L"%dx%d (%.1f\")",
+                                   H_ACTIVE, V_ACTIVE,
+                                   GetDiagonalSize(Edid[0x15], Edid[0x16]));
+                    IoSetItemText(ItemIndex, 1, szText);
+                }
+            }
+        }
+    }
+
+    SetupDiDestroyDeviceInfoList(hDevInfo);
+}
+
+static VOID
+ShowPrintersInfo(VOID)
+{
+    PPRINTER_INFO_2 pPrinterInfo;
+    DWORD cbNeeded, cReturned, dwSize, dwIndex;
+    DWORD dwFlag = PRINTER_ENUM_FAVORITE | PRINTER_ENUM_LOCAL |
+                   PRINTER_ENUM_NETWORK;
+    WCHAR szText[MAX_STR_LEN], szDefPrinter[MAX_STR_LEN] = {0};
+    INT Index;
+
+    if (!EnumPrinters(dwFlag, 0, 2, 0, 0, &cbNeeded, &cReturned))
+    {
+        if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
+            return;
+    }
+
+    pPrinterInfo = (PPRINTER_INFO_2)Alloc(cbNeeded);
+    if (!pPrinterInfo)
+        return;
+
+    if (!EnumPrinters(dwFlag,
+                      NULL, 2,
+                      (LPBYTE)pPrinterInfo,
+                      cbNeeded,
+                      &cbNeeded,
+                      &cReturned))
+    {
+        Free(pPrinterInfo);
+        return;
+    }
+
+    dwSize = MAX_STR_LEN;
+    GetDefaultPrinter(szDefPrinter, &dwSize);
+
+    for (dwIndex = 0; dwIndex < cReturned; ++dwIndex)
+    {
+        /* Printer name */
+        Index = IoAddItem(1, 6, pPrinterInfo[dwIndex].pPrinterName);
+
+        /* Paper size */
+        StringCbPrintf(szText, sizeof(szText), L"%ld x %ld mm (%ld x %ld dpi)",
+                       pPrinterInfo[dwIndex].pDevMode->dmPaperWidth / 10,
+                       pPrinterInfo[dwIndex].pDevMode->dmPaperLength / 10,
+                       pPrinterInfo[dwIndex].pDevMode->dmPrintQuality,
+                       pPrinterInfo[dwIndex].pDevMode->dmPrintQuality);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    Free(pPrinterInfo);
+}
+
+static VOID
+ShowNetAdaptersInfo(VOID)
+{
+    WCHAR szText[MAX_STR_LEN], szKey[MAX_PATH];
+    PIP_ADAPTER_INFO pAdapterInfo;
+    PIP_ADAPTER_INFO pAdapter = NULL;
+    ULONG ulOutBufLen;
+    INT Index, Count = 0;
+    MIB_IFROW *pIfRow;
+
+    pAdapterInfo = (PIP_ADAPTER_INFO)Alloc(sizeof(IP_ADAPTER_INFO));
+    if (!pAdapterInfo) return;
+
+    ulOutBufLen = sizeof(IP_ADAPTER_INFO);
+
+    if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW)
+    {
+        Free(pAdapterInfo);
+        pAdapterInfo = (IP_ADAPTER_INFO*)Alloc(ulOutBufLen);
+        if (!pAdapterInfo)
+            return;
+    }
+
+    if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) != NOERROR)
+    {
+        Free(pAdapterInfo);
+        return;
+    }
+
+    pAdapter = pAdapterInfo;
+
+    while (pAdapter)
+    {
+        StringCbPrintf(szKey, sizeof(szKey),
+                       L"SYSTEM\\CurrentControlSet\\Control\\Network\\{4D36E972-E325-11CE-BFC1-08002BE10318}\\%S\\Connection",
+                       pAdapter->AdapterName);
+
+        StringCbPrintf(szText, sizeof(szText), L"%S", pAdapter->Description);
+        if (SafeStrLen(szText) == 0)
+        {
+            if (!GetAdapterFriendlyName(szKey, szText, MAX_STR_LEN))
+                StringCbCopy(szText, sizeof(szText), L"Unknown Adapter");
+        }
+        Index = IoAddItem(1, 7, szText);
+
+        pIfRow = (MIB_IFROW*)Alloc(sizeof(MIB_IFROW));
+        if (!pIfRow)
+        {
+            Free(pAdapterInfo);
+            return;
+        }
+
+        pIfRow->dwIndex = pAdapter->Index;
+        if (GetIfEntry(pIfRow) != NO_ERROR)
+        {
+            Free(pAdapterInfo);
+            Free(pIfRow);
+            return;
+        }
+
+        StringCbPrintf(szText, sizeof(szText), L"%S (%ld Mbps)",
+                       pAdapter->IpAddressList.IpAddress.String,
+                       pIfRow->dwSpeed / (1000 * 1000));
+        IoSetItemText(Index, 1, szText);
+
+        pAdapter = pAdapter->Next;
+        Free(pIfRow);
+        ++Count;
+    }
+
+    Free(pAdapterInfo);
+}
+
 VOID
 ShowSummaryInfo(VOID)
 {
@@ -145,6 +378,9 @@ ShowSummaryInfo(VOID)
     IoAddIcon(IDI_HDD); /* HDD */
     IoAddIcon(IDI_HW); /* Memory */
     IoAddIcon(IDI_IE); /* Internet Explorer */
+    IoAddIcon(IDI_MONITOR); /* Monitors */
+    IoAddIcon(IDI_PRINTER); /* Printers */
+    IoAddIcon(IDI_NETWORK); /* Network Adapters */
 
     IoAddHeader(0, IDS_SUMMARY_OS, 0);
 
@@ -239,7 +475,21 @@ ShowSummaryInfo(VOID)
 
     IoAddHeader(0, IDS_SUMMARY_HDD, 2);
     HardDrivesInfo();
+    IoAddFooter();
 
+    /* Monitors */
+    IoAddHeader(0, IDS_CAT_HW_MONITOR, 5);
+    ShowMonitorsInfo();
+    IoAddFooter();
+
+    /* Printers */
+    IoAddHeader(0, IDS_CAT_HW_PRINTERS, 6);
+    ShowPrintersInfo();
+    IoAddFooter();
+
+    /* Network Adapters */
+    IoAddHeader(0, IDS_CAT_NETWORK_CARDS, 7);
+    ShowNetAdaptersInfo();
     IoAddFooter();
 
     IoAddHeader(0, IDS_SUMMARY_MEM, 3);
