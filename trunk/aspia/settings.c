@@ -10,6 +10,7 @@
 
 
 SETTINGS_STRUCT SettingsInfo = {0};
+THEMES_STRUCT ThemesInfo = {0};
 
 #define DIALOGS_COUNT   3
 #define GENERAL_DIALOG  0
@@ -171,6 +172,20 @@ LoadSettings(VOID)
                                      sizeof(SettingsInfo),
                                      szIniPath);
 
+    GetPrivateProfileString(L"general",
+                            L"language",
+                            0,
+                            ThemesInfo.szLangFile,
+                            MAX_PATH,
+                            szIniPath);
+
+    GetPrivateProfileString(L"general",
+                            L"icons",
+                            0,
+                            ThemesInfo.szIconsFile,
+                            MAX_PATH,
+                            szIniPath);
+
     LoadCategoriesSelections(szIniPath, RootCategoryList);
 
     SettingsInfo.Autorun = GetAutostartState();
@@ -207,6 +222,16 @@ SaveSettings(VOID)
                               L"settings",
                               &SettingsInfo,
                               sizeof(SettingsInfo),
+                              szIniPath);
+
+    WritePrivateProfileString(L"general",
+                              L"language",
+                              ThemesInfo.szLangFile,
+                              szIniPath);
+
+    WritePrivateProfileString(L"general",
+                              L"icons",
+                              ThemesInfo.szIconsFile,
                               szIniPath);
 
     SaveCategoriesSelections(szIniPath, RootCategoryList);
@@ -267,7 +292,7 @@ InitIconsCombo(IN HWND hCombo)
 
     ItemIndex = SendMessage(hCombo, CB_ADDSTRING, 0,
                             (LPARAM)L"Tango Icons");
-    if (SafeStrLen(SettingsInfo.szIconsFile) == 0)
+    if (SafeStrLen(ThemesInfo.szIconsFile) == 0)
         SendMessage(hCombo, CB_SETCURSEL, ItemIndex, 0);
 
     StringCbPrintf(szIconDir, sizeof(szIconDir),
@@ -311,7 +336,7 @@ InitIconsCombo(IN HWND hCombo)
             FreeLibrary(hDLL);
         }
 
-        if (wcscmp(FindFileData.cFileName, SettingsInfo.szIconsFile) == 0)
+        if (wcscmp(FindFileData.cFileName, ThemesInfo.szIconsFile) == 0)
         {
             SendMessage(hCombo, CB_SELECTSTRING, (WPARAM)-1,
                         (LPARAM)szText);
@@ -349,7 +374,7 @@ InitLangCombo(IN HWND hCombo)
 
     ItemIndex = SendMessage(hCombo, CB_ADDSTRING, 0,
                             (LPARAM)L"English");
-    if (SafeStrLen(SettingsInfo.szLangFile) == 0)
+    if (SafeStrLen(ThemesInfo.szLangFile) == 0)
         SendMessage(hCombo, CB_SETCURSEL, ItemIndex, 0);
 
 #ifdef _ASPIA_PORTABLE_
@@ -400,7 +425,7 @@ InitLangCombo(IN HWND hCombo)
             FreeLibrary(hDLL);
         }
 
-        if (wcscmp(FindFileData.cFileName, SettingsInfo.szLangFile) == 0)
+        if (wcscmp(FindFileData.cFileName, ThemesInfo.szLangFile) == 0)
         {
             SendMessage(hCombo, CB_SELECTSTRING, (WPARAM)-1,
                         (LPARAM)szText);
@@ -844,18 +869,18 @@ SaveSettingsFromDialog(HWND hDlg)
     LangFile = (WCHAR*)SendMessage(hLangList, CB_GETITEMDATA, Selected, 0);
     if (!LangFile)
     {
-        if (SafeStrLen(SettingsInfo.szLangFile) > 0)
+        if (SafeStrLen(ThemesInfo.szLangFile) > 0)
         {
-            SettingsInfo.szLangFile[0] = 0;
+            ThemesInfo.szLangFile[0] = 0;
             LoadLanguage();
             ReInitCtrls = TRUE;
         }
     }
     else
     {
-        if (SafeStrCmp(LangFile, SettingsInfo.szLangFile) != 0)
+        if (SafeStrCmp(LangFile, ThemesInfo.szLangFile) != 0)
         {
-            SafeStrCpyN(SettingsInfo.szLangFile, LangFile, MAX_PATH);
+            SafeStrCpyN(ThemesInfo.szLangFile, LangFile, MAX_PATH);
             LoadLanguage();
             ReInitCtrls = TRUE;
         }
@@ -870,18 +895,18 @@ SaveSettingsFromDialog(HWND hDlg)
 
     if (!IconFile)
     {
-        if (SafeStrLen(SettingsInfo.szIconsFile) > 0)
+        if (SafeStrLen(ThemesInfo.szIconsFile) > 0)
         {
-             SettingsInfo.szIconsFile[0] = 0;
+             ThemesInfo.szIconsFile[0] = 0;
              LoadIcons();
              ReInitCtrls = TRUE;
         }
     }
     else
     {
-        if (SafeStrCmp(IconFile, SettingsInfo.szIconsFile) != 0)
+        if (SafeStrCmp(IconFile, ThemesInfo.szIconsFile) != 0)
         {
-            SafeStrCpyN(SettingsInfo.szIconsFile, IconFile, MAX_PATH);
+            SafeStrCpyN(ThemesInfo.szIconsFile, IconFile, MAX_PATH);
             LoadIcons();
             ReInitCtrls = TRUE;
         }

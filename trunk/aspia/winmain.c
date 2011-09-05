@@ -649,7 +649,7 @@ LoadLanguage(VOID)
     if (hLangInst && hLangInst != hInstance)
         FreeLibrary(hLangInst);
 
-    if (SafeStrLen(SettingsInfo.szLangFile) == 0)
+    if (SafeStrLen(ThemesInfo.szLangFile) == 0)
     {
         hLangInst = hInstance;
     }
@@ -676,11 +676,11 @@ LoadLanguage(VOID)
 #endif /* _ASPIA_PORTABLE_ */
 
         StringCbCat(szPath, sizeof(szPath), L"languages\\");
-        StringCbCat(szPath, sizeof(szPath), SettingsInfo.szLangFile);
+        StringCbCat(szPath, sizeof(szPath), ThemesInfo.szLangFile);
 
         DebugTrace(L"Loading language file: %s", szPath);
         
-		hLangInst = LoadLibraryEx(szPath, NULL, LOAD_LIBRARY_AS_DATAFILE);
+        hLangInst = LoadLibraryEx(szPath, NULL, LOAD_LIBRARY_AS_DATAFILE);
         if (!hLangInst) hLangInst = hInstance;
     }
 }
@@ -691,7 +691,7 @@ LoadIcons(VOID)
     if (hIconsInst && hIconsInst != hInstance)
         FreeLibrary(hIconsInst);
 
-    if (SafeStrLen(SettingsInfo.szIconsFile) == 0)
+    if (SafeStrLen(ThemesInfo.szIconsFile) == 0)
     {
         hIconsInst = hInstance;
     }
@@ -702,7 +702,7 @@ LoadIcons(VOID)
         StringCbPrintf(szPath, sizeof(szPath),
                        L"%sicons\\%s",
                        ParamsInfo.szCurrentPath,
-                       SettingsInfo.szIconsFile);
+                       ThemesInfo.szIconsFile);
 
         DebugTrace(L"Loading icon file: %s", szPath);
 
