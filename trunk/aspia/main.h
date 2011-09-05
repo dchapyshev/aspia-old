@@ -274,6 +274,7 @@ VOID NETWORK_IEParamsInfo(VOID);
 VOID NETWORK_IEHistoryInfo(VOID);
 VOID NETWORK_IECookieInfo(VOID);
 VOID NETWORK_RasInfo(VOID);
+VOID ShowIEShortInfo(INT IconIndex);
 
 /* tests.c */
 VOID TESTS_MemTest(VOID);
