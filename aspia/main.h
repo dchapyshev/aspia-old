@@ -393,10 +393,6 @@ typedef struct
     INT Bottom;
     INT SplitterPos;
 
-    /* Language */
-    WCHAR szLangFile[MAX_PATH];
-    WCHAR szIconsFile[MAX_PATH];
-
     UINT StartupCategory;
 
     /* Report */
@@ -431,6 +427,13 @@ typedef struct
 
 typedef struct
 {
+    /* Language */
+    WCHAR szLangFile[MAX_PATH];
+    WCHAR szIconsFile[MAX_PATH];
+} THEMES_STRUCT, *PTHEMES_STRUCT;
+
+typedef struct
+{
     UINT LanguageId;
     LPWSTR lpszFileName;
     LPWSTR lpszLanguageName;
@@ -438,6 +441,7 @@ typedef struct
 
 extern LANGUAGES_LIST LanguagesList[];
 extern SETTINGS_STRUCT SettingsInfo;
+extern THEMES_STRUCT ThemesInfo;
 
 BOOL LoadSettings(VOID);
 BOOL SaveSettings(VOID);
