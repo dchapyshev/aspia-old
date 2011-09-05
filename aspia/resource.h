@@ -809,6 +809,10 @@
 #define IDS_TYPE_JSON                    699
 #define IDS_TYPE_INI                     700
 #define IDS_TYPE_RTF                     701
+#define IDS_REGION_ANSI_CODEPAGE         702
+#define IDS_REGION_OEM_CODEPAGE          703
+#define IDS_REGION_MAC_CODEPAGE          704
+#define IDS_REGION_LANG_CODE             705
 
 #define IDS_CAT_SUMMARY           1000
 

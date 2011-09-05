@@ -886,6 +886,10 @@ BEGIN
     IDS_TYPE_JSON, "JSON-файл (*.jsn)"
     IDS_TYPE_INI, "INI-файл (*.ini)"
     IDS_TYPE_RTF, "RTF-файл (*.rtf)"
+    IDS_REGION_ANSI_CODEPAGE, "Кодировка ANSI"
+    IDS_REGION_OEM_CODEPAGE, "Кодировка OEM"
+    IDS_REGION_MAC_CODEPAGE, "Кодировка MAC"
+    IDS_REGION_LANG_CODE, "Код языка"
 
     IDS_CAT_SUMMARY, "Общая информация"
 

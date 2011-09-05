@@ -565,7 +565,7 @@ NETWORK_RouteInfo(VOID)
 }
 
 static VOID
-ShowIERegInfo(UINT StringID, LPWSTR lpszPath, LPWSTR lpszKeyName)
+ShowIERegInfo(UINT StringID, LPWSTR lpszPath, LPWSTR lpszKeyName, INT IconIndex)
 {
     WCHAR szText[MAX_STR_LEN];
     INT Index;
@@ -576,34 +576,35 @@ ShowIERegInfo(UINT StringID, LPWSTR lpszPath, LPWSTR lpszKeyName)
                               szText,
                               MAX_STR_LEN))
     {
-        Index = IoAddValueName(1, StringID, 0);
+        Index = IoAddValueName(1, StringID, IconIndex);
         IoSetItemText(Index, 1, szText);
     }
 }
 
 VOID
-NETWORK_IEParamsInfo(VOID)
+ShowIEShortInfo(INT IconIndex)
 {
-    LPWSTR lpIEMain = L"Software\\Microsoft\\Internet Explorer\\Main";
-    LPWSTR lpIE = L"Software\\Microsoft\\Internet Explorer";
     INTERNET_PER_CONN_OPTION_LIST Info;
     INTERNET_PER_CONN_OPTION Option[5];
     WCHAR szText[MAX_STR_LEN];
     DWORD dwSize;
     INT Index;
 
-    DebugStartReceiving();
+    if (GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+                              L"Software\\Microsoft\\Internet Explorer",
+                              L"Version", szText,
+                              MAX_STR_LEN))
+    {
+        Index = IoAddValueName(1, IDS_VERSION, IconIndex);
+        IoSetItemText(Index, 1, szText);
+    }
 
-    IoAddIcon(IDI_IE);
+    ShowIERegInfo(IDS_IE_STARTPAGE,
+                  L"Software\\Microsoft\\Internet Explorer\\Main",
+                  L"Start Page",
+                  IconIndex);
 
-    IoAddHeader(0, IDS_CAT_NETWORK_IE_PARAMS, 0);
-
-    ShowIERegInfo(IDS_IE_DOWNLOADDIR, lpIE, L"Download Directory");
-    ShowIERegInfo(IDS_IE_STARTPAGE, lpIEMain, L"Start Page");
-    ShowIERegInfo(IDS_IE_SEARCHPAGE, lpIEMain, L"Search Page");
-    ShowIERegInfo(IDS_IE_LOCALPAGE, lpIEMain, L"Local Page");
-
-    Index = IoAddValueName(1, IDS_IE_USE_PROXY, 0);
+    Index = IoAddValueName(1, IDS_IE_USE_PROXY, IconIndex);
 
     Option[0].dwOption = INTERNET_PER_CONN_FLAGS;
     Option[1].dwOption = INTERNET_PER_CONN_PROXY_SERVER;
@@ -632,18 +633,29 @@ NETWORK_IEParamsInfo(VOID)
 
     if (SafeStrLen(Option[1].Value.pszValue) != 0)
     {
-        Index = IoAddValueName(1, IDS_IE_PROXY_ADDR, 0);
+        Index = IoAddValueName(1, IDS_IE_PROXY_ADDR, IconIndex);
         IoSetItemText(Index, 1, Option[1].Value.pszValue);
         GlobalFree(Option[1].Value.pszValue);
     }
+}
 
-    if (GetStringFromRegistry(HKEY_LOCAL_MACHINE, lpIE,
-                              L"Version", szText,
-                              MAX_STR_LEN))
-    {
-        Index = IoAddValueName(1, IDS_VERSION, 0);
-        IoSetItemText(Index, 1, szText);
-    }
+VOID
+NETWORK_IEParamsInfo(VOID)
+{
+    LPWSTR lpIEMain = L"Software\\Microsoft\\Internet Explorer\\Main";
+    LPWSTR lpIE = L"Software\\Microsoft\\Internet Explorer";
+
+    DebugStartReceiving();
+
+    IoAddIcon(IDI_IE);
+
+    IoAddHeader(0, IDS_CAT_NETWORK_IE_PARAMS, 0);
+
+    ShowIEShortInfo(0);
+
+    ShowIERegInfo(IDS_IE_DOWNLOADDIR, lpIE, L"Download Directory", 0);
+    ShowIERegInfo(IDS_IE_SEARCHPAGE, lpIEMain, L"Search Page", 0);
+    ShowIERegInfo(IDS_IE_LOCALPAGE, lpIEMain, L"Local Page", 0);
 
     DebugEndReceiving();
 }

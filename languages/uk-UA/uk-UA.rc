@@ -887,6 +887,10 @@ BEGIN
     IDS_TYPE_JSON, "JSON-פאיכ (*.jsn)"
     IDS_TYPE_INI, "INI-פאיכ (*.ini)"
     IDS_TYPE_RTF, "RTF-פאיכ (*.rtf)"
+    IDS_REGION_ANSI_CODEPAGE, "ANSI Codepage"
+    IDS_REGION_OEM_CODEPAGE, "OEM Codepage"
+    IDS_REGION_MAC_CODEPAGE, "MAC Codepage"
+    IDS_REGION_LANG_CODE, "Language Code"
 
     IDS_CAT_SUMMARY, "Çאדאכüםא ³םפמנלאצ³ÿ"
 

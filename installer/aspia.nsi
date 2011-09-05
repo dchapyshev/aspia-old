@@ -9,6 +9,13 @@
 ;Include Modern UI
 
   !include "MUI2.nsh"
+  
+;--------------------------------
+;Interface Settings
+
+  !define MUI_HEADERIMAGE
+  !define MUI_HEADERIMAGE_BITMAP "aspia.bmp" ; optional
+  !define MUI_ABORTWARNING
 
 ;--------------------------------
 ;Pages
@@ -43,13 +50,6 @@
 
   ;Request application privileges for Windows Vista
   RequestExecutionLevel admin
-
-;--------------------------------
-;Interface Settings
-
-  !define MUI_HEADERIMAGE
-  !define MUI_HEADERIMAGE_BITMAP "aspia.bmp" ; optional
-  !define MUI_ABORTWARNING
 
 
 ;--------------------------------

@@ -288,5 +288,10 @@ OS_RegionalParamInfo(VOID)
         IoSetItemText(Index, 1, lpszValue);
     }
 
+    AddLocaleInfoString1(0, IDS_REGION_ANSI_CODEPAGE, LOCALE_IDEFAULTANSICODEPAGE);
+    AddLocaleInfoString1(0, IDS_REGION_OEM_CODEPAGE, LOCALE_IDEFAULTCODEPAGE);
+    AddLocaleInfoString1(0, IDS_REGION_MAC_CODEPAGE, LOCALE_IDEFAULTMACCODEPAGE);
+    AddLocaleInfoString1(0, IDS_REGION_LANG_CODE, LOCALE_ILANGUAGE);
+
     DebugEndReceiving();
 }

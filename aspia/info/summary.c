@@ -144,6 +144,7 @@ ShowSummaryInfo(VOID)
     IoAddIcon(IDI_CPU); /* CPU */
     IoAddIcon(IDI_HDD); /* HDD */
     IoAddIcon(IDI_HW); /* Memory */
+    IoAddIcon(IDI_IE); /* Internet Explorer */
 
     IoAddHeader(0, IDS_SUMMARY_OS, 0);
 
@@ -200,6 +201,11 @@ ShowSummaryInfo(VOID)
         IoSetItemText(Index, 1, szText);
     }
 
+    IoAddFooter();
+
+    /* Internet Explorer */
+    IoAddHeader(0, IDS_CAT_NETWORK_IE, 4);
+    ShowIEShortInfo(4);
     IoAddFooter();
 
     IoAddHeader(0, IDS_SUMMARY_CPU, 1);
