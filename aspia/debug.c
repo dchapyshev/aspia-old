@@ -15,10 +15,10 @@ VOID
 DebugWriteLog(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, ...)
 {
     LARGE_INTEGER FileSize, MoveTo, NewPos;
-	WCHAR szMsg[MAX_STR_LEN * 3];
+    WCHAR szMsg[MAX_STR_LEN * 3];
     WCHAR szText[MAX_STR_LEN * 4], szTime[MAX_STR_LEN];
     DWORD dwBytesWritten;
-	va_list args;
+    va_list args;
 
     if (!hDebugLog || hDebugLog == INVALID_HANDLE_VALUE)
         return;
@@ -36,9 +36,9 @@ DebugWriteLog(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, ...)
                   0, NULL, NULL, szTime,
                   MAX_STR_LEN);
 
-	va_start(args, lpMsg);
-	StringCbVPrintf(szMsg, sizeof(szMsg), lpMsg, args);
-	va_end(args);
+    va_start(args, lpMsg);
+    StringCbVPrintf(szMsg, sizeof(szMsg), lpMsg, args);
+    va_end(args);
 
     StringCbPrintf(szText, sizeof(szText),
                    L"[%s] %S:%ld %S(): \"%s\"\r\n",

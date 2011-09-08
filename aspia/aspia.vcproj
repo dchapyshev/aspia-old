@@ -559,6 +559,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="LPC"
+				>
+				<File
+					RelativePath=".\LPC\lpc.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Файлы ресурсов"

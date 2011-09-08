@@ -353,7 +353,7 @@ DRIVER_GetMSRData(IN UINT32 Register,
 }
 
 WORD
-DRIVER_ReadIoPortWord(IN WORD Port)
+DRIVER_ReadIoPortWord(IN DWORD Port)
 {
     WORD Value = 0;
     DWORD ReadByte;
@@ -367,7 +367,7 @@ DRIVER_ReadIoPortWord(IN WORD Port)
 }
 
 DWORD
-DRIVER_ReadIoPortDword(IN WORD Port)
+DRIVER_ReadIoPortDword(IN DWORD Port)
 {
     DWORD ReadByte = 0, Value;
 
@@ -398,7 +398,7 @@ DRIVER_ReadIoPortByte(IN DWORD Port)
 }
 
 BOOL
-DRIVER_WriteIoPortWord(IN WORD Port,
+DRIVER_WriteIoPortWord(IN DWORD Port,
                        IN WORD Value)
 {
     PORT_WRITE_INPUT InBuffer;
@@ -418,7 +418,7 @@ DRIVER_WriteIoPortWord(IN WORD Port,
 }
 
 BOOL
-DRIVER_WriteIoPortDword(IN WORD Port,
+DRIVER_WriteIoPortDword(IN DWORD Port,
                         IN DWORD Value)
 {
     PORT_WRITE_INPUT InBuffer;
@@ -438,7 +438,7 @@ DRIVER_WriteIoPortDword(IN WORD Port,
 }
 
 BOOL
-DRIVER_WriteIoPortByte(IN WORD Port, IN BYTE Value)
+DRIVER_WriteIoPortByte(IN DWORD Port, IN BYTE Value)
 {
     PORT_WRITE_INPUT InBuffer;
     DWORD ReadByte, Length;
