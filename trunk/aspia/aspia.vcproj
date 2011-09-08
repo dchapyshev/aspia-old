@@ -481,6 +481,30 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="LPC"
+				>
+				<File
+					RelativePath=".\LPC\F718XX.c"
+					>
+				</File>
+				<File
+					RelativePath=".\LPC\IT87XX.c"
+					>
+				</File>
+				<File
+					RelativePath=".\LPC\lpc.c"
+					>
+				</File>
+				<File
+					RelativePath=".\LPC\NCT677X.c"
+					>
+				</File>
+				<File
+					RelativePath=".\LPC\W836XX.c"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Заголовочные файлы"
