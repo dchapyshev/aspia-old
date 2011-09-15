@@ -455,9 +455,7 @@ IoAddIcon(UINT IconID)
 BOOL
 IoCreateReport(LPWSTR lpszFile)
 {
-    if (_wfopen_s(&hReport, lpszFile,
-        (IoTarget == IO_TARGET_RTF) ? L"wt+" : L"wt+,ccs=UTF-8") != 0)
-        return FALSE;
+    hReport = _wfopen(lpszFile, (IoTarget == IO_TARGET_RTF) ? L"wt+" : L"wt+,ccs=UTF-8");
 
     if (!hReport) return FALSE;
 

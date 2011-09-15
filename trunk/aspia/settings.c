@@ -567,6 +567,10 @@ GeneralPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                            SettingsInfo.Autorun ? BST_CHECKED : BST_UNCHECKED);
             CheckDlgButton(hDlg, IDC_DEV_REPORT_SEND,
                            SettingsInfo.SendDevReport ? BST_UNCHECKED : BST_CHECKED);
+            CheckDlgButton(hDlg, IDC_STAY_ON_TOP,
+                           SettingsInfo.StayOnTop ? BST_CHECKED : BST_UNCHECKED);
+            CheckDlgButton(hDlg, IDC_ALLOW_KM_DRIVER,
+                           SettingsInfo.AllowKmDriver ? BST_CHECKED : BST_UNCHECKED);
 
             /* Init languages combobox */
             InitLangCombo(hLangList);
@@ -825,7 +829,7 @@ SaveSettingsFromDialog(HWND hDlg)
     HWND hIconsList = GetDlgItem(hDialogs[GENERAL_DIALOG], IDC_ICONS_COMBO);
     WCHAR *IconFile, *LangFile, szText[MAX_STR_LEN];
     INT Selected;
-    BOOL ReInitCtrls = FALSE;
+    BOOL KmDriverNew, ReInitCtrls = FALSE;
 
     SettingsInfo.CpuBackground = CpuBackground;
     SettingsInfo.CpuFontColor = CpuFontColor;
@@ -843,6 +847,30 @@ SaveSettingsFromDialog(HWND hDlg)
         (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_START_WITH_WINDOWS) == BST_CHECKED) ? TRUE : FALSE;
     SettingsInfo.SendDevReport =
         (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_DEV_REPORT_SEND) == BST_CHECKED) ? FALSE : TRUE;
+    SettingsInfo.StayOnTop =
+        (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_STAY_ON_TOP) == BST_CHECKED) ? TRUE : FALSE;
+
+    SetWindowPos(hMainWnd,
+                 SettingsInfo.StayOnTop ? HWND_TOPMOST : HWND_NOTOPMOST,
+                 20, 20, 850, 640,
+                 SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
+
+    KmDriverNew =
+        (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_ALLOW_KM_DRIVER) == BST_CHECKED) ? TRUE : FALSE;
+    if (SettingsInfo.AllowKmDriver != KmDriverNew)
+    {
+        if (KmDriverNew)
+        {
+            SettingsInfo.AllowKmDriver = KmDriverNew;
+            DRIVER_Load();
+        }
+        else
+        {
+            DRIVER_Unload();
+            SettingsInfo.AllowKmDriver = KmDriverNew;
+        }
+    }
+
     SettingsInfo.HideToTray =
         (IsDlgButtonChecked(hDialogs[SYSTRAY_DIALOG], IDC_START_MINIMIZED) == BST_CHECKED) ? TRUE : FALSE;
     SettingsInfo.ShowProgIcon =
@@ -934,8 +962,6 @@ SettingsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         case WM_INITDIALOG:
         {
-            DebugTrace(L"Dialog init");
-
             SettingsInfo.Autorun = GetAutostartState();
             InitSettingsControls(hDlg, GetDlgItem(hDlg, IDC_SETTINGS_TREE));
         }
@@ -954,7 +980,6 @@ SettingsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
         case WM_CLOSE:
         {
             UINT Index = 0;
-            DebugTrace(L"Dialog close");
 
             while (Index < DIALOGS_COUNT)
                 DestroyWindow(hDialogs[Index++]);

@@ -199,6 +199,11 @@ VOID OS_DesktopInfo(VOID);
 VOID OS_TaskSchedulerInfo(VOID);
 VOID OS_PreventsInfo(VOID);
 VOID ShowInstallDate(VOID);
+VOID OS_SysFilesDLLInfo(VOID);
+VOID OS_SysFilesAXInfo(VOID);
+VOID OS_SysFilesEXEInfo(VOID);
+VOID OS_SysFilesSYSInfo(VOID);
+VOID OS_SysFilesKnownInfo(VOID);
 
 /* regional.c */
 VOID OS_RegionalParamInfo(VOID);
@@ -263,6 +268,7 @@ VOID SOFTWARE_InstalledUpdInfo(VOID);
 VOID SOFTWARE_InstalledAppInfo(VOID);
 VOID SOFTWARE_TaskMgr(VOID);
 VOID SOFTWARE_LicensesInfo(VOID);
+VOID SOFTWARE_FileTypesInfo(VOID);
 
 /* network.c */
 VOID NETWORK_CardsInfo(VOID);
@@ -415,6 +421,8 @@ typedef struct
     BOOL HideToTray;
     BOOL ShowProgIcon;
     BOOL ShowSensorIcons;
+    BOOL StayOnTop;
+    BOOL AllowKmDriver;
 
     /* Sensor Colors */
     COLORREF HddBackground;
@@ -474,6 +482,9 @@ VOID DebugWriteLog(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, ...);
 #define DebugStartReceiving() DebugTrace(L"Start data receiving")
 #define DebugEndReceiving() DebugTrace(L"End data receiving")
 #define DebugAllocFailed() DebugTrace(L"Alloc() failed")
+
+/* sysmon.c */
+VOID CreateSysMonWindow(HWND hParentWnd);
 
 /* driver.c */
 typedef struct _SMBIOS_ENTRY

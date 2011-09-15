@@ -88,6 +88,9 @@
 #define IDI_FIREWALL      169
 #define IDI_USB_DEV       170
 #define IDI_ENCLOSURE     171
+#define IDI_START         172
+#define IDI_STOP          173
+#define IDI_STRESS_TEST   174
 
 /* Dialogs */
 #define IDD_ABOUT_DIALOG         5000
@@ -121,6 +124,10 @@
 #define ID_SELECT_ALL     1017
 #define ID_SHOW_WINDOW    1018
 #define ID_HIDE_WINDOW    1019
+#define ID_SYSMON         1020
+#define ID_SYSMON_START   1021
+#define ID_SYSMON_STOP    1022
+#define ID_SYSMON_TEST    1023
 
 /* Controls */
 #define IDC_CATEGORIES_TREE     100
@@ -165,6 +172,8 @@
 #define IDC_NEVER_SEND_REPORT   139
 #define IDC_DEV_REPORT_SEND     140
 #define IDC_FILE_TYPE_COMBO     141
+#define IDC_STAY_ON_TOP         142
+#define IDC_ALLOW_KM_DRIVER     143
 
 /* Strings */
 #define IDS_APPTITLE                100
@@ -813,6 +822,23 @@
 #define IDS_REGION_OEM_CODEPAGE          703
 #define IDS_REGION_MAC_CODEPAGE          704
 #define IDS_REGION_LANG_CODE             705
+#define IDS_SYSFILES_NAME                706
+#define IDS_SYSFILES_SIZE                707
+#define IDS_SYSFILES_VERSION             708
+#define IDS_SYSFILES_DESC                709
+#define IDS_SYSFILES_MANUF               710
+#define IDS_FILETYPES_EXT                711
+#define IDS_FILETYPES_DESC               712
+#define IDS_FILETYPES_TYPE               713
+#define IDS_SYSMON                       714
+#define IDS_ASPIA_SYSMON                 715
+#define IDS_SYSMON_START                 716
+#define IDS_SYSMON_STOP                  717
+#define IDS_SYSMON_TEST                  718
+#define IDS_SYSMON_SENSOR                719
+#define IDS_SYSMON_CURRENT               720
+#define IDS_SYSMON_MIN                   721
+#define IDS_SYSMON_MAX                   722
 
 #define IDS_CAT_SUMMARY           1000
 
@@ -856,6 +882,7 @@
 #define IDS_CAT_SOFTWARE_DRIVERS   2103
 #define IDS_CAT_SOFTWARE_UPD_SFT   2104
 #define IDS_CAT_SOFTWARE_LICENSES  2105
+#define IDS_CAT_SOFTWARE_FILETYPES 2106
 
 #define IDS_CAT_SOFTWARE_UPDATES  2151
 #define IDS_CAT_SOFTWARE_PROGRAMS 2152
@@ -887,6 +914,7 @@
 #define IDS_CAT_OS_TASKSCHED    2310
 #define IDS_CAT_OS_ACTIVEUSERS  2311
 #define IDS_CAT_OS_PREVENTS     2312
+#define IDS_CAT_OS_SYSFILES     2313
 
 #define IDS_CAT_OS_USERS        2350
 #define IDS_CAT_OS_USERGROUP    2351
@@ -894,5 +922,11 @@
 #define IDS_ELOG_APPLICATIONS   2360
 #define IDS_ELOG_SECURITY       2361
 #define IDS_ELOG_SYSTEM         2362
+
+#define IDS_CAT_SYSFILES_DLL    2370
+#define IDS_CAT_SYSFILES_AX     2371
+#define IDS_CAT_SYSFILES_EXE    2372
+#define IDS_CAT_SYSFILES_SYS    2373
+#define IDS_CAT_SYSFILES_KNOWN  2374
 
 #define IDS_LANGUAGE_NAME       10000

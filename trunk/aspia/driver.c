@@ -43,9 +43,9 @@ DRIVER_ExtractFromExe(OUT LPWSTR lpszDriverPath,
     DeleteFile(lpszDriverPath);
 
     DebugTrace(L"Extract %s driver to: %s",
-		       IsWin64 ? L"amd64" : L"x86", lpszDriverPath);
+               IsWin64 ? L"amd64" : L"x86", lpszDriverPath);
     
-	hRes = FindResource(hInstance,
+    hRes = FindResource(hInstance,
                         IsWin64 ?
                             MAKEINTRESOURCE(ID_DRIVER_X64_SYS) :
                             MAKEINTRESOURCE(ID_DRIVER_X32_SYS),
@@ -176,6 +176,9 @@ DRIVER_Unload(VOID)
 {
     SC_HANDLE scHandle;
 
+    if (!SettingsInfo.AllowKmDriver)
+        return FALSE;
+
     DebugTrace(L"Unloading driver");
 
     if (hDriverFile != INVALID_HANDLE_VALUE)
@@ -216,12 +219,18 @@ DRIVER_Load(VOID)
 {
     WCHAR szDriverExec[MAX_PATH];
 #ifndef _ASPIA_PORTABLE_
-	WCHAR szCurrent[MAX_PATH];
-	WCHAR szTemp[MAX_PATH];
+    WCHAR szCurrent[MAX_PATH];
+    WCHAR szTemp[MAX_PATH];
 #endif
     SC_HANDLE scHandle;
-	BOOLEAN   canDelete = TRUE;
-	BOOLEAN   bStarted;
+    BOOLEAN   canDelete = TRUE;
+    BOOLEAN   bStarted;
+
+    if (!SettingsInfo.AllowKmDriver)
+    {
+        DebugTrace(L"Kernel-mode driver disabled by user");
+        return FALSE;
+    }
 
     DebugTrace(L"Loading driver...");
 
@@ -229,34 +238,33 @@ DRIVER_Load(VOID)
     if (!DRIVER_ExtractFromExe(szDriverExec, sizeof(szDriverExec)))
         return FALSE;
 #else
-	if (!GetTempPath(MAX_PATH, szTemp)) return FALSE;
+    if (!GetTempPath(MAX_PATH, szTemp)) return FALSE;
 
     StringCbPrintf(szCurrent, sizeof(szCurrent),
                    L"%s%s",
                    ParamsInfo.szCurrentPath,
                    IsWin64System() ? L"aspia_x64.sys" : L"aspia_x32.sys");
 
-	StringCbPrintf(szDriverExec, sizeof(szDriverExec), L"%saspia.sys", szTemp);
+    StringCbPrintf(szDriverExec, sizeof(szDriverExec), L"%saspia.sys", szTemp);
 
-	if (!CopyFile(szCurrent, szDriverExec, FALSE)) {
-		StringCchCopy(szDriverExec, MAX_PATH, szCurrent);
-		canDelete = FALSE;
-	}
-	DebugTrace(L"Driver path: %s", szCurrent);
-	DebugTrace(L"Driver temp path: %s", szDriverExec);
+    if (!CopyFile(szCurrent, szDriverExec, FALSE)) {
+        StringCchCopy(szDriverExec, MAX_PATH, szCurrent);
+        canDelete = FALSE;
+    }
+    DebugTrace(L"Driver path: %s", szCurrent);
+    DebugTrace(L"Driver temp path: %s", szDriverExec);
 #endif
 
     scHandle = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
     if (!scHandle) return FALSE;
 
-    DRIVER_Unload();
+    bStarted = InstallDriver(scHandle, szDriverExec) &&
+               StartDriver(scHandle);
 
-    bStarted = InstallDriver(scHandle, szDriverExec) && 
-		       StartDriver(scHandle);
+    if (canDelete) DeleteFile(szDriverExec);
 
-	if (canDelete) DeleteFile(szDriverExec);
-	
-    if (!bStarted) {
+    if (!bStarted)
+    {
         CloseServiceHandle(scHandle);
         return FALSE;
     }

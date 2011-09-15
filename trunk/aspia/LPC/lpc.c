@@ -83,21 +83,21 @@ LPC_ChipTypeToText(DWORD dwChip, LPWSTR lpText, SIZE_T Size)
 }
 
 BYTE
-ReadByte(BYTE bRegisterPort, BYTE bValuePort, BYTE bRegister)
+LPC_ReadByte(BYTE bRegisterPort, BYTE bValuePort, BYTE bRegister)
 {
     DRIVER_WriteIoPortByte(bRegisterPort, bRegister);
     return DRIVER_ReadIoPortByte(bValuePort);
 }
 
 WORD
-ReadWord(BYTE bRegisterPort, BYTE bValuePort, BYTE bRegister)
+LPC_ReadWord(BYTE bRegisterPort, BYTE bValuePort, BYTE bRegister)
 {
-    return (WORD)((ReadByte(bRegisterPort, bValuePort, bRegister) << 8) |
-                  ReadByte(bRegisterPort, bValuePort, (BYTE)(bRegister + 1)));
+    return (WORD)((LPC_ReadByte(bRegisterPort, bValuePort, bRegister) << 8) |
+                  LPC_ReadByte(bRegisterPort, bValuePort, (BYTE)(bRegister + 1)));
 }
 
 VOID
-Select(BYTE bRegisterPort, BYTE bValuePort, BYTE devnum)
+LPC_Select(BYTE bRegisterPort, BYTE bValuePort, BYTE devnum)
 {
     DRIVER_WriteIoPortByte(bRegisterPort, DEVCIE_SELECT_REGISTER);
     DRIVER_WriteIoPortByte(bValuePort, devnum);
@@ -131,8 +131,8 @@ DetectWinbondFintek(BYTE bRegisterPort,
     WinbondNuvotonFintekEnter(bRegisterPort);
 
     /* Detection */
-    id = ReadByte(bRegisterPort, bValuePort, CHIP_ID_REGISTER);
-    rev = ReadByte(bRegisterPort, bValuePort, CHIP_REVISION_REGISTER);
+    id = LPC_ReadByte(bRegisterPort, bValuePort, CHIP_ID_REGISTER);
+    rev = LPC_ReadByte(bRegisterPort, bValuePort, CHIP_REVISION_REGISTER);
 
     switch (id)
     {
@@ -313,12 +313,12 @@ DetectWinbondFintek(BYTE bRegisterPort,
         return FALSE;
     }
 
-    Select(bRegisterPort, bValuePort, devnum);
+    LPC_Select(bRegisterPort, bValuePort, devnum);
 
-    *wAddress = ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER);
+    *wAddress = LPC_ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER);
     Sleep(1);
-    verify = ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER);
-    vendorID = ReadWord(bRegisterPort, bValuePort, FINTEK_VENDOR_ID_REGISTER);
+    verify = LPC_ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER);
+    vendorID = LPC_ReadWord(bRegisterPort, bValuePort, FINTEK_VENDOR_ID_REGISTER);
 
     WinbondNuvotonFintekExit(bRegisterPort);
 
@@ -373,7 +373,7 @@ DetectIT87(BYTE bRegisterPort,
 
     IT87Enter(bRegisterPort);
 
-    id = ReadWord(bRegisterPort, bValuePort, CHIP_ID_REGISTER);
+    id = LPC_ReadWord(bRegisterPort, bValuePort, CHIP_ID_REGISTER);
 
     switch (id)
     {
@@ -414,18 +414,18 @@ DetectIT87(BYTE bRegisterPort,
         }
     }
 
-    Select(bRegisterPort, bValuePort, IT87_ENVIRONMENT_CONTROLLER_LDN);
+    LPC_Select(bRegisterPort, bValuePort, IT87_ENVIRONMENT_CONTROLLER_LDN);
 
-    *wAddress = ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER);
+    *wAddress = LPC_ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER);
     Sleep(1);
-    verify = ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER);
+    verify = LPC_ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER);
 
-    *bVersion = (BYTE)(ReadByte(bRegisterPort, bValuePort, IT87_CHIP_VERSION_REGISTER) & 0x0F);
+    *bVersion = (BYTE)(LPC_ReadByte(bRegisterPort, bValuePort, IT87_CHIP_VERSION_REGISTER) & 0x0F);
 
-    Select(bRegisterPort, bValuePort, IT87_GPIO_LDN);
-    *wGPIOAddress = ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER + 2);
+    LPC_Select(bRegisterPort, bValuePort, IT87_GPIO_LDN);
+    *wGPIOAddress = LPC_ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER + 2);
     Sleep(1);
-    verifyGPIO = ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER + 2);
+    verifyGPIO = LPC_ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER + 2);
 
     IT87Exit(bRegisterPort, bValuePort);
 

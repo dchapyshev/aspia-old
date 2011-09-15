@@ -24,9 +24,10 @@ static const TBBUTTON Buttons[] =
     { 0, ID_SAVE,     TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szSaveReportBtn},
     { 1, ID_RELOAD,   TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szReloadBtn},
     {-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
-    { 2, ID_SETTINGS, TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0},
+    { 2, ID_SYSMON,   TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0},
+    { 3, ID_SETTINGS, TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0},
     {-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
-    { 3, ID_ABOUT,    TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0}
+    { 4, ID_ABOUT,    TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0}
 };
 
 
@@ -233,6 +234,9 @@ ToolBarOnGetDispInfo(LPTOOLTIPTEXT lpttt)
         case ID_SETTINGS:
             StringID = IDS_SETTINGS;
             break;
+        case ID_SYSMON:
+            StringID = IDS_SYSMON;
+            break;
         default:
             return;
     }
@@ -360,6 +364,7 @@ InitToolBar(HWND hwnd)
     /* Add images to ImageList */
     AddImageToImageList(hImageList, IDI_SAVE);
     AddImageToImageList(hImageList, IDI_RELOAD);
+    AddImageToImageList(hImageList, IDI_TASKMGR);
     AddImageToImageList(hImageList, IDI_SETTINGS);
     AddImageToImageList(hImageList, IDI_INFO);
 
@@ -520,8 +525,6 @@ AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
         {
             WCHAR szFormat[MAX_STR_LEN], szInfo[MAX_STR_LEN * 5];
 
-            DebugTrace(L"Dialog init");
-
             LoadMUIString(IDS_ABOUT_STRING, szInfo, sizeof(szInfo)/sizeof(WCHAR));
             SetWindowText(GetDlgItem(hDlg, IDC_ABOUT_EDIT), szInfo);
 
@@ -544,7 +547,6 @@ AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
         break;
 
         case WM_CLOSE:
-            DebugTrace(L"Dialog close");
             DestroyIcon(hIcon);
             EndDialog(hDlg, LOWORD(wParam));
             break;

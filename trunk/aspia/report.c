@@ -522,26 +522,6 @@ static HICON hUnCheckAllIcon = NULL;
 
 
 VOID
-GetCheckBoxesState(HWND hDlg)
-{
-    SettingsInfo.IsAddContent =
-       (IsDlgButtonChecked(hDlg, IDC_ADD_CONTENT) == BST_CHECKED) ? TRUE : FALSE;
-
-    SettingsInfo.ELogShowError =
-       (IsDlgButtonChecked(hDlg, IDC_FILTER_ELOG_ERROR) == BST_CHECKED) ? TRUE : FALSE;
-    SettingsInfo.ELogShowWarning =
-       (IsDlgButtonChecked(hDlg, IDC_FILTER_ELOG_WARNING) == BST_CHECKED) ? TRUE : FALSE;
-    SettingsInfo.ELogShowInfo =
-       (IsDlgButtonChecked(hDlg, IDC_FILTER_ELOG_INFO) == BST_CHECKED) ? TRUE : FALSE;
-    SettingsInfo.IEShowFile =
-       (IsDlgButtonChecked(hDlg, IDC_FILTER_IE_FILE) == BST_CHECKED) ? TRUE : FALSE;
-    SettingsInfo.IEShowHttp =
-       (IsDlgButtonChecked(hDlg, IDC_FILTER_IE_HTTP) == BST_CHECKED) ? TRUE : FALSE;
-    SettingsInfo.IEShowFtp =
-       (IsDlgButtonChecked(hDlg, IDC_FILTER_IE_FTP) == BST_CHECKED) ? TRUE : FALSE;
-}
-
-VOID
 AddFileTypeToComboBox(HWND hCombo, UINT StringID)
 {
     WCHAR szText[MAX_STR_LEN];
@@ -637,8 +617,6 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             WCHAR szFileName[MAX_PATH];
             DWORD dwSize;
 
-            DebugTrace(L"Dialog init");
-
             CheckDlgButton(hDlg, IDC_ADD_CONTENT,
                            SettingsInfo.IsAddContent ? BST_CHECKED : BST_UNCHECKED);
 
@@ -711,9 +689,8 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 
         case WM_CLOSE:
         {
-            DebugTrace(L"Dialog close");
-
-            GetCheckBoxesState(hDlg);
+            SettingsInfo.IsAddContent =
+                (IsDlgButtonChecked(hDlg, IDC_ADD_CONTENT) == BST_CHECKED) ? TRUE : FALSE;
 
             RebuildTreeChecks(hTree);
             GetCheckStateTreeView(hTree, RootCategoryList);
@@ -725,9 +702,6 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 
             EndDialog(hDlg, LOWORD(wParam));
         }
-        break;
-
-        case WM_NOTIFY:
         break;
 
         case WM_COMMAND:
@@ -790,9 +764,8 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 
                 case IDOK:
                 {
-                    DebugTrace(L"Dialog close");
-
-                    GetCheckBoxesState(hDlg);
+                    SettingsInfo.IsAddContent =
+                        (IsDlgButtonChecked(hDlg, IDC_ADD_CONTENT) == BST_CHECKED) ? TRUE : FALSE;
 
                     GetCheckStateTreeView(hTree, RootCategoryList);
 

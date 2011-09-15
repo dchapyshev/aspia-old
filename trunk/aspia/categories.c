@@ -247,6 +247,24 @@ COLUMN_LIST FirewallColumnList[] =
     { 0 }
 };
 
+COLUMN_LIST SysFilesColumnList[] =
+{
+    { IDS_SYSFILES_NAME, 110 },
+    { IDS_SYSFILES_SIZE, 70 },
+    { IDS_SYSFILES_VERSION, 90 },
+    { IDS_SYSFILES_MANUF, 110 },
+    { IDS_SYSFILES_DESC, 230 },
+    { 0 }
+};
+
+COLUMN_LIST FileTypesColumnList[] =
+{
+    { IDS_FILETYPES_EXT, 90 },
+    { IDS_FILETYPES_DESC, 220 },
+    { IDS_FILETYPES_TYPE, 170 },
+    { 0 }
+};
+
 CATEGORY_LIST DMICategoryList[] =
 {
     { IDS_CAT_HW_DMI_BIOS,      IDI_CPU,      FALSE, TRUE, NULL, DMI_BIOSInfo,      StdColumnList, NULL },
@@ -312,6 +330,7 @@ CATEGORY_LIST SoftwareCategoryList[] =
     { IDS_CAT_SOFTWARE_UPD_SFT,  IDI_SOFTWARE, FALSE, TRUE, NULL, NULL,                  NULL,               UpdSftCategoryList },
     { IDS_CAT_SOFTWARE_SERVICES, IDI_SERVICES, FALSE, TRUE, NULL, SOFTWARE_ServicesInfo, ServicesColumnList, NULL },
     { IDS_CAT_SOFTWARE_DRIVERS,  IDI_HW,       FALSE, TRUE, NULL, SOFTWARE_DriversInfo,  DriversColumnList,  NULL },
+    { IDS_CAT_SOFTWARE_FILETYPES,IDI_APPS,     FALSE, TRUE, NULL, SOFTWARE_FileTypesInfo,FileTypesColumnList,NULL },
     { IDS_CAT_SOFTWARE_TASKMGR,  IDI_TASKMGR,  FALSE, TRUE, NULL, SOFTWARE_TaskMgr,      TaskMgrColumnList,  NULL },
     { IDS_CAT_SOFTWARE_LICENSES, IDI_CONTACT,  FALSE, TRUE, NULL, SOFTWARE_LicensesInfo, LicensesColumnList, NULL },
     { 0 }
@@ -354,6 +373,17 @@ CATEGORY_LIST EventsCategoryList[] =
     { 0 }
 };
 
+CATEGORY_LIST SysFilesCategoryList[] =
+{
+    { IDS_CAT_SYSFILES_KNOWN, IDI_APPS, FALSE, FALSE, NULL, OS_SysFilesKnownInfo, StdColumnList,      NULL },
+    { IDS_CAT_SYSFILES_DLL,   IDI_APPS, FALSE, FALSE, NULL, OS_SysFilesDLLInfo,   SysFilesColumnList, NULL },
+    { IDS_CAT_SYSFILES_AX,    IDI_APPS, FALSE, FALSE, NULL, OS_SysFilesAXInfo,    SysFilesColumnList, NULL },
+    { IDS_CAT_SYSFILES_EXE,   IDI_APPS, FALSE, FALSE, NULL, OS_SysFilesEXEInfo,   SysFilesColumnList, NULL },
+    { IDS_CAT_SYSFILES_SYS,   IDI_APPS, FALSE, FALSE, NULL, OS_SysFilesSYSInfo,   SysFilesColumnList, NULL },
+    { IDS_CAT_OS_FONTS,       IDI_FONTS,FALSE, TRUE,  NULL, OS_FontsInfo,         FontsColumnList,    NULL },
+    { 0 }
+};
+
 CATEGORY_LIST OSCategoryList[] =
 {
     { IDS_CAT_OS_REGDATA,      IDI_COMPUTER,   FALSE, TRUE, NULL, OS_RegInformation,    StdColumnList,      NULL },
@@ -363,8 +393,8 @@ CATEGORY_LIST OSCategoryList[] =
     { IDS_CAT_OS_REGPARAM,     IDI_LOCALES,    FALSE, TRUE, NULL, OS_RegionalParamInfo, StdColumnList,      NULL },
     { IDS_CAT_OS_ENVIRON,      IDI_APPS,       FALSE, TRUE, NULL, OS_EnvironInfo,       EnvironColumnList,  NULL },
     { IDS_CAT_OS_SYSFOLDERS,   IDI_SYSFOLDERS, FALSE, TRUE, NULL, OS_SysFoldersInfo,    EnvironColumnList,  NULL },
-    { IDS_CAT_OS_FONTS,        IDI_FONTS,      FALSE, TRUE, NULL, OS_FontsInfo,         FontsColumnList,    NULL },
     { IDS_CAT_OS_EVENTVIEW,    IDI_EVENTVWR,   FALSE, FALSE, NULL, NULL,                NULL,               EventsCategoryList },
+    { IDS_CAT_OS_SYSFILES,     IDI_WINDOWS,    FALSE, FALSE, NULL, NULL,                NULL,               SysFilesCategoryList },
     { IDS_CAT_OS_AUTORUN,      IDI_SOFTWARE,   FALSE, TRUE, NULL, OS_AutorunInfo,       StdColumnList,      NULL },
     { IDS_CAT_OS_PREVENTS,     IDI_PREVENT,    FALSE, TRUE, NULL, OS_PreventsInfo,      StdColumnList,      NULL },
     { 0 }

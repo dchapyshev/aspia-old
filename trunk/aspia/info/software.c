@@ -460,3 +460,87 @@ SOFTWARE_LicensesInfo(VOID)
 
     DebugEndReceiving();
 }
+
+VOID
+SOFTWARE_FileTypesInfo(VOID)
+{
+    WCHAR szKeyName[MAX_PATH], szRoot[MAX_PATH],
+          szDesc[MAX_PATH], szContentType[MAX_PATH];
+    DWORD dwSize;
+    HKEY hKey;
+    LONG lIndex = 0, res;
+    INT Index;
+
+    DebugStartReceiving();
+
+    IoAddIcon(IDI_APPS);
+
+    dwSize = MAX_PATH;
+    while (RegEnumKeyEx(HKEY_CLASSES_ROOT,
+                        lIndex,
+                        szKeyName,
+                        &dwSize,
+                        NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+    {
+        if (szKeyName[0] != L'.')
+        {
+            dwSize = MAX_PATH;
+            ++lIndex;
+            continue;
+        }
+
+        if (RegOpenKey(HKEY_CLASSES_ROOT, szKeyName, &hKey) == ERROR_SUCCESS)
+        {
+            dwSize = MAX_PATH;
+
+            res = RegQueryValueEx(hKey, NULL, NULL, NULL,
+                                  (LPBYTE)szRoot,
+                                  &dwSize);
+
+            if (res != ERROR_SUCCESS)
+            {
+                RegCloseKey(hKey);
+                dwSize = MAX_PATH;
+                ++lIndex;
+                continue;
+            }
+
+            dwSize = MAX_PATH;
+            res = RegQueryValueEx(hKey, L"Content Type",
+                                  NULL, NULL,
+                                  (LPBYTE)szContentType,
+                                  &dwSize);
+            if (res != ERROR_SUCCESS)
+            {
+                StringCbCopy(szContentType, sizeof(szContentType), L"-");
+            }
+
+            RegCloseKey(hKey);
+
+            if (RegOpenKey(HKEY_CLASSES_ROOT, szRoot, &hKey) == ERROR_SUCCESS)
+            {
+                dwSize = MAX_PATH;
+                res = RegQueryValueEx(hKey, NULL, NULL, NULL,
+                                      (LPBYTE)szDesc,
+                                      &dwSize);
+                RegCloseKey(hKey);
+
+                if (res != ERROR_SUCCESS)
+                {
+                    dwSize = MAX_PATH;
+                    ++lIndex;
+                    continue;
+                }
+
+                Index = IoAddItem(0, 0, szKeyName);
+                IoSetItemText(Index, 1, szDesc);
+                IoSetItemText(Index, 2, szContentType);
+            }
+        }
+
+        dwSize = MAX_PATH;
+        ++lIndex;
+    }
+
+    DebugEndReceiving();
+}

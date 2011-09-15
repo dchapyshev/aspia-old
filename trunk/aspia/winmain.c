@@ -384,6 +384,10 @@ OnCommand(UINT Command)
         }
         break;
 
+        case ID_SYSMON:
+            CreateSysMonWindow(hMainWnd);
+            break;
+
         case ID_EXIT:
             PostMessage(hMainWnd, WM_CLOSE, 0, 0);
             break;
@@ -635,9 +639,6 @@ HandleCommandLine(VOID)
 
     DRIVER_Load();
 
-    /* Load SmBIOS information */
-    InitSmBIOSData();
-
     ReportSaveAll(FALSE, szPath, bNavMenu);
 
     return TRUE;
@@ -798,6 +799,9 @@ wWinMain(HINSTANCE hInst,
         SettingsInfo.ShowProgIcon = FALSE;
         SettingsInfo.ShowSensorIcons = FALSE;
 
+        SettingsInfo.AllowKmDriver = TRUE;
+        SettingsInfo.StayOnTop = FALSE;
+
         /* Report: Content Filtering */
         SettingsInfo.ELogShowError = TRUE;
         SettingsInfo.ELogShowWarning = TRUE;
@@ -840,7 +844,7 @@ wWinMain(HINSTANCE hInst,
     if (HandleCommandLine())
         goto Exit;
 
-	/* если у нас дебаг билд, то всегда включаем DebugMode */
+    /* если у нас дебаг билд, то всегда включаем DebugMode */
 #ifdef _DEBUG
     ParamsInfo.DebugMode = TRUE;
 #endif
@@ -851,9 +855,6 @@ wWinMain(HINSTANCE hInst,
 
     /* Загружаем драйвер режима ядра */
     DRIVER_Load();
-
-    /* Load SmBIOS information */
-    InitSmBIOSData();
 
     InitCommonControls();
 
@@ -885,6 +886,14 @@ wWinMain(HINSTANCE hInst,
                               NULL, NULL, hInstance, NULL);
 
     if (!hMainWnd) goto Exit;
+
+    if (SettingsInfo.StayOnTop)
+    {
+        SetWindowPos(hMainWnd,
+                     HWND_TOPMOST,
+                     20, 20, 850, 640,
+                     SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
+    }
 
     if (SettingsInfo.ShowSensorIcons)
     {

@@ -145,9 +145,11 @@ BEGIN
     COMBOBOX IDC_ICONS_COMBO, 95, 29, 110, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
     LTEXT "Відкриті категорії при запуску:", -1, 13, 48, 190, 10
     COMBOBOX IDC_STARTUP_CAT_COMBO, 13, 58, 192, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
-    AUTOCHECKBOX "Запускати разом з Windows", IDC_START_WITH_WINDOWS, 20, 76, 110, 8
-    AUTOCHECKBOX "Зберігати положення вікна", IDC_SAVE_WINDOW_POS, 20, 90, 109, 8
-    AUTOCHECKBOX "Пропонувати відіслати звіт про невідомі пристрої", IDC_DEV_REPORT_SEND, 20, 105, 187, 15, BS_MULTILINE
+    AUTOCHECKBOX "Запускати разом з Windows", IDC_START_WITH_WINDOWS, 20, 79, 110, 8
+    AUTOCHECKBOX "Зберігати положення вікна", IDC_SAVE_WINDOW_POS, 20, 93, 109, 8
+    AUTOCHECKBOX "Stay on top", IDC_STAY_ON_TOP, 20, 107, 109, 8
+    AUTOCHECKBOX "Allow kernel-mode driver", IDC_ALLOW_KM_DRIVER, 20, 122, 109, 8
+    AUTOCHECKBOX "Пропонувати відіслати звіт про невідомі пристрої", IDC_DEV_REPORT_SEND, 20, 135, 187, 15, BS_MULTILINE
 END
 
 IDD_SETTINGS_FILTER DIALOGEX DISCARDABLE 103, 0, 273, 200
@@ -891,6 +893,23 @@ BEGIN
     IDS_REGION_OEM_CODEPAGE, "OEM Codepage"
     IDS_REGION_MAC_CODEPAGE, "MAC Codepage"
     IDS_REGION_LANG_CODE, "Language Code"
+    IDS_SYSFILES_NAME, "Name"
+    IDS_SYSFILES_SIZE, "Size"
+    IDS_SYSFILES_VERSION, "Version"
+    IDS_SYSFILES_DESC, "Description"
+    IDS_SYSFILES_MANUF, "Manufacturer"
+    IDS_FILETYPES_EXT, "Extension"
+    IDS_FILETYPES_DESC, "Description"
+    IDS_FILETYPES_TYPE, "Content Type"
+    IDS_SYSMON, "System Monitor"
+    IDS_ASPIA_SYSMON, "Aspia System Monitor"
+    IDS_SYSMON_START, "Start"
+    IDS_SYSMON_STOP, "Stop"
+    IDS_SYSMON_TEST, "Stress Test"
+    IDS_SYSMON_SENSOR, "Sensor"
+    IDS_SYSMON_CURRENT, "Current"
+    IDS_SYSMON_MIN, "Minimum"
+    IDS_SYSMON_MAX, "Maximum"
 
     IDS_CAT_SUMMARY, "Загальна інформація"
 
@@ -936,6 +955,7 @@ BEGIN
     IDS_CAT_SOFTWARE_SERVICES, "Системні служби"
     IDS_CAT_SOFTWARE_DRIVERS, "Драйвери пристроїв"
     IDS_CAT_SOFTWARE_LICENSES, "Ліцензії"
+    IDS_CAT_SOFTWARE_FILETYPES, "File Types"
 
     IDS_CAT_NETWORK, "Мережа"
     IDS_CAT_NETWORK_CARDS, "Мережеві адаптери"
@@ -960,8 +980,14 @@ BEGIN
     IDS_CAT_OS_PREVENTS, "Prevents"
     IDS_CAT_OS_REGPARAM, "Регіональні параметри"
     IDS_CAT_OS_TASKSCHED, "Планувач завдань"
-    IDS_CAT_OS_FONTS, "Встановлені шрифти"
+    IDS_CAT_OS_FONTS, "Шрифти"
     IDS_CAT_OS_EVENTVIEW, "Системні події"
+    IDS_CAT_OS_SYSFILES, "System Files"
+    IDS_CAT_SYSFILES_DLL, "DLL Files"
+    IDS_CAT_SYSFILES_AX, "AX Files"
+    IDS_CAT_SYSFILES_EXE, "EXE Files"
+    IDS_CAT_SYSFILES_SYS, "SYS Files"
+    IDS_CAT_SYSFILES_KNOWN, "Known DLLs"
     IDS_CAT_OS_AUTORUN, "Автозавантаження"
     IDS_CAT_OS_ENVIRON, "Змінні середовища"
     IDS_CAT_OS_SYSFOLDERS, "Системні теки"
