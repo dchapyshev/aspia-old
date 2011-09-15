@@ -144,9 +144,11 @@ BEGIN
     COMBOBOX IDC_ICONS_COMBO, 95, 29, 110, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
     LTEXT "Категория открываемая при запуске:", -1, 13, 48, 190, 10
     COMBOBOX IDC_STARTUP_CAT_COMBO, 13, 58, 192, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
-    AUTOCHECKBOX "Запускать вместе с Windows", IDC_START_WITH_WINDOWS, 20, 76, 110, 8
-    AUTOCHECKBOX "Сохранять положение окна", IDC_SAVE_WINDOW_POS, 20, 90, 109, 8
-    AUTOCHECKBOX "Предлагать отправить отчет о неизвестных устройствах", IDC_DEV_REPORT_SEND, 20, 105, 187, 15, BS_MULTILINE
+    AUTOCHECKBOX "Запускать вместе с Windows", IDC_START_WITH_WINDOWS, 20, 79, 110, 8
+    AUTOCHECKBOX "Сохранять положение окна", IDC_SAVE_WINDOW_POS, 20, 93, 109, 8
+    AUTOCHECKBOX "Поверх всех окон", IDC_STAY_ON_TOP, 20, 107, 109, 8
+    AUTOCHECKBOX "Разрешить драйвер режима ядра", IDC_ALLOW_KM_DRIVER, 20, 122, 130, 8
+    AUTOCHECKBOX "Предлагать отправить отчет о неизвестных устройствах", IDC_DEV_REPORT_SEND, 20, 135, 187, 15, BS_MULTILINE
 END
 
 IDD_SETTINGS_FILTER DIALOGEX DISCARDABLE 103, 0, 273, 200
@@ -890,6 +892,23 @@ BEGIN
     IDS_REGION_OEM_CODEPAGE, "Кодировка OEM"
     IDS_REGION_MAC_CODEPAGE, "Кодировка MAC"
     IDS_REGION_LANG_CODE, "Код языка"
+    IDS_SYSFILES_NAME, "Имя"
+    IDS_SYSFILES_SIZE, "Размер"
+    IDS_SYSFILES_VERSION, "Версия"
+    IDS_SYSFILES_DESC, "Описание"
+    IDS_SYSFILES_MANUF, "Производитель"
+    IDS_FILETYPES_EXT, "Расширение"
+    IDS_FILETYPES_DESC, "Описание"
+    IDS_FILETYPES_TYPE, "Тип содержимого"
+    IDS_SYSMON, "Системный монитор"
+    IDS_ASPIA_SYSMON, "Системный монитор Aspia"
+    IDS_SYSMON_START, "Старт"
+    IDS_SYSMON_STOP, "Стоп"
+    IDS_SYSMON_TEST, "Стресс-тест"
+    IDS_SYSMON_SENSOR, "Датчик"
+    IDS_SYSMON_CURRENT, "Текущее"
+    IDS_SYSMON_MIN, "Минимальное"
+    IDS_SYSMON_MAX, "Максимальное"
 
     IDS_CAT_SUMMARY, "Общая информация"
 
@@ -935,6 +954,7 @@ BEGIN
     IDS_CAT_SOFTWARE_SERVICES, "Системные службы"
     IDS_CAT_SOFTWARE_DRIVERS, "Драйверы устройств"
     IDS_CAT_SOFTWARE_LICENSES, "Лицензии"
+    IDS_CAT_SOFTWARE_FILETYPES, "Типы файлов"
 
     IDS_CAT_NETWORK, "Сеть"
     IDS_CAT_NETWORK_CARDS, "Сетевые адаптеры"
@@ -959,8 +979,14 @@ BEGIN
     IDS_CAT_OS_PREVENTS, "Запреты"
     IDS_CAT_OS_REGPARAM, "Региональные параметры"
     IDS_CAT_OS_TASKSCHED, "Планировщик заданий"
-    IDS_CAT_OS_FONTS, "Установленные шрифты"
+    IDS_CAT_OS_FONTS, "Шрифты"
     IDS_CAT_OS_EVENTVIEW, "Системные события"
+    IDS_CAT_OS_SYSFILES, "Системные файлы"
+    IDS_CAT_SYSFILES_DLL, "Файлы DLL"
+    IDS_CAT_SYSFILES_AX, "Файлы AX"
+    IDS_CAT_SYSFILES_EXE, "Файлы EXE"
+    IDS_CAT_SYSFILES_SYS, "Файлы SYS"
+    IDS_CAT_SYSFILES_KNOWN, "Известные DLL"
     IDS_CAT_OS_AUTORUN, "Автозагрузка"
     IDS_CAT_OS_ENVIRON, "Переменные среды"
     IDS_CAT_OS_SYSFOLDERS, "Системные папки"

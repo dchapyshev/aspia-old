@@ -397,10 +397,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\info\dmi.c"
-					>
-				</File>
-				<File
 					RelativePath=".\info\eventlog.c"
 					>
 				</File>
@@ -505,6 +501,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="sysmon"
+				>
+				<File
+					RelativePath=".\sysmon\sysmon.c"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Заголовочные файлы"
@@ -532,10 +536,6 @@
 				>
 				<File
 					RelativePath=".\smbios\smbios.h"
-					>
-				</File>
-				<File
-					RelativePath=".\smbios\smbios_internal.h"
 					>
 				</File>
 			</Filter>

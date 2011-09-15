@@ -1467,6 +1467,7 @@ OS_PreventsInfo(VOID)
 {
     LPWSTR lpExplorer = L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer";
     LPWSTR lpSystem = L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System";
+
     DebugStartReceiving();
 
     IoAddIcon(IDI_CHECKED);
@@ -1555,6 +1556,209 @@ OS_PreventsInfo(VOID)
     AddPreventItem(IDS_PREV_DISABLE_GPO, HKEY_LOCAL_MACHINE,
                    lpSystem,
                    L"DisableGPO");
+
+    DebugEndReceiving();
+}
+
+VOID
+FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
+{
+    HANDLE hFind = INVALID_HANDLE_VALUE;
+    WCHAR szPath[MAX_PATH], szSize[MAX_STR_LEN],
+          szText[MAX_STR_LEN], szFilePath[MAX_PATH];
+    WIN32_FIND_DATA FindFileData;
+    DWORD dwSize, dwHandle;
+    LPVOID pData, pResult;
+    INT Index;
+
+    struct LANGANDCODEPAGE
+    {
+        WORD wLanguage;
+        WORD wCodePage;
+    } *lpTranslate;
+
+    DebugStartReceiving();
+
+    StringCbPrintf(szPath, sizeof(szPath), L"%s\\%s", lpDir, lpExt);
+
+    hFind = FindFirstFile(szPath, &FindFileData);
+    if (hFind == INVALID_HANDLE_VALUE)
+        return;
+
+    do
+    {
+        /* File name */
+        Index = IoAddItem(0, 0, FindFileData.cFileName);
+
+        /* File size */
+        StringCbPrintf(szSize, sizeof(szSize), L"%ld KB",
+                       ((FindFileData.nFileSizeHigh * ((DWORDLONG)MAXDWORD + 1)) +
+                       FindFileData.nFileSizeLow) / 1024);
+        IoSetItemText(Index, 1, szSize);
+
+        StringCbPrintf(szFilePath, sizeof(szFilePath),
+                       L"%s\\%s", lpDir, FindFileData.cFileName);
+
+        dwSize = GetFileVersionInfoSize(szFilePath, &dwHandle);
+        if (!dwSize) continue;
+
+        pData = Alloc(dwSize);
+        if (!pData) continue;
+
+        if (GetFileVersionInfo(szFilePath, dwHandle, dwSize, pData))
+        {
+            if (VerQueryValue(pData,
+                              L"\\VarFileInfo\\Translation",
+                              (LPVOID*)&lpTranslate,
+                              (PUINT)&dwSize))
+            {
+                if (lpTranslate)
+                {
+                    StringCbPrintf(szText, sizeof(szText),
+                                   L"\\StringFileInfo\\%04x%04x\\FileVersion",
+                                   lpTranslate->wLanguage,
+                                   lpTranslate->wCodePage);
+
+                    if (VerQueryValue(pData, szText, (LPVOID*)&pResult, (PUINT)&dwSize))
+                    {
+                        /* File version */
+                        IoSetItemText(Index, 2, pResult);
+                    }
+
+                    StringCbPrintf(szText, sizeof(szText),
+                                   L"\\StringFileInfo\\%04x%04x\\CompanyName",
+                                   lpTranslate->wLanguage,
+                                   lpTranslate->wCodePage);
+
+                    if (VerQueryValue(pData, szText, (LPVOID*)&pResult, (PUINT)&dwSize))
+                    {
+                        /* File version */
+                        IoSetItemText(Index, 3, pResult);
+                    }
+
+                    StringCbPrintf(szText, sizeof(szText),
+                                   L"\\StringFileInfo\\%04x%04x\\FileDescription",
+                                   lpTranslate->wLanguage,
+                                   lpTranslate->wCodePage);
+
+                    if (VerQueryValue(pData, szText, (LPVOID*)&pResult, (PUINT)&dwSize))
+                    {
+                        /* File description */
+                        IoSetItemText(Index, 4, pResult);
+                    }
+                }
+            }
+        }
+        Free(pData);
+    }
+    while (FindNextFile(hFind, &FindFileData) != 0);
+
+    FindClose(hFind);
+}
+
+VOID
+OS_SysFilesDLLInfo(VOID)
+{
+    WCHAR szPath[MAX_PATH];
+
+    DebugStartReceiving();
+
+    IoAddIcon(IDI_APPS);
+
+    GetSystemDirectory(szPath, MAX_PATH);
+    FindSysFiles(szPath, L"*.dll");
+
+    DebugEndReceiving();
+}
+
+VOID
+OS_SysFilesAXInfo(VOID)
+{
+    WCHAR szPath[MAX_PATH];
+
+    DebugStartReceiving();
+
+    IoAddIcon(IDI_APPS);
+
+    GetSystemDirectory(szPath, MAX_PATH);
+    FindSysFiles(szPath, L"*.ax");
+
+    DebugEndReceiving();
+}
+
+VOID
+OS_SysFilesEXEInfo(VOID)
+{
+    WCHAR szPath[MAX_PATH];
+
+    DebugStartReceiving();
+
+    IoAddIcon(IDI_APPS);
+
+    GetSystemDirectory(szPath, MAX_PATH);
+    FindSysFiles(szPath, L"*.exe");
+
+    DebugEndReceiving();
+}
+
+VOID
+OS_SysFilesSYSInfo(VOID)
+{
+    WCHAR szPath[MAX_PATH];
+
+    DebugStartReceiving();
+
+    IoAddIcon(IDI_APPS);
+
+    GetSystemDirectory(szPath, MAX_PATH);
+    StringCbCat(szPath, sizeof(szPath), L"\\drivers");
+    FindSysFiles(szPath, L"*.sys");
+
+    DebugEndReceiving();
+}
+
+VOID
+OS_SysFilesKnownInfo(VOID)
+{
+    WCHAR szValueName[MAX_PATH], szValue[MAX_PATH];
+    DWORD dwSize, dwValueSize, dwIndex = 0;
+    INT Index;
+    HKEY hKey;
+
+    DebugStartReceiving();
+
+    IoAddIcon(IDI_APPS);
+
+    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+                     L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\KnownDlls",
+                     0,
+                     KEY_READ,
+                     &hKey) != ERROR_SUCCESS)
+    {
+        return;
+    }
+
+
+    dwValueSize = MAX_PATH;
+    dwSize = MAX_PATH;
+
+    while (RegEnumValue(hKey,
+                        dwIndex,
+                        szValueName,
+                        &dwSize,
+                        0, NULL,
+                        (LPBYTE)szValue,
+                        &dwValueSize) == ERROR_SUCCESS)
+    {
+        Index = IoAddItem(0, 0, szValueName);
+        IoSetItemText(Index, 1, szValue);
+
+        dwValueSize = MAX_PATH;
+        dwSize = MAX_PATH;
+        ++dwIndex;
+    }
+
+    RegCloseKey(hKey);
 
     DebugEndReceiving();
 }
