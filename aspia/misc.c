@@ -363,15 +363,14 @@ ChopSpaces(LPWSTR s, SIZE_T size)
 BOOL
 TimeToString(time_t Time, LPWSTR lpTimeStr, SIZE_T Size)
 {
-    struct tm t;
-    WCHAR time[MAX_STR_LEN];
+    struct tm *t = localtime(&Time);
+    WCHAR *time;
     INT len;
 
-    if (localtime_s(&t, &Time) != 0)
-        return FALSE;
+    if (!t) return FALSE;
 
-    if (_wasctime_s(time, MAX_STR_LEN, &t) != 0)
-        return FALSE;
+    time = _wasctime(t);
+    if (!time) return FALSE;
 
     len = SafeStrLen(time);
     if (len == 0) return FALSE;

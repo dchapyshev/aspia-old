@@ -7,7 +7,7 @@
  *    Based on /Hardware/LPC/LPCIO.cs from Open Hardware Monitor
  */
 
-#include "../main.h"
+#include "../../main.h"
 #include "lpc.h"
 
 #define CONFIGURATION_CONTROL_REGISTER 0x02
@@ -450,12 +450,16 @@ LPC_GetChipType(VOID)
     {
         DebugTrace(L"RegPort = 0x2E, ValPort = 0x2F, wChipType = 0x%x, wAddress = 0x%x",
                    wChipType, wAddress);
+
+        W836XX_GetInfo(wChipType, 0, wAddress);
     }
 
     if (DetectWinbondFintek(0x4E, 0x4F, &wChipType, &wAddress))
     {
         DebugTrace(L"RegPort = 0x4E, ValPort = 0x4F, wChipType = 0x%x, wAddress = 0x%x",
                    wChipType, wAddress);
+
+        W836XX_GetInfo(wChipType, 0, wAddress);
     }
 
     if (DetectIT87(0x2E, 0x2F, &wChipType, &wAddress, &wGPIOAddress, &bVersion))

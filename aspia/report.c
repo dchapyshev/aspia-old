@@ -161,8 +161,8 @@ GetIoTargetById(UINT id)
             return IO_TARGET_TXT;
         case IDS_TYPE_CSV:
             return IO_TARGET_CSV;
-        case IDS_TYPE_JSON:
-            return IO_TARGET_JSON;
+        //case IDS_TYPE_JSON:
+            //return IO_TARGET_JSON;
         case IDS_TYPE_INI:
             return IO_TARGET_INI;
         case IDS_TYPE_RTF:
@@ -290,8 +290,8 @@ GetIoTargetByFileExt(LPWSTR lpPath)
 
     if (wcscmp(szExt, L"htm") == 0)
         return IO_TARGET_HTML;
-    else if (wcscmp(szExt, L"jsn") == 0)
-        return IO_TARGET_JSON;
+    //else if (wcscmp(szExt, L"jsn") == 0)
+        //return IO_TARGET_JSON;
     else if (wcscmp(szExt, L"ini") == 0)
         return IO_TARGET_INI;
     else if (wcscmp(szExt, L"txt") == 0)
@@ -555,9 +555,9 @@ GetReportExtById(UINT id, LPWSTR lpExt, SIZE_T Size)
         case IDS_TYPE_CSV:
             szExt = L".csv";
             break;
-        case IDS_TYPE_JSON:
-            szExt = L".jsn";
-            break;
+        //case IDS_TYPE_JSON:
+            //szExt = L".jsn";
+            //break;
         case IDS_TYPE_INI:
             szExt = L".ini";
             break;
@@ -585,7 +585,8 @@ ReportSaveFileDialog(HWND hDlg, LPWSTR lpszPath, SIZE_T PathSize)
     saveas.lStructSize     = sizeof(OPENFILENAME);
     saveas.hwndOwner       = hDlg;
     saveas.hInstance       = hInstance;
-    saveas.lpstrFilter     = L"HTML File (*.htm)\0*.htm\0RTF File (*.rtf)\0*.rtf\0Text File (*.txt)\0*.txt\0JSON File (*.jsn)\0*.jsn\0INI File (*.ini)\0*.ini\0CSV File (*.csv)\0*.csv\0\0";
+    //saveas.lpstrFilter     = L"HTML File (*.htm)\0*.htm\0RTF File (*.rtf)\0*.rtf\0Text File (*.txt)\0*.txt\0JSON File (*.jsn)\0*.jsn\0INI File (*.ini)\0*.ini\0CSV File (*.csv)\0*.csv\0\0";
+    saveas.lpstrFilter     = L"HTML File (*.htm)\0*.htm\0RTF File (*.rtf)\0*.rtf\0Text File (*.txt)\0*.txt\0INI File (*.ini)\0*.ini\0CSV File (*.csv)\0*.csv\0\0";
     saveas.lpstrFile       = szPath;
     saveas.nMaxFile        = MAX_PATH;
     saveas.lpstrInitialDir = NULL;
@@ -679,7 +680,7 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             AddFileTypeToComboBox(hCombo, IDS_TYPE_HTML);
             AddFileTypeToComboBox(hCombo, IDS_TYPE_TEXT);
             AddFileTypeToComboBox(hCombo, IDS_TYPE_CSV);
-            AddFileTypeToComboBox(hCombo, IDS_TYPE_JSON);
+            //AddFileTypeToComboBox(hCombo, IDS_TYPE_JSON);
             AddFileTypeToComboBox(hCombo, IDS_TYPE_INI);
             AddFileTypeToComboBox(hCombo, IDS_TYPE_RTF);
 

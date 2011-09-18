@@ -206,9 +206,9 @@ ShowMonitorsInfo(VOID)
         {
             pVendorSign = GetEdidVendorSign(Edid + ID_MANUFACTURER_NAME);
 
-            swprintf_s(szMonitorId, sizeof(szMonitorId), L"%s%02x%02x",
-                       pVendorSign, Edid[ID_MODEL + 1], Edid[ID_MODEL]);
-            _wcsupr_s(szMonitorId, MAX_STR_LEN);
+            StringCbPrintf(szMonitorId, sizeof(szMonitorId), L"%s%02x%02x",
+                           pVendorSign, Edid[ID_MODEL + 1], Edid[ID_MODEL]);
+            _wcsupr(szMonitorId);
 
             GetPrivateProfileString(L"devices", szMonitorId, L"",
                                     szText, MAX_STR_LEN, szIniPath);

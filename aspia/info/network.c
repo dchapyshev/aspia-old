@@ -491,15 +491,15 @@ IpToStr(IN IN_ADDR in, LPWSTR p, SIZE_T size)
 {
     WCHAR b[10];
 
-    _itow_s(in.S_un.S_addr & 0xFF, b, 10, 10);
+    _itow(in.S_un.S_addr & 0xFF, b, 10);
     StringCbCopy(p, size, b);
-    _itow_s((in.S_un.S_addr >> 8) & 0xFF, b, 10, 10);
+    _itow((in.S_un.S_addr >> 8) & 0xFF, b, 10);
     StringCbCat(p, size, L".");
     StringCbCat(p, size, b);
-    _itow_s((in.S_un.S_addr >> 16) & 0xFF, b, 10, 10);
+    _itow((in.S_un.S_addr >> 16) & 0xFF, b, 10);
     StringCbCat(p, size, L".");
     StringCbCat(p, size, b);
-    _itow_s((in.S_un.S_addr >> 24) & 0xFF, b, 10, 10);
+    _itow((in.S_un.S_addr >> 24) & 0xFF, b, 10);
     StringCbCat(p, size, L".");
     StringCbCat(p, size, b);
 }
