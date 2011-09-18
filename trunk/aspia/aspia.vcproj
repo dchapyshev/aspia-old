@@ -429,6 +429,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\info\smbios.c"
+					>
+				</File>
+				<File
 					RelativePath=".\info\software.c"
 					>
 				</File>
@@ -460,44 +464,36 @@
 						>
 					</File>
 				</Filter>
-			</Filter>
-			<Filter
-				Name="smbios"
-				>
-				<File
-					RelativePath=".\smbios\smbios.c"
+				<Filter
+					Name="LPC"
 					>
-				</File>
+					<File
+						RelativePath=".\info\LPC\F718XX.c"
+						>
+					</File>
+					<File
+						RelativePath=".\info\LPC\IT87XX.c"
+						>
+					</File>
+					<File
+						RelativePath=".\info\LPC\lpc.c"
+						>
+					</File>
+					<File
+						RelativePath=".\info\LPC\NCT677X.c"
+						>
+					</File>
+					<File
+						RelativePath=".\info\LPC\W836XX.c"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="smart"
 				>
 				<File
 					RelativePath=".\smart\smart.c"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="LPC"
-				>
-				<File
-					RelativePath=".\LPC\F718XX.c"
-					>
-				</File>
-				<File
-					RelativePath=".\LPC\IT87XX.c"
-					>
-				</File>
-				<File
-					RelativePath=".\LPC\lpc.c"
-					>
-				</File>
-				<File
-					RelativePath=".\LPC\NCT677X.c"
-					>
-				</File>
-				<File
-					RelativePath=".\LPC\W836XX.c"
 					>
 				</File>
 			</Filter>
@@ -532,14 +528,6 @@
 				>
 			</File>
 			<Filter
-				Name="smbios"
-				>
-				<File
-					RelativePath=".\smbios\smbios.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="smart"
 				>
 				<File
@@ -555,17 +543,21 @@
 					>
 				</File>
 				<File
+					RelativePath=".\info\smbios.h"
+					>
+				</File>
+				<File
 					RelativePath=".\info\spd.h"
 					>
 				</File>
-			</Filter>
-			<Filter
-				Name="LPC"
-				>
-				<File
-					RelativePath=".\LPC\lpc.h"
+				<Filter
+					Name="LPC"
 					>
-				</File>
+					<File
+						RelativePath=".\info\LPC\lpc.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

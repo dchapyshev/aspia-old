@@ -11,7 +11,7 @@
 #include "version.h"
 
 #include "resource.h"
-#include "smbios/smbios.h"
+#include "info/smbios.h"
 
 #include <windows.h>
 #include <commctrl.h>
