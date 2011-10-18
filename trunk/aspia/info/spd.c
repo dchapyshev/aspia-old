@@ -172,10 +172,23 @@ GetSmBusBaseAddress(WORD *BaseAddress)
 
                     switch (io_cfc & 0xffff)
                     {
-                        /* ATI SB400/SB600 */
                         case VENDOR_ID_ATI:
                         {
-                            *BaseAddress = DRIVER_GetRegisterDataWord(io_cf8, 0x10) & 0xFFF0;
+                            DWORD DevId = DRIVER_GetRegisterDataDword(io_cf8, 2);
+
+                            DebugTrace(L"ATI SMBus, DevId = 0x%x", DevId);
+
+                            switch (DevId)
+                            {
+                                /* ATI SB850 */
+                                case 0x43851002:
+                                    return UNKNOWN_SMBUS;
+
+                                /* ATI SB400/SB600 */
+                                default:
+                                    *BaseAddress = DRIVER_GetRegisterDataWord(io_cf8, 0x10) & 0xFFF0;
+                                    break;
+                            }
                             return ATISB_SMBUS;
                         }
                         break;
@@ -684,17 +697,21 @@ ShowSpdData(BYTE *Spd)
     {
         case 0x06: /* DDR SGRAM */
         case 0x07: /* DDR SDRAM */
+            DebugTrace(L"DDR1 Memory (0x%x)", Spd[0x02]);
             ShowSpdDataForDDR(Spd);
             break;
         case 0x08: /* DDR2 SDRAM */
         case 0x09: /* DDR2 SDRAM FB-DIMM */
         case 0x10: /* DDR2 SDRAM FB-DIMM PROBE */
+            DebugTrace(L"DDR2 Memory (0x%x)", Spd[0x02]);
             ShowSpdDataForDDR2(Spd);
             break;
         case 0x11: /* DDR3 SDRAM */
+            DebugTrace(L"DDR3 Memory (0x%x)", Spd[0x02]);
             ShowSpdDataForDDR3(Spd);
             break;
         default: /* Unsupported type */
+            DebugTrace(L"Unknown Memory Type (0x%x)", Spd[0x02]);
             break;
     }
 }
@@ -719,17 +736,31 @@ HW_SPDInfo(VOID)
         return;
     }
 
+    DebugTrace(L"SMBus BaseAddress = 0x%x, dwType = 0x%x", BaseAddress, dwType);
+
     if (ReadSPDDataFromSmBus(dwType, BaseAddress, 0xA1, SpdData))
+    {
+        DebugTrace(L"Show info in 0xA1 slot");
         ShowSpdData(SpdData);
+    }
 
     if (ReadSPDDataFromSmBus(dwType, BaseAddress, 0xA3, SpdData))
+    {
+        DebugTrace(L"Show info in 0xA3 slot");
         ShowSpdData(SpdData);
+    }
 
     if (ReadSPDDataFromSmBus(dwType, BaseAddress, 0xA5, SpdData))
+    {
+        DebugTrace(L"Show info in 0xA5 slot");
         ShowSpdData(SpdData);
+    }
 
     if (ReadSPDDataFromSmBus(dwType, BaseAddress, 0xA7, SpdData))
+    {
+        DebugTrace(L"Show info in 0xA7 slot");
         ShowSpdData(SpdData);
+    }
 
     DebugTrace(L"End receiving SPD data");
 }
