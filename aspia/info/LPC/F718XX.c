@@ -5,7 +5,7 @@
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "../main.h"
+#include "../../main.h"
 #include "lpc.h"
 
 
