@@ -153,12 +153,13 @@ GetCPUTemperature(VOID)
     }
     else if (wcscmp(szVendor, L"AuthenticAMD") == 0)
     {
-        DWORD Value;
+        /*DWORD Value;
         ULONG Device;
 
         Device = GetPciAddress(0, 24, 3);
         Value = ReadPciConfigDword(Device, 0xA4);
-        return ((Value >> 21) & 0x7FF) / 8;
+        return ((Value >> 21) & 0x7FF) / 8;*/
+        return 0;
     }
     else
     {

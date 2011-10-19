@@ -328,7 +328,7 @@ HW_SensorInfo(VOID)
         GetIntelCpuInfo();
     else if (wcscmp(szText, L"AuthenticAMD") == 0)
     {
-        CPU_IDS CpuIds = {0};
+        /*CPU_IDS CpuIds = {0};
 
         GetProcessorIDs(&CpuIds);
 
@@ -341,7 +341,7 @@ HW_SensorInfo(VOID)
             case 0x11:
                 GetAmd10CpuInfo();
                 break;
-        }
+        }*/
     }
 
     DebugEndReceiving();
