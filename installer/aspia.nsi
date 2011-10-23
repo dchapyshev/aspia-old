@@ -74,18 +74,18 @@
 
   LangString DESC_FULL_INSTALL ${LANG_ENGLISH} "Full"
   LangString DESC_FULL_INSTALL ${LANG_RUSSIAN} "Полная установка"
-  LangString DESC_FULL_INSTALL ${LANG_UKRAINIAN} "Full"
+  LangString DESC_FULL_INSTALL ${LANG_UKRAINIAN} "Повне"
 
   LangString DESC_MIN_INSTALL ${LANG_ENGLISH} "Minimal"
   LangString DESC_MIN_INSTALL ${LANG_RUSSIAN} "Минимальная установка"
-  LangString DESC_MIN_INSTALL ${LANG_UKRAINIAN} "Minimal"
+  LangString DESC_MIN_INSTALL ${LANG_UKRAINIAN} "Мінімальне"
 
   InstType "$(DESC_FULL_INSTALL)"
   InstType "$(DESC_MIN_INSTALL)"
 
   LangString DESC_MAIN_PROG ${LANG_ENGLISH} "Main Program"
   LangString DESC_MAIN_PROG ${LANG_RUSSIAN} "Основная программа"
-  LangString DESC_MAIN_PROG ${LANG_UKRAINIAN} "Main Program"
+  LangString DESC_MAIN_PROG ${LANG_UKRAINIAN} "Основна програма"
   
   LangString DESC_CURRENT_LANG ${LANG_ENGLISH} ""
   LangString DESC_CURRENT_LANG ${LANG_RUSSIAN} "ru-RU.dll"
@@ -122,7 +122,7 @@ SectionEnd
 
   LangString DESC_LANG_FILES ${LANG_ENGLISH} "Language Files"
   LangString DESC_LANG_FILES ${LANG_RUSSIAN} "Языковые файлы"
-  LangString DESC_LANG_FILES ${LANG_UKRAINIAN} "Language Files"
+  LangString DESC_LANG_FILES ${LANG_UKRAINIAN} "Мовні файли"
 
 SectionGroup "$(DESC_LANG_FILES)"
 
@@ -142,13 +142,13 @@ SectionGroupEnd
 
   LangString DESC_ICONS_THEM ${LANG_ENGLISH} "Icons Themes"
   LangString DESC_ICONS_THEM ${LANG_RUSSIAN} "Темы иконок"
-  LangString DESC_ICONS_THEM ${LANG_UKRAINIAN} "Icons Themes"
+  LangString DESC_ICONS_THEM ${LANG_UKRAINIAN} "Теми значків"
 
 SectionGroup "$(DESC_ICONS_THEM)"
 
   LangString DESC_XP_ICONS ${LANG_ENGLISH} "XP Icons"
   LangString DESC_XP_ICONS ${LANG_RUSSIAN} "Иконки XP"
-  LangString DESC_XP_ICONS ${LANG_UKRAINIAN} "XP Icons"
+  LangString DESC_XP_ICONS ${LANG_UKRAINIAN} "Значки XP"
 
 Section "$(DESC_XP_ICONS)" SecXpIconFile
   SetOutPath "$INSTDIR\icons"
@@ -158,7 +158,7 @@ SectionEnd
 
   LangString DESC_VISTA_ICONS ${LANG_ENGLISH} "Vista Icons"
   LangString DESC_VISTA_ICONS ${LANG_RUSSIAN} "Иконки Vista"
-  LangString DESC_VISTA_ICONS ${LANG_UKRAINIAN} "Vista Icons"
+  LangString DESC_VISTA_ICONS ${LANG_UKRAINIAN} "Значки Vista"
 
 Section "$(DESC_VISTA_ICONS)" SecVistaIconFile
   SetOutPath "$INSTDIR\icons"
@@ -170,13 +170,13 @@ SectionGroupEnd
 
   LangString DESC_DEV_DB ${LANG_ENGLISH} "Devices Database"
   LangString DESC_DEV_DB ${LANG_RUSSIAN} "База данных устройств"
-  LangString DESC_DEV_DB ${LANG_UKRAINIAN} "Devices Database"
+  LangString DESC_DEV_DB ${LANG_UKRAINIAN} "База даних пристроїв"
 
 SectionGroup "$(DESC_DEV_DB)"
 
   LangString DESC_PCI_DEVS ${LANG_ENGLISH} "PCI Devices"
   LangString DESC_PCI_DEVS ${LANG_RUSSIAN} "Устройства PCI"
-  LangString DESC_PCI_DEVS ${LANG_UKRAINIAN} "PCI Devices"
+  LangString DESC_PCI_DEVS ${LANG_UKRAINIAN} "Пристрої PCI"
 
 Section "$(DESC_PCI_DEVS)" SecPciDbFile
   SetOutPath "$INSTDIR"
@@ -186,7 +186,7 @@ SectionEnd
 
   LangString DESC_USB_DEVS ${LANG_ENGLISH} "USB Devices"
   LangString DESC_USB_DEVS ${LANG_RUSSIAN} "Устройства USB"
-  LangString DESC_USB_DEVS ${LANG_UKRAINIAN} "USB Devices"
+  LangString DESC_USB_DEVS ${LANG_UKRAINIAN} "Пристрої USB"
 
 Section "$(DESC_USB_DEVS)" SecUsbDbFile
   SetOutPath "$INSTDIR"
@@ -196,7 +196,7 @@ SectionEnd
 
   LangString DESC_MON_DEVS ${LANG_ENGLISH} "Monitors"
   LangString DESC_MON_DEVS ${LANG_RUSSIAN} "Мониторы"
-  LangString DESC_MON_DEVS ${LANG_UKRAINIAN} "Monitors"
+  LangString DESC_MON_DEVS ${LANG_UKRAINIAN} "Монітори"
 
 Section "$(DESC_MON_DEVS)" SecMonDbFile
   SetOutPath "$INSTDIR"
@@ -222,31 +222,31 @@ FunctionEnd
 ;Descriptions
   LangString DESC_SEC_RU_RU_FILE ${LANG_ENGLISH} "Russian Language File."
   LangString DESC_SEC_RU_RU_FILE ${LANG_RUSSIAN} "Файл поддержки русского языка."
-  LangString DESC_SEC_RU_RU_FILE ${LANG_UKRAINIAN} "Russian Language File."
+  LangString DESC_SEC_RU_RU_FILE ${LANG_UKRAINIAN} "Файл підтримки російської мови."
 
   LangString DESC_SEC_UK_UA_FILE ${LANG_ENGLISH} "Ukrainian Language File."
   LangString DESC_SEC_UK_UA_FILE ${LANG_RUSSIAN} "Файл поддержки украинского языка."
-  LangString DESC_SEC_UK_UA_FILE ${LANG_UKRAINIAN} "Ukrainian Language File."
+  LangString DESC_SEC_UK_UA_FILE ${LANG_UKRAINIAN} "Файл підтримки української мови."
 
   LangString DESC_SEC_XP_ICON_FILE ${LANG_ENGLISH} "XP Icon File."
   LangString DESC_SEC_XP_ICON_FILE ${LANG_RUSSIAN} "Тема иконок XP."
-  LangString DESC_SEC_XP_ICON_FILE ${LANG_UKRAINIAN} "XP Icon File."
+  LangString DESC_SEC_XP_ICON_FILE ${LANG_UKRAINIAN} "Тема значків XP."
 
   LangString DESC_SEC_VISTA_ICON_FILE ${LANG_ENGLISH} "Vista Icon File."
   LangString DESC_SEC_VISTA_ICON_FILE ${LANG_RUSSIAN} "Тема иконок Vista."
-  LangString DESC_SEC_VISTA_ICON_FILE ${LANG_UKRAINIAN} "Vista Icon File."
+  LangString DESC_SEC_VISTA_ICON_FILE ${LANG_UKRAINIAN} "Тема значків Vista."
 
   LangString DESC_SEC_MON_DB_FILE ${LANG_ENGLISH} "Monitors Database File."
   LangString DESC_SEC_MON_DB_FILE ${LANG_RUSSIAN} "Файл базы данных мониторов."
-  LangString DESC_SEC_MON_DB_FILE ${LANG_UKRAINIAN} "Monitors Database File."
+  LangString DESC_SEC_MON_DB_FILE ${LANG_UKRAINIAN} "Файл бази даних моніторів."
 
   LangString DESC_SEC_PCI_DB_FILE ${LANG_ENGLISH} "PCI Devices Database File."
   LangString DESC_SEC_PCI_DB_FILE ${LANG_RUSSIAN} "Файл базы данных устройств PCI."
-  LangString DESC_SEC_PCI_DB_FILE ${LANG_UKRAINIAN} "PCI Devices Database File."
+  LangString DESC_SEC_PCI_DB_FILE ${LANG_UKRAINIAN} "Файл бази даних пристроїв PCI."
 
   LangString DESC_SEC_USB_DB_FILE ${LANG_ENGLISH} "USB Devices Database File."
   LangString DESC_SEC_USB_DB_FILE ${LANG_RUSSIAN} "Файл базы данных устройств USB."
-  LangString DESC_SEC_USB_DB_FILE ${LANG_UKRAINIAN} "USB Devices Database File."
+  LangString DESC_SEC_USB_DB_FILE ${LANG_UKRAINIAN} "Файл бази даних пристроїв USB."
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
