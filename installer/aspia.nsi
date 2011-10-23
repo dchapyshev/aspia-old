@@ -105,6 +105,11 @@ Section "!$(DESC_MAIN_PROG)" SecMainProgram
   ;Store installation folder
   WriteRegStr HKLM "Software\Aspia" "" $INSTDIR
 
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Aspia" "DisplayName" "Aspia"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Aspia" "Publisher" "Aspia Software"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Aspia" "DisplayIcon" "$INSTDIR\aspia.exe,0"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Aspia" "UninstallString" "$INSTDIR\Uninstall.exe"
+
   WriteINIStr "$PROGRAMFILES32\Aspia\aspia.ini" "general" "language" "$(DESC_CURRENT_LANG)"
 
   ;Create uninstaller
@@ -288,6 +293,7 @@ Section "Uninstall"
   RMDir "$INSTDIR"
 
   DeleteRegKey HKLM "Software\Aspia"
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Aspia"
 
 SectionEnd
 
