@@ -85,6 +85,9 @@ typedef struct _COLUMN_LIST
     INT Width;
 } COLUMN_LIST;
 
+/* Definition for the SetWindowTheme function */
+typedef HRESULT (WINAPI *PSWT)(HWND, LPCWSTR, LPCWSTR);
+
 extern HWND hToolBar;
 extern HWND hTreeView;
 extern HWND hListView;
