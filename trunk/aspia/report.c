@@ -608,6 +608,8 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
     HWND hTree = GetDlgItem(hDlg, IDC_CATEGORIES_TREE);
     HWND hCombo = GetDlgItem(hDlg, IDC_FILE_TYPE_COMBO);
+    HINSTANCE hUxThemeDLL;
+    PSWT pSetWindowTheme;
 
     UNREFERENCED_PARAMETER(lParam);
 
@@ -683,6 +685,17 @@ ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             //AddFileTypeToComboBox(hCombo, IDS_TYPE_JSON);
             AddFileTypeToComboBox(hCombo, IDS_TYPE_INI);
             AddFileTypeToComboBox(hCombo, IDS_TYPE_RTF);
+
+            hUxThemeDLL = LoadLibrary(L"UXTHEME.DLL");
+            if (hUxThemeDLL)
+            {
+                pSetWindowTheme = (PSWT)GetProcAddress(hUxThemeDLL, "SetWindowTheme");
+                if (pSetWindowTheme)
+                {
+                    pSetWindowTheme(hTree, L"Explorer", 0);
+                }
+                FreeLibrary(hUxThemeDLL);
+            }
 
             SetTimer(hTree, IDT_UPDATE_TIMER, 10, UpdateProc);
         }
