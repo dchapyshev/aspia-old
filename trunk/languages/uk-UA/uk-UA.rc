@@ -165,20 +165,6 @@ BEGIN
     CONTROL "", IDC_REF_RATE_UPDOWN, "msctls_updown32", UDS_NOTHOUSANDS | UDS_WRAP | UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS | WS_CHILD | WS_VISIBLE | UDS_ALIGNRIGHT, 178, 128, 9, 11
 END
 
-IDD_UNKNOWN_DEV_REPORT DIALOGEX 22, 16, 227, 199
-STYLE DS_SHELLFONT | WS_BORDER | WS_DLGFRAME | WS_SYSMENU | DS_MODALFRAME | DS_CENTER
-CAPTION "Відсилання звіту"
-FONT 8, "MS Shell Dlg"
-BEGIN
-    LTEXT "Aspia виявила, що у вас є пристрої, яких немає в нашій базі даних. Відправивши нам звіт, ви допоможете зробити Aspia краще.", -1, 6, 5, 215, 27
-    LTEXT "До звіту будуть включені дані про наступні пристрої:", -1, 6, 31, 212, 10
-    CONTROL "", IDC_REPORT_DATA_LIST, "SysListView32", LVS_REPORT | LVS_SORTASCENDING | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP, 6, 43, 213, 112
-    AUTOCHECKBOX "Пропонувати відіслати звіт", IDC_NEVER_SEND_REPORT, 11, 163, 154, 8
-
-    PUSHBUTTON "&Відіслати Звіт", IDOK, 94, 178, 60, 14
-    PUSHBUTTON "&Закрити", IDCANCEL, 159, 178, 60, 14
-END
-
 STRINGTABLE DISCARDABLE
 BEGIN
     IDS_APPTITLE, "Aspia"
@@ -890,6 +876,10 @@ BEGIN
     IDS_CLOSE_BTN, "Закрити"
     IDS_SAVE_BTN, "Зберегти"
     IDS_FILE_TYPE_TEXT, "Тип файлу:"
+    IDS_DEV_REPORT_TEXT, "Aspia виявила, що у вас є пристрої, яких немає в нашій базі даних. Відправивши нам звіт, ви допоможете зробити Aspia краще.\nДо звіту будуть включені дані про наступні пристрої:"
+    IDS_NEVER_SEND_REPORT, "Пропонувати відіслати звіт"
+    IDS_SEND_BTN, "Відіслати"
+    IDS_DEV_REPORT_TITLE, "Відсилання звіту"
 
     IDS_CAT_SUMMARY, "Загальна інформація"
 

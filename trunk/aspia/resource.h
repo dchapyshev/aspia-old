@@ -99,7 +99,6 @@
 #define IDD_SETTINGS_GENERAL     5003
 #define IDD_SETTINGS_FILTER      5004
 #define IDD_SETTINGS_SYSTRAY     5005
-#define IDD_UNKNOWN_DEV_REPORT   5006
 
 /* Menu */
 #define IDR_POPUP           500
@@ -162,8 +161,6 @@
 #define IDC_FILTER_IE_HTTP      135
 #define IDC_FILTER_IE_FTP       136
 #define IDC_SETTINGS_TREE       137
-#define IDC_REPORT_DATA_LIST    138
-#define IDC_NEVER_SEND_REPORT   139
 #define IDC_DEV_REPORT_SEND     140
 #define IDC_STAY_ON_TOP         142
 #define IDC_ALLOW_KM_DRIVER     143
@@ -839,6 +836,10 @@
 #define IDS_CLOSE_BTN                    725
 #define IDS_SAVE_BTN                     726
 #define IDS_FILE_TYPE_TEXT               727
+#define IDS_DEV_REPORT_TEXT              728
+#define IDS_NEVER_SEND_REPORT            729
+#define IDS_SEND_BTN                     730
+#define IDS_DEV_REPORT_TITLE             731
 
 #define IDS_CAT_SUMMARY           1000
 

@@ -14,6 +14,12 @@ typedef VOID (CALLBACK *DEVICESENUMPROC)(HWND hList, INT IconIndex, LPWSTR lpNam
 
 HIMAGELIST hDevImageList = NULL;
 
+static HWND hTopText = NULL;
+static HWND hDataList = NULL;
+static HWND hCheckBox = NULL;
+static HWND hSendBtn = NULL;
+static HWND hCloseBtn = NULL;
+
 
 VOID
 SendFileToServer(LPWSTR lpServer, LPWSTR lpFilePath, char *lpFileName)
@@ -385,80 +391,287 @@ SaveDevReportFile(HWND hList)
     DeleteFile(szPath);
 }
 
-INT_PTR CALLBACK
-DevReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
+VOID
+DevReportWindowOnSize(LPARAM lParam)
 {
-    UNREFERENCED_PARAMETER(lParam);
+    HDWP hdwp = BeginDeferWindowPos(5);
 
-    switch (Msg)
+#define TOP_TEXT_HEIGHT          50
+#define CHECKBOX_HEIGHT          20
+#define BUTTON_WIDTH             100
+#define BUTTON_HEIGHT            25
+
+#define ITEMS_DIVIDER 6
+
+    /*
+     * HIWORD(lParam) - Height of main window
+     * LOWORD(lParam) - Width of main window
+     */
+
+    /* Size top text */
+    DeferWindowPos(hdwp,
+                   hTopText,
+                   0,
+                   ITEMS_DIVIDER,
+                   ITEMS_DIVIDER,
+                   LOWORD(lParam) - (ITEMS_DIVIDER * 2),
+                   TOP_TEXT_HEIGHT,
+                   SWP_NOZORDER|SWP_NOACTIVATE);
+
+    /* Size ListView */
+    DeferWindowPos(hdwp,
+                   hDataList,
+                   0,
+                   ITEMS_DIVIDER,
+                   TOP_TEXT_HEIGHT + (ITEMS_DIVIDER * 2),
+                   LOWORD(lParam) - (ITEMS_DIVIDER * 2),
+                   HIWORD(lParam) - (ITEMS_DIVIDER * 4) - TOP_TEXT_HEIGHT - CHECKBOX_HEIGHT - BUTTON_HEIGHT - 10,
+                   SWP_NOZORDER|SWP_NOACTIVATE);
+
+    /* Size checkbox */
+    DeferWindowPos(hdwp,
+                   hCheckBox,
+                   0,
+                   ITEMS_DIVIDER * 2,
+                   HIWORD(lParam) - CHECKBOX_HEIGHT - BUTTON_HEIGHT - (ITEMS_DIVIDER) - 10,
+                   LOWORD(lParam) - (ITEMS_DIVIDER * 3),
+                   CHECKBOX_HEIGHT,
+                   SWP_NOZORDER|SWP_NOACTIVATE);
+
+    /* Size "Save" button */
+    DeferWindowPos(hdwp,
+                   hSendBtn,
+                   0,
+                   LOWORD(lParam) - (BUTTON_WIDTH * 2) - (ITEMS_DIVIDER * 2),
+                   HIWORD(lParam) - BUTTON_HEIGHT - ITEMS_DIVIDER,
+                   BUTTON_WIDTH,
+                   BUTTON_HEIGHT,
+                   SWP_NOZORDER|SWP_NOACTIVATE);
+
+    /* Size "Close" button */
+    DeferWindowPos(hdwp,
+                   hCloseBtn,
+                   0,
+                   LOWORD(lParam) - BUTTON_WIDTH - ITEMS_DIVIDER,
+                   HIWORD(lParam) - BUTTON_HEIGHT - ITEMS_DIVIDER,
+                   BUTTON_WIDTH,
+                   BUTTON_HEIGHT,
+                   SWP_NOZORDER|SWP_NOACTIVATE);
+
+    EndDeferWindowPos(hdwp);
+}
+
+VOID
+DevReportInitControls(HWND hwnd)
+{
+    WCHAR szText[MAX_STR_LEN];
+
+    hTopText = CreateWindow(L"STATIC", L"",
+                            WS_CHILD | WS_VISIBLE,
+                            0, 0, 0, 0,
+                            hwnd, 0, hInstance, NULL);
+    if (!hTopText)
     {
-        case WM_INITDIALOG:
-        {
-            HWND hList = GetDlgItem(hDlg, IDC_REPORT_DATA_LIST);
+        DebugTrace(L"Unable to create window!");
+        return;
+    }
+    LoadMUIString(IDS_DEV_REPORT_TEXT, szText, MAX_STR_LEN);
+    SetWindowText(hTopText, szText);
+    SendMessage(hTopText, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
 
-            CheckDlgButton(hDlg, IDC_NEVER_SEND_REPORT,
-                           SettingsInfo.SendDevReport ? BST_UNCHECKED : BST_CHECKED);
+    /* Initialize ListView */
+    hDataList = CreateWindowEx(WS_EX_CLIENTEDGE,
+                               WC_LISTVIEW,
+                               L"",
+                               WS_CHILD | WS_VISIBLE | WS_TABSTOP | LVS_REPORT |
+                               LVS_SORTASCENDING | LVS_NOCOLUMNHEADER,
+                               0, 0, 0, 0,
+                               hwnd,
+                               NULL,
+                               hInstance,
+                               NULL);
 
-            hDevImageList =
-                ImageList_Create(ParamsInfo.SxSmIcon,
-                                 ParamsInfo.SySmIcon,
-                                 ILC_MASK | ParamsInfo.SysColorDepth,
-                                 1, 1);
-
-            AddImageListIcon(hDevImageList, IDI_MONITOR); /* Icon for monitors */
-            AddImageListIcon(hDevImageList, IDI_USB_DEV); /* Icon for USB */
-            AddImageListIcon(hDevImageList, IDI_HW); /* Icon for PCI */
-
-            ListView_SetImageList(hList, hDevImageList, LVSIL_SMALL);
-
-            AddColumn(hList, 0, 400, L"");
-
-            EnumUnknownDevices(hList, DevicesEnumProc);
-        }
-        break;
-
-        case WM_CLOSE:
-        {
-            ImageList_Destroy(hDevImageList);
-            FreeItems(GetDlgItem(hDlg, IDC_REPORT_DATA_LIST));
-            EndDialog(hDlg, LOWORD(wParam));
-        }
-        break;
-
-        case WM_COMMAND:
-        {
-            switch (LOWORD(wParam))
-            {
-                case IDCANCEL:
-                    SettingsInfo.SendDevReport =
-                        (IsDlgButtonChecked(hDlg, IDC_NEVER_SEND_REPORT) == BST_CHECKED) ? FALSE : TRUE;
-                    PostMessage(hDlg, WM_CLOSE, 0, 0);
-                    break;
-
-                case IDOK:
-                    SaveDevReportFile(GetDlgItem(hDlg, IDC_REPORT_DATA_LIST));
-                    SettingsInfo.SendDevReport = TRUE;
-                    PostMessage(hDlg, WM_CLOSE, 0, 0);
-                    break;
-            }
-        }
-        break;
+    if (!hDataList)
+    {
+        DebugTrace(L"Unable to create TreeView control!");
+        return;
     }
 
-    return FALSE;
+    /* Try to set theme for ListView */
+    IntSetWindowTheme(hDataList);
+
+    hDevImageList =
+       ImageList_Create(ParamsInfo.SxSmIcon,
+                        ParamsInfo.SySmIcon,
+                        ILC_MASK | ParamsInfo.SysColorDepth,
+                        1, 1);
+
+    AddImageListIcon(hDevImageList, IDI_MONITOR); /* Icon for monitors */
+    AddImageListIcon(hDevImageList, IDI_USB_DEV); /* Icon for USB */
+    AddImageListIcon(hDevImageList, IDI_HW); /* Icon for PCI */
+
+    ListView_SetImageList(hDataList, hDevImageList, LVSIL_SMALL);
+
+    AddColumn(hDataList, 0, 400, L"");
+
+    EnumUnknownDevices(hDataList, DevicesEnumProc);
+
+    /* Initialize checkbox */
+    hCheckBox = CreateWindow(L"Button",
+                             L"",
+                             WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+                             0, 0, 0, 0,
+                             hwnd, 0, hInstance, NULL);
+
+    if (!hCheckBox)
+    {
+        DebugTrace(L"Unable to create CheckBox control!");
+        return;
+    }
+
+    /* Set checkbox text and font */
+    SendMessage(hCheckBox, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
+    LoadMUIString(IDS_NEVER_SEND_REPORT, szText, MAX_STR_LEN);
+    SetWindowText(hCheckBox, szText);
+
+    /* Set checkbox state */
+    SendMessage(hCheckBox, BM_SETCHECK,
+                (SettingsInfo.SendDevReport ? BST_UNCHECKED : BST_CHECKED), 0);
+
+    /* "Send" button */
+    hSendBtn = CreateWindow(L"Button", L"",
+                            WS_CHILD | WS_VISIBLE,
+                            0, 0, 0, 0,
+                            hwnd, 0, hInstance, NULL);
+    if (!hSendBtn)
+    {
+        DebugTrace(L"Unable to create button!");
+        return;
+    }
+    LoadMUIString(IDS_SEND_BTN, szText, MAX_STR_LEN);
+    SetWindowText(hSendBtn, szText);
+    SendMessage(hSendBtn, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
+
+    /* "Close" button */
+    hCloseBtn = CreateWindow(L"Button", L"",
+                             WS_CHILD | WS_VISIBLE,
+                             0, 0, 0, 0,
+                             hwnd, 0, hInstance, NULL);
+    if (!hCloseBtn)
+    {
+        DebugTrace(L"Unable to create button!");
+        return;
+    }
+    LoadMUIString(IDS_CLOSE_BTN, szText, MAX_STR_LEN);
+    SetWindowText(hCloseBtn, szText);
+    SendMessage(hCloseBtn, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
+}
+
+VOID
+DevReportWindowOnCommand(HWND hwnd, WPARAM wParam, LPARAM lParam)
+{
+    if (HIWORD(wParam) == BN_CLICKED)
+    {
+        if (lParam == (LPARAM)hSendBtn)
+        {
+            SaveDevReportFile(hDataList);
+            SettingsInfo.SendDevReport = TRUE;
+            PostMessage(hwnd, WM_CLOSE, 0, 0);
+        }
+        else if (lParam == (LPARAM)hCloseBtn)
+        {
+            SettingsInfo.SendDevReport =
+                (SendMessage(hCheckBox, BM_GETCHECK, 0, 0) == BST_CHECKED) ? TRUE : FALSE;
+            PostMessage(hwnd, WM_CLOSE, 0, 0);
+        }
+    }
+}
+
+LRESULT CALLBACK
+DevReportWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
+{
+    switch (Msg)
+    {
+        case WM_CREATE:
+            DevReportInitControls(hwnd);
+            break;
+
+        case WM_COMMAND:
+            DevReportWindowOnCommand(hwnd, wParam, lParam);
+            break;
+
+        case WM_SIZE:
+            DevReportWindowOnSize(lParam);
+            break;
+
+        case WM_SIZING:
+            break;
+
+        case WM_DESTROY:
+        {
+            ImageList_Destroy(hDevImageList);
+            FreeItems(hDataList);
+
+            PostQuitMessage(0);
+        }
+        return 0;
+    }
+
+    return DefWindowProc(hwnd, Msg, wParam, lParam);
 }
 
 VOID
 DetectUnknownDevices(VOID)
 {
+    WNDCLASSEX WndClass = {0};
+    WCHAR szWindowClass[] = L"ASPIAISDEVREPORT";
+    WCHAR szWindowName[MAX_STR_LEN];
+    HWND hWnd;
+    MSG Msg;
+
     if (SettingsInfo.SendDevReport)
         return;
 
-    if (EnumUnknownDevices(NULL, NULL))
+    /* Create the window */
+    WndClass.cbSize        = sizeof(WNDCLASSEX);
+    WndClass.lpszClassName = szWindowClass;
+    WndClass.lpfnWndProc   = DevReportWindowProc;
+    WndClass.hInstance     = hInstance;
+    WndClass.style         = CS_HREDRAW | CS_VREDRAW;
+    WndClass.hIcon         = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MAINICON));
+    WndClass.hCursor       = LoadCursor(NULL, IDC_ARROW);
+    WndClass.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
+    WndClass.lpszMenuName  = NULL;
+
+    if (RegisterClassEx(&WndClass) == (ATOM)0)
+        return;
+
+    LoadMUIString(IDS_DEV_REPORT_TITLE, szWindowName, MAX_STR_LEN);
+
+    /* Создаем главное окно программы */
+    hWnd = CreateWindowEx(WS_EX_WINDOWEDGE,
+                          szWindowClass,
+                          szWindowName,
+                          WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
+                          22, 16, 430, 490,
+                          NULL, NULL, hInstance, NULL);
+
+    if (!hWnd)
     {
-        DialogBox(hLangInst,
-                  MAKEINTRESOURCE(IDD_UNKNOWN_DEV_REPORT),
-                  hMainWnd,
-                  DevReportDlgProc);
+        UnregisterClass(szWindowClass, hInstance);
+        return;
     }
+
+    /* Show it */
+    ShowWindow(hWnd, SW_SHOW);
+    UpdateWindow(hWnd);
+
+    /* Message Loop */
+    while (GetMessage(&Msg, NULL, 0, 0))
+    {
+        TranslateMessage(&Msg);
+        DispatchMessage(&Msg);
+    }
+
+    UnregisterClass(szWindowClass, hInstance);
 }
