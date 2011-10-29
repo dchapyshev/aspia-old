@@ -638,19 +638,69 @@ HandleCommandLine(VOID)
     return TRUE;
 }
 
+BOOL
+IsIniFileExists(VOID)
+{
+    WCHAR szIniPath[MAX_PATH];
+
+    if (!GetIniFilePath(szIniPath, MAX_PATH))
+        return FALSE;
+
+    if (GetFileAttributes(szIniPath) == INVALID_FILE_ATTRIBUTES)
+        return FALSE;
+
+    return TRUE;
+}
+
+BOOL
+GetLangFileNameFromSystem(LPWSTR lpFileName, SIZE_T Size)
+{
+    WCHAR szIso639[MAX_STR_LEN];
+    WCHAR szIso3166[MAX_STR_LEN];
+
+    if (!GetLocaleInfo(LOCALE_USER_DEFAULT,
+                       LOCALE_SISO639LANGNAME,
+                       szIso639, MAX_STR_LEN))
+       return FALSE;
+
+    if (!GetLocaleInfo(LOCALE_USER_DEFAULT,
+                       LOCALE_SISO3166CTRYNAME,
+                       szIso3166, MAX_STR_LEN))
+       return FALSE;
+
+    StringCbPrintf(lpFileName, Size, L"%s-%s.dll",
+                   szIso639, szIso3166);
+
+    return TRUE;
+}
+
 VOID
 LoadLanguage(VOID)
 {
     if (hLangInst && hLangInst != hInstance)
         FreeLibrary(hLangInst);
 
-    if (SafeStrLen(ThemesInfo.szLangFile) == 0)
+    if (SafeStrLen(ThemesInfo.szLangFile) == 0 && IsIniFileExists())
     {
         hLangInst = hInstance;
     }
     else
     {
         WCHAR szPath[MAX_PATH];
+
+        if (!IsIniFileExists())
+        {
+            if (!GetLangFileNameFromSystem(ThemesInfo.szLangFile,
+                                           sizeof(ThemesInfo.szLangFile)))
+            {
+                hLangInst = hInstance;
+                return;
+            }
+        }
+        else
+        {
+            hLangInst = hInstance;
+        }
 
 #ifdef _ASPIA_PORTABLE_
 
