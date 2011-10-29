@@ -817,6 +817,8 @@ InitSettingsControls(HWND hDlg, HWND hTree)
                      hDlg,
                      SysTrayPageWndProc);
 
+    IntSetWindowTheme(hTree);
+
     OnSelCategoryChange(0);
 }
 

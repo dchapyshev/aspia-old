@@ -8,6 +8,10 @@
 #include "main.h"
 
 
+/* Definition for the SetWindowTheme function */
+typedef HRESULT (WINAPI *PSWT)(HWND, LPCWSTR, LPCWSTR);
+
+
 BOOL
 IsUserAdmin(VOID)
 {
@@ -715,4 +719,22 @@ SafeStrCmp(LPCTSTR lpString1, LPCTSTR lpString2)
         Result -= 2;
 
     return Result;
+}
+
+VOID
+IntSetWindowTheme(HWND hwnd)
+{
+    HINSTANCE hUxThemeDLL;
+    PSWT pSetWindowTheme;
+
+    hUxThemeDLL = LoadLibrary(L"UXTHEME.DLL");
+    if (hUxThemeDLL)
+    {
+        pSetWindowTheme = (PSWT)GetProcAddress(hUxThemeDLL, "SetWindowTheme");
+        if (pSetWindowTheme)
+        {
+            pSetWindowTheme(hwnd, L"Explorer", 0);
+        }
+        FreeLibrary(hUxThemeDLL);
+    }
 }

@@ -419,8 +419,6 @@ InitControls(HWND hwnd)
     WCHAR szSplitWndClass[] = L"SplitterWindowClass";
     WNDCLASSEX SplitWndClass = {0};
     HTREEITEM hSelectedItem;
-    HINSTANCE hUxThemeDLL;
-    PSWT pSetWindowTheme;
 
     if (SettingsInfo.SaveWindowPos)
     {
@@ -510,17 +508,8 @@ InitControls(HWND hwnd)
     ShowWindow(hSplitter, SW_SHOW);
     UpdateWindow(hSplitter);
 
-    hUxThemeDLL = LoadLibrary(L"UXTHEME.DLL");
-    if (hUxThemeDLL)
-    {
-        pSetWindowTheme = (PSWT)GetProcAddress(hUxThemeDLL, "SetWindowTheme");
-        if (pSetWindowTheme)
-        {
-            pSetWindowTheme(hTreeView, L"Explorer", 0);
-            pSetWindowTheme(hListView, L"Explorer", 0);
-        }
-        FreeLibrary(hUxThemeDLL);
-    }
+    IntSetWindowTheme(hTreeView);
+    IntSetWindowTheme(hListView);
 
     SetFocus(hListView);
 }
