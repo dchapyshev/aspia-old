@@ -9,7 +9,6 @@
 
 
 static HIMAGELIST hReportImageList = NULL;
-static BOOL IsCanceled = FALSE;
 
 HWND hStatusDlg = NULL;
 static HWND hReportTree = NULL;

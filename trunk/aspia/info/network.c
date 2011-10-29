@@ -355,6 +355,8 @@ NETWORK_CardsInfo(VOID)
         Free(pPerInfo);
         Free(pIfRow);
         ++Count;
+
+        if (IsCanceled) break;
     }
 
     Free(pAdapterInfo);
@@ -480,6 +482,8 @@ NETWORK_SharedInfo(VOID)
             }
             NetApiBufferFree(pInfo);
         }
+
+        if (IsCanceled) break;
     }
     while (Status == ERROR_MORE_DATA);
 
@@ -558,6 +562,8 @@ NETWORK_RouteInfo(VOID)
         StringCbPrintf(szText, sizeof(szText), L"%ld",
                        pIpForwardTable->table[Index].dwForwardMetric1);
         IoSetItemText(ItemIndex, 3, szText);
+
+        if (IsCanceled) break;
     }
 
     Free(pIpForwardTable);
@@ -743,6 +749,8 @@ NETWORK_IEHistoryInfo(VOID)
             /* URL */
             IoSetItemText(Index, 3, StatUrl.pwcsUrl);
         }
+
+        if (IsCanceled) break;
     }
 
     History->lpVtbl->Release(History);
@@ -860,6 +868,8 @@ NETWORK_IECookieInfo(VOID)
 
         IECookieAdd(pCacheInfo);
         Free(pCacheInfo);
+
+        if (IsCanceled) break;
     }
 
     FindCloseUrlCache(hHandle);
@@ -1143,6 +1153,8 @@ NETWORK_RasInfo(VOID)
                     RasEntry.dwfOptions & RASEO_RequireMsCHAP2);
 
         IoAddFooter();
+
+        if (IsCanceled) break;
     }
 
     Free(pRasEntryName);
@@ -1196,6 +1208,8 @@ NETWORK_OpenFilesInfo(VOID)
             }
             NetApiBufferFree(pInfo);
         }
+
+        if (IsCanceled) break;
     }
     while (Status == ERROR_MORE_DATA);
 

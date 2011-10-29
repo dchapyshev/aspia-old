@@ -317,6 +317,8 @@ SOFTWARE_ServicesInfo(VOID)
                 IoSetItemText(ItemIndex, 5, L"-");
                 IoSetItemText(ItemIndex, 6, L"-");
             }
+
+            if (IsCanceled) break;
         }
 
         Free(pAllServices);
@@ -387,6 +389,8 @@ SOFTWARE_DriversInfo(VOID)
                 IoSetItemText(ItemIndex, 4, L"-");
                 IoSetItemText(ItemIndex, 5, L"-");
             }
+
+            if (IsCanceled) break;
         }
 
         Free(pAllServices);

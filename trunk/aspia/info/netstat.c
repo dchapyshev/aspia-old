@@ -453,6 +453,12 @@ NETWORK_NetStatInfo(VOID)
             IoSetItemText(ItemIndex, 3, szText);
 
             IoSetItemText(ItemIndex, 4, TcpState[TcpTableEx->table[dwIndex].dwState]);
+
+            if (IsCanceled)
+            {
+                Free(TcpTableEx);
+                goto Exit;
+            }
         }
         Free(TcpTableEx);
     }
@@ -481,6 +487,12 @@ NETWORK_NetStatInfo(VOID)
                 IoSetItemText(ItemIndex, 3, szText);
 
                 IoSetItemText(ItemIndex, 4, TcpState[TcpTable->table[dwIndex].dwState]);
+
+                if (IsCanceled)
+                {
+                    Free(TcpTable);
+                    goto Exit;
+                }
             }
 
             Free(TcpTable);
@@ -514,6 +526,12 @@ NETWORK_NetStatInfo(VOID)
             IoSetItemText(ItemIndex, 3, L"*.*.*.*:*");
 
             IoSetItemText(ItemIndex, 4, L"-");
+
+            if (IsCanceled)
+            {
+                Free(UdpTableEx);
+                goto Exit;
+            }
         }
         Free(UdpTableEx);
     }
@@ -537,12 +555,18 @@ NETWORK_NetStatInfo(VOID)
                 IoSetItemText(ItemIndex, 3, L"*.*.*.*:*");
 
                 IoSetItemText(ItemIndex, 4, L"-");
+
+                if (IsCanceled)
+                {
+                    Free(UdpTable);
+                    goto Exit;
+                }
             }
 
             Free(UdpTable);
         }
     }
-
+Exit:
     CloseHandle(hProcessSnap);
 
     DebugEndReceiving();

@@ -313,6 +313,8 @@ HW_DevicesInfo(VOID)
         IoSetItemText(ItemIndex, 5, szVendorID);
         IoSetItemText(ItemIndex, 6, szVendorName);
         IoSetItemText(ItemIndex, 7, szDeviceName);
+
+        if (IsCanceled) break;
     }
 
     if (hDevInfo)
@@ -428,6 +430,8 @@ HW_UnknownDevicesInfo(VOID)
         IoSetItemText(ItemIndex, 1, szVendorID);
         IoSetItemText(ItemIndex, 2, szVendorName);
         IoSetItemText(ItemIndex, 3, szDeviceName);
+
+        if (IsCanceled) break;
     }
 
     if (hDevInfo)

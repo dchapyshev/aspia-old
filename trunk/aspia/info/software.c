@@ -87,6 +87,8 @@ EnumInstalledApplications(BOOL IsUpdates, BOOL IsUserKey, APPENUMPROC lpEnumProc
             RegCloseKey(hAppKey);
         }
 
+        if (IsCanceled) break;
+
         dwSize = MAX_PATH;
         ++ItemIndex;
     }
@@ -312,6 +314,8 @@ SOFTWARE_TaskMgr(VOID)
             IoSetItemText(Index, 4, szText);
 
         CloseHandle(hProcess);
+
+        if (IsCanceled) break;
     }
     while (Process32Next(hProcessSnap, &pe32));
 
@@ -537,6 +541,8 @@ SOFTWARE_FileTypesInfo(VOID)
                 IoSetItemText(Index, 2, szContentType);
             }
         }
+
+        if (IsCanceled) break;
 
         dwSize = MAX_PATH;
         ++lIndex;

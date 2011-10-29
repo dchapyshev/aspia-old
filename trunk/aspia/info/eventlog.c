@@ -534,6 +534,8 @@ QueryEventMessages(LPWSTR lpMachineName,
 
         Free(g_RecordPtrs[dwCurrentRecord]);
 
+        if (IsCanceled) break;
+
         --dwRecordsToRead;
         ++dwCurrentRecord;
     }

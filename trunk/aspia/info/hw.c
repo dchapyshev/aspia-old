@@ -990,6 +990,8 @@ EnumPrintersInfo(DWORD dwFlag)
         IoSetItemText(Index, 1, szText);
 
         IoAddFooter();
+
+        if (IsCanceled) break;
     }
 
     Free(pPrinterInfo);
