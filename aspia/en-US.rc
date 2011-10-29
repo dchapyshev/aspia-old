@@ -161,20 +161,6 @@ BEGIN
     CONTROL "", IDC_REF_RATE_UPDOWN, "msctls_updown32", UDS_NOTHOUSANDS | UDS_WRAP | UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS | WS_CHILD | WS_VISIBLE | UDS_ALIGNRIGHT, 178, 128, 9, 11
 END
 
-IDD_UNKNOWN_DEV_REPORT DIALOGEX 22, 16, 227, 199
-STYLE DS_SHELLFONT | WS_BORDER | WS_DLGFRAME | WS_SYSMENU | DS_MODALFRAME | DS_CENTER
-CAPTION "Report Sending"
-FONT 8, "MS Shell Dlg"
-BEGIN
-    LTEXT "Aspia discovered that you have devices that do not exist in our database. By sending us a report, you'll help to make Aspia better.", -1, 6, 5, 215, 27
-    LTEXT "Your report will include data on the following devices:", -1, 6, 31, 212, 10
-    CONTROL "", IDC_REPORT_DATA_LIST, "SysListView32", LVS_REPORT | LVS_SORTASCENDING | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP, 6, 43, 213, 112
-    AUTOCHECKBOX "Offer to send a report", IDC_NEVER_SEND_REPORT, 11, 163, 154, 8
-
-    PUSHBUTTON "&Send Report", IDOK, 94, 178, 60, 14
-    PUSHBUTTON "&Close", IDCANCEL, 159, 178, 60, 14
-END
-
 STRINGTABLE DISCARDABLE
 BEGIN
     IDS_APPTITLE, "Aspia"
@@ -885,6 +871,10 @@ BEGIN
     IDS_CLOSE_BTN, "Close"
     IDS_SAVE_BTN, "Save"
     IDS_FILE_TYPE_TEXT, "File Type:"
+    IDS_DEV_REPORT_TEXT, "Aspia discovered that you have devices that do not exist in our database. By sending us a report, you'll help to make Aspia better.\nYour report will include data on the following devices:"
+    IDS_NEVER_SEND_REPORT, "Offer to send a report"
+    IDS_SEND_BTN, "Send"
+    IDS_DEV_REPORT_TITLE, "Report Sending"
 
     IDS_CAT_SUMMARY, "Summary Information"
 

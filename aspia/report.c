@@ -617,7 +617,7 @@ ReportSaveFileDialog(HWND hDlg, LPWSTR lpszPath, SIZE_T PathSize)
 VOID
 ReportWindowOnSize(LPARAM lParam)
 {
-    HDWP hdwp = BeginDeferWindowPos(3);
+    HDWP hdwp = BeginDeferWindowPos(10);
 
 #define SELECT_BUTTON_WIDTH      30
 #define SELECT_BUTTON_HEIGHT     30
@@ -933,9 +933,9 @@ ReportWindowInitControls(HWND hwnd)
 
     /* "Save" button */
     hSaveBtn = CreateWindow(L"Button", L"",
-                               WS_CHILD | WS_VISIBLE,
-                               0, 0, 0, 0,
-                               hwnd, 0, hInstance, NULL);
+                            WS_CHILD | WS_VISIBLE,
+                            0, 0, 0, 0,
+                            hwnd, 0, hInstance, NULL);
     if (!hSaveBtn)
     {
         DebugTrace(L"Unable to create button!");
@@ -947,9 +947,9 @@ ReportWindowInitControls(HWND hwnd)
 
     /* "Close" button */
     hCloseBtn = CreateWindow(L"Button", L"",
-                               WS_CHILD | WS_VISIBLE,
-                               0, 0, 0, 0,
-                               hwnd, 0, hInstance, NULL);
+                             WS_CHILD | WS_VISIBLE,
+                             0, 0, 0, 0,
+                             hwnd, 0, hInstance, NULL);
     if (!hCloseBtn)
     {
         DebugTrace(L"Unable to create button!");
@@ -970,7 +970,7 @@ ReportWindowOnCommand(HWND hwnd, WPARAM wParam, LPARAM lParam)
         if (lParam == (LPARAM)hSaveBtn)
         {
             SettingsInfo.IsAddContent =
-                (SendMessage(hContent, BM_GETSTATE, 0, 0) == BST_CHECKED) ? TRUE : FALSE;
+                (SendMessage(hContent, BM_GETCHECK, 0, 0) == BST_CHECKED) ? TRUE : FALSE;
 
             GetCheckStateTreeView(hReportTree, RootCategoryList);
 
@@ -978,11 +978,11 @@ ReportWindowOnCommand(HWND hwnd, WPARAM wParam, LPARAM lParam)
 
             ReportCreateThread(TRUE, FALSE);
 
-            SendMessage(hwnd, WM_CLOSE, 0, 0);
+            PostMessage(hwnd, WM_CLOSE, 0, 0);
         }
         else if (lParam == (LPARAM)hCloseBtn)
         {
-            SendMessage(hwnd, WM_CLOSE, 0, 0);
+            PostMessage(hwnd, WM_CLOSE, 0, 0);
         }
         else if (lParam == (LPARAM)hChoosePath)
         {
@@ -1043,9 +1043,6 @@ ReportWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
         case WM_COMMAND:
             ReportWindowOnCommand(hwnd, wParam, lParam);
-            break;
-
-        case WM_NOTIFY:
             break;
 
         case WM_SIZE:
@@ -1144,7 +1141,11 @@ CreateReportWindow(HWND hParent)
                                 22, 16, 357, 440,
                                 hParent, NULL, hInstance, NULL);
 
-    if (!hReportWnd) return;
+    if (!hReportWnd)
+    {
+        UnregisterClass(szWindowClass, hInstance);
+        return;
+    }
 
     /* Show it */
     ShowWindow(hReportWnd, SW_SHOW);

@@ -270,7 +270,11 @@ CreateSysMonWindow(HWND hParentWnd)
                                 20, 20, 570, 500,
                                 NULL, NULL, hInstance, NULL);
 
-    if (!hSysMonWnd) return;
+    if (!hSysMonWnd)
+    {
+        UnregisterClass(szWindowClass, hInstance);
+        return;
+    }
 
     /* Show it */
     ShowWindow(hSysMonWnd, SW_SHOW);
