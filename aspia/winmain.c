@@ -19,6 +19,7 @@ HANDLE hFillThread = NULL;
 HANDLE hProcessHeap = NULL;
 CRITICAL_SECTION CriticalSection;
 BOOL IsLoadingDone = TRUE;
+BOOL IsCanceled = FALSE;
 PARAMS_STRUCT ParamsInfo = {0};
 
 
@@ -426,11 +427,6 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
             switch (data->code)
             {
-                case LVN_COLUMNCLICK:
-                {
-                }
-                break;
-
                 case NM_RCLICK:
                 {
                     if (data->hwndFrom == hListView)
@@ -476,6 +472,8 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
                     if (data->hwndFrom == hTreeView)
                     {
                         UINT Category = (UINT)((LPNMTREEVIEW)lParam)->itemNew.lParam;
+
+                        IsCanceled = TRUE;
 
                         if (CurrentCategory == Category) break;
                         _beginthread(GUIInfoThread, 0, (LPVOID)Category);

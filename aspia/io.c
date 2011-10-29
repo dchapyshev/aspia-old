@@ -708,6 +708,8 @@ IoRunInfoFunc(UINT Category, CATEGORY_LIST *List)
 {
     SIZE_T Index = 0;
 
+    IsCanceled = FALSE;
+
     do
     {
         if (List[Index].StringID == Category)
@@ -720,4 +722,6 @@ IoRunInfoFunc(UINT Category, CATEGORY_LIST *List)
             IoRunInfoFunc(Category, List[Index].Child);
     }
     while (List[++Index].StringID != 0);
+
+    IsCanceled = FALSE;
 }

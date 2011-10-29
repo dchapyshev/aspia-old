@@ -416,6 +416,8 @@ OS_FontsInfo(VOID)
         IoSetItemText(Index, 2, szSize);
 
         RemoveFontResource(FindFileData.cFileName);
+
+        if (IsCanceled) break;
     }
     while (FindNextFile(hFind, &FindFileData) != 0);
 
@@ -801,6 +803,8 @@ OS_SysFoldersInfo(VOID)
     {
         AddFolderInfoToListView(ShellFolders[Index].NameIndex,
                                 ShellFolders[Index].FolderIndex);
+
+        if (IsCanceled) break;
     }
     while (ShellFolders[++Index].NameIndex != 0);
 
@@ -1650,6 +1654,8 @@ FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
             }
         }
         Free(pData);
+
+        if (IsCanceled) break;
     }
     while (FindNextFile(hFind, &FindFileData) != 0);
 

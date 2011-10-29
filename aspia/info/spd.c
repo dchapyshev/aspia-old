@@ -744,17 +744,23 @@ HW_SPDInfo(VOID)
         ShowSpdData(SpdData);
     }
 
+    if (IsCanceled) return;
+
     if (ReadSPDDataFromSmBus(dwType, BaseAddress, 0xA3, SpdData))
     {
         DebugTrace(L"Show info in 0xA3 slot");
         ShowSpdData(SpdData);
     }
 
+    if (IsCanceled) return;
+
     if (ReadSPDDataFromSmBus(dwType, BaseAddress, 0xA5, SpdData))
     {
         DebugTrace(L"Show info in 0xA5 slot");
         ShowSpdData(SpdData);
     }
+
+    if (IsCanceled) return;
 
     if (ReadSPDDataFromSmBus(dwType, BaseAddress, 0xA7, SpdData))
     {
