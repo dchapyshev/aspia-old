@@ -212,8 +212,7 @@ VOID OS_SysFilesKnownInfo(VOID);
 VOID OS_RegionalParamInfo(VOID);
 
 /* report.c */
-INT_PTR CALLBACK
-ReportDlgProc(HWND, UINT, WPARAM, LPARAM);
+VOID CreateReportWindow(HWND hParent);
 BOOL CreateReport(LPWSTR);
 VOID CloseReport(VOID);
 VOID ReportBeginColumn(VOID);

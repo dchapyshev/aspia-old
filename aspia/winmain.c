@@ -340,10 +340,7 @@ OnCommand(UINT Command)
         break;
 
         case ID_SAVE_REPORT:
-            DialogBox(hLangInst,
-                      MAKEINTRESOURCE(IDD_REPORT_DIALOG),
-                      hMainWnd,
-                      ReportDlgProc);
+            CreateReportWindow(hMainWnd);
             break;
 
         case ID_RELOAD:
