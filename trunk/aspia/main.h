@@ -210,7 +210,7 @@ VOID OS_SysFilesKnownInfo(VOID);
 VOID OS_RegionalParamInfo(VOID);
 
 /* report.c */
-VOID CreateReportWindow(HWND hParent);
+VOID CreateReportWindow(VOID);
 BOOL CreateReport(LPWSTR);
 VOID CloseReport(VOID);
 VOID ReportBeginColumn(VOID);

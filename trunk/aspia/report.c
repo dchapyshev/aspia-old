@@ -1108,7 +1108,7 @@ ReportWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 }
 
 VOID
-CreateReportWindow(HWND hParent)
+CreateReportWindow(VOID)
 {
     WNDCLASSEX WndClass = {0};
     WCHAR szWindowClass[] = L"ASPIAISREPORT";
@@ -1138,7 +1138,7 @@ CreateReportWindow(HWND hParent)
                                 szWindowName,
                                 WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
                                 22, 16, 357, 440,
-                                hParent, NULL, hInstance, NULL);
+                                NULL, NULL, hInstance, NULL);
 
     if (!hReportWnd)
     {
