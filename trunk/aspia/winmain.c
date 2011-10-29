@@ -414,7 +414,6 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         case WM_CREATE:
             InitControls(hwnd);
             _beginthread(GUIInfoThread, 0, (LPVOID)SettingsInfo.StartupCategory);
-            DetectUnknownDevices();
             break;
 
         case WM_COMMAND:
@@ -860,6 +859,8 @@ wWinMain(HINSTANCE hInst,
     DRIVER_Load();
 
     InitCommonControls();
+
+    DetectUnknownDevices();
 
     /* Загружаем ускорители для обработки горячих клавишь */
     hAccel = LoadAccelerators(hInstance,
