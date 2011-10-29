@@ -580,8 +580,6 @@ DevReportWindowOnCommand(HWND hwnd, WPARAM wParam, LPARAM lParam)
         }
         else if (lParam == (LPARAM)hCloseBtn)
         {
-            SettingsInfo.SendDevReport =
-                (SendMessage(hCheckBox, BM_GETCHECK, 0, 0) == BST_CHECKED) ? TRUE : FALSE;
             PostMessage(hwnd, WM_CLOSE, 0, 0);
         }
     }
@@ -605,10 +603,22 @@ DevReportWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
             break;
 
         case WM_SIZING:
-            break;
+        {
+            LPRECT pRect = (LPRECT)lParam;
+
+            if (pRect->right - pRect->left < 400)
+                pRect->right = pRect->left + 400;
+
+            if (pRect->bottom - pRect->top < 300)
+                pRect->bottom = pRect->top + 300;
+        }
+        break;
 
         case WM_DESTROY:
         {
+            SettingsInfo.SendDevReport =
+                (SendMessage(hCheckBox, BM_GETCHECK, 0, 0) == BST_CHECKED) ? FALSE : TRUE;
+
             ImageList_Destroy(hDevImageList);
             FreeItems(hDataList);
 
