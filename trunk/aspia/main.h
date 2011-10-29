@@ -85,9 +85,6 @@ typedef struct _COLUMN_LIST
     INT Width;
 } COLUMN_LIST;
 
-/* Definition for the SetWindowTheme function */
-typedef HRESULT (WINAPI *PSWT)(HWND, LPCWSTR, LPCWSTR);
-
 extern HWND hToolBar;
 extern HWND hTreeView;
 extern HWND hListView;
@@ -316,6 +313,7 @@ BOOL GetCurrentPath(LPWSTR, SIZE_T);
 INT SafeStrLen(LPCWSTR lpString);
 LPWSTR SafeStrCpyN(LPWSTR lpString1, LPCWSTR lpString2, INT iMaxLength);
 INT SafeStrCmp(LPCWSTR lpString1, LPCWSTR lpString2);
+VOID IntSetWindowTheme(HWND hwnd);
 
 
 __inline INT
@@ -394,14 +392,23 @@ VOID ListViewAddHeader(UINT, INT);
 /* settings.c */
 typedef struct
 {
-    /* Main Window Position */
+    /* Save all windows position */
     BOOL SaveWindowPos;
+
+    /* Main Window Position */
     BOOL IsMaximized;
     INT Left;
     INT Top;
     INT Right;
     INT Bottom;
     INT SplitterPos;
+
+    /* Report Window Position */
+    BOOL ReportIsMaximized;
+    INT ReportLeft;
+    INT ReportTop;
+    INT ReportRight;
+    INT ReportBottom;
 
     UINT StartupCategory;
 

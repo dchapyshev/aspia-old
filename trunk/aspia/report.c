@@ -743,9 +743,19 @@ VOID
 ReportWindowInitControls(HWND hwnd)
 {
     WCHAR szText[MAX_STR_LEN];
-    HINSTANCE hUxThemeDLL;
-    PSWT pSetWindowTheme;
     DWORD dwSize;
+
+    if (SettingsInfo.SaveWindowPos)
+    {
+        MoveWindow(hwnd, SettingsInfo.ReportLeft,
+                   SettingsInfo.ReportTop,
+                   SettingsInfo.ReportRight - SettingsInfo.ReportLeft,
+                   SettingsInfo.ReportBottom - SettingsInfo.ReportTop,
+                   TRUE);
+
+        if (SettingsInfo.ReportIsMaximized)
+            ShowWindow(hwnd, SW_MAXIMIZE);
+    }
 
     /* Initialize TreeView */
     hReportTree = CreateWindowEx(WS_EX_CLIENTEDGE,
@@ -783,16 +793,7 @@ ReportWindowInitControls(HWND hwnd)
     SetCheckStateTreeView(hReportTree, RootCategoryList);
 
     /* Try to set theme for TreeView */
-    hUxThemeDLL = LoadLibrary(L"UXTHEME.DLL");
-    if (hUxThemeDLL)
-    {
-        pSetWindowTheme = (PSWT)GetProcAddress(hUxThemeDLL, "SetWindowTheme");
-        if (pSetWindowTheme)
-        {
-            pSetWindowTheme(hReportTree, L"Explorer", 0);
-        }
-        FreeLibrary(hUxThemeDLL);
-    }
+    IntSetWindowTheme(hReportTree);
 
     /* Create "Select All" button */
     hSelectAll = CreateWindow(L"Button", L"",
@@ -889,6 +890,11 @@ ReportWindowInitControls(HWND hwnd)
                                WS_CHILD | WS_VISIBLE,
                                0, 0, 0, 0,
                                hwnd, 0, hInstance, NULL);
+    if (!hChoosePath)
+    {
+        DebugTrace(L"Unable to create button!");
+        return;
+    }
     SetWindowText(hChoosePath, L"...");
     SendMessage(hChoosePath, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
 
@@ -897,6 +903,11 @@ ReportWindowInitControls(HWND hwnd)
                                 WS_CHILD | WS_VISIBLE,
                                 0, 0, 0, 0,
                                 hwnd, 0, hInstance, NULL);
+    if (!hFileTypeTxt)
+    {
+        DebugTrace(L"Unable to create window!");
+        return;
+    }
     LoadMUIString(IDS_FILE_TYPE_TEXT, szText, MAX_STR_LEN);
     SetWindowText(hFileTypeTxt, szText);
     SendMessage(hFileTypeTxt, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
@@ -906,6 +917,11 @@ ReportWindowInitControls(HWND hwnd)
                              CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL,
                              0, 0, 0, 0,
                              hwnd, 0, hInstance, NULL);
+    if (!hComboBox)
+    {
+        DebugTrace(L"Unable to create ComboBox!");
+        return;
+    }
     SendMessage(hComboBox, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
 
     AddFileTypeToComboBox(hComboBox, IDS_TYPE_HTML);
@@ -920,6 +936,11 @@ ReportWindowInitControls(HWND hwnd)
                                WS_CHILD | WS_VISIBLE,
                                0, 0, 0, 0,
                                hwnd, 0, hInstance, NULL);
+    if (!hSaveBtn)
+    {
+        DebugTrace(L"Unable to create button!");
+        return;
+    }
     LoadMUIString(IDS_SAVE_BTN, szText, MAX_STR_LEN);
     SetWindowText(hSaveBtn, szText);
     SendMessage(hSaveBtn, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
@@ -929,6 +950,11 @@ ReportWindowInitControls(HWND hwnd)
                                WS_CHILD | WS_VISIBLE,
                                0, 0, 0, 0,
                                hwnd, 0, hInstance, NULL);
+    if (!hCloseBtn)
+    {
+        DebugTrace(L"Unable to create button!");
+        return;
+    }
     LoadMUIString(IDS_CLOSE_BTN, szText, MAX_STR_LEN);
     SetWindowText(hCloseBtn, szText);
     SendMessage(hCloseBtn, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
@@ -1040,6 +1066,8 @@ ReportWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
         case WM_DESTROY:
         {
+            WINDOWPLACEMENT wp;
+
             SettingsInfo.IsAddContent =
                 (SendMessage(hContent, BM_GETCHECK, 0, 0) == BST_CHECKED) ? TRUE : FALSE;
 
@@ -1050,6 +1078,27 @@ ReportWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
             DestroyIcon(hCheckAllIcon);
             DestroyIcon(hUnCheckAllIcon);
+
+            wp.length = sizeof(WINDOWPLACEMENT);
+            GetWindowPlacement(hwnd, &wp);
+
+            SettingsInfo.ReportIsMaximized =
+                (IsZoomed(hwnd) || (wp.flags & WPF_RESTORETOMAXIMIZED));
+
+            if (!SettingsInfo.ReportIsMaximized)
+            {
+                SettingsInfo.ReportLeft   = wp.rcNormalPosition.left;
+                SettingsInfo.ReportTop    = wp.rcNormalPosition.top;
+                SettingsInfo.ReportRight  = wp.rcNormalPosition.right;
+                SettingsInfo.ReportBottom = wp.rcNormalPosition.bottom;
+            }
+
+            DebugTrace(L"Report window position: left = %d, top = %d, right = %d, bottom = %d, maximized = %s",
+                       SettingsInfo.ReportLeft,
+                       SettingsInfo.ReportTop,
+                       SettingsInfo.ReportRight,
+                       SettingsInfo.ReportBottom,
+                       SettingsInfo.ReportIsMaximized ? L"TRUE" : L"FALSE");
 
             PostQuitMessage(0);
 

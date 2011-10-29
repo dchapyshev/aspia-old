@@ -121,7 +121,7 @@ BEGIN
     LTEXT "Відкриті категорії при запуску:", -1, 13, 48, 190, 10
     COMBOBOX IDC_STARTUP_CAT_COMBO, 13, 58, 192, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
     AUTOCHECKBOX "Запускати разом з Windows", IDC_START_WITH_WINDOWS, 20, 79, 110, 8
-    AUTOCHECKBOX "Зберігати положення вікна", IDC_SAVE_WINDOW_POS, 20, 93, 109, 8
+    AUTOCHECKBOX "Зберігати положення вікон", IDC_SAVE_WINDOW_POS, 20, 93, 109, 8
     AUTOCHECKBOX "Зверху всіх вікон", IDC_STAY_ON_TOP, 20, 107, 109, 8
     AUTOCHECKBOX "Дозволити драйвер режиму ядра", IDC_ALLOW_KM_DRIVER, 20, 122, 109, 8
     AUTOCHECKBOX "Пропонувати відіслати звіт про невідомі пристрої", IDC_DEV_REPORT_SEND, 20, 135, 187, 15, BS_MULTILINE
@@ -889,7 +889,7 @@ BEGIN
     IDS_ADD_CONTENT_TABLE, "Додавати зміст у звіт"
     IDS_CLOSE_BTN, "Закрити"
     IDS_SAVE_BTN, "Зберегти"
-    IDS_FILE_TYPE_TEXT, "Тип Файлу:"
+    IDS_FILE_TYPE_TEXT, "Тип файлу:"
 
     IDS_CAT_SUMMARY, "Загальна інформація"
 

@@ -781,14 +781,22 @@ wWinMain(HINSTANCE hInst,
 
         SettingsInfo.StartupCategory = IDS_CAT_SUMMARY;
 
-        /* Window Position */
-        SettingsInfo.SaveWindowPos = FALSE;
+        /* Windows Position */
+        SettingsInfo.SaveWindowPos = TRUE;
+
         SettingsInfo.Bottom = 660;
         SettingsInfo.Left = 20;
         SettingsInfo.Right = 870;
         SettingsInfo.Top = 20;
         SettingsInfo.IsMaximized = FALSE;
-        SettingsInfo.SplitterPos = 200;
+
+        SettingsInfo.SplitterPos = 250;
+
+        SettingsInfo.ReportBottom = 409;
+        SettingsInfo.ReportLeft = 20;
+        SettingsInfo.ReportRight = 342;
+        SettingsInfo.ReportTop = 20;
+        SettingsInfo.ReportIsMaximized = FALSE;
 
         /* Autorun */
         SettingsInfo.Autorun = FALSE;
