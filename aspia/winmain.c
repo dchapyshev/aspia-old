@@ -341,7 +341,7 @@ OnCommand(UINT Command)
         break;
 
         case ID_SAVE_REPORT:
-            CreateReportWindow(hMainWnd);
+            CreateReportWindow();
             break;
 
         case ID_RELOAD:
