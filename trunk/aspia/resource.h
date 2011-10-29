@@ -94,13 +94,12 @@
 
 /* Dialogs */
 #define IDD_ABOUT_DIALOG         5000
-#define IDD_REPORT_DIALOG        5001
-#define IDD_SETTINGS_DIALOG      5002
-#define IDD_REPORT_STATUS_DIALOG 5003
-#define IDD_SETTINGS_GENERAL     5004
-#define IDD_SETTINGS_FILTER      5005
-#define IDD_SETTINGS_SYSTRAY     5006
-#define IDD_UNKNOWN_DEV_REPORT   5007
+#define IDD_SETTINGS_DIALOG      5001
+#define IDD_REPORT_STATUS_DIALOG 5002
+#define IDD_SETTINGS_GENERAL     5003
+#define IDD_SETTINGS_FILTER      5004
+#define IDD_SETTINGS_SYSTRAY     5005
+#define IDD_UNKNOWN_DEV_REPORT   5006
 
 /* Menu */
 #define IDR_POPUP           500
@@ -130,14 +129,11 @@
 #define ID_SYSMON_TEST    1023
 
 /* Controls */
-#define IDC_CATEGORIES_TREE     100
-#define IDC_FILEPATH_EDIT       101
 #define IDC_SET_PATH_BTN        102
 #define IDC_VERSION_TEXT        103
 #define IDC_SITE_BTN            104
 #define IDC_DONATE_BTN          105
 #define IDC_ACCELERATORS        106
-#define IDC_ADD_CONTENT         107
 #define IDC_LANGUAGE_COMBO      108
 #define IDC_SAVE_WINDOW_POS     109
 #define IDC_STARTUP_CAT_COMBO   110
@@ -146,8 +142,6 @@
 #define IDC_SHOW_PROG_ICON      113
 #define IDC_SHOW_SENSOR_ICON    114
 #define IDC_SENSOR_ICON_LIST    115
-#define IDC_SELECT_ALL          116
-#define IDC_UNSELECT_ALL        117
 #define IDC_ICONS_COMBO         118
 #define IDC_ABOUT_EDIT          119
 #define IDC_ABOUT_ICON          120
@@ -171,9 +165,10 @@
 #define IDC_REPORT_DATA_LIST    138
 #define IDC_NEVER_SEND_REPORT   139
 #define IDC_DEV_REPORT_SEND     140
-#define IDC_FILE_TYPE_COMBO     141
 #define IDC_STAY_ON_TOP         142
 #define IDC_ALLOW_KM_DRIVER     143
+#define IDC_FILEPATH_TITLE      144
+#define IDC_FILETYPE_TITLE      145
 
 /* Strings */
 #define IDS_APPTITLE                100
@@ -839,6 +834,11 @@
 #define IDS_SYSMON_CURRENT               720
 #define IDS_SYSMON_MIN                   721
 #define IDS_SYSMON_MAX                   722
+#define IDS_REPORTWND_TITLE              723
+#define IDS_ADD_CONTENT_TABLE            724
+#define IDS_CLOSE_BTN                    725
+#define IDS_SAVE_BTN                     726
+#define IDS_FILE_TYPE_TEXT               727
 
 #define IDS_CAT_SUMMARY           1000
 

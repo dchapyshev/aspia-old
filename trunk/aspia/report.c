@@ -9,8 +9,19 @@
 
 
 static HIMAGELIST hReportImageList = NULL;
-HWND hStatusDlg = NULL;
 static BOOL IsCanceled = FALSE;
+
+HWND hStatusDlg = NULL;
+static HWND hReportTree = NULL;
+static HWND hSelectAll = NULL;
+static HWND hUnselectAll = NULL;
+static HWND hContent = NULL;
+static HWND hFilePath = NULL;
+static HWND hChoosePath = NULL;
+static HWND hSaveBtn = NULL;
+static HWND hCloseBtn = NULL;
+static HWND hFileTypeTxt = NULL;
+static HWND hComboBox = NULL;
 
 
 static VOID
@@ -603,204 +614,502 @@ ReportSaveFileDialog(HWND hDlg, LPWSTR lpszPath, SIZE_T PathSize)
     return FALSE;
 }
 
-INT_PTR CALLBACK
-ReportDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
+VOID
+ReportWindowOnSize(LPARAM lParam)
 {
-    HWND hTree = GetDlgItem(hDlg, IDC_CATEGORIES_TREE);
-    HWND hCombo = GetDlgItem(hDlg, IDC_FILE_TYPE_COMBO);
+    HDWP hdwp = BeginDeferWindowPos(3);
+
+#define SELECT_BUTTON_WIDTH      30
+#define SELECT_BUTTON_HEIGHT     30
+#define CHECKBOX_HEIGHT          20
+#define FILEPATH_EDIT_HEIGHT     20
+#define CHOOSE_PATH_BUTTON_WIDTH 30
+#define BUTTON_WIDTH             100
+#define BUTTON_HEIGHT            25
+#define FILE_TYPE_TEXT_HEIGHT    20
+#define FILE_TYPE_TEXT_WIDTH     100
+#define FILE_TYPE_COMBO_HEIGHT   18
+
+#define ITEMS_DIVIDER 6
+
+    /*
+     * HIWORD(lParam) - Height of main window
+     * LOWORD(lParam) - Width of main window
+     */
+
+    /* Size TreeView */
+    DeferWindowPos(hdwp,
+                   hReportTree,
+                   0,
+                   ITEMS_DIVIDER, ITEMS_DIVIDER,
+                   LOWORD(lParam) - SELECT_BUTTON_WIDTH - (ITEMS_DIVIDER * 3),
+                   HIWORD(lParam) - (ITEMS_DIVIDER * 6) - CHECKBOX_HEIGHT - FILEPATH_EDIT_HEIGHT - FILE_TYPE_COMBO_HEIGHT - BUTTON_HEIGHT - 10,
+                   SWP_NOZORDER|SWP_NOACTIVATE);
+
+    /* Size "Select All" button */
+    DeferWindowPos(hdwp,
+                   hSelectAll,
+                   0,
+                   LOWORD(lParam) - SELECT_BUTTON_WIDTH - ITEMS_DIVIDER,
+                   ITEMS_DIVIDER,
+                   SELECT_BUTTON_WIDTH,
+                   SELECT_BUTTON_HEIGHT,
+                   SWP_NOZORDER|SWP_NOACTIVATE);
+
+    /* Size "Unselect All" button */
+    DeferWindowPos(hdwp,
+                   hUnselectAll,
+                   0,
+                   LOWORD(lParam) - SELECT_BUTTON_WIDTH - ITEMS_DIVIDER,
+                   SELECT_BUTTON_HEIGHT + (ITEMS_DIVIDER * 2),
+                   SELECT_BUTTON_WIDTH,
+                   SELECT_BUTTON_HEIGHT,
+                   SWP_NOZORDER|SWP_NOACTIVATE);
+
+    /* Size "Content Table" checkbox */
+    DeferWindowPos(hdwp,
+                   hContent,
+                   0,
+                   ITEMS_DIVIDER * 2,
+                   HIWORD(lParam) - CHECKBOX_HEIGHT - FILEPATH_EDIT_HEIGHT - BUTTON_HEIGHT - FILE_TYPE_COMBO_HEIGHT - (ITEMS_DIVIDER * 4) - 10,
+                   LOWORD(lParam) - (ITEMS_DIVIDER * 3),
+                   CHECKBOX_HEIGHT,
+                   SWP_NOZORDER|SWP_NOACTIVATE);
+
+    /* Size "File Path" edit */
+    DeferWindowPos(hdwp,
+                   hFilePath,
+                   0,
+                   ITEMS_DIVIDER,
+                   HIWORD(lParam) - FILEPATH_EDIT_HEIGHT- BUTTON_HEIGHT - FILE_TYPE_COMBO_HEIGHT - (ITEMS_DIVIDER * 3) - 10,
+                   LOWORD(lParam) - CHOOSE_PATH_BUTTON_WIDTH - (ITEMS_DIVIDER * 3),
+                   FILEPATH_EDIT_HEIGHT,
+                   SWP_NOZORDER|SWP_NOACTIVATE);
+
+    /* Size "Choose File Path" button */
+    DeferWindowPos(hdwp,
+                   hChoosePath,
+                   0,
+                   LOWORD(lParam) - CHOOSE_PATH_BUTTON_WIDTH - ITEMS_DIVIDER,
+                   HIWORD(lParam) - FILEPATH_EDIT_HEIGHT - BUTTON_HEIGHT - FILE_TYPE_COMBO_HEIGHT - (ITEMS_DIVIDER * 3) - 10,
+                   CHOOSE_PATH_BUTTON_WIDTH,
+                   FILEPATH_EDIT_HEIGHT,
+                   SWP_NOZORDER|SWP_NOACTIVATE);
+
+    /* Size "File Type" text */
+    DeferWindowPos(hdwp,
+                   hFileTypeTxt,
+                   0,
+                   ITEMS_DIVIDER,
+                   HIWORD(lParam) - BUTTON_HEIGHT- FILE_TYPE_TEXT_HEIGHT - (ITEMS_DIVIDER * 2) - 5,
+                   FILE_TYPE_TEXT_WIDTH,
+                   FILE_TYPE_TEXT_HEIGHT,
+                   SWP_NOZORDER|SWP_NOACTIVATE);
+
+    /* Size "File Type" combobox */
+    DeferWindowPos(hdwp,
+                   hComboBox,
+                   0,
+                   FILE_TYPE_TEXT_WIDTH + (ITEMS_DIVIDER * 2),
+                   HIWORD(lParam) - BUTTON_HEIGHT - FILE_TYPE_TEXT_HEIGHT - (ITEMS_DIVIDER * 2) - 10,
+                   LOWORD(lParam) - FILE_TYPE_TEXT_WIDTH - (ITEMS_DIVIDER * 3),
+                   FILE_TYPE_COMBO_HEIGHT,
+                   SWP_NOZORDER|SWP_NOACTIVATE);
+
+    /* Size "Save" button */
+    DeferWindowPos(hdwp,
+                   hSaveBtn,
+                   0,
+                   LOWORD(lParam) - (BUTTON_WIDTH * 2) - (ITEMS_DIVIDER * 2),
+                   HIWORD(lParam) - BUTTON_HEIGHT - ITEMS_DIVIDER,
+                   BUTTON_WIDTH,
+                   BUTTON_HEIGHT,
+                   SWP_NOZORDER|SWP_NOACTIVATE);
+
+    /* Size "Close" button */
+    DeferWindowPos(hdwp,
+                   hCloseBtn,
+                   0,
+                   LOWORD(lParam) - BUTTON_WIDTH - ITEMS_DIVIDER,
+                   HIWORD(lParam) - BUTTON_HEIGHT - ITEMS_DIVIDER,
+                   BUTTON_WIDTH,
+                   BUTTON_HEIGHT,
+                   SWP_NOZORDER|SWP_NOACTIVATE);
+
+    EndDeferWindowPos(hdwp);
+}
+
+VOID
+ReportWindowInitControls(HWND hwnd)
+{
+    WCHAR szText[MAX_STR_LEN];
     HINSTANCE hUxThemeDLL;
     PSWT pSetWindowTheme;
+    DWORD dwSize;
 
-    UNREFERENCED_PARAMETER(lParam);
+    /* Initialize TreeView */
+    hReportTree = CreateWindowEx(WS_EX_CLIENTEDGE,
+                                 WC_TREEVIEW,
+                                 L"",
+                                 WS_CHILD | WS_VISIBLE | WS_TABSTOP | TVS_HASLINES |
+                                 TVS_SHOWSELALWAYS | TVS_HASBUTTONS | TVS_LINESATROOT |
+                                 TVS_CHECKBOXES,
+                                 0, 0, 0, 0,
+                                 hwnd,
+                                 NULL,
+                                 hInstance,
+                                 NULL);
 
+    if (!hReportTree)
+    {
+        DebugTrace(L"Unable to create TreeView control!");
+        return;
+    }
+
+    hReportImageList = ImageList_Create(ParamsInfo.SxSmIcon,
+                                        ParamsInfo.SySmIcon,
+                                        ILC_MASK | ParamsInfo.SysColorDepth,
+                                        1, 1);
+    if (!hReportImageList)
+    {
+        DebugTrace(L"Unable to create ImageList!");
+        return;
+    }
+
+    AddTreeViewItems(hReportTree, RootCategoryList, TVI_ROOT);
+    TreeView_SetImageList(hReportTree, hReportImageList, LVSIL_NORMAL);
+
+    /* TreeView checkboxes state */
+    SetCheckStateTreeView(hReportTree, RootCategoryList);
+
+    /* Try to set theme for TreeView */
+    hUxThemeDLL = LoadLibrary(L"UXTHEME.DLL");
+    if (hUxThemeDLL)
+    {
+        pSetWindowTheme = (PSWT)GetProcAddress(hUxThemeDLL, "SetWindowTheme");
+        if (pSetWindowTheme)
+        {
+            pSetWindowTheme(hReportTree, L"Explorer", 0);
+        }
+        FreeLibrary(hUxThemeDLL);
+    }
+
+    /* Create "Select All" button */
+    hSelectAll = CreateWindow(L"Button", L"",
+                              WS_CHILD | WS_VISIBLE | BS_ICON,
+                              0, 0, 0, 0,
+                              hwnd, 0, hInstance, NULL);
+
+    /* Set icon for button */
+    hCheckAllIcon = (HICON)LoadImage(hIconsInst,
+                                     MAKEINTRESOURCE(IDI_CHECK_ALL),
+                                     IMAGE_ICON,
+                                     ParamsInfo.SxSmIcon,
+                                     ParamsInfo.SySmIcon,
+                                     LR_DEFAULTCOLOR);
+    SendMessage(hSelectAll, BM_SETIMAGE, IMAGE_ICON, (LPARAM)hCheckAllIcon);
+
+    /* Create "Unselect All" button */
+    hUnselectAll = CreateWindow(L"Button", L"",
+                                WS_CHILD | WS_VISIBLE | BS_ICON,
+                                0, 0, 0, 0,
+                                hwnd, 0, hInstance, NULL);
+
+    /* Set icon for button */
+    hUnCheckAllIcon = (HICON)LoadImage(hIconsInst,
+                                       MAKEINTRESOURCE(IDI_UNCHECK_ALL),
+                                       IMAGE_ICON,
+                                       ParamsInfo.SxSmIcon,
+                                       ParamsInfo.SySmIcon,
+                                       LR_DEFAULTCOLOR);
+    SendMessage(hUnselectAll, BM_SETIMAGE, IMAGE_ICON, (LPARAM)hUnCheckAllIcon);
+
+    hContent = CreateWindow(L"Button",
+                            L"",
+                            WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+                            0, 0, 0, 0,
+                            hwnd, 0, hInstance, NULL);
+
+    if (!hContent)
+    {
+        DebugTrace(L"Unable to create CheckBox control!");
+        return;
+    }
+
+    /* Set checkbox text and font */
+    SendMessage(hContent, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
+    LoadMUIString(IDS_ADD_CONTENT_TABLE, szText, MAX_STR_LEN);
+    SetWindowText(hContent, szText);
+
+    /* Set checkbox state */
+    SendMessage(hContent, BM_SETCHECK,
+                (SettingsInfo.IsAddContent ? BST_CHECKED : BST_UNCHECKED), 0);
+
+    /* File path edit */
+    hFilePath = CreateWindowEx(WS_EX_CLIENTEDGE,
+                               L"Edit", NULL,
+                               WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP | ES_READONLY | ES_AUTOHSCROLL,
+                               0, 0, 0, 0,
+                               hwnd, 0, hInstance, NULL);
+    if (!hFilePath)
+    {
+        DebugTrace(L"Unable to create Edit control!");
+        return;
+    }
+    /* Set font for file path edit */
+    SendMessage(hFilePath, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
+
+    /* Set default file path */
+    if (SafeStrLen(SettingsInfo.szReportPath) == 0)
+    {
+        WCHAR szExt[MAX_STR_LEN];
+
+        SHGetSpecialFolderPath(hwnd,
+                               SettingsInfo.szReportPath,
+                               CSIDL_MYDOCUMENTS, FALSE);
+
+        dwSize = MAX_PATH;
+        GetComputerName(szText, &dwSize);
+
+        StringCbCat(SettingsInfo.szReportPath,
+                    sizeof(SettingsInfo.szReportPath), L"\\");
+        StringCbCat(SettingsInfo.szReportPath,
+                    sizeof(SettingsInfo.szReportPath), szText);
+
+        GetReportExtById(SettingsInfo.ReportFileType, szExt, sizeof(szExt));
+
+        StringCbCat(SettingsInfo.szReportPath,
+                    sizeof(SettingsInfo.szReportPath), szExt);
+    }
+
+    SetWindowText(hFilePath, SettingsInfo.szReportPath);
+
+    /* Choose file path button */
+    hChoosePath = CreateWindow(L"Button", L"",
+                               WS_CHILD | WS_VISIBLE,
+                               0, 0, 0, 0,
+                               hwnd, 0, hInstance, NULL);
+    SetWindowText(hChoosePath, L"...");
+    SendMessage(hChoosePath, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
+
+    /* "File Type" text */
+    hFileTypeTxt = CreateWindow(L"STATIC", L"",
+                                WS_CHILD | WS_VISIBLE,
+                                0, 0, 0, 0,
+                                hwnd, 0, hInstance, NULL);
+    LoadMUIString(IDS_FILE_TYPE_TEXT, szText, MAX_STR_LEN);
+    SetWindowText(hFileTypeTxt, szText);
+    SendMessage(hFileTypeTxt, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
+
+    /* File type combobox */
+    hComboBox = CreateWindow(L"COMBOBOX", L"",
+                             CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL,
+                             0, 0, 0, 0,
+                             hwnd, 0, hInstance, NULL);
+    SendMessage(hComboBox, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
+
+    AddFileTypeToComboBox(hComboBox, IDS_TYPE_HTML);
+    AddFileTypeToComboBox(hComboBox, IDS_TYPE_TEXT);
+    AddFileTypeToComboBox(hComboBox, IDS_TYPE_CSV);
+    //AddFileTypeToComboBox(hComboBox, IDS_TYPE_JSON);
+    AddFileTypeToComboBox(hComboBox, IDS_TYPE_INI);
+    AddFileTypeToComboBox(hComboBox, IDS_TYPE_RTF);
+
+    /* "Save" button */
+    hSaveBtn = CreateWindow(L"Button", L"",
+                               WS_CHILD | WS_VISIBLE,
+                               0, 0, 0, 0,
+                               hwnd, 0, hInstance, NULL);
+    LoadMUIString(IDS_SAVE_BTN, szText, MAX_STR_LEN);
+    SetWindowText(hSaveBtn, szText);
+    SendMessage(hSaveBtn, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
+
+    /* "Close" button */
+    hCloseBtn = CreateWindow(L"Button", L"",
+                               WS_CHILD | WS_VISIBLE,
+                               0, 0, 0, 0,
+                               hwnd, 0, hInstance, NULL);
+    LoadMUIString(IDS_CLOSE_BTN, szText, MAX_STR_LEN);
+    SetWindowText(hCloseBtn, szText);
+    SendMessage(hCloseBtn, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
+
+    SetTimer(hReportTree, IDT_UPDATE_TIMER, 10, UpdateProc);
+}
+
+VOID
+ReportWindowOnCommand(HWND hwnd, WPARAM wParam, LPARAM lParam)
+{
+    if (HIWORD(wParam) == BN_CLICKED)
+    {
+        if (lParam == (LPARAM)hSaveBtn)
+        {
+            SettingsInfo.IsAddContent =
+                (SendMessage(hContent, BM_GETSTATE, 0, 0) == BST_CHECKED) ? TRUE : FALSE;
+
+            GetCheckStateTreeView(hReportTree, RootCategoryList);
+
+            KillTimer(hMainWnd, IDT_UPDATE_TIMER);
+
+            ReportCreateThread(TRUE, FALSE);
+
+            SendMessage(hwnd, WM_CLOSE, 0, 0);
+        }
+        else if (lParam == (LPARAM)hCloseBtn)
+        {
+            SendMessage(hwnd, WM_CLOSE, 0, 0);
+        }
+        else if (lParam == (LPARAM)hChoosePath)
+        {
+            if (ReportSaveFileDialog(hwnd,
+                                     SettingsInfo.szReportPath,
+                                     sizeof(SettingsInfo.szReportPath)))
+            {
+                SetWindowText(hFilePath, SettingsInfo.szReportPath);
+            }
+        }
+        else if (lParam == (LPARAM)hSelectAll)
+        {
+            SetAllItemsStateTreeView(hReportTree, TRUE, RootCategoryList);
+        }
+        else if (lParam == (LPARAM)hUnselectAll)
+        {
+            SetAllItemsStateTreeView(hReportTree, FALSE, RootCategoryList);
+        }
+    }
+    else if (HIWORD(wParam) == CBN_SELCHANGE && lParam == (LPARAM)hComboBox)
+    {
+        INT Index = SendMessage(hComboBox, CB_GETCURSEL, 0, 0);
+        UINT Data = (UINT)SendMessage(hComboBox, CB_GETITEMDATA, Index, 0);
+        WCHAR szPath[MAX_PATH];
+        WCHAR szExt[MAX_STR_LEN];
+
+        if (Data == CB_ERR) return;
+
+        SettingsInfo.ReportFileType = Data;
+
+        GetReportExtById(Data, szExt, sizeof(szExt));
+
+        GetWindowText(hFilePath, szPath, MAX_PATH);
+        for (Index = wcslen(szPath); Index > 0; Index--)
+        {
+            if (szPath[Index] == L'.')
+            {
+                szPath[Index] = L'\0';
+                break;
+            }
+        }
+        StringCbCat(szPath, sizeof(szPath), szExt);
+        SetWindowText(hFilePath, szPath);
+        StringCbCopy(SettingsInfo.szReportPath,
+                     sizeof(SettingsInfo.szReportPath),
+                     szPath);
+    }
+}
+
+LRESULT CALLBACK
+ReportWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
+{
     switch (Msg)
     {
-        case WM_INITDIALOG:
+        case WM_CREATE:
+            ReportWindowInitControls(hwnd);
+            break;
+
+        case WM_COMMAND:
+            ReportWindowOnCommand(hwnd, wParam, lParam);
+            break;
+
+        case WM_NOTIFY:
+            break;
+
+        case WM_SIZE:
+            ReportWindowOnSize(lParam);
+            break;
+
+        case WM_SIZING:
         {
-            WCHAR szFileName[MAX_PATH];
-            DWORD dwSize;
+            LPRECT pRect = (LPRECT)lParam;
 
-            CheckDlgButton(hDlg, IDC_ADD_CONTENT,
-                           SettingsInfo.IsAddContent ? BST_CHECKED : BST_UNCHECKED);
+            if (pRect->right - pRect->left < 300)
+                pRect->right = pRect->left + 300;
 
-            /* Initialize TreeView */
-            hReportImageList = ImageList_Create(ParamsInfo.SxSmIcon,
-                                                ParamsInfo.SySmIcon,
-                                                ILC_MASK | ParamsInfo.SysColorDepth,
-                                                1, 1);
-            AddTreeViewItems(hTree, RootCategoryList, TVI_ROOT);
-            TreeView_SetImageList(hTree, hReportImageList, LVSIL_NORMAL);
-
-            /* Checkbox'es */
-            SetCheckStateTreeView(hTree, RootCategoryList);
-
-            /* Set icons for buttons */
-            hCheckAllIcon = (HICON)LoadImage(hIconsInst,
-                                             MAKEINTRESOURCE(IDI_CHECK_ALL),
-                                             IMAGE_ICON,
-                                             ParamsInfo.SxSmIcon,
-                                             ParamsInfo.SySmIcon,
-                                             LR_DEFAULTCOLOR);
-            SendMessage(GetDlgItem(hDlg, IDC_SELECT_ALL),
-                        BM_SETIMAGE, IMAGE_ICON, (LPARAM)hCheckAllIcon);
-
-            hUnCheckAllIcon = (HICON)LoadImage(hIconsInst,
-                                               MAKEINTRESOURCE(IDI_UNCHECK_ALL),
-                                               IMAGE_ICON,
-                                               ParamsInfo.SxSmIcon,
-                                               ParamsInfo.SySmIcon,
-                                               LR_DEFAULTCOLOR);
-            SendMessage(GetDlgItem(hDlg, IDC_UNSELECT_ALL),
-                        BM_SETIMAGE, IMAGE_ICON, (LPARAM)hUnCheckAllIcon);
-
-            /* Set default file path */
-            if (SafeStrLen(SettingsInfo.szReportPath) == 0)
-            {
-                WCHAR szExt[MAX_STR_LEN];
-
-                SHGetSpecialFolderPath(hDlg,
-                                       SettingsInfo.szReportPath,
-                                       CSIDL_MYDOCUMENTS, FALSE);
-
-                dwSize = MAX_PATH;
-                GetComputerName(szFileName, &dwSize);
-
-                StringCbCat(SettingsInfo.szReportPath,
-                            sizeof(SettingsInfo.szReportPath), L"\\");
-                StringCbCat(SettingsInfo.szReportPath,
-                            sizeof(SettingsInfo.szReportPath), szFileName);
-
-                GetReportExtById(SettingsInfo.ReportFileType, szExt, sizeof(szExt));
-
-                StringCbCat(SettingsInfo.szReportPath,
-                            sizeof(SettingsInfo.szReportPath), szExt);
-            }
-
-            SetWindowText(GetDlgItem(hDlg, IDC_FILEPATH_EDIT),
-                          SettingsInfo.szReportPath);
-
-            AddFileTypeToComboBox(hCombo, IDS_TYPE_HTML);
-            AddFileTypeToComboBox(hCombo, IDS_TYPE_TEXT);
-            AddFileTypeToComboBox(hCombo, IDS_TYPE_CSV);
-            //AddFileTypeToComboBox(hCombo, IDS_TYPE_JSON);
-            AddFileTypeToComboBox(hCombo, IDS_TYPE_INI);
-            AddFileTypeToComboBox(hCombo, IDS_TYPE_RTF);
-
-            hUxThemeDLL = LoadLibrary(L"UXTHEME.DLL");
-            if (hUxThemeDLL)
-            {
-                pSetWindowTheme = (PSWT)GetProcAddress(hUxThemeDLL, "SetWindowTheme");
-                if (pSetWindowTheme)
-                {
-                    pSetWindowTheme(hTree, L"Explorer", 0);
-                }
-                FreeLibrary(hUxThemeDLL);
-            }
-
-            SetTimer(hTree, IDT_UPDATE_TIMER, 10, UpdateProc);
+            if (pRect->bottom - pRect->top < 350)
+                pRect->bottom = pRect->top + 350;
         }
         break;
 
-        case WM_CLOSE:
+        case WM_DESTROY:
         {
             SettingsInfo.IsAddContent =
-                (IsDlgButtonChecked(hDlg, IDC_ADD_CONTENT) == BST_CHECKED) ? TRUE : FALSE;
+                (SendMessage(hContent, BM_GETCHECK, 0, 0) == BST_CHECKED) ? TRUE : FALSE;
 
-            RebuildTreeChecks(hTree);
-            GetCheckStateTreeView(hTree, RootCategoryList);
+            RebuildTreeChecks(hReportTree);
+            GetCheckStateTreeView(hReportTree, RootCategoryList);
 
             KillTimer(hMainWnd, IDT_UPDATE_TIMER);
 
             DestroyIcon(hCheckAllIcon);
             DestroyIcon(hUnCheckAllIcon);
 
-            EndDialog(hDlg, LOWORD(wParam));
+            PostQuitMessage(0);
+
+            ShowWindow(hMainWnd, SW_SHOW);
+            BringWindowToTop(hMainWnd);
         }
-        break;
-
-        case WM_COMMAND:
-        {
-            switch (LOWORD(wParam))
-            {
-                case IDC_FILE_TYPE_COMBO:
-                {
-                    if (HIWORD(wParam) == CBN_SELCHANGE)
-                    {
-                        INT Index = SendMessage(hCombo, CB_GETCURSEL, 0, 0);
-                        UINT Data = (UINT)SendMessage(hCombo, CB_GETITEMDATA, Index, 0);
-                        HWND hEdit = GetDlgItem(hDlg, IDC_FILEPATH_EDIT);
-                        WCHAR szPath[MAX_PATH];
-                        WCHAR szExt[MAX_STR_LEN];
-
-                        if (Data == CB_ERR) break;
-
-                        SettingsInfo.ReportFileType = Data;
-
-                        GetReportExtById(Data, szExt, sizeof(szExt));
-
-                        GetWindowText(hEdit, szPath, MAX_PATH);
-                        for (Index = wcslen(szPath); Index > 0; Index--)
-                        {
-                            if (szPath[Index] == L'.')
-                            {
-                                szPath[Index] = L'\0';
-                                break;
-                            }
-                        }
-                        StringCbCat(szPath, sizeof(szPath), szExt);
-                        SetWindowText(hEdit, szPath);
-                        StringCbCopy(SettingsInfo.szReportPath,
-                                     sizeof(SettingsInfo.szReportPath),
-                                     szPath);
-                    }
-                }
-                break;
-
-                case IDC_SELECT_ALL:
-                    SetAllItemsStateTreeView(hTree, TRUE, RootCategoryList);
-                    break;
-
-                case IDC_UNSELECT_ALL:
-                    SetAllItemsStateTreeView(hTree, FALSE, RootCategoryList);
-                    break;
-
-                case IDC_SET_PATH_BTN:
-                {
-                    if (ReportSaveFileDialog(hDlg,
-                                             SettingsInfo.szReportPath,
-                                             sizeof(SettingsInfo.szReportPath)))
-                    {
-                        SetWindowText(GetDlgItem(hDlg, IDC_FILEPATH_EDIT),
-                                      SettingsInfo.szReportPath);
-                    }
-                }
-                break;
-
-                case IDOK:
-                {
-                    SettingsInfo.IsAddContent =
-                        (IsDlgButtonChecked(hDlg, IDC_ADD_CONTENT) == BST_CHECKED) ? TRUE : FALSE;
-
-                    GetCheckStateTreeView(hTree, RootCategoryList);
-
-                    KillTimer(hMainWnd, IDT_UPDATE_TIMER);
-
-                    DestroyIcon(hCheckAllIcon);
-                    DestroyIcon(hUnCheckAllIcon);
-
-                    ReportCreateThread(TRUE, FALSE);
-
-                    EndDialog(hDlg, LOWORD(wParam));
-                }
-                break;
-
-                case IDCANCEL:
-                    PostMessage(hDlg, WM_CLOSE, 0, 0);
-                    break;
-            }
-        }
-        break;
+        return 0;
     }
 
-    return FALSE;
+    return DefWindowProc(hwnd, Msg, wParam, lParam);
+}
+
+VOID
+CreateReportWindow(HWND hParent)
+{
+    WNDCLASSEX WndClass = {0};
+    WCHAR szWindowClass[] = L"ASPIAISREPORT";
+    WCHAR szWindowName[MAX_STR_LEN];
+    HWND hReportWnd;
+    MSG Msg;
+
+    /* Create the window */
+    WndClass.cbSize        = sizeof(WNDCLASSEX);
+    WndClass.lpszClassName = szWindowClass;
+    WndClass.lpfnWndProc   = ReportWindowProc;
+    WndClass.hInstance     = hInstance;
+    WndClass.style         = CS_HREDRAW | CS_VREDRAW;
+    WndClass.hIcon         = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MAINICON));
+    WndClass.hCursor       = LoadCursor(NULL, IDC_ARROW);
+    WndClass.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
+    WndClass.lpszMenuName  = NULL;
+
+    if (RegisterClassEx(&WndClass) == (ATOM)0)
+        return;
+
+    LoadMUIString(IDS_REPORTWND_TITLE, szWindowName, MAX_STR_LEN);
+
+    /* Создаем главное окно программы */
+    hReportWnd = CreateWindowEx(WS_EX_WINDOWEDGE,
+                                szWindowClass,
+                                szWindowName,
+                                WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
+                                22, 16, 357, 440,
+                                hParent, NULL, hInstance, NULL);
+
+    if (!hReportWnd) return;
+
+    /* Show it */
+    ShowWindow(hReportWnd, SW_SHOW);
+    UpdateWindow(hReportWnd);
+
+    /* Hide main window */
+    ShowWindow(hMainWnd, SW_HIDE);
+
+    /* Message Loop */
+    while (GetMessage(&Msg, NULL, 0, 0))
+    {
+        TranslateMessage(&Msg);
+        DispatchMessage(&Msg);
+    }
+
+    UnregisterClass(szWindowClass, hInstance);
 }
