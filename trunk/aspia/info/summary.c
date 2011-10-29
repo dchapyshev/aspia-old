@@ -108,8 +108,10 @@ HardDrivesInfo(VOID)
         {
             StringCbPrintf(szResult,
                            sizeof(szResult),
-                           L"%I64d MB / %I64d MB",
+                           L"%.2f GB (%I64d MB) / %.2f GB (%I64d MB)",
+                           ((DOUBLE)TotalNumberOfFreeBytes.QuadPart / (DOUBLE)(1024 * 1024 * 1024)),
                            (TotalNumberOfFreeBytes.QuadPart / (1024 * 1024)),
+                           ((DOUBLE)TotalNumberOfBytes.QuadPart / (DOUBLE)(1024 * 1024 * 1024)),
                            (TotalNumberOfBytes.QuadPart / (1024 * 1024)));
             IoSetItemText(Index, 1, szResult);
         }
@@ -499,20 +501,23 @@ ShowSummaryInfo(VOID)
     {
         /* Total physical memory */
         Index = IoAddValueName(1, IDS_ALL_MEMORY, 3);
-        StringCbPrintf(szText, sizeof(szText), L"%I64d MB",
-                       (MemStatus.ullTotalPhys / (1024 * 1024)));
+        StringCbPrintf(szText, sizeof(szText), L"%I64d MB (%.2f GB)",
+                       (MemStatus.ullTotalPhys / (1024 * 1024)),
+                       ((DOUBLE)MemStatus.ullTotalPhys / (DOUBLE)(1024 * 1024 * 1024)));
         IoSetItemText(Index, 1, szText);
 
         /* Total physical free memory */
         Index = IoAddValueName(1, IDS_FREE_MEMORY, 3);
-        StringCbPrintf(szText, sizeof(szText), L"%I64d MB",
-                       (MemStatus.ullAvailPhys / (1024 * 1024)));
+        StringCbPrintf(szText, sizeof(szText), L"%I64d MB (%.2f GB)",
+                       (MemStatus.ullAvailPhys / (1024 * 1024)),
+                       ((DOUBLE)MemStatus.ullAvailPhys / (DOUBLE)(1024 * 1024 * 1024)));
         IoSetItemText(Index, 1, szText);
 
         /* Total physical used memory */
         Index = IoAddValueName(1, IDS_USED_MEMORY, 3);
-        StringCbPrintf(szText, sizeof(szText), L"%I64d MB",
-                       ((MemStatus.ullTotalPhys - MemStatus.ullAvailPhys) / (1024 * 1024)));
+        StringCbPrintf(szText, sizeof(szText), L"%I64d MB (%.2f GB)",
+                       ((MemStatus.ullTotalPhys - MemStatus.ullAvailPhys) / (1024 * 1024)),
+                       ((DOUBLE)(MemStatus.ullTotalPhys - MemStatus.ullAvailPhys) / (DOUBLE)(1024 * 1024 * 1024)));
         IoSetItemText(Index, 1, szText);
 
         /* Percent used physical memory */
@@ -525,20 +530,23 @@ ShowSummaryInfo(VOID)
 
         /* Total page file */
         Index = IoAddValueName(1, IDS_TOTAL_PAGINGFILE, 3);
-        StringCbPrintf(szText, sizeof(szText), L"%I64d MB",
-                       (MemStatus.ullTotalPageFile / (1024 * 1024)));
+        StringCbPrintf(szText, sizeof(szText), L"%I64d MB (%.2f GB)",
+                       (MemStatus.ullTotalPageFile / (1024 * 1024)),
+                       ((DOUBLE)MemStatus.ullTotalPageFile / (DOUBLE)(1024 * 1024 * 1024)));
         IoSetItemText(Index, 1, szText);
 
         /* Free page file */
         Index = IoAddValueName(1, IDS_FREE_PAGINGFILE, 3);
-        StringCbPrintf(szText, sizeof(szText), L"%I64d MB",
-                       (MemStatus.ullAvailPageFile / (1024 * 1024)));
+        StringCbPrintf(szText, sizeof(szText), L"%I64d MB (%.2f GB)",
+                       (MemStatus.ullAvailPageFile / (1024 * 1024)),
+                       ((DOUBLE)MemStatus.ullAvailPageFile / (DOUBLE)(1024 * 1024 * 1024)));
         IoSetItemText(Index, 1, szText);
 
         /* Used page file */
         Index = IoAddValueName(1, IDS_USED_PAGINFILE, 3);
-        StringCbPrintf(szText, sizeof(szText), L"%I64d MB",
-                       ((MemStatus.ullTotalPageFile - MemStatus.ullAvailPageFile)/(1024 * 1024)));
+        StringCbPrintf(szText, sizeof(szText), L"%I64d MB (%.2f GB)",
+                       ((MemStatus.ullTotalPageFile - MemStatus.ullAvailPageFile)/(1024 * 1024)),
+                       ((DOUBLE)(MemStatus.ullTotalPageFile - MemStatus.ullAvailPageFile)/(DOUBLE)(1024 * 1024 * 1024)));
         IoSetItemText(Index, 1, szText);
 
         /* Percent used page file */
@@ -551,20 +559,23 @@ ShowSummaryInfo(VOID)
 
         /* Total virtual memory */
         Index = IoAddValueName(1, IDS_TOTAL_VIRUALMEM, 3);
-        StringCbPrintf(szText, sizeof(szText), L"%I64d MB",
-                       (MemStatus.ullTotalVirtual / (1024 * 1024)));
+        StringCbPrintf(szText, sizeof(szText), L"%I64d MB (%.2f GB)",
+                       (MemStatus.ullTotalVirtual / (1024 * 1024)),
+                       ((DOUBLE)MemStatus.ullTotalVirtual / (DOUBLE)(1024 * 1024 * 1024)));
         IoSetItemText(Index, 1, szText);
 
         /* Free virtual memory */
         Index = IoAddValueName(1, IDS_FREE_VIRUALMEM, 3);
-        StringCbPrintf(szText, sizeof(szText), L"%I64d MB",
-                       (MemStatus.ullAvailVirtual / (1024 * 1024)));
+        StringCbPrintf(szText, sizeof(szText), L"%I64d MB (%.2f GB)",
+                       (MemStatus.ullAvailVirtual / (1024 * 1024)),
+                       ((DOUBLE)MemStatus.ullAvailVirtual / (DOUBLE)(1024 * 1024 * 1024)));
         IoSetItemText(Index, 1, szText);
 
         /* Used virtual memory */
         Index = IoAddValueName(1, IDS_USED_VIRTMEM, 3);
-        StringCbPrintf(szText, sizeof(szText), L"%I64d MB",
-                       ((MemStatus.ullTotalVirtual - MemStatus.ullAvailVirtual)/(1024 * 1024)));
+        StringCbPrintf(szText, sizeof(szText), L"%I64d MB (%.2f GB)",
+                       ((MemStatus.ullTotalVirtual - MemStatus.ullAvailVirtual)/(1024 * 1024)),
+                       ((DOUBLE)(MemStatus.ullTotalVirtual - MemStatus.ullAvailVirtual)/(DOUBLE)(1024 * 1024 * 1024)));
         IoSetItemText(Index, 1, szText);
 
         /* Percent used virtual memory */
