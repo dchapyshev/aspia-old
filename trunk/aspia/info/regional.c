@@ -46,7 +46,7 @@ OS_RegionalParamInfo(VOID)
 {
     LCID UserLcid = GetUserDefaultLCID();
     WCHAR szText[MAX_STR_LEN];
-    TIME_ZONE_INFORMATION TimeZone;
+    TIME_ZONE_INFORMATION TimeZone = {0};
     LPWSTR lpszValue;
     DWORD dwRet;
     INT Index;
@@ -57,35 +57,39 @@ OS_RegionalParamInfo(VOID)
     IoAddIcon(IDI_CALENDAR);
     IoAddIcon(IDI_TEXT);
 
-    IoAddHeader(0, IDS_REGION_TIME_ZONE, 1);
     dwRet = GetTimeZoneInformation(&TimeZone);
-    if (dwRet != TIME_ZONE_ID_UNKNOWN)
+    if (dwRet != TIME_ZONE_ID_INVALID)
     {
         LPWSTR szFormat = L"%02d.%02d (day.month) %02d:%02d (hour:minute)";
 
+        IoAddHeader(0, IDS_REGION_TIME_ZONE, 1);
         Index = IoAddValueName(1, IDS_REGION_CUR_TIMEZONE, 1);
         if (dwRet == TIME_ZONE_ID_STANDARD)
             IoSetItemText(Index, 1, TimeZone.StandardName);
         else
             IoSetItemText(Index, 1, TimeZone.DaylightName);
 
-        Index = IoAddValueName(1, IDS_REGION_CHANGE_TO_STD_TIME, 1);
-        StringCbPrintf(szText, sizeof(szText), szFormat,
-                        TimeZone.StandardDate.wDay,
-                        TimeZone.StandardDate.wMonth,
-                        TimeZone.StandardDate.wHour,
-                        TimeZone.StandardDate.wMinute);
-        IoSetItemText(Index, 1, szText);
+        if (dwRet != TIME_ZONE_ID_UNKNOWN)
+        {
+            Index = IoAddValueName(1, IDS_REGION_CHANGE_TO_STD_TIME, 1);
+            StringCbPrintf(szText, sizeof(szText), szFormat,
+                           TimeZone.StandardDate.wDay,
+                           TimeZone.StandardDate.wMonth,
+                           TimeZone.StandardDate.wHour,
+                           TimeZone.StandardDate.wMinute);
+            IoSetItemText(Index, 1, szText);
 
-        Index = IoAddValueName(1, IDS_REGION_CHANGE_TO_DL_TIME, 1);
-        StringCbPrintf(szText, sizeof(szText), szFormat,
-                        TimeZone.DaylightDate.wDay,
-                        TimeZone.DaylightDate.wMonth,
-                        TimeZone.DaylightDate.wHour,
-                        TimeZone.DaylightDate.wMinute);
-        IoSetItemText(Index, 1, szText);
+            Index = IoAddValueName(1, IDS_REGION_CHANGE_TO_DL_TIME, 1);
+            StringCbPrintf(szText, sizeof(szText), szFormat,
+                           TimeZone.DaylightDate.wDay,
+                           TimeZone.DaylightDate.wMonth,
+                           TimeZone.DaylightDate.wHour,
+                           TimeZone.DaylightDate.wMinute);
+            IoSetItemText(Index, 1, szText);
+        }
+
+        IoAddFooter();
     }
-    IoAddFooter();
 
     IoAddHeader(0, IDS_REGION_LANGUAGE, 0);
     AddLocaleInfoString1(0, IDS_REGION_LANG_NAME_NATIVE, LOCALE_SNATIVELANGNAME);
