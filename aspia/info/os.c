@@ -433,6 +433,7 @@ AutorunShowRegPath(HKEY hRootKey, LPWSTR lpszPath)
     WCHAR szName[MAX_PATH], szPath[MAX_PATH];
     DWORD dwIndex, dwSize, dwPathSize;
     INT Index, Count = 0;
+    INT IconIndex;
     HKEY hKey;
 
     if (RegOpenKeyEx(hRootKey,
@@ -462,7 +463,41 @@ AutorunShowRegPath(HKEY hRootKey, LPWSTR lpszPath)
 
         if (SafeStrLen(szName) >= 1)
         {
-            Index = IoAddItem(0, -1, szName);
+            HICON hIcon = NULL;
+            WCHAR szNewPath[MAX_PATH];
+            UINT i;
+
+            if (szPath[0] == L'"')
+            {
+                for (i = 1; i < wcslen(szPath); i++)
+                {
+                    if (szPath[i] == L'"')
+                    {
+                        szNewPath[i - 1] = L'\0';
+                        ExtractIconEx(szNewPath, 0, NULL, &hIcon, 1);
+                        break;
+                    }
+                    szNewPath[i - 1] = szPath[i];
+                }
+            }
+            else
+            {
+                ExtractIconEx(szPath, 0, NULL, &hIcon, 1);
+            }
+
+            if (!hIcon)
+            {
+                IconIndex = IoAddIcon(IDI_APPS);
+            }
+            else
+            {
+                IconIndex = ImageList_AddIcon(hListViewImageList,
+                                              hIcon);
+
+                DestroyIcon(hIcon);
+            }
+
+            Index = IoAddItem(1, IconIndex, szName);
             IoSetItemText(Index, 1, szPath);
             ++Count;
         }
@@ -471,8 +506,9 @@ AutorunShowRegPath(HKEY hRootKey, LPWSTR lpszPath)
 None:
     if (!Count)
     {
+        IconIndex = IoAddIcon(IDI_APPS);
         LoadMUIString(IDS_NONE, szPath, MAX_PATH);
-        Index = IoAddItem(0, -1, szPath);
+        Index = IoAddItem(1, IconIndex, szPath);
         IoSetItemText(Index, 1, L"\0");
     }
 
@@ -541,6 +577,7 @@ AutorunShowFolderContent(LPWSTR lpszPath)
     WCHAR szPath[MAX_PATH], szCmd[MAX_PATH], szFilePath[MAX_PATH];
     WIN32_FIND_DATA FindFileData;
     INT Index, Count = 0;
+    INT IconIndex;
 
     StringCbCopy(szPath, sizeof(szPath), lpszPath);
     StringCbCat(szPath, sizeof(szPath), L"\\*.*");
@@ -553,18 +590,34 @@ AutorunShowFolderContent(LPWSTR lpszPath)
     {
         if (!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
         {
+            HICON hIcon = NULL;
+
             /* HACK */
             if (wcscmp(FindFileData.cFileName, L"desktop.ini") == 0)
                 continue;
-
-            Index = IoAddItem(0, -1, FindFileData.cFileName);
 
             StringCbCopy(szFilePath, sizeof(szFilePath), lpszPath);
             StringCbCat(szFilePath, sizeof(szFilePath), L"\\");
             StringCbCat(szFilePath, sizeof(szFilePath), FindFileData.cFileName);
 
             GetShortcutCommandLine(szFilePath, szCmd, sizeof(szCmd));
+
+            ExtractIconEx(szCmd, 0, NULL, &hIcon, 1);
+            if (hIcon)
+            {
+                IconIndex = ImageList_AddIcon(hListViewImageList,
+                                              hIcon);
+
+                DestroyIcon(hIcon);
+            }
+            else
+            {
+                IconIndex = IoAddIcon(IDI_APPS);
+            }
+
+            Index = IoAddItem(1, IconIndex, FindFileData.cFileName);
             IoSetItemText(Index, 1, szCmd);
+
             ++Count;
         }
     }
@@ -572,8 +625,9 @@ AutorunShowFolderContent(LPWSTR lpszPath)
 
     if (!Count)
     {
+        IconIndex = IoAddIcon(IDI_APPS);
         LoadMUIString(IDS_NONE, szPath, MAX_PATH);
-        Index = IoAddItem(0, -1, szPath);
+        Index = IoAddItem(0, IconIndex, szPath);
         IoSetItemText(Index, 1, L"\0");
     }
 
@@ -584,7 +638,8 @@ VOID
 OS_AutorunInfo(VOID)
 {
     WCHAR szPath[MAX_PATH];
-    INT Index;
+    INT Index, IconIndex;
+    HICON hIcon;
 
     DebugStartReceiving();
 
@@ -672,16 +727,36 @@ OS_AutorunInfo(VOID)
     IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", 0);
 
     /* winlogon shell for all users */
-    Index = IoAddItem(0, -1, L"Shell");
-    GetStringFromRegistry(HKEY_LOCAL_MACHINE,
-                          L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon",
-                          L"Shell",
-                          szPath,
-                          MAX_PATH);
-    IoSetItemText(Index, 1, szPath);
+    if (GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+                              L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon",
+                              L"Shell",
+                              szPath,
+                              MAX_PATH))
+    {
+        ExtractIconEx(szPath, 0, NULL, &hIcon, 1);
+
+        if (hIcon)
+        {
+            IconIndex = ImageList_AddIcon(hListViewImageList, hIcon);
+            DestroyIcon(hIcon);
+        }
+        else
+            IconIndex = IoAddIcon(IDI_APPS);
+
+        Index = IoAddItem(1, IconIndex, L"Shell");
+        IoSetItemText(Index, 1, szPath);
+    }
+    else
+    {
+        IconIndex = IoAddIcon(IDI_APPS);
+        Index = IoAddItem(1, IconIndex, L"Shell");
+        LoadMUIString(IDS_NONE, szPath, MAX_PATH);
+        IoSetItemText(Index, 1, szPath);
+    }
 
     /* winlogon userinit for all users */
-    Index = IoAddItem(0, -1, L"Userinit");
+    IconIndex = IoAddIcon(IDI_APPS);
+    Index = IoAddItem(1, IconIndex, L"Userinit");
     GetStringFromRegistry(HKEY_LOCAL_MACHINE,
                           L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon",
                           L"Userinit",
@@ -695,17 +770,29 @@ OS_AutorunInfo(VOID)
     IoAddHeaderString(0, L"HKCU\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", 0);
 
     /* winlogon shell for current user */
-    Index = IoAddItem(0, -1, L"Shell");
     if (GetStringFromRegistry(HKEY_CURRENT_USER,
                               L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon",
                               L"Shell",
                               szPath,
                               MAX_PATH))
     {
+        ExtractIconEx(szPath, 0, NULL, &hIcon, 1);
+
+        if (hIcon)
+        {
+            IconIndex = ImageList_AddIcon(hListViewImageList, hIcon);
+            DestroyIcon(hIcon);
+        }
+        else
+            IconIndex = IoAddIcon(IDI_APPS);
+
+        Index = IoAddItem(1, IconIndex, L"Shell");
         IoSetItemText(Index, 1, szPath);
     }
     else
     {
+        IconIndex = IoAddIcon(IDI_APPS);
+        Index = IoAddItem(1, IconIndex, L"Shell");
         LoadMUIString(IDS_NONE, szPath, MAX_PATH);
         IoSetItemText(Index, 1, szPath);
     }
