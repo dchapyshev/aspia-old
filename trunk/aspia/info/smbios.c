@@ -1650,9 +1650,12 @@ DMI_EnclosureInfo(VOID)
             IoAddHeader(0, IDS_ENCL_ID, 0);
 
             /* Vendor */
-            Index = IoAddValueName(1, IDS_MANUFACTURER, 0);
             GetStringResourceByID(Buf[0x04], pBuf, szText);
-            IoSetItemText(Index, 1, szText);
+            if (SafeStrLen(szText) > 1)
+            {
+                Index = IoAddValueName(1, IDS_MANUFACTURER, 0);
+                IoSetItemText(Index, 1, szText);
+            }
 
             /* Version */
             GetStringResourceByID(Buf[0x06], pBuf, szText);
@@ -1751,9 +1754,12 @@ DMI_BoardInfo(VOID)
         IoSetItemText(Index, 1, szText);
 
         /* Version */
-        Index = IoAddValueName(1, IDS_VERSION, 0);
         GetStringResourceByID(Buf[0x06], pBuf, szText);
-        IoSetItemText(Index, 1, szText);
+        if (SafeStrLen(szText) > 1)
+        {
+            Index = IoAddValueName(1, IDS_VERSION, 0);
+            IoSetItemText(Index, 1, szText);
+        }
 
         /* Serial number */
         GetStringResourceByID(Buf[0x07], pBuf, szText);
@@ -2032,6 +2038,7 @@ DMI_OnboardInfo(VOID)
         do
         {
             GetStringResourceByID(Buf[5 + 2 * (Count - 1)], pBuf, szText);
+            ChopSpaces(szText, sizeof(szText));
             IoAddHeaderString(0, szText, 0);
 
             Type = Buf[4 + 2 * (Count - 1)];
@@ -2093,8 +2100,6 @@ DMI_BatteryInfo(VOID)
     if (!IsSmBiosWorks()) return;
     IoAddIcon(IDI_BATTERY);
 
-    IoAddHeader(0, IDS_BAT_BATTERYS, 0);
-
     do
     {
         Len = MAX_DATA;
@@ -2108,6 +2113,8 @@ DMI_BatteryInfo(VOID)
 
         if (IsFound)
         {
+            if (Count == 1) IoAddHeader(0, IDS_BAT_BATTERYS, 0);
+
             /* Location */
             Index = IoAddValueName(1, IDS_DMI_BATTERY_LOCATION, 0);
             GetStringResourceByID(Buf[0x04], pBuf, szText);
@@ -2186,7 +2193,7 @@ DMI_BatteryInfo(VOID)
     }
     while (IsFound);
 
-    AddDMIFooter();
+    if (Count) AddDMIFooter();
 
     DebugEndReceiving();
 }
