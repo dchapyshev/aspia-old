@@ -60,17 +60,17 @@ OS_RegionalParamInfo(VOID)
     dwRet = GetTimeZoneInformation(&TimeZone);
     if (dwRet != TIME_ZONE_ID_INVALID)
     {
-        LPWSTR szFormat = L"%02d.%02d (day.month) %02d:%02d (hour:minute)";
-
         IoAddHeader(0, IDS_REGION_TIME_ZONE, 1);
         Index = IoAddValueName(1, IDS_REGION_CUR_TIMEZONE, 1);
-        if (dwRet == TIME_ZONE_ID_STANDARD)
-            IoSetItemText(Index, 1, TimeZone.StandardName);
-        else
+        if (dwRet == TIME_ZONE_ID_DAYLIGHT)
             IoSetItemText(Index, 1, TimeZone.DaylightName);
+        else
+            IoSetItemText(Index, 1, TimeZone.StandardName);
 
         if (dwRet != TIME_ZONE_ID_UNKNOWN)
         {
+            LPWSTR szFormat = L"%02d.%02d (day.month) %02d:%02d (hour:minute)";
+
             Index = IoAddValueName(1, IDS_REGION_CHANGE_TO_STD_TIME, 1);
             StringCbPrintf(szText, sizeof(szText), szFormat,
                            TimeZone.StandardDate.wDay,
