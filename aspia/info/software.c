@@ -345,6 +345,53 @@ InsertKeySep(LPWSTR szIn, LPWSTR szOut)
 }
 
 VOID
+GetVMWareLicenses(VOID)
+{
+    WCHAR szKeyName[MAX_PATH], szSerial[MAX_PATH];
+    DWORD dwType, dwSize = MAX_PATH;
+    INT Index, ItemIndex = 0;
+    HKEY hKey, hSubKey;
+
+    if (RegOpenKey(HKEY_LOCAL_MACHINE,
+                   L"Software\\VMware, Inc.\\VMware Workstation",
+                   &hKey) != ERROR_SUCCESS)
+    {
+        return;
+    }
+
+    while (RegEnumKeyEx(hKey, ItemIndex, szKeyName, &dwSize,
+           NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+    {
+        if (RegOpenKey(hKey, szKeyName, &hSubKey) == ERROR_SUCCESS)
+        {
+            if (wcsncmp(szKeyName, L"License.ws.", 11) == 0)
+            {
+                dwType = REG_SZ;
+                dwSize = MAX_PATH;
+
+                if (RegQueryValueEx(hSubKey,
+                                    L"Serial",
+                                    NULL,
+                                    &dwType,
+                                    (LPBYTE)szSerial,
+                                    &dwSize) == ERROR_SUCCESS)
+                {
+                    Index = IoAddItem(0, 0, L"VMWare Workstation");
+                    IoSetItemText(Index, 1, szSerial);
+                }
+            }
+
+            RegCloseKey(hSubKey);
+        }
+
+        dwSize = MAX_PATH;
+        ++ItemIndex;
+    }
+
+    RegCloseKey(hKey);
+}
+
+VOID
 SOFTWARE_LicensesInfo(VOID)
 {
     WCHAR szText[MAX_STR_LEN], szTemp[MAX_STR_LEN];
@@ -461,6 +508,8 @@ SOFTWARE_LicensesInfo(VOID)
         Index = IoAddItem(0, 0, L"Microsoft Visual Studio 2005");
         IoSetItemText(Index, 1, szText);
     }
+
+    GetVMWareLicenses();
 
     DebugEndReceiving();
 }
