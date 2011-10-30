@@ -142,7 +142,7 @@ STYLE DS_SHELLFONT | DS_CONTROL | WS_CHILD | WS_CLIPCHILDREN
 FONT 8, "MS Shell Dlg"
 BEGIN
     AUTOCHECKBOX "Start minimized to tray", IDC_START_MINIMIZED, 20, 8, 119, 8
-    AUTOCHECKBOX "Show programm icon in tray", IDC_SHOW_PROG_ICON, 20, 23, 127, 8
+    AUTOCHECKBOX "Show program icon in tray", IDC_SHOW_PROG_ICON, 20, 23, 127, 8
     AUTOCHECKBOX "Show sensor icons in tray:", IDC_SHOW_SENSOR_ICON, 20, 38, 123, 8
     CONTROL "", IDC_SENSOR_ICON_LIST, "SysListView32", LVS_REPORT | LVS_SORTASCENDING | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP, 11, 55, 199, 64
 
@@ -448,7 +448,7 @@ BEGIN
 
     IDS_BAT_ID, "Battery ID"
     IDS_BAT_TYPE, "Battery Type"
-    IDS_BAT_CAPACITY, "Disigned Capacity"
+    IDS_BAT_CAPACITY, "Designed Capacity"
     IDS_BAT_FULL_CAPACITY, "Fully Charged Capacity"
     IDS_BAT_CURRENT_CAPACITY, "Current Capacity"
     IDS_BAT_VOLTAGE, "Voltage"
@@ -954,7 +954,7 @@ BEGIN
     IDS_CAT_SYSFILES_SYS, "SYS Files"
     IDS_CAT_SYSFILES_KNOWN, "Known DLLs"
     IDS_CAT_OS_AUTORUN, "Startup"
-    IDS_CAT_OS_ENVIRON, "Environment Vatiables"
+    IDS_CAT_OS_ENVIRON, "Environment Variables"
     IDS_CAT_OS_SYSFOLDERS, "System Folders"
 
     IDS_ABOUT_STRING, "Aspia is free software released under GNU LGPL license.\r\n\
