@@ -275,18 +275,22 @@ ShowPrintersInfo(VOID)
     dwSize = MAX_STR_LEN;
     GetDefaultPrinter(szDefPrinter, &dwSize);
 
-    for (dwIndex = 0; dwIndex < cReturned; ++dwIndex)
+    for (dwIndex = 0; dwIndex < cReturned; dwIndex++)
     {
         /* Printer name */
         Index = IoAddItem(1, 6, pPrinterInfo[dwIndex].pPrinterName);
 
         /* Paper size */
-        StringCbPrintf(szText, sizeof(szText), L"%ld x %ld mm (%ld x %ld dpi)",
-                       pPrinterInfo[dwIndex].pDevMode->dmPaperWidth / 10,
-                       pPrinterInfo[dwIndex].pDevMode->dmPaperLength / 10,
-                       pPrinterInfo[dwIndex].pDevMode->dmPrintQuality,
-                       pPrinterInfo[dwIndex].pDevMode->dmPrintQuality);
-        IoSetItemText(Index, 1, szText);
+        if (pPrinterInfo[dwIndex].pDevMode)
+        {
+            StringCbPrintf(szText, sizeof(szText),
+                           L"%ld x %ld mm (%ld x %ld dpi)",
+                           pPrinterInfo[dwIndex].pDevMode->dmPaperWidth / 10,
+                           pPrinterInfo[dwIndex].pDevMode->dmPaperLength / 10,
+                           pPrinterInfo[dwIndex].pDevMode->dmPrintQuality,
+                           pPrinterInfo[dwIndex].pDevMode->dmPrintQuality);
+            IoSetItemText(Index, 1, szText);
+        }
     }
 
     Free(pPrinterInfo);

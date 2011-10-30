@@ -921,8 +921,11 @@ EnumPrintersInfo(DWORD dwFlag)
         }
 
         /* Device name */
-        Index = IoAddValueName(1, IDS_PRINTER_DEVICENAME, 0);
-        IoSetItemText(Index, 1, pDevMode->dmDeviceName);
+        if (SafeStrLen(pDevMode->dmDeviceName) > 1)
+        {
+            Index = IoAddValueName(1, IDS_PRINTER_DEVICENAME, 0);
+            IoSetItemText(Index, 1, pDevMode->dmDeviceName);
+        }
 
         /* Print processor */
         if (SafeStrLen(pPrinterInfo[dwIndex].pPrintProcessor) > 1)
@@ -966,28 +969,31 @@ EnumPrintersInfo(DWORD dwFlag)
                        pPrinterInfo[dwIndex].cJobs);
         IoSetItemText(Index, 1, szText);
 
-        /* Paper size */
-        Index = IoAddValueName(1, IDS_PRINTER_PAPER_SIZE, 0);
-        StringCbPrintf(szText, sizeof(szText), L"%ld x %ld mm",
-                       pDevMode->dmPaperWidth / 10,
-                       pDevMode->dmPaperLength / 10);
-        IoSetItemText(Index, 1, szText);
+        if (pDevMode)
+        {
+            /* Paper size */
+            Index = IoAddValueName(1, IDS_PRINTER_PAPER_SIZE, 0);
+            StringCbPrintf(szText, sizeof(szText), L"%ld x %ld mm",
+                           pDevMode->dmPaperWidth / 10,
+                           pDevMode->dmPaperLength / 10);
+            IoSetItemText(Index, 1, szText);
 
-        /* Quality */
-        Index = IoAddValueName(1, IDS_PRINTER_QUALITY, 0);
-        StringCbPrintf(szText, sizeof(szText), L"%ld x %ld dpi",
-                       pDevMode->dmPrintQuality,
-                       pDevMode->dmPrintQuality);
-        IoSetItemText(Index, 1, szText);
+            /* Quality */
+            Index = IoAddValueName(1, IDS_PRINTER_QUALITY, 0);
+            StringCbPrintf(szText, sizeof(szText), L"%ld x %ld dpi",
+                           pDevMode->dmPrintQuality,
+                           pDevMode->dmPrintQuality);
+            IoSetItemText(Index, 1, szText);
 
-        /* Orientation */
-        Index = IoAddValueName(1, IDS_PRINTER_ORIENTATION, 0);
-        if (pDevMode->dmOrientation == DMORIENT_PORTRAIT)
-            LoadMUIString(IDS_PRINTER_PORTRAIT, szText, MAX_STR_LEN);
-        else
-            LoadMUIString(IDS_PRINTER_LANDSCAPE, szText, MAX_STR_LEN);
+            /* Orientation */
+            Index = IoAddValueName(1, IDS_PRINTER_ORIENTATION, 0);
+            if (pDevMode->dmOrientation == DMORIENT_PORTRAIT)
+                LoadMUIString(IDS_PRINTER_PORTRAIT, szText, MAX_STR_LEN);
+            else
+                LoadMUIString(IDS_PRINTER_LANDSCAPE, szText, MAX_STR_LEN);
 
-        IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, szText);
+        }
 
         IoAddFooter();
 
