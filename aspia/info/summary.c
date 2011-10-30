@@ -219,6 +219,7 @@ ShowMonitorsInfo(VOID)
                 StringCbPrintf(szText, sizeof(szText), L"%s (NoDB)", szDeviceName);
             }
 
+            if (DeviceIndex == 1) IoAddHeader(0, IDS_CAT_HW_MONITOR, 5);
             ItemIndex = IoAddItem(1, 5, szText);
 
             Block = Edid + DETAILED_TIMING_DESCRIPTIONS_START;
@@ -239,6 +240,8 @@ ShowMonitorsInfo(VOID)
     }
 
     SetupDiDestroyDeviceInfoList(hDevInfo);
+
+    if (DeviceIndex) IoAddFooter();
 }
 
 static VOID
@@ -484,9 +487,7 @@ ShowSummaryInfo(VOID)
     IoAddFooter();
 
     /* Monitors */
-    IoAddHeader(0, IDS_CAT_HW_MONITOR, 5);
     ShowMonitorsInfo();
-    IoAddFooter();
 
     /* Printers */
     IoAddHeader(0, IDS_CAT_HW_PRINTERS, 6);
