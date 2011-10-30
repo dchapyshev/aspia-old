@@ -429,12 +429,17 @@ SOFTWARE_LicensesInfo(VOID)
     }
 
     /* Office 2003 Key */
-    if (GetMSProductKey(FALSE,
-                        "SOFTWARE\\Microsoft\\Office\\11.0\\Registration\\{90170409-6000-11D3-8CFE-0150048383C9}",
-                        szText, sizeof(szText)/sizeof(WCHAR)))
+    if (!GetMSProductKey(FALSE,
+                         "SOFTWARE\\Microsoft\\Office\\11.0\\Registration\\{90170409-6000-11D3-8CFE-0150048383C9}",
+                         szText, sizeof(szText)/sizeof(WCHAR)))
     {
-        Index = IoAddItem(0, 0, L"Microsoft Office 2003");
-        IoSetItemText(Index, 1, szText);
+        if (GetMSProductKey(FALSE,
+               "SOFTWARE\\Microsoft\\Office\\11.0\\Registration\\{90110419-6000-11D3-8CFE-0150048383C9}",
+               szText, sizeof(szText)/sizeof(WCHAR)))
+        {
+            Index = IoAddItem(0, 0, L"Microsoft Office 2003");
+            IoSetItemText(Index, 1, szText);
+        }
     }
 
     /* Office XP Key */
