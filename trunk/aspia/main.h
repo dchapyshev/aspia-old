@@ -493,6 +493,9 @@ VOID DebugWriteLog(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, ...);
 #define DebugEndReceiving() DebugTrace(L"End data receiving")
 #define DebugAllocFailed() DebugTrace(L"Alloc() failed")
 
+/* lpc.c */
+VOID GetLPCSensorsInfo(VOID);
+
 /* sysmon.c */
 VOID CreateSysMonWindow(HWND hParentWnd);
 

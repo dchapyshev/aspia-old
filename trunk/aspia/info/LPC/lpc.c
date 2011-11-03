@@ -441,7 +441,7 @@ DetectIT87(BYTE bRegisterPort,
 }
 
 VOID
-LPC_GetChipType(VOID)
+GetLPCSensorsInfo(VOID)
 {
     WORD wChipType, wAddress, wGPIOAddress;
     BYTE bVersion;
