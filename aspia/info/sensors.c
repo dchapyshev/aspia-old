@@ -182,6 +182,8 @@ GetIntelCpuInfo(VOID)
                        bIndex + 1, Tjmax, Temp, Tjmax - Temp);
             ++bIndex;
         }
+
+        IoAddFooter();
     }
 }
 
@@ -216,6 +218,8 @@ GetAmd10CpuInfo(VOID)
                        L"%d °C",
                        ((ThermValue >> 21) & 0x7FF) / 8);
         IoSetItemText(Index, 1, szText);
+
+        IoAddFooter();
     }
 }
 
@@ -277,6 +281,8 @@ GetAmd0FCpuInfo(VOID)
                            ((ThermValue >> 16) & 0xFF) + Offset);
             IoSetItemText(Index, 1, szText);
         }
+
+        IoAddFooter();
     }
 }
 
@@ -293,6 +299,7 @@ HW_SensorInfo(VOID)
 
     IoAddIcon(IDI_HDD);
     IoAddIcon(IDI_CPU);
+    IoAddIcon(IDI_HW);
 
     /* Hard Drives */
     for (bIndex = 0; bIndex <= 32; ++bIndex)
@@ -302,6 +309,10 @@ HW_SensorInfo(VOID)
 
         if (SMART_ReadDriveInformation(hHandle, bIndex, &DriveInfo))
         {
+            DWORD dwTemp = SMART_GetHDDTemperature(hHandle, bIndex);
+
+            if (dwTemp == 0) continue;
+
             ChangeByteOrder((PCHAR)DriveInfo.sModelNumber,
                             sizeof(DriveInfo.sModelNumber));
             StringCbPrintf(szText, sizeof(szText),
@@ -311,7 +322,7 @@ HW_SensorInfo(VOID)
 
             StringCbPrintf(szText, sizeof(szText),
                            L"%ld °C",
-                           SMART_GetHDDTemperature(hHandle, bIndex));
+                           dwTemp);
 
             Index = IoAddValueName(1, IDS_SENSOR_TEMPERATURE, 0);
             IoSetItemText(Index, 1, szText);
@@ -343,6 +354,8 @@ HW_SensorInfo(VOID)
                 break;
         }*/
     }
+
+    GetLPCSensorsInfo();
 
     DebugEndReceiving();
 }
