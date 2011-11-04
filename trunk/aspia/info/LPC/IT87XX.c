@@ -160,11 +160,23 @@ IT87XX_GetInfo(WORD wChipType,
         {
             DebugTrace(L"Voltage[%d] = %f", i, fValue);
 
-            StringCbPrintf(szText, sizeof(szText), L"Voltage #%d", i + 1);
-            ItemIndex = IoAddItem(1, 2, szText);
+            if (SafeStrLen(LpcVoltageDesc[i].szDesc) > 0)
+            {
+                ItemIndex = IoAddItem(1, 2, LpcVoltageDesc[i].szDesc);
 
-            StringCbPrintf(szText, sizeof(szText), L"%.3f", fValue);
-            IoSetItemText(ItemIndex, 1, szText);
+                /* Voltage = value + (value - Vf) * Ri / Rf */
+                StringCbPrintf(szText, sizeof(szText), L"%.3f V",
+                    fValue + (fValue - 0) * LpcVoltageDesc[i].ri / LpcVoltageDesc[i].rf);
+                IoSetItemText(ItemIndex, 1, szText);
+            }
+            else
+            {
+                StringCbPrintf(szText, sizeof(szText), L"Voltage #%d", i + 1);
+                ItemIndex = IoAddItem(1, 2, szText);
+
+                StringCbPrintf(szText, sizeof(szText), L"%.3f V", fValue);
+                IoSetItemText(ItemIndex, 1, szText);
+            }
         }
     }
 
@@ -178,10 +190,17 @@ IT87XX_GetInfo(WORD wChipType,
         {
             DebugTrace(L"Temperature[%d] = %d", i, bValue);
 
-            StringCbPrintf(szText, sizeof(szText), L"Temperature #%d", i + 1);
-            ItemIndex = IoAddItem(1, 2, szText);
+            if (SafeStrLen(szLpcTempDesc[i]) > 0)
+            {
+                ItemIndex = IoAddItem(1, 2, szLpcTempDesc[i]);
+            }
+            else
+            {
+                StringCbPrintf(szText, sizeof(szText), L"Temperature #%d", i + 1);
+                ItemIndex = IoAddItem(1, 2, szText);
+            }
 
-            StringCbPrintf(szText, sizeof(szText), L"%d", bValue);
+            StringCbPrintf(szText, sizeof(szText), L"%d °C", bValue);
             IoSetItemText(ItemIndex, 1, szText);
         }
     }
@@ -206,10 +225,17 @@ IT87XX_GetInfo(WORD wChipType,
 
                 if (tmp > 0)
                 {
-                    StringCbPrintf(szText, sizeof(szText), L"Fans #%d", i + 1);
-                    ItemIndex = IoAddItem(1, 2, szText);
+                    if (SafeStrLen(szLpcFanDesc[i]) > 0)
+                    {
+                        ItemIndex = IoAddItem(1, 2, szLpcFanDesc[i]);
+                    }
+                    else
+                    {
+                        StringCbPrintf(szText, sizeof(szText), L"Fans #%d", i + 1);
+                        ItemIndex = IoAddItem(1, 2, szText);
+                    }
 
-                    StringCbPrintf(szText, sizeof(szText), L"%.0f", tmp);
+                    StringCbPrintf(szText, sizeof(szText), L"%.0f RPM", tmp);
                     IoSetItemText(ItemIndex, 1, szText);
                 }
             }
@@ -242,10 +268,17 @@ IT87XX_GetInfo(WORD wChipType,
 
                 if (tmp > 0)
                 {
-                    StringCbPrintf(szText, sizeof(szText), L"Fans #%d", i + 1);
-                    ItemIndex = IoAddItem(1, 2, szText);
+                    if (SafeStrLen(szLpcFanDesc[i]) > 0)
+                    {
+                        ItemIndex = IoAddItem(1, 2, szLpcFanDesc[i]);
+                    }
+                    else
+                    {
+                        StringCbPrintf(szText, sizeof(szText), L"Fans #%d", i + 1);
+                        ItemIndex = IoAddItem(1, 2, szText);
+                    }
 
-                    StringCbPrintf(szText, sizeof(szText), L"%f", tmp);
+                    StringCbPrintf(szText, sizeof(szText), L"%.0f RPM", tmp);
                     IoSetItemText(ItemIndex, 1, szText);
                 }
             }
