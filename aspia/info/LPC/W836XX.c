@@ -77,15 +77,20 @@ IsWinbondVendor(WORD address)
 VOID
 W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
 {
+    WCHAR szText[MAX_STR_LEN];
     BOOL peciTemperature[3];
     BYTE voltageRegister[10] = {0};
     BYTE voltageBank[10] = {0};
-    INT iMaxVoltages, iMaxFans, i, value;
+    INT iMaxVoltages = 0, iMaxFans = 0, i, value;
     FLOAT fvalue, voltageGain = 0.008f;
     DWORD newBits, bits;
+    INT ItemIndex;
 
     if (!IsWinbondVendor(address))
         return;
+
+    LPC_ChipTypeToText(wChipType, szText, sizeof(szText));
+    IoAddItem(0, 2, szText);
 
     switch (wChipType)
     {
@@ -204,6 +209,12 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
             if (fvalue > 0)
             {
                 DebugTrace(L"Voltages[%d] = %f", i, fvalue);
+
+                StringCbPrintf(szText, sizeof(szText), L"Voltage #%d", i + 1);
+                ItemIndex = IoAddItem(1, 2, szText);
+
+                StringCbPrintf(szText, sizeof(szText), L"%.3f V", fvalue);
+                IoSetItemText(ItemIndex, 1, szText);
             }
         }
         else
@@ -215,8 +226,15 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
 
             if (valid)
             {
-                fvalue = voltageGain * W836XX_ReadByte(address, 5, VOLTAGE_VBAT_REG);
-                DebugTrace(L"Voltages[%d] = %f", i, fvalue);
+                BYTE tmp = W836XX_ReadByte(address, 5, VOLTAGE_VBAT_REG);
+
+                fvalue = voltageGain * tmp;
+                DebugTrace(L"Voltages[%d] = %f, voltageGain = %f, tmp = %d", i, fvalue, voltageGain, tmp);
+
+                ItemIndex = IoAddItem(1, 2, L"Battery Voltage");
+
+                StringCbPrintf(szText, sizeof(szText), L"%.3f V", fvalue);
+                IoSetItemText(ItemIndex, 1, szText);
             }
         }
     }
@@ -235,6 +253,12 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
         if (temp <= 125 && temp >= -55 && !peciTemperature[i])
         {
             DebugTrace(L"Temperatures[%d] = %f", i, temp);
+
+            StringCbPrintf(szText, sizeof(szText), L"Temperature #%d", i + 1);
+            ItemIndex = IoAddItem(1, 2, szText);
+
+            StringCbPrintf(szText, sizeof(szText), L"%.2f °C", temp);
+            IoSetItemText(ItemIndex, 1, szText);
         }
     }
 
@@ -260,6 +284,12 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
         fvalue = (count < 0xff) ? 1.35e6f / (count * divisor) : 0;
 
         DebugTrace(L"Fans[%d] = %f", i, fvalue);
+
+        StringCbPrintf(szText, sizeof(szText), L"Fans #%d", i + 1);
+        ItemIndex = IoAddItem(1, 2, szText);
+
+        StringCbPrintf(szText, sizeof(szText), L"%.0f RPM", fvalue);
+        IoSetItemText(ItemIndex, 1, szText);
 
         /* update fan divisor */
         if (count > 192 && divisorBits < 7)

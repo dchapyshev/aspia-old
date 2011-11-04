@@ -480,6 +480,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\info\LPC\mainboards.c"
+						>
+					</File>
+					<File
 						RelativePath=".\info\LPC\NCT677X.c"
 						>
 					</File>

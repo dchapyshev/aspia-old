@@ -451,6 +451,7 @@ GetLPCSensorsInfo(VOID)
         DebugTrace(L"RegPort = 0x2E, ValPort = 0x2F, wChipType = 0x%x, wAddress = 0x%x",
                    wChipType, wAddress);
 
+        LPC_MainboardInfoInit(wChipType);
         W836XX_GetInfo(wChipType, 0, wAddress);
     }
 
@@ -459,6 +460,7 @@ GetLPCSensorsInfo(VOID)
         DebugTrace(L"RegPort = 0x4E, ValPort = 0x4F, wChipType = 0x%x, wAddress = 0x%x",
                    wChipType, wAddress);
 
+        LPC_MainboardInfoInit(wChipType);
         W836XX_GetInfo(wChipType, 0, wAddress);
     }
 
@@ -467,6 +469,7 @@ GetLPCSensorsInfo(VOID)
         DebugTrace(L"RegPort = 0x2E, ValPort = 0x2F, wChipType = 0x%x, wAddress = 0z%x, wGPIOAddress = 0x%x, bVersion = 0x%x",
                    wChipType, wAddress, wGPIOAddress, bVersion);
 
+        LPC_MainboardInfoInit(wChipType);
         IT87XX_GetInfo(wChipType,
                        wAddress,
                        wGPIOAddress,
@@ -478,6 +481,7 @@ GetLPCSensorsInfo(VOID)
         DebugTrace(L"RegPort = 0x2E, ValPort = 0x2F, wChipType = 0x%x, wAddress = 0x%x, wGPIOAddress = 0x%x, bVersion = 0x%x",
                    wChipType, wAddress, wGPIOAddress, bVersion);
 
+        LPC_MainboardInfoInit(wChipType);
         IT87XX_GetInfo(wChipType,
                        wAddress,
                        wGPIOAddress,
