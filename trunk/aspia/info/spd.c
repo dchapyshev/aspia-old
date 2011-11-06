@@ -667,32 +667,9 @@ GetSpdModuleType(BYTE *Spd, LPWSTR lpszString, SIZE_T Size)
     StringCbCopy(lpszString, Size, L"Unknown");
 }
 
-BOOL
-IsBadSpdData(BYTE *Spd)
-{
-    SIZE_T Index;
-
-    for (Index = 0x40; Index < 0x80; Index++)
-    {
-        if (Spd[Index] == 0xff)
-            return TRUE;
-    }
-
-    if (Spd[0x00] != 0x80)
-        return TRUE;
-
-    return FALSE;
-}
-
 VOID
 ShowSpdData(BYTE *Spd)
 {
-    if (IsBadSpdData(Spd))
-    {
-        DebugTrace(L"Bad SPD data");
-        return;
-    }
-
     switch (Spd[0x02])
     {
         case 0x06: /* DDR SGRAM */

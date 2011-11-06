@@ -426,6 +426,32 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
             switch (data->code)
             {
+                case NM_CUSTOMDRAW:
+                {
+                    NMLVCUSTOMDRAW *nmlvcd = (NMLVCUSTOMDRAW*)lParam;
+
+                    if (data->hwndFrom != hListView) break;
+
+                    if (nmlvcd->nmcd.dwDrawStage == CDDS_PREPAINT)
+                    {
+                        return CDRF_NOTIFYITEMDRAW;
+                    }
+                    else if (nmlvcd->nmcd.dwDrawStage == CDDS_ITEMPREPAINT)
+                    {
+                        if (nmlvcd->nmcd.dwItemSpec & 1)
+                        {
+                            nmlvcd->clrTextBk = 0xF3F3F3;
+                            return CDRF_NEWFONT;
+                        }
+                        else
+                        {
+                            nmlvcd->clrTextBk = 0xFFFFFF;
+                            return CDRF_NEWFONT;
+                        }
+                    }
+                }
+                break;
+
                 case NM_RCLICK:
                 {
                     if (data->hwndFrom == hListView)
