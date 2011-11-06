@@ -11,9 +11,11 @@
 
 #define ATK0110    0x0110
 
+#define F71805F    0x0406
 #define F71858     0x0507
 #define F71862     0x0601
 #define F71869     0x0814
+#define F71872F    0x0341
 #define F71882     0x0541
 #define F71889AD   0x1005
 #define F71889ED   0x0909
@@ -125,6 +127,8 @@ VOID IT87XX_GetInfo(WORD wChipType, WORD wAddress, WORD wGPIOAddress, BYTE bVers
 #define Z68X_UD7_B3           0x0034
 /* Shuttle */
 #define FH67                  0x0035
+/* EPOX */
+#define _9NPA7I_9NPAI_9NPA7J_9NPAJ_3P 0x0036
 
 typedef struct
 {

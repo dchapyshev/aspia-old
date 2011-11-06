@@ -33,9 +33,11 @@ CHIP_INFO ChipInfo[] =
 {
     { ATK0110,    L"Asus ATK0110" },
 
+    { F71805F,    L"Fintek F71805F" },
     { F71858,     L"Fintek F71858" },
     { F71862,     L"Fintek F71862" },
     { F71869,     L"Fintek F71869" },
+    { F71872F,    L"Fintek F71872F" },
     { F71882,     L"Fintek F71882" },
     { F71889AD,   L"Fintek F71889AD" },
     { F71889ED,   L"Fintek F71889ED" },
@@ -118,15 +120,11 @@ WinbondNuvotonFintekExit(BYTE bRegisterPort)
 
 BOOL
 DetectWinbondFintek(BYTE bRegisterPort,
-                    BYTE bValuePort,
-                    WORD *wChipType,
-                    WORD *wAddress)
+                    BYTE bValuePort)
 {
     BYTE id, rev, devnum = 0;
     WORD verify, vendorID, chip = 0;
-
-    if (!wChipType || !wAddress)
-        return FALSE;
+    WORD wAddress;
 
     WinbondNuvotonFintekEnter(bRegisterPort);
 
@@ -134,8 +132,30 @@ DetectWinbondFintek(BYTE bRegisterPort,
     id = LPC_ReadByte(bRegisterPort, bValuePort, CHIP_ID_REGISTER);
     rev = LPC_ReadByte(bRegisterPort, bValuePort, CHIP_REVISION_REGISTER);
 
+    DebugTrace(L"id = 0x%x; rev = 0x%x", id, rev);
+
     switch (id)
     {
+        case 0x03:
+            switch (rev)
+            {
+                case 0x41:
+                    chip = F71872F;
+                    devnum = FINTEK_HARDWARE_MONITOR_LDN;
+                    break;
+            }
+            break;
+
+        case 0x04:
+            switch (rev)
+            {
+                case 0x06:
+                    chip = F71805F;
+                    devnum = FINTEK_HARDWARE_MONITOR_LDN;
+                    break;
+            }
+            break;
+
         case 0x05:
             switch (rev)
             {
@@ -315,26 +335,64 @@ DetectWinbondFintek(BYTE bRegisterPort,
 
     LPC_Select(bRegisterPort, bValuePort, devnum);
 
-    *wAddress = LPC_ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER);
+    wAddress = LPC_ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER);
     Sleep(1);
     verify = LPC_ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER);
     vendorID = LPC_ReadWord(bRegisterPort, bValuePort, FINTEK_VENDOR_ID_REGISTER);
 
     WinbondNuvotonFintekExit(bRegisterPort);
 
-    if (*wAddress != verify)
+    if (wAddress != verify)
     {
         return FALSE;
     }
 
     /* some Fintek chips have address register offset 0x05 added already */
-    if ((*wAddress & 0x07) == 0x05)
-        *wAddress &= 0xFFF8;
+    if ((wAddress & 0x07) == 0x05)
+        wAddress &= 0xFFF8;
 
-    if (*wAddress < 0x100 || (*wAddress & 0xF007) != 0)
+    if (wAddress < 0x100 || (wAddress & 0xF007) != 0)
         return FALSE;
 
-    *wChipType = chip;
+    DebugTrace(L"RegPort = 0x%x, ValPort = 0x%x, wChipType = 0x%x, wAddress = 0x%x",
+               bRegisterPort, bValuePort, chip, wAddress);
+
+    LPC_MainboardInfoInit(chip);
+
+    switch (chip)
+    {
+        case W83627DHG:
+        case W83627DHGP:
+        case W83627EHF:
+        case W83627HF:
+        case W83627THF:
+        case W83667HG:
+        case W83667HGB:
+        case W83687THF:
+            W836XX_GetInfo(chip, 0, wAddress);
+            break;
+
+        case F71805F:
+        case F71858:
+        case F71862:
+        case F71869:
+        case F71872F:
+        case F71882:
+        case F71889AD:
+        case F71889ED:
+        case F71889F:
+            F718XX_GetInfo(chip, wAddress);
+            break;
+
+        case NCT6771F:
+        case NCT6776F:
+            NCT677X_GetInfo(chip, rev, wAddress);
+            break;
+
+        default:
+            DebugTrace(L"Unknown chip type!");
+            break;
+    }
 
     return TRUE;
 }
@@ -446,23 +504,8 @@ GetLPCSensorsInfo(VOID)
     WORD wChipType, wAddress, wGPIOAddress;
     BYTE bVersion;
 
-    if (DetectWinbondFintek(0x2E, 0x2F, &wChipType, &wAddress))
-    {
-        DebugTrace(L"RegPort = 0x2E, ValPort = 0x2F, wChipType = 0x%x, wAddress = 0x%x",
-                   wChipType, wAddress);
-
-        LPC_MainboardInfoInit(wChipType);
-        W836XX_GetInfo(wChipType, 0, wAddress);
-    }
-
-    if (DetectWinbondFintek(0x4E, 0x4F, &wChipType, &wAddress))
-    {
-        DebugTrace(L"RegPort = 0x4E, ValPort = 0x4F, wChipType = 0x%x, wAddress = 0x%x",
-                   wChipType, wAddress);
-
-        LPC_MainboardInfoInit(wChipType);
-        W836XX_GetInfo(wChipType, 0, wAddress);
-    }
+    DetectWinbondFintek(0x2E, 0x2F);
+    DetectWinbondFintek(0x4E, 0x4F);
 
     if (DetectIT87(0x2E, 0x2F, &wChipType, &wAddress, &wGPIOAddress, &bVersion))
     {
