@@ -118,7 +118,7 @@ WinbondNuvotonFintekExit(BYTE bRegisterPort)
     DRIVER_WriteIoPortByte(bRegisterPort, 0xAA);
 }
 
-BOOL
+VOID
 DetectWinbondFintek(BYTE bRegisterPort,
                     BYTE bValuePort)
 {
@@ -330,7 +330,7 @@ DetectWinbondFintek(BYTE bRegisterPort,
         {
             WinbondNuvotonFintekExit(bRegisterPort);
         }
-        return FALSE;
+        return;
     }
 
     LPC_Select(bRegisterPort, bValuePort, devnum);
@@ -342,17 +342,14 @@ DetectWinbondFintek(BYTE bRegisterPort,
 
     WinbondNuvotonFintekExit(bRegisterPort);
 
-    if (wAddress != verify)
-    {
-        return FALSE;
-    }
+    if (wAddress != verify) return;
 
     /* some Fintek chips have address register offset 0x05 added already */
     if ((wAddress & 0x07) == 0x05)
         wAddress &= 0xFFF8;
 
     if (wAddress < 0x100 || (wAddress & 0xF007) != 0)
-        return FALSE;
+        return;
 
     DebugTrace(L"RegPort = 0x%x, ValPort = 0x%x, wChipType = 0x%x, wAddress = 0x%x",
                bRegisterPort, bValuePort, chip, wAddress);
@@ -393,8 +390,6 @@ DetectWinbondFintek(BYTE bRegisterPort,
             DebugTrace(L"Unknown chip type!");
             break;
     }
-
-    return TRUE;
 }
 
 VOID
@@ -413,21 +408,14 @@ IT87Exit(BYTE bRegisterPort, BYTE bValuePort)
     DRIVER_WriteIoPortByte(bValuePort, 0x02);
 }
 
-BOOL
-DetectIT87(BYTE bRegisterPort,
-           BYTE bValuePort,
-           WORD *wChipType,
-           WORD *wAddress,
-           WORD *wGPIOAddress,
-           BYTE *bVersion)
+VOID
+DetectIT87(BYTE bRegisterPort, BYTE bValuePort)
 {
-    WORD id, chip, verify, verifyGPIO;
-
-    if (!wChipType || !wAddress || !wGPIOAddress || !bVersion)
-        return FALSE;
+    WORD id, chip, verify, wAddress;
+    BYTE bVersion;
 
     if (bRegisterPort != 0x2E)
-        return FALSE;
+        return;
 
     IT87Enter(bRegisterPort);
 
@@ -474,60 +462,30 @@ DetectIT87(BYTE bRegisterPort,
 
     LPC_Select(bRegisterPort, bValuePort, IT87_ENVIRONMENT_CONTROLLER_LDN);
 
-    *wAddress = LPC_ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER);
+    wAddress = LPC_ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER);
     Sleep(1);
     verify = LPC_ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER);
 
-    *bVersion = (BYTE)(LPC_ReadByte(bRegisterPort, bValuePort, IT87_CHIP_VERSION_REGISTER) & 0x0F);
-
-    LPC_Select(bRegisterPort, bValuePort, IT87_GPIO_LDN);
-    *wGPIOAddress = LPC_ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER + 2);
-    Sleep(1);
-    verifyGPIO = LPC_ReadWord(bRegisterPort, bValuePort, BASE_ADDRESS_REGISTER + 2);
+    bVersion = (BYTE)(LPC_ReadByte(bRegisterPort, bValuePort, IT87_CHIP_VERSION_REGISTER) & 0x0F);
 
     IT87Exit(bRegisterPort, bValuePort);
 
-    if (*wAddress != verify || *wAddress < 0x100 || (*wAddress & 0xF007) != 0)
-        return FALSE;
+    if (wAddress != verify || wAddress < 0x100 || (wAddress & 0xF007) != 0)
+        return;
 
-    if (*wGPIOAddress != verifyGPIO || *wGPIOAddress < 0x100 || (*wGPIOAddress & 0xF007) != 0)
-        return FALSE;
+    DebugTrace(L"RegPort = 0x2E, ValPort = 0x2F, chip = 0x%x, wAddress = 0x%x, bVersion = 0x%x",
+               chip, wAddress, bVersion);
 
-    *wChipType = chip;
-
-    return TRUE;
+    LPC_MainboardInfoInit(chip);
+    IT87XX_GetInfo(chip, wAddress, bVersion);
 }
 
 VOID
 GetLPCSensorsInfo(VOID)
 {
-    WORD wChipType, wAddress, wGPIOAddress;
-    BYTE bVersion;
-
     DetectWinbondFintek(0x2E, 0x2F);
     DetectWinbondFintek(0x4E, 0x4F);
 
-    if (DetectIT87(0x2E, 0x2F, &wChipType, &wAddress, &wGPIOAddress, &bVersion))
-    {
-        DebugTrace(L"RegPort = 0x2E, ValPort = 0x2F, wChipType = 0x%x, wAddress = 0z%x, wGPIOAddress = 0x%x, bVersion = 0x%x",
-                   wChipType, wAddress, wGPIOAddress, bVersion);
-
-        LPC_MainboardInfoInit(wChipType);
-        IT87XX_GetInfo(wChipType,
-                       wAddress,
-                       wGPIOAddress,
-                       bVersion);
-    }
-
-    if (DetectIT87(0x4E, 0x4F, &wChipType, &wAddress, &wGPIOAddress, &bVersion))
-    {
-        DebugTrace(L"RegPort = 0x2E, ValPort = 0x2F, wChipType = 0x%x, wAddress = 0x%x, wGPIOAddress = 0x%x, bVersion = 0x%x",
-                   wChipType, wAddress, wGPIOAddress, bVersion);
-
-        LPC_MainboardInfoInit(wChipType);
-        IT87XX_GetInfo(wChipType,
-                       wAddress,
-                       wGPIOAddress,
-                       bVersion);
-    }
+    DetectIT87(0x2E, 0x2F);
+    DetectIT87(0x4E, 0x4F);
 }

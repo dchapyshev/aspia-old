@@ -193,10 +193,11 @@ LPC_GetMBModelId(LPWSTR lpModel)
 }
 
 VOID
-InitVItem(INT Index, LPWSTR lpDesc, FLOAT ri, FLOAT rf)
+InitVItem(INT Index, LPWSTR lpDesc, FLOAT ri, FLOAT rf, FLOAT vf)
 {
     LpcVoltageDesc[Index].ri = ri;
     LpcVoltageDesc[Index].rf = rf;
+    LpcVoltageDesc[Index].vf = vf;
     StringCbCopy(LpcVoltageDesc[Index].szDesc,
                  sizeof(LpcVoltageDesc[Index].szDesc),
                  lpDesc);
@@ -254,16 +255,16 @@ LPC_MainboardInfoInit(WORD wChipType)
                     switch (wModelId)
                     {
                         case Crosshair_III_Formula: /* IT8720F */
-                            InitVItem(8, L"VBat", 0.0f, 1.0f);
+                            InitVItem(8, L"VBat", 0.0f, 1.0f, 0.0f);
                             break;
 
                         case M2N_SLI_DELUXE:
-                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                            InitVItem(1, L"+3.3V",     0.0f,  1.0f);
-                            InitVItem(3, L"+5V",       6.8f,  10.0f);
-                            InitVItem(4, L"+12V",      30.0f, 10.0f);
-                            InitVItem(7, L"+5VSB",     6.8f,  10.0f);
-                            InitVItem(8, L"VBat",      0.0f,  1.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"+3.3V",     0.0f,  1.0f, 0.0f);
+                            InitVItem(3, L"+5V",       6.8f,  10.0f, 0.0f);
+                            InitVItem(4, L"+12V",      30.0f, 10.0f, 0.0f);
+                            InitVItem(7, L"+5VSB",     6.8f,  10.0f, 0.0f);
+                            InitVItem(8, L"VBat",      0.0f,  1.0f, 0.0f);
 
                             InitTItem(0, L"CPU");
                             InitTItem(1, L"Motherboard");
@@ -274,8 +275,8 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         case M4A79XTD_EVO: /* IT8720F */
-                            InitVItem(3, L"+5V",  6.8f,  10.0f);
-                            InitVItem(8, L"VBat", 0.0f,  1.0f);
+                            InitVItem(3, L"+5V",  6.8f,  10.0f, 0.0f);
+                            InitVItem(8, L"VBat", 0.0f,  1.0f, 0.0f);
 
                             InitTItem(0, L"CPU");
                             InitTItem(1, L"Motherboard");
@@ -286,12 +287,12 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         case AT3GC_I: /* IT8718F */
-                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                            InitVItem(2, L"+3.3V",     0.0f,  1.0f);
-                            InitVItem(3, L"+5V",       6.8f,  10.0f);
-                            InitVItem(4, L"+12V",      28.0f, 5.0f);
-                            InitVItem(7, L"+5VSB",     6.8f,  10.0f);
-                            InitVItem(8, L"VBat",      0.0f,  1.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"+3.3V",     0.0f,  1.0f, 0.0f);
+                            InitVItem(3, L"+5V",       6.8f,  10.0f, 0.0f);
+                            InitVItem(4, L"+12V",      28.0f, 5.0f, 0.0f);
+                            InitVItem(7, L"+5VSB",     6.8f,  10.0f, 0.0f);
+                            InitVItem(8, L"VBat",      0.0f,  1.0f, 0.0f);
 
                             InitTItem(1, L"Motherboard");
 
@@ -299,8 +300,8 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         default:
-                            InitVItem(0, L"CPU VCore", 0.0f, 1.0f);
-                            InitVItem(8, L"VBat", 0.0f, 1.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f, 1.0f, 0.0f);
+                            InitVItem(8, L"VBat", 0.0f, 1.0f, 0.0f);
                             break;
                     }
                 }
@@ -311,11 +312,11 @@ LPC_MainboardInfoInit(WORD wChipType)
                     switch (wModelId)
                     {
                         case P55_Deluxe: /* IT8720F */
-                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                            InitVItem(2, L"+3.3V",     0.0f,  1.0f);
-                            InitVItem(4, L"+12V",      30.0f, 10.0f);
-                            InitVItem(5, L"+5V",       0.0f,  1.0f);
-                            InitVItem(8, L"VBat",      0.0f,  1.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"+3.3V",     0.0f,  1.0f, 0.0f);
+                            InitVItem(4, L"+12V",      30.0f, 10.0f, 0.0f);
+                            InitVItem(5, L"+5V",       0.0f,  1.0f, 0.0f);
+                            InitVItem(8, L"VBat",      0.0f,  1.0f, 0.0f);
 
                             InitTItem(0, L"CPU");
                             InitTItem(1, L"Motherboard");
@@ -328,8 +329,8 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         default:
-                            InitVItem(0, L"CPU VCore", 0.0f, 1.0f);
-                            InitVItem(8, L"VBat",      0.0f, 1.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f, 1.0f, 0.0f);
+                            InitVItem(8, L"VBat",      0.0f, 1.0f, 0.0f);
                             break;
                     }
                 }
@@ -340,15 +341,15 @@ LPC_MainboardInfoInit(WORD wChipType)
                     switch (wModelId)
                     {
                         case LP_BI_P45_T2RS_Elite: /* IT8718F */
-                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                            InitVItem(1, L"FSB VTT",   0.0f,  1.0f);
-                            InitVItem(2, L"+3.3V",     0.0f,  1.0f);
-                            InitVItem(3, L"+5V",       6.8f,  10.0f);
-                            InitVItem(4, L"+12V",      30.0f, 10.0f);
-                            InitVItem(5, L"NB Core",   0.0f,  1.0f);
-                            InitVItem(6, L"VDIMM",     0.0f,  1.0f);
-                            InitVItem(7, L"+5VSB",     6.8f,  10.0f);
-                            InitVItem(8, L"VBat",      0.0f,  1.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"FSB VTT",   0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"+3.3V",     0.0f,  1.0f, 0.0f);
+                            InitVItem(3, L"+5V",       6.8f,  10.0f, 0.0f);
+                            InitVItem(4, L"+12V",      30.0f, 10.0f, 0.0f);
+                            InitVItem(5, L"NB Core",   0.0f,  1.0f, 0.0f);
+                            InitVItem(6, L"VDIMM",     0.0f,  1.0f, 0.0f);
+                            InitVItem(7, L"+5VSB",     6.8f,  10.0f, 0.0f);
+                            InitVItem(8, L"VBat",      0.0f,  1.0f, 0.0f);
 
                             InitTItem(0, L"CPU");
                             InitTItem(1, L"System");
@@ -356,15 +357,15 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         case LP_DK_P55_T3eH9: /* IT8720F */
-                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                            InitVItem(1, L"VTT",       0.0f,  1.0f);
-                            InitVItem(2, L"+3.3V",     0.0f,  1.0f);
-                            InitVItem(3, L"+5V",       6.8f,  10.0f);
-                            InitVItem(4, L"+12V",      30.0f, 10.0f);
-                            InitVItem(5, L"CPU PLL",   0.0f,  1.0f);
-                            InitVItem(6, L"DRAM",      0.0f,  1.0f);
-                            InitVItem(7, L"+5VSB",     6.8f,  10.0f);
-                            InitVItem(8, L"VBat",      0.0f,  1.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"VTT",       0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"+3.3V",     0.0f,  1.0f, 0.0f);
+                            InitVItem(3, L"+5V",       6.8f,  10.0f, 0.0f);
+                            InitVItem(4, L"+12V",      30.0f, 10.0f, 0.0f);
+                            InitVItem(5, L"CPU PLL",   0.0f,  1.0f, 0.0f);
+                            InitVItem(6, L"DRAM",      0.0f,  1.0f, 0.0f);
+                            InitVItem(7, L"+5VSB",     6.8f,  10.0f, 0.0f);
+                            InitVItem(8, L"VBat",      0.0f,  1.0f, 0.0f);
 
                             InitTItem(0, L"Chipset");
                             InitTItem(1, L"CPU PWM");
@@ -372,14 +373,14 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         default:
-                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                            InitVItem(1, L"VTT",       0.0f,  1.0f);
-                            InitVItem(2, L"+3.3V",     0.0f,  1.0f);
-                            InitVItem(3, L"+5V",       6.8f,  10.0f);
-                            InitVItem(4, L"+12V",      30.0f, 10.0f);
-                            InitVItem(6, L"DRAM",      0.0f,  1.0f);
-                            InitVItem(7, L"+5VSB",     6.8f,  10.0f);
-                            InitVItem(8, L"VBat",      0.0f,  1.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"VTT",       0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"+3.3V",     0.0f,  1.0f, 0.0f);
+                            InitVItem(3, L"+5V",       6.8f,  10.0f, 0.0f);
+                            InitVItem(4, L"+12V",      30.0f, 10.0f, 0.0f);
+                            InitVItem(6, L"DRAM",      0.0f,  1.0f, 0.0f);
+                            InitVItem(7, L"+5VSB",     6.8f,  10.0f, 0.0f);
+                            InitVItem(8, L"VBat",      0.0f,  1.0f, 0.0f);
                             break;
                     }
                 }
@@ -390,12 +391,12 @@ LPC_MainboardInfoInit(WORD wChipType)
                     switch (wModelId)
                     {
                         case _965P_S3: /* IT8718F */
-                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                            InitVItem(1, L"DRAM",      0.0f,  1.0f);
-                            InitVItem(2, L"+3.3V",     0.0f,  1.0f);
-                            InitVItem(3, L"+5V",       6.8f,  10.0f);
-                            InitVItem(7, L"+12V",      27.0f, 9.1f);
-                            InitVItem(8, L"VBat",      0.0f,  1.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"DRAM",      0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"+3.3V",     0.0f,  1.0f, 0.0f);
+                            InitVItem(3, L"+5V",       6.8f,  10.0f, 0.0f);
+                            InitVItem(7, L"+12V",      27.0f, 9.1f, 0.0f);
+                            InitVItem(8, L"VBat",      0.0f,  1.0f, 0.0f);
 
                             InitTItem(0, L"System");
                             InitTItem(1, L"CPU");
@@ -407,12 +408,12 @@ LPC_MainboardInfoInit(WORD wChipType)
                         case EP45_DS3R: /* IT8718F */
                         case EP45_UD3R:
                         case X38_DS5:
-                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                            InitVItem(1, L"DRAM",      0.0f,  1.0f);
-                            InitVItem(2, L"+3.3V",     0.0f,  1.0f);
-                            InitVItem(3, L"+5V",       6.8f,  10.0f);
-                            InitVItem(7, L"+12V",      27.0f, 9.1f);
-                            InitVItem(8, L"VBat",      0.0f,  1.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"DRAM",      0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"+3.3V",     0.0f,  1.0f, 0.0f);
+                            InitVItem(3, L"+5V",       6.8f,  10.0f, 0.0f);
+                            InitVItem(7, L"+12V",      27.0f, 9.1f, 0.0f);
+                            InitVItem(8, L"VBat",      0.0f,  1.0f, 0.0f);
 
                             InitTItem(0, L"System");
                             InitTItem(1, L"CPU");
@@ -424,10 +425,10 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         case EX58_EXTREME: /* IT8720F */
-                            InitVItem(0, L"CPU VCore", 0.0f, 1.0f);
-                            InitVItem(1, L"DRAM",      0.0f, 1.0f);
-                            InitVItem(3, L"+5V",       6.8f, 10.0f);
-                            InitVItem(8, L"VBat",      0.0f, 1.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f, 1.0f, 0.0f);
+                            InitVItem(1, L"DRAM",      0.0f, 1.0f, 0.0f);
+                            InitVItem(3, L"+5V",       6.8f, 10.0f, 0.0f);
+                            InitVItem(8, L"VBat",      0.0f, 1.0f, 0.0f);
 
                             InitTItem(0, L"System");
                             InitTItem(1, L"CPU");
@@ -441,12 +442,12 @@ LPC_MainboardInfoInit(WORD wChipType)
 
                         case P35_DS3: /* IT8718F */
                         case P35_DS3L:
-                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                            InitVItem(1, L"DRAM",      0.0f,  1.0f);
-                            InitVItem(2, L"+3.3V",     0.0f,  1.0f);
-                            InitVItem(3, L"+5V",       6.8f,  10.0f);
-                            InitVItem(7, L"+12V",      27.0f, 9.1f);
-                            InitVItem(8, L"VBat",      0.0f,  1.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"DRAM",      0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"+3.3V",     0.0f,  1.0f, 0.0f);
+                            InitVItem(3, L"+5V",       6.8f,  10.0f, 0.0f);
+                            InitVItem(7, L"+12V",      27.0f, 9.1f, 0.0f);
+                            InitVItem(8, L"VBat",      0.0f,  1.0f, 0.0f);
 
                             InitTItem(0, L"System");
                             InitTItem(1, L"CPU");
@@ -459,12 +460,12 @@ LPC_MainboardInfoInit(WORD wChipType)
 
                         case P55_UD4: /* IT8720F */
                         case P55M_UD4:
-                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                            InitVItem(1, L"DRAM",      0.0f,  1.0f);
-                            InitVItem(2, L"+3.3V",     0.0f,  1.0f);
-                            InitVItem(3, L"+5V",       6.8f,  10.0f);
-                            InitVItem(5, L"+12V",      27.0f, 9.1f);
-                            InitVItem(8, L"VBat",      0.0f,  1.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"DRAM",      0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"+3.3V",     0.0f,  1.0f, 0.0f);
+                            InitVItem(3, L"+5V",       6.8f,  10.0f, 0.0f);
+                            InitVItem(5, L"+12V",      27.0f, 9.1f, 0.0f);
+                            InitVItem(8, L"VBat",      0.0f,  1.0f, 0.0f);
 
                             InitTItem(0, L"System");
                             InitTItem(2, L"CPU");
@@ -476,12 +477,12 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         case GA_MA770T_UD3: /* IT8720F */
-                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                            InitVItem(1, L"DRAM",      0.0f,  1.0f);
-                            InitVItem(2, L"+3.3V",     0.0f,  1.0f);
-                            InitVItem(3, L"+5V",       6.8f,  10.0f);
-                            InitVItem(4, L"+12V",      27.0f, 9.1f);
-                            InitVItem(8, L"VBat",      0.0f,  1.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"DRAM",      0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"+3.3V",     0.0f,  1.0f, 0.0f);
+                            InitVItem(3, L"+5V",       6.8f,  10.0f, 0.0f);
+                            InitVItem(4, L"+12V",      27.0f, 9.1f, 0.0f);
+                            InitVItem(8, L"VBat",      0.0f,  1.0f, 0.0f);
 
                             InitTItem(0, L"System");
                             InitTItem(1, L"CPU");
@@ -493,12 +494,12 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         case GA_MA785GMT_UD2H: /* IT8718F */
-                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                            InitVItem(1, L"DRAM",      0.0f,  1.0f);
-                            InitVItem(2, L"+3.3V",     0.0f,  1.0f);
-                            InitVItem(3, L"+5V",       6.8f,  10.0f);
-                            InitVItem(4, L"+12V",      27.0f, 9.1f);
-                            InitVItem(8, L"VBat",      0.0f,  1.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"DRAM",      0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"+3.3V",     0.0f,  1.0f, 0.0f);
+                            InitVItem(3, L"+5V",       6.8f,  10.0f, 0.0f);
+                            InitVItem(4, L"+12V",      27.0f, 9.1f, 0.0f);
+                            InitVItem(8, L"VBat",      0.0f,  1.0f, 0.0f);
 
                             InitTItem(0, L"System");
                             InitTItem(1, L"CPU");
@@ -509,12 +510,12 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         case X58A_UD3R: /* IT8720F */
-                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                            InitVItem(1, L"DRAM",      0.0f,  1.0f);
-                            InitVItem(2, L"+3.3V",     0.0f,  1.0f);
-                            InitVItem(3, L"+5V",       6.8f,  10.0f);
-                            InitVItem(5, L"+12V",      27.0f, 9.1f);
-                            InitVItem(8, L"VBat",      0.0f,  1.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"DRAM",      0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"+3.3V",     0.0f,  1.0f, 0.0f);
+                            InitVItem(3, L"+5V",       6.8f,  10.0f, 0.0f);
+                            InitVItem(5, L"+12V",      27.0f, 9.1f, 0.0f);
+                            InitVItem(8, L"VBat",      0.0f,  1.0f, 0.0f);
 
                             InitTItem(0, L"System");
                             InitTItem(1, L"CPU");
@@ -527,19 +528,19 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         default:
-                            InitVItem(0, L"CPU VCore", 0.0f, 1.0f);
-                            InitVItem(1, L"DRAM",      0.0f, 1.0f);
-                            InitVItem(2, L"+3.3V",     0.0f, 1.0f);
-                            InitVItem(3, L"+5V",       6.8f, 10.0f);
-                            InitVItem(8, L"VBat",      0.0f, 1.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f, 1.0f, 0.0f);
+                            InitVItem(1, L"DRAM",      0.0f, 1.0f, 0.0f);
+                            InitVItem(2, L"+3.3V",     0.0f, 1.0f, 0.0f);
+                            InitVItem(3, L"+5V",       6.8f, 10.0f, 0.0f);
+                            InitVItem(8, L"VBat",      0.0f, 1.0f, 0.0f);
                             break;
                     }
                 }
                 break;
 
                 default:
-                    InitVItem(0, L"CPU VCore", 0.0f, 1.0f);
-                    InitVItem(8, L"VBat",      0.0f, 1.0f);
+                    InitVItem(0, L"CPU VCore", 0.0f, 1.0f, 0.0f);
+                    InitVItem(8, L"VBat",      0.0f, 1.0f, 0.0f);
                     break;
             }
         }
@@ -556,12 +557,12 @@ LPC_MainboardInfoInit(WORD wChipType)
                     switch (wModelId)
                     {
                         case A890GXM_A: /* IT8721F */
-                            InitVItem(0, L"CPU VCore",     0.0f,  1.0f);
-                            InitVItem(1, L"VDIMM",         0.0f,  1.0f);
-                            InitVItem(2, L"NB Voltage",    0.0f,  1.0f);
-                            InitVItem(3, L"Analog +3.3V",  10.0f, 10.0f);
-                            InitVItem(7, L"Standby +3.3V", 10.0f, 10.0f);
-                            InitVItem(8, L"VBat",          10.0f, 10.0f);
+                            InitVItem(0, L"CPU VCore",     0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"VDIMM",         0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"NB Voltage",    0.0f,  1.0f, 0.0f);
+                            InitVItem(3, L"Analog +3.3V",  10.0f, 10.0f, 0.0f);
+                            InitVItem(7, L"Standby +3.3V", 10.0f, 10.0f, 0.0f);
+                            InitVItem(8, L"VBat",          10.0f, 10.0f, 0.0f);
 
                             InitTItem(0, L"System");
                             InitTItem(1, L"CPU");
@@ -573,9 +574,9 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         default:
-                            InitVItem(3, L"Analog +3.3V",  10.0f, 10.0f);
-                            InitVItem(7, L"Standby +3.3V", 10.0f, 10.0f);
-                            InitVItem(8, L"VBat",          10.0f, 10.0f);
+                            InitVItem(3, L"Analog +3.3V",  10.0f, 10.0f, 0.0f);
+                            InitVItem(7, L"Standby +3.3V", 10.0f, 10.0f, 0.0f);
+                            InitVItem(8, L"VBat",          10.0f, 10.0f, 0.0f);
                             break;
                     }
                 }
@@ -586,12 +587,12 @@ LPC_MainboardInfoInit(WORD wChipType)
                     switch (wModelId)
                     {
                         case P67A_UD4_B3: /* IT8728F */
-                            InitVItem(0, L"+12V",          100.0f, 10.0f);
-                            InitVItem(1, L"+5V",           15.0f,  10.0f);
-                            InitVItem(5, L"CPU VCore",     0.0f,   1.0f);
-                            InitVItem(6, L"DRAM",          0.0f,   1.0f);
-                            InitVItem(7, L"Standby +3.3V", 10.0f,  10.0f);
-                            InitVItem(8, L"VBat",          10.0f,  10.0f);
+                            InitVItem(0, L"+12V",          100.0f, 10.0f, 0.0f);
+                            InitVItem(1, L"+5V",           15.0f,  10.0f, 0.0f);
+                            InitVItem(5, L"CPU VCore",     0.0f,   1.0f, 0.0f);
+                            InitVItem(6, L"DRAM",          0.0f,   1.0f, 0.0f);
+                            InitVItem(7, L"Standby +3.3V", 10.0f,  10.0f, 0.0f);
+                            InitVItem(8, L"VBat",          10.0f,  10.0f, 0.0f);
 
                             InitTItem(0, L"System");
                             InitTItem(1, L"CPU");
@@ -603,13 +604,13 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         case H67A_UD3H_B3: /* IT8728F */
-                            InitVItem(0, L"VTT",           0.0f,  1.0f);
-                            InitVItem(1, L"+5V",           15.0f, 10.0f);
-                            InitVItem(2, L"+12V",          68.0f, 22.0f);
-                            InitVItem(5, L"CPU VCore",     0.0f,  1.0f);
-                            InitVItem(6, L"DRAM",          0.0f,  1.0f);
-                            InitVItem(7, L"Standby +3.3V", 10.0f, 10.0f);
-                            InitVItem(8, L"VBat",          10.0f, 10.0f);
+                            InitVItem(0, L"VTT",           0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"+5V",           15.0f, 10.0f, 0.0f);
+                            InitVItem(2, L"+12V",          68.0f, 22.0f, 0.0f);
+                            InitVItem(5, L"CPU VCore",     0.0f,  1.0f, 0.0f);
+                            InitVItem(6, L"DRAM",          0.0f,  1.0f, 0.0f);
+                            InitVItem(7, L"Standby +3.3V", 10.0f, 10.0f, 0.0f);
+                            InitVItem(8, L"VBat",          10.0f, 10.0f, 0.0f);
 
                             InitTItem(0, L"System");
                             InitTItem(2, L"CPU");
@@ -621,14 +622,14 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         case Z68X_UD7_B3: /* IT8728F */
-                            InitVItem(0, L"VTT",           0.0f,  1.0f);
-                            InitVItem(1, L"+3.3V",         13.3f, 20.5f);
-                            InitVItem(2, L"+12V",          68.0f, 22.0f);
-                            InitVItem(3, L"+5V",           14.3f, 20.0f);
-                            InitVItem(5, L"CPU VCore",     0.0f,  1.0f);
-                            InitVItem(6, L"DRAM",          0.0f,  1.0f);
-                            InitVItem(7, L"Standby +3.3V", 10.0f, 10.0f);
-                            InitVItem(8, L"VBat",          10.0f, 10.0f);
+                            InitVItem(0, L"VTT",           0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"+3.3V",         13.3f, 20.5f, 0.0f);
+                            InitVItem(2, L"+12V",          68.0f, 22.0f, 0.0f);
+                            InitVItem(3, L"+5V",           14.3f, 20.0f, 0.0f);
+                            InitVItem(5, L"CPU VCore",     0.0f,  1.0f, 0.0f);
+                            InitVItem(6, L"DRAM",          0.0f,  1.0f, 0.0f);
+                            InitVItem(7, L"Standby +3.3V", 10.0f, 10.0f, 0.0f);
+                            InitVItem(8, L"VBat",          10.0f, 10.0f, 0.0f);
 
                             InitTItem(0, L"System");
                             InitTItem(1, L"CPU");
@@ -642,8 +643,8 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         default:
-                            InitVItem(7, L"Standby +3.3V", 10.0f, 10.0f);
-                            InitVItem(8, L"VBat",          10.0f, 10.0f);
+                            InitVItem(7, L"Standby +3.3V", 10.0f, 10.0f, 0.0f);
+                            InitVItem(8, L"VBat",          10.0f, 10.0f, 0.0f);
                             break;
                     }
                 }
@@ -654,13 +655,13 @@ LPC_MainboardInfoInit(WORD wChipType)
                     switch (wModelId)
                     {
                         case FH67: /* IT8772E */
-                            InitVItem(0, L"CPU VCore",       0.0f,  1.0f);
-                            InitVItem(1, L"DRAM",            0.0f,  1.0f);
-                            InitVItem(2, L"PCH VCCIO",       0.0f,  1.0f);
-                            InitVItem(3, L"CPU VCCIO",       0.0f,  1.0f);
-                            InitVItem(4, L"Graphic Voltage", 0.0f,  1.0f);
-                            InitVItem(7, L"Standby +3.3V",   10.0f, 10.0f);
-                            InitVItem(8, L"VBat",            10.0f, 10.0f);
+                            InitVItem(0, L"CPU VCore",       0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"DRAM",            0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"PCH VCCIO",       0.0f,  1.0f, 0.0f);
+                            InitVItem(3, L"CPU VCCIO",       0.0f,  1.0f, 0.0f);
+                            InitVItem(4, L"Graphic Voltage", 0.0f,  1.0f, 0.0f);
+                            InitVItem(7, L"Standby +3.3V",   10.0f, 10.0f, 0.0f);
+                            InitVItem(8, L"VBat",            10.0f, 10.0f, 0.0f);
 
                             InitTItem(0, L"System");
                             InitTItem(1, L"CPU");
@@ -670,16 +671,16 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         default:
-                            InitVItem(7, L"Standby +3.3V", 10.0f, 10.0f);
-                            InitVItem(8, L"VBat",          10.0f, 10.0f);
+                            InitVItem(7, L"Standby +3.3V", 10.0f, 10.0f, 0.0f);
+                            InitVItem(8, L"VBat",          10.0f, 10.0f, 0.0f);
                             break;
                     }
                 }
                 break;
 
                 default:
-                    InitVItem(7, L"Standby +3.3V", 10.0f, 10.0f);
-                    InitVItem(8, L"VBat",          10.0f, 10.0f);
+                    InitVItem(7, L"Standby +3.3V", 10.0f, 10.0f, 0.0f);
+                    InitVItem(8, L"VBat",          10.0f, 10.0f, 0.0f);
                     break;
             }
         }
@@ -687,9 +688,9 @@ LPC_MainboardInfoInit(WORD wChipType)
 
         case F71858:
         {
-            InitVItem(0, L"VCC3V",   150.0f, 150.0f);
-            InitVItem(1, L"VSB3V",   150.0f, 150.0f);
-            InitVItem(2, L"Battery", 150.0f, 150.0f);
+            InitVItem(0, L"VCC3V",   150.0f, 150.0f, 0.0f);
+            InitVItem(1, L"VSB3V",   150.0f, 150.0f, 0.0f);
+            InitVItem(2, L"Battery", 150.0f, 150.0f, 0.0f);
         }
         break;
 
@@ -703,53 +704,53 @@ LPC_MainboardInfoInit(WORD wChipType)
                     switch (wModelId)
                     {
                         case _9NPA7I_9NPAI_9NPA7J_9NPAJ_3P:
-                            InitVItem(0,  L"VCC3.3V",  100.0f, 100.0f);
-                            InitVItem(1,  L"VTT1.2V",  0.0f, 1.0f);
-                            InitVItem(2,  L"VRAM",     100.0f, 100.0f);
-                            InitVItem(3,  L"VCHIPSET", 47.0f, 100.0f);
-                            InitVItem(4,  L"VCC5V",    200.0f, 47.0f);
-                            InitVItem(5,  L"+12V",     200.0f, 20.0f);
-                            InitVItem(6,  L"VCC1.5V",  0.0f, 1.0f);
-                            InitVItem(7,  L"VCORE",    0.0f, 1.0f);
-                            InitVItem(8,  L"VSB5V",    200.0f, 47.0f);
-                            InitVItem(9,  L"VBATTERY", 100.0f, 100.0f);
-                            InitVItem(10, L"VSB3.3V",  100.0f, 100.0f);
+                            InitVItem(0, L"VCC",      100.0f, 100.0f, 0.0f);
+                            InitVItem(1, L"+5V",      200.0f, 47.0f,  0.0f);
+                            InitVItem(2, L"DIMM",     100.0f, 100.0f, 0.0f);
+                            InitVItem(3, L"5VSB",     200.0f, 47.0f,  0.0f);
+                            InitVItem(5, L"+12V",     200.0f, 20.0f,  0.0f);
+                            InitVItem(6, L"Chipset",  0.0f,   1.0f,   0.0f);
+                            InitVItem(7, L"CPU Core", 0.0f,   1.0f,   0.0f);
+                            InitVItem(9, L"VSB",      100.0f, 100.0f, 0.0f);
+                            InitVItem(10,L"VBat",     100.0f, 100.0f, 0.0f);
 
                             InitTItem(0, L"CPU");
                             InitTItem(1, L"Motherboard");
 
                             InitFItem(0, L"CPU Fan");
+                            InitFItem(1, L"Power Fan");
+                            InitFItem(2, L"Chassis Fan");
                             break;
 
                         default:
-                            InitVItem(0,  L"VCC3.3V",  100.0f, 100.0f);
-                            InitVItem(1,  L"VTT1.2V",  0.0f, 1.0f);
-                            InitVItem(2,  L"VRAM",     100.0f, 100.0f);
-                            InitVItem(3,  L"VCHIPSET", 47.0f, 100.0f);
-                            InitVItem(4,  L"VCC5V",    200.0f, 47.0f);
-                            InitVItem(5,  L"+12V",     200.0f, 20.0f);
-                            InitVItem(6,  L"VCC1.5V",  0.0f, 1.0f);
-                            InitVItem(7,  L"VCORE",    0.0f, 1.0f);
-                            InitVItem(8,  L"VSB5V",    200.0f, 47.0f);
-                            InitVItem(9,  L"VBATTERY", 100.0f, 100.0f);
-                            InitVItem(10, L"VSB3.3V",  100.0f, 100.0f);
+                            InitVItem(0,  L"VCC3.3V",  100.0f, 100.0f, 0.0f);
+                            InitVItem(1,  L"VTT1.2V",  0.0f, 1.0f, 0.0f);
+                            InitVItem(2,  L"VRAM",     100.0f, 100.0f, 0.0f);
+                            InitVItem(3,  L"VCHIPSET", 47.0f, 100.0f, 0.0f);
+                            InitVItem(4,  L"VCC5V",    200.0f, 47.0f, 0.0f);
+                            InitVItem(5,  L"+12V",     200.0f, 20.0f, 0.0f);
+                            InitVItem(6,  L"VCC1.5V",  0.0f, 1.0f, 0.0f);
+                            InitVItem(7,  L"VCORE",    0.0f, 1.0f, 0.0f);
+                            InitVItem(8,  L"VSB5V",    200.0f, 47.0f, 0.0f);
+                            InitVItem(9,  L"VBATTERY", 100.0f, 100.0f, 0.0f);
+                            InitVItem(10, L"VSB3.3V",  100.0f, 100.0f, 0.0f);
                             break;
                     }
                 }
                 break;
 
                 default:
-                    InitVItem(0,  L"VCC3.3V",  100.0f, 100.0f);
-                    InitVItem(1,  L"VTT1.2V",  0.0f, 1.0f);
-                    InitVItem(2,  L"VRAM",     100.0f, 100.0f);
-                    InitVItem(3,  L"VCHIPSET", 47.0f, 100.0f);
-                    InitVItem(4,  L"VCC5V",    200.0f, 47.0f);
-                    InitVItem(5,  L"+12V",     200.0f, 20.0f);
-                    InitVItem(6,  L"VCC1.5V",  0.0f, 1.0f);
-                    InitVItem(7,  L"VCORE",    0.0f, 1.0f);
-                    InitVItem(8,  L"VSB5V",    200.0f, 47.0f);
-                    InitVItem(9,  L"VBATTERY", 100.0f, 100.0f);
-                    InitVItem(10, L"VSB3.3V",  100.0f, 100.0f);
+                    InitVItem(0,  L"VCC3.3V",  100.0f, 100.0f, 0.0f);
+                    InitVItem(1,  L"VTT1.2V",  0.0f, 1.0f, 0.0f);
+                    InitVItem(2,  L"VRAM",     100.0f, 100.0f, 0.0f);
+                    InitVItem(3,  L"VCHIPSET", 47.0f, 100.0f, 0.0f);
+                    InitVItem(4,  L"VCC5V",    200.0f, 47.0f, 0.0f);
+                    InitVItem(5,  L"+12V",     200.0f, 20.0f, 0.0f);
+                    InitVItem(6,  L"VCC1.5V",  0.0f, 1.0f, 0.0f);
+                    InitVItem(7,  L"VCORE",    0.0f, 1.0f, 0.0f);
+                    InitVItem(8,  L"VSB5V",    200.0f, 47.0f, 0.0f);
+                    InitVItem(9,  L"VBATTERY", 100.0f, 100.0f, 0.0f);
+                    InitVItem(10, L"VSB3.3V",  100.0f, 100.0f, 0.0f);
                     break;
             }
         }
@@ -769,15 +770,15 @@ LPC_MainboardInfoInit(WORD wChipType)
                     switch (wModelId)
                     {
                         case X58_SLI_Classified: /* F71882 */
-                            InitVItem(0, L"VCC3V",     150.0f, 150.0f);
-                            InitVItem(1, L"CPU VCore", 47.0f,  100.0f);
-                            InitVItem(2, L"DIMM",      47.0f,  100.0f);
-                            InitVItem(3, L"CPU VTT",   24.0f,  100.0f);
-                            InitVItem(4, L"IOH Vcore", 24.0f,  100.0f);
-                            InitVItem(5, L"+5V",       51.0f,  12.0f);
-                            InitVItem(6, L"+12V",      56.0f,  6.8f);
-                            InitVItem(7, L"3VSB",      150.0f, 150.0f);
-                            InitVItem(8, L"VBat",      150.0f, 150.0f);
+                            InitVItem(0, L"VCC3V",     150.0f, 150.0f, 0.0f);
+                            InitVItem(1, L"CPU VCore", 47.0f,  100.0f, 0.0f);
+                            InitVItem(2, L"DIMM",      47.0f,  100.0f, 0.0f);
+                            InitVItem(3, L"CPU VTT",   24.0f,  100.0f, 0.0f);
+                            InitVItem(4, L"IOH Vcore", 24.0f,  100.0f, 0.0f);
+                            InitVItem(5, L"+5V",       51.0f,  12.0f, 0.0f);
+                            InitVItem(6, L"+12V",      56.0f,  6.8f, 0.0f);
+                            InitVItem(7, L"3VSB",      150.0f, 150.0f, 0.0f);
+                            InitVItem(8, L"VBat",      150.0f, 150.0f, 0.0f);
 
                             InitTItem(0, L"CPU");
                             InitTItem(1, L"VREG");
@@ -789,20 +790,20 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         default:
-                            InitVItem(0, L"VCC3V",     150.0f, 150.0f);
-                            InitVItem(1, L"CPU VCore", 0.0f,   1.0f);
-                            InitVItem(7, L"VSB3V",     150.0f, 150.0f);
-                            InitVItem(8, L"VBat",      150.0f, 150.0f);
+                            InitVItem(0, L"VCC3V",     150.0f, 150.0f, 0.0f);
+                            InitVItem(1, L"CPU VCore", 0.0f,   1.0f, 0.0f);
+                            InitVItem(7, L"VSB3V",     150.0f, 150.0f, 0.0f);
+                            InitVItem(8, L"VBat",      150.0f, 150.0f, 0.0f);
                             break;
                     }
                 }
                 break;
 
                 default:
-                    InitVItem(0, L"VCC3V",     150.0f, 150.0f);
-                    InitVItem(1, L"CPU VCore", 0.0f,   1.0f);
-                    InitVItem(7, L"VSB3V",     150.0f, 150.0f);
-                    InitVItem(8, L"VBat",      150.0f, 150.0f);
+                    InitVItem(0, L"VCC3V",     150.0f, 150.0f, 0.0f);
+                    InitVItem(1, L"CPU VCore", 0.0f,   1.0f, 0.0f);
+                    InitVItem(7, L"VSB3V",     150.0f, 150.0f, 0.0f);
+                    InitVItem(8, L"VBat",      150.0f, 150.0f, 0.0f);
                     break;
             }
         }
@@ -817,13 +818,13 @@ LPC_MainboardInfoInit(WORD wChipType)
                     switch (wModelId)
                     {
                         case AOD790GX_128M: /* W83627EHF */
-                            InitVItem(0, L"CPU VCore",     0.0f,  1.0f);
-                            InitVItem(2, L"Analog +3.3V",  34.0f, 34.0f);
-                            InitVItem(4, L"+3.3V",         10.0f, 10.0f);
-                            InitVItem(5, L"+5V",           20.0f, 10.0f);
-                            InitVItem(6, L"+12V",          28.0f, 5.0f);
-                            InitVItem(7, L"Standby +3.3V", 34.0f, 34.0f);
-                            InitVItem(8, L"VBAT",          34.0f, 34.0f);
+                            InitVItem(0, L"CPU VCore",     0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"Analog +3.3V",  34.0f, 34.0f, 0.0f);
+                            InitVItem(4, L"+3.3V",         10.0f, 10.0f, 0.0f);
+                            InitVItem(5, L"+5V",           20.0f, 10.0f, 0.0f);
+                            InitVItem(6, L"+12V",          28.0f, 5.0f, 0.0f);
+                            InitVItem(7, L"Standby +3.3V", 34.0f, 34.0f, 0.0f);
+                            InitVItem(8, L"VBAT",          34.0f, 34.0f, 0.0f);
 
                             InitTItem(0, L"CPU");
                             InitTItem(2, L"Motherboard");
@@ -833,11 +834,11 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         default:
-                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                            InitVItem(2, L"AVCC",      34.0f, 34.0f);
-                            InitVItem(3, L"3VCC",      34.0f, 34.0f);
-                            InitVItem(7, L"3VSB",      34.0f, 34.0f);
-                            InitVItem(8, L"VBAT",      34.0f, 34.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"AVCC",      34.0f, 34.0f, 0.0f);
+                            InitVItem(3, L"3VCC",      34.0f, 34.0f, 0.0f);
+                            InitVItem(7, L"3VSB",      34.0f, 34.0f, 0.0f);
+                            InitVItem(8, L"VBAT",      34.0f, 34.0f, 0.0f);
 
                             InitTItem(0, L"CPU");
                             InitTItem(1, L"Auxiliary");
@@ -854,11 +855,11 @@ LPC_MainboardInfoInit(WORD wChipType)
                 break;
 
                 default:
-                    InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                    InitVItem(2, L"AVCC",      34.0f, 34.0f);
-                    InitVItem(3, L"3VCC",      34.0f, 34.0f);
-                    InitVItem(7, L"3VSB",      34.0f, 34.0f);
-                    InitVItem(8, L"VBAT",      34.0f, 34.0f);
+                    InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                    InitVItem(2, L"AVCC",      34.0f, 34.0f, 0.0f);
+                    InitVItem(3, L"3VCC",      34.0f, 34.0f, 0.0f);
+                    InitVItem(7, L"3VSB",      34.0f, 34.0f, 0.0f);
+                    InitVItem(8, L"VBAT",      34.0f, 34.0f, 0.0f);
 
                     InitTItem(0, L"CPU");
                     InitTItem(1, L"Auxiliary");
@@ -886,12 +887,12 @@ LPC_MainboardInfoInit(WORD wChipType)
                     switch (wModelId)
                     {
                         case _880GMH_USB3: /* W83627DHG-P */
-                            InitVItem(0, L"CPU VCore",     0.0f,  1.0f);
-                            InitVItem(3, L"+3.3V",         34.0f, 34.0f);
-                            InitVItem(5, L"+5V",           15.0f, 7.5f);
-                            InitVItem(6, L"+12V",          56.0f, 10.0f);
-                            InitVItem(7, L"Standby +3.3V", 34.0f, 34.0f);
-                            InitVItem(8, L"VBAT",          34.0f, 34.0f);
+                            InitVItem(0, L"CPU VCore",     0.0f,  1.0f, 0.0f);
+                            InitVItem(3, L"+3.3V",         34.0f, 34.0f, 0.0f);
+                            InitVItem(5, L"+5V",           15.0f, 7.5f, 0.0f);
+                            InitVItem(6, L"+12V",          56.0f, 10.0f, 0.0f);
+                            InitVItem(7, L"Standby +3.3V", 34.0f, 34.0f, 0.0f);
+                            InitVItem(8, L"VBAT",          34.0f, 34.0f, 0.0f);
 
                             InitTItem(0, L"CPU");
                             InitTItem(2, L"Motherboard");
@@ -902,11 +903,11 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         default:
-                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                            InitVItem(2, L"AVCC",      34.0f, 34.0f);
-                            InitVItem(3, L"3VCC",      34.0f, 34.0f);
-                            InitVItem(7, L"3VSB",      34.0f, 34.0f);
-                            InitVItem(8, L"VBAT",      34.0f, 34.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"AVCC",      34.0f, 34.0f, 0.0f);
+                            InitVItem(3, L"3VCC",      34.0f, 34.0f, 0.0f);
+                            InitVItem(7, L"3VSB",      34.0f, 34.0f, 0.0f);
+                            InitVItem(8, L"VBAT",      34.0f, 34.0f, 0.0f);
 
                             InitTItem(0, L"CPU");
                             InitTItem(1, L"Auxiliary");
@@ -928,13 +929,13 @@ LPC_MainboardInfoInit(WORD wChipType)
                     {
                         case P6X58D_E: /* W83667HG */
                         case Rampage_II_GENE:
-                            InitVItem(0, L"CPU VCore",     0.0f,   1.0f);
-                            InitVItem(1, L"+12V",          11.5f,  1.91f);
-                            InitVItem(2, L"Analog +3.3V",  34.0f,  34.0f);
-                            InitVItem(3, L"+3.3V",         34.0f,  34.0f);
-                            InitVItem(4, L"+5V",           15.0f,  7.5f);
-                            InitVItem(7, L"Standby +3.3V", 34.0f,  34.0f);
-                            InitVItem(8, L"VBAT",          34.0f,  34.0f);
+                            InitVItem(0, L"CPU VCore",     0.0f,   1.0f, 0.0f);
+                            InitVItem(1, L"+12V",          11.5f,  1.91f, 0.0f);
+                            InitVItem(2, L"Analog +3.3V",  34.0f,  34.0f, 0.0f);
+                            InitVItem(3, L"+3.3V",         34.0f,  34.0f, 0.0f);
+                            InitVItem(4, L"+5V",           15.0f,  7.5f, 0.0f);
+                            InitVItem(7, L"Standby +3.3V", 34.0f,  34.0f, 0.0f);
+                            InitVItem(8, L"VBAT",          34.0f,  34.0f, 0.0f);
 
                             InitTItem(0, L"CPU");
                             InitTItem(2, L"Motherboard");
@@ -947,13 +948,13 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         case Rampage_Extreme: /* W83667HG */
-                            InitVItem(0, L"CPU VCore",     0.0f,  1.0f);
-                            InitVItem(1, L"+12V",          12.0f, 2.0f);
-                            InitVItem(2, L"Analog +3.3V",  34.0f, 34.0f);
-                            InitVItem(3, L"+3.3V",         34.0f, 34.0f);
-                            InitVItem(4, L"+5V",           15.0f, 7.5f);
-                            InitVItem(7, L"Standby +3.3V", 34.0f, 34.0f);
-                            InitVItem(8, L"VBAT",          34.0f, 34.0f);
+                            InitVItem(0, L"CPU VCore",     0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"+12V",          12.0f, 2.0f, 0.0f);
+                            InitVItem(2, L"Analog +3.3V",  34.0f, 34.0f, 0.0f);
+                            InitVItem(3, L"+3.3V",         34.0f, 34.0f, 0.0f);
+                            InitVItem(4, L"+5V",           15.0f, 7.5f, 0.0f);
+                            InitVItem(7, L"Standby +3.3V", 34.0f, 34.0f, 0.0f);
+                            InitVItem(8, L"VBAT",          34.0f, 34.0f, 0.0f);
 
                             InitTItem(0, L"CPU");
                             InitTItem(2, L"Motherboard");
@@ -966,11 +967,11 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         default:
-                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                            InitVItem(2, L"AVCC",      34.0f, 34.0f);
-                            InitVItem(3, L"3VCC",      34.0f, 34.0f);
-                            InitVItem(7, L"3VSB",      34.0f, 34.0f);
-                            InitVItem(8, L"VBAT",      34.0f, 34.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"AVCC",      34.0f, 34.0f, 0.0f);
+                            InitVItem(3, L"3VCC",      34.0f, 34.0f, 0.0f);
+                            InitVItem(7, L"3VSB",      34.0f, 34.0f, 0.0f);
+                            InitVItem(8, L"VBAT",      34.0f, 34.0f, 0.0f);
 
                             InitTItem(0, L"CPU");
                             InitTItem(1, L"Auxiliary");
@@ -987,11 +988,11 @@ LPC_MainboardInfoInit(WORD wChipType)
                 break;
 
                 default:
-                    InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                    InitVItem(2, L"AVCC",      34.0f, 34.0f);
-                    InitVItem(3, L"3VCC",      34.0f, 34.0f);
-                    InitVItem(7, L"3VSB",      34.0f, 34.0f);
-                    InitVItem(8, L"VBAT",      34.0f, 34.0f);
+                    InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                    InitVItem(2, L"AVCC",      34.0f, 34.0f, 0.0f);
+                    InitVItem(3, L"3VCC",      34.0f, 34.0f, 0.0f);
+                    InitVItem(7, L"3VSB",      34.0f, 34.0f, 0.0f);
+                    InitVItem(8, L"VBAT",      34.0f, 34.0f, 0.0f);
 
                     InitTItem(0, L"CPU");
                     InitTItem(1, L"Auxiliary");
@@ -1011,10 +1012,10 @@ LPC_MainboardInfoInit(WORD wChipType)
         case W83627THF:
         case W83687THF:
         {
-            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-            InitVItem(3, L"AVCC",      34.0f, 51.0f);
-            InitVItem(5, L"5VSB",      34.0f, 51.0f);
-            InitVItem(6, L"VBAT",      0.0f,  1.0f);
+            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+            InitVItem(3, L"AVCC",      34.0f, 51.0f, 0.0f);
+            InitVItem(5, L"5VSB",      34.0f, 51.0f, 0.0f);
+            InitVItem(6, L"VBAT",      0.0f,  1.0f, 0.0f);
 
             InitTItem(0, L"CPU");
             InitTItem(1, L"Auxiliary");
@@ -1038,13 +1039,13 @@ LPC_MainboardInfoInit(WORD wChipType)
                         case P8P67: /* NCT6776F */
                         case P8P67_EVO:
                         case P8P67_PRO:
-                            InitVItem(0, L"CPU VCore",     0.0f,  1.0f);
-                            InitVItem(1, L"+12V",          12.0f, 1.0f);
-                            InitVItem(2, L"Analog +3.3V",  34.0f, 34.0f);
-                            InitVItem(3, L"+3.3V",         34.0f, 34.0f);
-                            InitVItem(4, L"+5V",           12.0f, 3.0f);
-                            InitVItem(7, L"Standby +3.3V", 34.0f, 34.0f);
-                            InitVItem(8, L"VBAT",          34.0f, 34.0f);
+                            InitVItem(0, L"CPU VCore",     0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"+12V",          12.0f, 1.0f, 0.0f);
+                            InitVItem(2, L"Analog +3.3V",  34.0f, 34.0f, 0.0f);
+                            InitVItem(3, L"+3.3V",         34.0f, 34.0f, 0.0f);
+                            InitVItem(4, L"+5V",           12.0f, 3.0f, 0.0f);
+                            InitVItem(7, L"Standby +3.3V", 34.0f, 34.0f, 0.0f);
+                            InitVItem(8, L"VBAT",          34.0f, 34.0f, 0.0f);
 
                             InitTItem(0, L"CPU");
                             InitTItem(2, L"Auxiliary");
@@ -1057,13 +1058,13 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         case P8P67_M_PRO: /* NCT6776F */
-                            InitVItem(0, L"CPU VCore",     0.0f,  1.0f);
-                            InitVItem(1, L"+12V",          11.0f, 1.0f);
-                            InitVItem(2, L"Analog +3.3V",  34.0f, 34.0f);
-                            InitVItem(3, L"+3.3V",         34.0f, 34.0f);
-                            InitVItem(4, L"+5V",           12.0f, 3.0f);
-                            InitVItem(7, L"Standby +3.3V", 34.0f, 34.0f);
-                            InitVItem(8, L"VBAT",          34.0f, 34.0f);
+                            InitVItem(0, L"CPU VCore",     0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"+12V",          11.0f, 1.0f, 0.0f);
+                            InitVItem(2, L"Analog +3.3V",  34.0f, 34.0f, 0.0f);
+                            InitVItem(3, L"+3.3V",         34.0f, 34.0f, 0.0f);
+                            InitVItem(4, L"+5V",           12.0f, 3.0f, 0.0f);
+                            InitVItem(7, L"Standby +3.3V", 34.0f, 34.0f, 0.0f);
+                            InitVItem(8, L"VBAT",          34.0f, 34.0f, 0.0f);
 
                             InitTItem(0, L"CPU");
                             InitTItem(3, L"Motherboard");
@@ -1076,11 +1077,11 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         default:
-                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                            InitVItem(2, L"AVCC",      34.0f, 34.0f);
-                            InitVItem(3, L"3VCC",      34.0f, 34.0f);
-                            InitVItem(7, L"3VSB",      34.0f, 34.0f);
-                            InitVItem(8, L"VBAT",      34.0f, 34.0f);
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"AVCC",      34.0f, 34.0f, 0.0f);
+                            InitVItem(3, L"3VCC",      34.0f, 34.0f, 0.0f);
+                            InitVItem(7, L"3VSB",      34.0f, 34.0f, 0.0f);
+                            InitVItem(8, L"VBAT",      34.0f, 34.0f, 0.0f);
 
                             InitTItem(0, L"CPU");
                             InitTItem(1, L"CPU");
@@ -1092,11 +1093,11 @@ LPC_MainboardInfoInit(WORD wChipType)
                 break;
 
                 default:
-                    InitVItem(0, L"CPU VCore", 0.0f,  1.0f);
-                    InitVItem(2, L"AVCC",      34.0f, 34.0f);
-                    InitVItem(3, L"3VCC",      34.0f, 34.0f);
-                    InitVItem(7, L"3VSB",      34.0f, 34.0f);
-                    InitVItem(8, L"VBAT",      34.0f, 34.0f);
+                    InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                    InitVItem(2, L"AVCC",      34.0f, 34.0f, 0.0f);
+                    InitVItem(3, L"3VCC",      34.0f, 34.0f, 0.0f);
+                    InitVItem(7, L"3VSB",      34.0f, 34.0f, 0.0f);
+                    InitVItem(8, L"VBAT",      34.0f, 34.0f, 0.0f);
 
                     InitTItem(0, L"CPU");
                     InitTItem(1, L"CPU");
