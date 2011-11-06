@@ -75,6 +75,9 @@ IDI_ENCLOSURE     ICON DISCARDABLE "res/enclosure.ico"
 IDI_START         ICON DISCARDABLE "res/start.ico"
 IDI_STOP          ICON DISCARDABLE "res/stop.ico"
 IDI_STRESS_TEST   ICON DISCARDABLE "res/stress.ico"
+IDI_VOLTAGE       ICON DISCARDABLE "res/voltage.ico"
+IDI_TEMPERATURE   ICON DISCARDABLE "res/temperature.ico"
+IDI_FAN           ICON DISCARDABLE "res/fan.ico"
 
 IDC_ACCELERATORS ACCELERATORS
 BEGIN

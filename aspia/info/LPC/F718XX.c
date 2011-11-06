@@ -89,7 +89,7 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
 
         if (SafeStrLen(LpcVoltageDesc[i].szDesc) > 0)
         {
-            ItemIndex = IoAddItem(1, 2, LpcVoltageDesc[i].szDesc);
+            ItemIndex = IoAddItem(1, 3, LpcVoltageDesc[i].szDesc);
 
             /* Voltage = value + (value - Vf) * Ri / Rf */
             StringCbPrintf(szText, sizeof(szText), L"%.3f V",
@@ -99,7 +99,7 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
         else
         {
             StringCbPrintf(szText, sizeof(szText), L"Voltage #%d", i + 1);
-            ItemIndex = IoAddItem(1, 2, szText);
+            ItemIndex = IoAddItem(1, 3, szText);
 
             StringCbPrintf(szText, sizeof(szText), L"%.3f V", fValue);
             IoSetItemText(ItemIndex, 1, szText);
@@ -137,7 +137,7 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
 
                     if (SafeStrLen(szLpcTempDesc[i]) > 0)
                     {
-                        ItemIndex = IoAddItem(1, 2, szLpcTempDesc[i]);
+                        ItemIndex = IoAddItem(1, 4, szLpcTempDesc[i]);
 
                         StringCbPrintf(szText, sizeof(szText), L"%.1f °C", (FLOAT)sValue / 128.0f);
                         IoSetItemText(ItemIndex, 1, szText);
@@ -157,7 +157,7 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
 
                     if (SafeStrLen(szLpcTempDesc[i]) > 0)
                     {
-                        ItemIndex = IoAddItem(1, 2, szLpcTempDesc[i]);
+                        ItemIndex = IoAddItem(1, 4, szLpcTempDesc[i]);
 
                         StringCbPrintf(szText, sizeof(szText), L"%d °C", bValue);
                         IoSetItemText(ItemIndex, 1, szText);
@@ -176,7 +176,7 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
 
                     if (SafeStrLen(szLpcTempDesc[i]) > 0)
                     {
-                        ItemIndex = IoAddItem(1, 2, szLpcTempDesc[i]);
+                        ItemIndex = IoAddItem(1, 4, szLpcTempDesc[i]);
 
                         StringCbPrintf(szText, sizeof(szText), L"%d °C", bValue);
                         IoSetItemText(ItemIndex, 1, szText);
@@ -209,12 +209,12 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
             {
                 if (SafeStrLen(szLpcFanDesc[i]) > 0)
                 {
-                    ItemIndex = IoAddItem(1, 2, szLpcFanDesc[i]);
+                    ItemIndex = IoAddItem(1, 5, szLpcFanDesc[i]);
                 }
                 else
                 {
                     StringCbPrintf(szText, sizeof(szText), L"Fans #%d", i + 1);
-                    ItemIndex = IoAddItem(1, 2, szText);
+                    ItemIndex = IoAddItem(1, 5, szText);
                 }
 
                 StringCbPrintf(szText, sizeof(szText), L"%.0f RPM", fValue);
