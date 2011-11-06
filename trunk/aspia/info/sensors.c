@@ -170,7 +170,7 @@ GetIntelCpuInfo(VOID)
             LoadMUIString(IDS_SENSOR_CORE_TEMPERATURE,
                           szFormat, MAX_STR_LEN);
             StringCbPrintf(szText, sizeof(szText), szFormat, bIndex + 1);
-            Index = IoAddItem(1, 1, szText);
+            Index = IoAddItem(1, 4, szText);
 
             Tjmax = GetTjmaxTemperature(bIndex);
 
@@ -300,6 +300,9 @@ HW_SensorInfo(VOID)
     IoAddIcon(IDI_HDD);
     IoAddIcon(IDI_CPU);
     IoAddIcon(IDI_HW);
+    IoAddIcon(IDI_VOLTAGE);
+    IoAddIcon(IDI_TEMPERATURE);
+    IoAddIcon(IDI_FAN);
 
     /* Hard Drives */
     for (bIndex = 0; bIndex <= 32; ++bIndex)
@@ -324,7 +327,7 @@ HW_SensorInfo(VOID)
                            L"%ld °C",
                            dwTemp);
 
-            Index = IoAddValueName(1, IDS_SENSOR_TEMPERATURE, 0);
+            Index = IoAddValueName(1, IDS_SENSOR_TEMPERATURE, 4);
             IoSetItemText(Index, 1, szText);
 
             IoAddFooter();

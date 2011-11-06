@@ -91,6 +91,9 @@
 #define IDI_START         172
 #define IDI_STOP          173
 #define IDI_STRESS_TEST   174
+#define IDI_VOLTAGE       175
+#define IDI_TEMPERATURE   176
+#define IDI_FAN           177
 
 /* Dialogs */
 #define IDD_ABOUT_DIALOG         5000

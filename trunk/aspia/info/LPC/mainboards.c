@@ -716,6 +716,7 @@ LPC_MainboardInfoInit(WORD wChipType)
 
                             InitTItem(0, L"CPU");
                             InitTItem(1, L"Motherboard");
+                            InitTItem(2, L"Aux");
 
                             InitFItem(0, L"CPU Fan");
                             InitFItem(1, L"Power Fan");

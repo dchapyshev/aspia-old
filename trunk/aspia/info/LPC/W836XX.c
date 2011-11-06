@@ -211,7 +211,7 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
                 DebugTrace(L"Voltages[%d] = %f", i, fvalue);
 
                 StringCbPrintf(szText, sizeof(szText), L"Voltage #%d", i + 1);
-                ItemIndex = IoAddItem(1, 2, szText);
+                ItemIndex = IoAddItem(1, 3, szText);
 
                 StringCbPrintf(szText, sizeof(szText), L"%.3f V", fvalue);
                 IoSetItemText(ItemIndex, 1, szText);
@@ -231,7 +231,7 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
                 fvalue = voltageGain * tmp;
                 DebugTrace(L"Voltages[%d] = %f, voltageGain = %f, tmp = %d", i, fvalue, voltageGain, tmp);
 
-                ItemIndex = IoAddItem(1, 2, L"Battery Voltage");
+                ItemIndex = IoAddItem(1, 3, L"Battery Voltage");
 
                 StringCbPrintf(szText, sizeof(szText), L"%.3f V", fvalue);
                 IoSetItemText(ItemIndex, 1, szText);
@@ -255,7 +255,7 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
             DebugTrace(L"Temperatures[%d] = %f", i, temp);
 
             StringCbPrintf(szText, sizeof(szText), L"Temperature #%d", i + 1);
-            ItemIndex = IoAddItem(1, 2, szText);
+            ItemIndex = IoAddItem(1, 4, szText);
 
             StringCbPrintf(szText, sizeof(szText), L"%.2f °C", temp);
             IoSetItemText(ItemIndex, 1, szText);
@@ -286,7 +286,7 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
         DebugTrace(L"Fans[%d] = %f", i, fvalue);
 
         StringCbPrintf(szText, sizeof(szText), L"Fans #%d", i + 1);
-        ItemIndex = IoAddItem(1, 2, szText);
+        ItemIndex = IoAddItem(1, 5, szText);
 
         StringCbPrintf(szText, sizeof(szText), L"%.0f RPM", fvalue);
         IoSetItemText(ItemIndex, 1, szText);
