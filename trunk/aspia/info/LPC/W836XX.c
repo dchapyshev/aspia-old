@@ -20,15 +20,15 @@
 #define VENDOR_ID_REGISTER            0x4F
 #define TEMPERATURE_SOURCE_SELECT_REG 0x49
 
-static BYTE TEMPERATURE_REG[] = { 0x50, 0x50, 0x27 };
-BYTE TEMPERATURE_BANK[] = { 1, 2, 0 };
+static const BYTE TEMPERATURE_REG[] = { 0x50, 0x50, 0x27 };
+const BYTE TEMPERATURE_BANK[]       = { 1,    2,    0 };
 
-BYTE FAN_TACHO_REG[] = { 0x28, 0x29, 0x2A, 0x3F, 0x53 };
-BYTE FAN_TACHO_BANK[] = { 0, 0, 0, 0, 5 };
-BYTE FAN_BIT_REG[] = { 0x47, 0x4B, 0x4C, 0x59, 0x5D };
-BYTE FAN_DIV_BIT0[] = { 36, 38, 30, 8, 10 };
-BYTE FAN_DIV_BIT1[] = { 37, 39, 31, 9, 11 };
-BYTE FAN_DIV_BIT2[] = { 5, 6, 7, 23, 15 };
+const BYTE FAN_TACHO_REG[]  = { 0x28, 0x29, 0x2A, 0x3F, 0x53 };
+const BYTE FAN_TACHO_BANK[] = { 0,    0,    0,    0,    5    };
+const BYTE FAN_BIT_REG[]    = { 0x47, 0x4B, 0x4C, 0x59, 0x5D };
+const BYTE FAN_DIV_BIT0[]   = { 36,   38,   30,   8,    10   };
+const BYTE FAN_DIV_BIT1[]   = { 37,   39,   31,   9,    11   };
+const BYTE FAN_DIV_BIT2[]   = { 5,    6,    7,    23,   15   };
 
 
 BYTE
@@ -51,18 +51,17 @@ W836XX_WriteByte(WORD address, BYTE bank, BYTE reg, BYTE value)
 }
 
 DWORD
-W836XX_SetBit(DWORD target, INT bit, INT value)
+W836XX_SetBit(DWORD target, WORD bit, WORD value)
 {
     DWORD mask;
 
-    if ((value & 1) != value)
-        return 0;
+    if (((value & 1) == value) && bit >= 0 && bit <= 63)
+    {
+        mask = (((DWORD)1) << bit);
+        return value > 0 ? target | mask : target & ~mask;
+    }
 
-    if (bit < 0 || bit > 63)
-        return 0;
-
-    mask = (((DWORD)1) << bit);
-    return value > 0 ? target | mask : target & ~mask;
+    return value;
 }
 
 BOOL
@@ -78,7 +77,6 @@ VOID
 W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
 {
     WCHAR szText[MAX_STR_LEN];
-    BOOL peciTemperature[3];
     BYTE voltageRegister[10] = {0};
     BYTE voltageBank[10] = {0};
     INT iMaxVoltages = 0, iMaxFans = 0, i, value;
@@ -91,38 +89,6 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
 
     LPC_ChipTypeToText(wChipType, szText, sizeof(szText));
     IoAddItem(0, 2, szText);
-
-    switch (wChipType)
-    {
-        case W83667HG:
-        case W83667HGB:
-        {
-            /* note temperature sensor registers that read PECI */
-            BYTE flag = W836XX_ReadByte(address, 0, TEMPERATURE_SOURCE_SELECT_REG);
-            peciTemperature[0] = (flag & 0x04) != 0;
-            peciTemperature[1] = (flag & 0x40) != 0;
-            peciTemperature[2] = FALSE;
-        }
-        break;
-
-        case W83627DHG:
-        case W83627DHGP:
-        {
-            /* note temperature sensor registers that read PECI */
-            BYTE sel = W836XX_ReadByte(address, 0, TEMPERATURE_SOURCE_SELECT_REG);
-            peciTemperature[0] = (sel & 0x07) != 0;
-            peciTemperature[1] = (sel & 0x70) != 0;
-            peciTemperature[2] = FALSE;
-        }
-        break;
-
-        default:
-            /* no PECI support */
-            peciTemperature[0] = FALSE;
-            peciTemperature[1] = FALSE;
-            peciTemperature[2] = FALSE;
-            break;
-    }
 
     switch (wChipType)
     {
@@ -210,11 +176,14 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
             {
                 DebugTrace(L"Voltages[%d] = %f", i, fvalue);
 
-                StringCbPrintf(szText, sizeof(szText), L"Voltage #%d", i + 1);
-                ItemIndex = IoAddItem(1, 3, szText);
+                if (SafeStrLen(LpcVoltageDesc[i].szDesc) > 0)
+                {
+                    ItemIndex = IoAddItem(1, 3, LpcVoltageDesc[i].szDesc);
 
-                StringCbPrintf(szText, sizeof(szText), L"%.3f V", fvalue);
-                IoSetItemText(ItemIndex, 1, szText);
+                    StringCbPrintf(szText, sizeof(szText), L"%.3f V",
+                        fvalue + (fvalue - LpcVoltageDesc[i].vf) * LpcVoltageDesc[i].ri / LpcVoltageDesc[i].rf);
+                    IoSetItemText(ItemIndex, 1, szText);
+                }
             }
         }
         else
@@ -231,9 +200,17 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
                 fvalue = voltageGain * tmp;
                 DebugTrace(L"Voltages[%d] = %f, voltageGain = %f, tmp = %d", i, fvalue, voltageGain, tmp);
 
-                ItemIndex = IoAddItem(1, 3, L"Battery Voltage");
+                ItemIndex = IoAddItem(1, 3, L"VBat");
 
-                StringCbPrintf(szText, sizeof(szText), L"%.3f V", fvalue);
+                if (SafeStrLen(LpcVoltageDesc[i].szDesc) > 0)
+                {
+                    StringCbPrintf(szText, sizeof(szText), L"%.3f V",
+                        fvalue + (fvalue - LpcVoltageDesc[i].vf) * LpcVoltageDesc[i].ri / LpcVoltageDesc[i].rf);
+                }
+                else
+                {
+                    StringCbPrintf(szText, sizeof(szText), L"%.3f V", fvalue);
+                }
                 IoSetItemText(ItemIndex, 1, szText);
             }
         }
@@ -250,68 +227,86 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
 
         temp = value / 2.0f;
 
-        if (temp <= 125 && temp >= -55 && !peciTemperature[i])
+        if (temp <= 125 && temp >= -55)
         {
             DebugTrace(L"Temperatures[%d] = %f", i, temp);
 
-            StringCbPrintf(szText, sizeof(szText), L"Temperature #%d", i + 1);
-            ItemIndex = IoAddItem(1, 4, szText);
+            if (SafeStrLen(szLpcTempDesc[i]) > 0)
+            {
+                ItemIndex = IoAddItem(1, 4, szLpcTempDesc[i]);
 
-            StringCbPrintf(szText, sizeof(szText), L"%.2f °C", temp);
-            IoSetItemText(ItemIndex, 1, szText);
+                StringCbPrintf(szText, sizeof(szText), L"%.2f °C", temp);
+                IoSetItemText(ItemIndex, 1, szText);
+            }
         }
     }
 
     bits = 0;
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 5; i++)
+    {
         bits = (bits << 8) | W836XX_ReadByte(address, 0, FAN_BIT_REG[i]);
+    }
 
     newBits = bits;
 
     for (i = 0; i < iMaxFans; i++)
     {
-        INT divisorBits, divisor;
-        INT count = W836XX_ReadByte(address, FAN_TACHO_BANK[i], FAN_TACHO_REG[i]);
+        BYTE offset, divisor, count;
 
         /* assemble fan divisor */
-        divisorBits = (INT)(
-            (((bits >> FAN_DIV_BIT2[i]) & 1) << 2) |
-            (((bits >> FAN_DIV_BIT1[i]) & 1) << 1) |
-            ((bits >> FAN_DIV_BIT0[i]) & 1));
+        offset = (((bits >> FAN_DIV_BIT2[i]) & 1) << 2) |
+                 (((bits >> FAN_DIV_BIT1[i]) & 1) << 1) |
+                  ((bits >> FAN_DIV_BIT0[i]) & 1);
 
-        divisor = 1 << divisorBits;
+        divisor = 1 << offset;
 
-        fvalue = (count < 0xff) ? 1.35e6f / (count * divisor) : 0;
+        count = W836XX_ReadByte(address, FAN_TACHO_BANK[i], FAN_TACHO_REG[i]);
+
+        /* update fan divisor */
+        if (count > 192 && offset < 7)
+        {
+            offset++;
+        }
+        else if (count < 96 && offset > 0)
+        {
+            offset--;
+        }
+
+        fvalue = (count < 0xff) ? 1.35e6f / ((FLOAT)(count * divisor * 2)) : 0;
 
         DebugTrace(L"Fans[%d] = %f", i, fvalue);
 
-        StringCbPrintf(szText, sizeof(szText), L"Fans #%d", i + 1);
-        ItemIndex = IoAddItem(1, 5, szText);
+        if (fvalue > 0.0f)
+        {
+            if (SafeStrLen(szLpcFanDesc[i]) > 0)
+            {
+                ItemIndex = IoAddItem(1, 5, szLpcFanDesc[i]);
+            }
+            else
+            {
+                StringCbPrintf(szText, sizeof(szText), L"Fans #%d", i + 1);
+                ItemIndex = IoAddItem(1, 5, szText);
+            }
 
-        StringCbPrintf(szText, sizeof(szText), L"%.0f RPM", fvalue);
-        IoSetItemText(ItemIndex, 1, szText);
+            StringCbPrintf(szText, sizeof(szText), L"%.0f RPM", fvalue);
+            IoSetItemText(ItemIndex, 1, szText);
+        }
 
-        /* update fan divisor */
-        if (count > 192 && divisorBits < 7)
-            divisorBits++;
-        if (count < 96 && divisorBits > 0)
-            divisorBits--;
-
-        newBits = W836XX_SetBit(newBits, FAN_DIV_BIT2[i], (divisorBits >> 2) & 1);
-        newBits = W836XX_SetBit(newBits, FAN_DIV_BIT1[i], (divisorBits >> 1) & 1);
-        newBits = W836XX_SetBit(newBits, FAN_DIV_BIT0[i], divisorBits & 1);
+        newBits = W836XX_SetBit(newBits, FAN_DIV_BIT2[i], (offset >> 2) & 1);
+        newBits = W836XX_SetBit(newBits, FAN_DIV_BIT1[i], (offset >> 1) & 1);
+        newBits = W836XX_SetBit(newBits, FAN_DIV_BIT0[i],  offset       & 1);
     }
 
     /* write new fan divisors */
     for (i = 4; i >= 0; i--)
     {
-        BYTE oldByte = (BYTE)(bits & 0xFF);
-        BYTE newByte = (BYTE)(newBits & 0xFF);
-
-        bits = bits >> 8;
-        newBits = newBits >> 8;
+        BYTE oldByte = bits & 0xFF;
+        BYTE newByte = newBits & 0xFF;
 
         if (oldByte != newByte)
             W836XX_WriteByte(address, 0, FAN_BIT_REG[i], newByte);
+
+        bits = bits >> 8;
+        newBits = newBits >> 8;
     }
 }
