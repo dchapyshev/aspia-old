@@ -52,10 +52,20 @@ typedef struct
 /* lpc.c */
 extern CHIP_INFO ChipInfo[];
 VOID LPC_ChipTypeToText(DWORD dwChip, LPWSTR lpText, SIZE_T Size);
+VOID LPC_MainboardInfoInit(WORD wChipType);
 
 
 /* IT87XX.c */
-VOID IT87XX_GetInfo(WORD wChipType, WORD wAddress, WORD wGPIOAddress, BYTE bVersion);
+VOID IT87XX_GetInfo(WORD wChipType, WORD wAddress, BYTE bVersion);
+
+/* W836XX.c */
+VOID W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address);
+
+/* F718XX.c */
+VOID F718XX_GetInfo(WORD wChipType, WORD wAddress);
+
+/* NCT677X.c */
+VOID NCT677X_GetInfo(WORD wChipType, BYTE revision, WORD port);
 
 /* mainboards.c */
 
@@ -135,12 +145,12 @@ typedef struct
     WCHAR szDesc[MAX_STR_LEN];
     FLOAT ri;
     FLOAT rf;
-    //FLOAT vf;
+    FLOAT vf;
 }
 LPC_VOLTAGE_DESC;
 
 
-#define LPC_INDEX_MAX 10
+#define LPC_INDEX_MAX 11
 
 extern LPC_VOLTAGE_DESC LpcVoltageDesc[LPC_INDEX_MAX];
 extern WCHAR szLpcTempDesc[LPC_INDEX_MAX][MAX_STR_LEN];

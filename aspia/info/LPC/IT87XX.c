@@ -71,7 +71,6 @@ IT87XX_WriteGPIO(INT iIndex, INT iGPIOCount, WORD wGPIOAddress, BYTE bValue)
 VOID
 IT87XX_GetInfo(WORD wChipType,
                WORD wAddress,
-               WORD wGPIOAddress,
                BYTE bVersion)
 {
     WORD wAddressReg, wDataReg;
@@ -79,9 +78,7 @@ IT87XX_GetInfo(WORD wChipType,
     WCHAR szText[MAX_STR_LEN];
     BOOL Valid, has16bitFanCounter;
     FLOAT fVoltageGain;
-    INT iGPIOCount, i;
-    INT iValue;
-    INT ItemIndex;
+    INT i, iValue, ItemIndex;
 
     wAddressReg = (WORD)(wAddress + ADDRESS_REGISTER_OFFSET);
     wDataReg = (WORD)(wAddress + DATA_REGISTER_OFFSET);
@@ -99,8 +96,7 @@ IT87XX_GetInfo(WORD wChipType,
     if ((IT87XX_ReadByte(wAddressReg, wDataReg, CONFIGURATION_REGISTER, &Valid) & 0x10) == 0)
         return;
 
-    if (!Valid)
-        return;
+    if (!Valid) return;
 
     LPC_ChipTypeToText(wChipType, szText, sizeof(szText));
     IoAddItem(0, 2, szText);
@@ -125,36 +121,17 @@ IT87XX_GetInfo(WORD wChipType,
         has16bitFanCounter = TRUE;
     }
 
-    /* Set the number of GPIO sets */
-    switch (wChipType)
-    {
-        case IT8712F:
-        case IT8716F:
-        case IT8718F:
-        case IT8726F:
-            iGPIOCount = 5;
-            break;
-
-        case IT8720F:
-        case IT8721F:
-            iGPIOCount = 8;
-            break;
-
-        case IT8728F:
-        case IT8772E:
-            iGPIOCount = 0;
-            break;
-    }
-
     for (i = 0; i < 9; i++)
     {
-        FLOAT fValue =
-            fVoltageGain * IT87XX_ReadByte(wAddressReg,
-                                           wDataReg,
-                                           (BYTE)(VOLTAGE_BASE_REG + i),
-                                           &Valid);
+        BYTE v = IT87XX_ReadByte(wAddressReg,
+                                 wDataReg,
+                                 (BYTE)(VOLTAGE_BASE_REG + i),
+                                 &Valid);
+        FLOAT fValue;
 
-        if (!Valid) continue;
+        if (!Valid || v == 0xFF) continue;
+
+        fValue = fVoltageGain * v;
 
         if (fValue > 0)
         {
@@ -193,15 +170,10 @@ IT87XX_GetInfo(WORD wChipType,
             if (SafeStrLen(szLpcTempDesc[i]) > 0)
             {
                 ItemIndex = IoAddItem(1, 2, szLpcTempDesc[i]);
-            }
-            else
-            {
-                StringCbPrintf(szText, sizeof(szText), L"Temperature #%d", i + 1);
-                ItemIndex = IoAddItem(1, 2, szText);
-            }
 
-            StringCbPrintf(szText, sizeof(szText), L"%d °C", bValue);
-            IoSetItemText(ItemIndex, 1, szText);
+                StringCbPrintf(szText, sizeof(szText), L"%d °C", bValue);
+                IoSetItemText(ItemIndex, 1, szText);
+            }
         }
     }
 

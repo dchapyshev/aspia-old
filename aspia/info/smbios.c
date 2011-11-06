@@ -1507,14 +1507,22 @@ DMI_SystemInfo(VOID)
         IoAddHeader(0, IDS_CAT_HW_DMI_SYSTEM, 0);
 
         /* Vendor */
-        Index = IoAddValueName(1, IDS_MANUFACTURER, 0);
         GetStringResourceByID(Buf[0x04], pBuf, szText);
-        IoSetItemText(Index, 1, szText);
+        ChopSpaces(szText, sizeof(szText));
+        if (szText[0] != 0)
+        {
+            Index = IoAddValueName(1, IDS_MANUFACTURER, 0);
+            IoSetItemText(Index, 1, szText);
+        }
 
         /* Product */
-        Index = IoAddValueName(1, IDS_PRODUCT, 0);
         GetStringResourceByID(Buf[0x05], pBuf, szText);
-        IoSetItemText(Index, 1, szText);
+        ChopSpaces(szText, sizeof(szText));
+        if (szText[0] != 0)
+        {
+            Index = IoAddValueName(1, IDS_PRODUCT, 0);
+            IoSetItemText(Index, 1, szText);
+        }
 
         /* Version */
         GetStringResourceByID(Buf[0x06], pBuf, szText);
@@ -1536,7 +1544,8 @@ DMI_SystemInfo(VOID)
 
         /* ID */
         CopyMemory(&Uuid, &Buf[0x08], 16);
-        if (Uuid.TimeLow && Uuid.TimeHiAndVersion && Uuid.TimeMid)
+        if (Uuid.TimeLow != 0xFFFFFFFF && Uuid.TimeHiAndVersion != 0xFFFF &&
+            Uuid.TimeMid != 0xFFFF)
         {
             Index = IoAddValueName(1, IDS_SYS_ID, 0);
             StringCbPrintf(szText,
