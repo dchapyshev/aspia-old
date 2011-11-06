@@ -147,7 +147,7 @@ ShowMonitorsInfo(VOID)
     INT DeviceIndex = 0;
     BYTE Edid[0x80];
     BYTE* Block;
-    INT Index, ItemIndex;
+    INT Index, ItemIndex, Count = 0;
 
     StringCbPrintf(szIniPath, sizeof(szIniPath),
                    L"%s%s",
@@ -219,7 +219,7 @@ ShowMonitorsInfo(VOID)
                 StringCbPrintf(szText, sizeof(szText), L"%s (NoDB)", szDeviceName);
             }
 
-            if (DeviceIndex == 1) IoAddHeader(0, IDS_CAT_HW_MONITOR, 5);
+            if (++Count == 1) IoAddHeader(0, IDS_CAT_HW_MONITOR, 5);
             ItemIndex = IoAddItem(1, 5, szText);
 
             Block = Edid + DETAILED_TIMING_DESCRIPTIONS_START;
