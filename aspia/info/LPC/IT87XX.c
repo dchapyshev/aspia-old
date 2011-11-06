@@ -24,8 +24,8 @@
 #define VOLTAGE_BASE_REG                 0x20
 
 
-static BYTE FAN_TACHOMETER_REG[]            = { 0x0d, 0x0e, 0x0f, 0x80, 0x82 };
-static BYTE FAN_TACHOMETER_EXT_REG[]        = { 0x18, 0x19, 0x1a, 0x81, 0x83 };
+static const BYTE FAN_TACHOMETER_REG[]     = { 0x0d, 0x0e, 0x0f, 0x80, 0x82 };
+static const BYTE FAN_TACHOMETER_EXT_REG[] = { 0x18, 0x19, 0x1a, 0x81, 0x83 };
 
 
 BYTE
@@ -143,7 +143,7 @@ IT87XX_GetInfo(WORD wChipType,
 
                 /* Voltage = value + (value - Vf) * Ri / Rf */
                 StringCbPrintf(szText, sizeof(szText), L"%.3f V",
-                    fValue + (fValue - 0) * LpcVoltageDesc[i].ri / LpcVoltageDesc[i].rf);
+                    fValue + (fValue - LpcVoltageDesc[i].vf) * LpcVoltageDesc[i].ri / LpcVoltageDesc[i].rf);
                 IoSetItemText(ItemIndex, 1, szText);
             }
             else
