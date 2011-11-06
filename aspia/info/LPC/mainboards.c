@@ -165,6 +165,7 @@ MB_MODELS MbModelsList[] =
     { X38_DS5, L"X38-DS5" },
     { X58A_UD3R, L"X58A-UD3R" },
     { Z68X_UD7_B3, L"Z68X-UD7-B3" },
+    { G31M_ES2C, L"G31M-ES2C" },
     /* Shuttle */
     { FH67, L"FH67" },
     /* EPOX */
@@ -526,6 +527,17 @@ LPC_MainboardInfoInit(WORD wChipType)
                             InitFItem(1, L"System Fan #2");
                             InitFItem(2, L"Power Fan");
                             InitFItem(3, L"System Fan #1");
+                            break;
+
+                        case G31M_ES2C: /* IT8718F */
+                            InitVItem(0, L"CPU VCore", 0.0f, 1.0f, 0.0f);
+                            InitVItem(1, L"DRAM",      0.0f, 1.0f, 0.0f);
+                            InitVItem(2, L"+3.3V",     0.0f, 1.0f, 0.0f);
+                            InitVItem(3, L"+5V",       6.8f, 10.0f, 0.0f);
+                            InitVItem(7, L"+12V",      27.0f, 9.1f, 0.0f);
+                            InitVItem(8, L"VBat",      0.0f, 1.0f, 0.0f);
+
+                            InitTItem(2, L"CPU");
                             break;
 
                         default:
