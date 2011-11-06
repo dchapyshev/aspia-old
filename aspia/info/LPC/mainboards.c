@@ -166,6 +166,8 @@ MB_MODELS MbModelsList[] =
     { Z68X_UD7_B3, L"Z68X-UD7-B3" },
     /* Shuttle */
     { FH67, L"FH67" },
+    /* EPOX */
+    { _9NPA7I_9NPAI_9NPA7J_9NPAJ_3P, L"nForce4 DDR: 9NPA7I / 9NPAI / 9NPA7J / 9NPAJ-3P Series" },
     {0}
 };
 
@@ -586,8 +588,8 @@ LPC_MainboardInfoInit(WORD wChipType)
                         case P67A_UD4_B3: /* IT8728F */
                             InitVItem(0, L"+12V",          100.0f, 10.0f);
                             InitVItem(1, L"+5V",           15.0f,  10.0f);
-                            InitVItem(5, L"CPU VCore",     0.0f,   0.0f);
-                            InitVItem(6, L"DRAM",          0.0f,   0.0f);
+                            InitVItem(5, L"CPU VCore",     0.0f,   1.0f);
+                            InitVItem(6, L"DRAM",          0.0f,   1.0f);
                             InitVItem(7, L"Standby +3.3V", 10.0f,  10.0f);
                             InitVItem(8, L"VBat",          10.0f,  10.0f);
 
@@ -691,6 +693,68 @@ LPC_MainboardInfoInit(WORD wChipType)
         }
         break;
 
+        case F71805F:
+        case F71872F:
+        {
+            switch (wManufId)
+            {
+                case EPOX_MB:
+                {
+                    switch (wModelId)
+                    {
+                        case _9NPA7I_9NPAI_9NPA7J_9NPAJ_3P:
+                            InitVItem(0,  L"VCC3.3V",  100.0f, 100.0f);
+                            InitVItem(1,  L"VTT1.2V",  0.0f, 1.0f);
+                            InitVItem(2,  L"VRAM",     100.0f, 100.0f);
+                            InitVItem(3,  L"VCHIPSET", 47.0f, 100.0f);
+                            InitVItem(4,  L"VCC5V",    200.0f, 47.0f);
+                            InitVItem(5,  L"+12V",     200.0f, 20.0f);
+                            InitVItem(6,  L"VCC1.5V",  0.0f, 1.0f);
+                            InitVItem(7,  L"VCORE",    0.0f, 1.0f);
+                            InitVItem(8,  L"VSB5V",    200.0f, 47.0f);
+                            InitVItem(9,  L"VBATTERY", 100.0f, 100.0f);
+                            InitVItem(10, L"VSB3.3V",  100.0f, 100.0f);
+
+                            InitTItem(0, L"CPU");
+                            InitTItem(1, L"Motherboard");
+
+                            InitFItem(0, L"CPU Fan");
+                            break;
+
+                        default:
+                            InitVItem(0,  L"VCC3.3V",  100.0f, 100.0f);
+                            InitVItem(1,  L"VTT1.2V",  0.0f, 1.0f);
+                            InitVItem(2,  L"VRAM",     100.0f, 100.0f);
+                            InitVItem(3,  L"VCHIPSET", 47.0f, 100.0f);
+                            InitVItem(4,  L"VCC5V",    200.0f, 47.0f);
+                            InitVItem(5,  L"+12V",     200.0f, 20.0f);
+                            InitVItem(6,  L"VCC1.5V",  0.0f, 1.0f);
+                            InitVItem(7,  L"VCORE",    0.0f, 1.0f);
+                            InitVItem(8,  L"VSB5V",    200.0f, 47.0f);
+                            InitVItem(9,  L"VBATTERY", 100.0f, 100.0f);
+                            InitVItem(10, L"VSB3.3V",  100.0f, 100.0f);
+                            break;
+                    }
+                }
+                break;
+
+                default:
+                    InitVItem(0,  L"VCC3.3V",  100.0f, 100.0f);
+                    InitVItem(1,  L"VTT1.2V",  0.0f, 1.0f);
+                    InitVItem(2,  L"VRAM",     100.0f, 100.0f);
+                    InitVItem(3,  L"VCHIPSET", 47.0f, 100.0f);
+                    InitVItem(4,  L"VCC5V",    200.0f, 47.0f);
+                    InitVItem(5,  L"+12V",     200.0f, 20.0f);
+                    InitVItem(6,  L"VCC1.5V",  0.0f, 1.0f);
+                    InitVItem(7,  L"VCORE",    0.0f, 1.0f);
+                    InitVItem(8,  L"VSB5V",    200.0f, 47.0f);
+                    InitVItem(9,  L"VBATTERY", 100.0f, 100.0f);
+                    InitVItem(10, L"VSB3.3V",  100.0f, 100.0f);
+                    break;
+            }
+        }
+        break;
+
         case F71862:
         case F71869:
         case F71882:
@@ -726,7 +790,7 @@ LPC_MainboardInfoInit(WORD wChipType)
 
                         default:
                             InitVItem(0, L"VCC3V",     150.0f, 150.0f);
-                            InitVItem(1, L"CPU VCore", 0.0f,   0.0f);
+                            InitVItem(1, L"CPU VCore", 0.0f,   1.0f);
                             InitVItem(7, L"VSB3V",     150.0f, 150.0f);
                             InitVItem(8, L"VBat",      150.0f, 150.0f);
                             break;
@@ -736,7 +800,7 @@ LPC_MainboardInfoInit(WORD wChipType)
 
                 default:
                     InitVItem(0, L"VCC3V",     150.0f, 150.0f);
-                    InitVItem(1, L"CPU VCore", 0.0f,   0.0f);
+                    InitVItem(1, L"CPU VCore", 0.0f,   1.0f);
                     InitVItem(7, L"VSB3V",     150.0f, 150.0f);
                     InitVItem(8, L"VBat",      150.0f, 150.0f);
                     break;
@@ -864,7 +928,7 @@ LPC_MainboardInfoInit(WORD wChipType)
                     {
                         case P6X58D_E: /* W83667HG */
                         case Rampage_II_GENE:
-                            InitVItem(0, L"CPU VCore",     0.0f,   0.0f);
+                            InitVItem(0, L"CPU VCore",     0.0f,   1.0f);
                             InitVItem(1, L"+12V",          11.5f,  1.91f);
                             InitVItem(2, L"Analog +3.3V",  34.0f,  34.0f);
                             InitVItem(3, L"+3.3V",         34.0f,  34.0f);
