@@ -860,7 +860,7 @@ ReportWindowInitControls(HWND hwnd)
     SendMessage(hFilePath, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
 
     /* Set default file path */
-    if (SafeStrLen(SettingsInfo.szReportPath) == 0)
+    if (SettingsInfo.szReportPath[0] == 0)
     {
         WCHAR szExt[MAX_STR_LEN];
 

@@ -277,7 +277,7 @@ ShowSpdDataForDDR(BYTE *Spd)
         StringCbCat(szText, sizeof(szText), L"2, ");
     if ((Spd[0x10] & 0x01))
         StringCbCat(szText, sizeof(szText), L"1, ");
-    szText[SafeStrLen(szText) - 2] = 0;
+    szText[wcslen(szText) - 2] = 0;
     IoSetItemText(ItemIndex, 1, szText);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_REFRESH_RATE, 1);
@@ -300,7 +300,7 @@ ShowSpdDataForDDR(BYTE *Spd)
         StringCbCat(szText, sizeof(szText), L"1.5, ");
     if (Spd[0x12] & 0x01)
         StringCbCat(szText, sizeof(szText), L"1.0, ");
-    szText[SafeStrLen(szText) - 2] = 0;
+    szText[wcslen(szText) - 2] = 0;
     IoSetItemText(ItemIndex, 1, szText);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_TIMING_RCD, 1);

@@ -92,7 +92,7 @@ ShowSpdDataForDDR2(BYTE *Spd)
                    Spd[0x4E], Spd[0x4F], Spd[0x50], Spd[0x51], Spd[0x52],
                    Spd[0x53], Spd[0x54], Spd[0x55], Spd[0x56], Spd[0x57],
                    Spd[0x58], Spd[0x59], Spd[0x5A]);
-    IoAddHeaderString(0, (SafeStrLen(szText) == 0) ? L"Unknown" : szText, 0);
+    IoAddHeaderString(0, (szText[0] == 0) ? L"Unknown" : szText, 0);
 
     ItemIndex = IoAddValueName(1, IDS_MANUFACTURER, 0);
     GetSpdManufacturer(Spd, szText, sizeof(szText));
@@ -184,7 +184,7 @@ ShowSpdDataForDDR2(BYTE *Spd)
         StringCbCat(szText, sizeof(szText), L"8, ");
     if ((Spd[0x10] & 0x04) >> 1)
         StringCbCat(szText, sizeof(szText), L"4, ");
-    szText[SafeStrLen(szText) - 2] = 0;
+    szText[wcslen(szText) - 2] = 0;
     IoSetItemText(ItemIndex, 1, szText);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_REFRESH_RATE, 1);
@@ -205,7 +205,7 @@ ShowSpdDataForDDR2(BYTE *Spd)
         StringCbCat(szText, sizeof(szText), L"3.0, ");
     if ((Spd[0x12] & 0x04) >> 1)
         StringCbCat(szText, sizeof(szText), L"2.0, ");
-    szText[SafeStrLen(szText) - 2] = 0;
+    szText[wcslen(szText) - 2] = 0;
     IoSetItemText(ItemIndex, 1, szText);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_TIMING_RCD, 1);

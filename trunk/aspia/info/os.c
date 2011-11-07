@@ -28,7 +28,7 @@ ShowRegInfo(UINT StringID, LPWSTR lpszKeyName)
                           szText,
                           MAX_STR_LEN);
 
-    if (SafeStrLen(szText) > 0)
+    if (szText[0] != 0)
     {
         Index = IoAddValueName(1, StringID, 0);
         IoSetItemText(Index, 1, szText);
@@ -461,7 +461,7 @@ AutorunShowRegPath(HKEY hRootKey, LPWSTR lpszPath)
             break;
         }
 
-        if (SafeStrLen(szName) >= 1)
+        if (szName[0] != 0)
         {
             HICON hIcon = NULL;
             WCHAR szNewPath[MAX_PATH];
@@ -627,7 +627,7 @@ AutorunShowFolderContent(LPWSTR lpszPath)
     {
         IconIndex = IoAddIcon(IDI_APPS);
         LoadMUIString(IDS_NONE, szPath, MAX_PATH);
-        Index = IoAddItem(0, IconIndex, szPath);
+        Index = IoAddItem(1, IconIndex, szPath);
         IoSetItemText(Index, 1, L"\0");
     }
 

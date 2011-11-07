@@ -1,84 +1,20 @@
 /*
- * PROJECT:         Aspia
- * FILE:            aspia/driver.c
+ * PROJECT:         Aspia (Driver Helper DLL)
+ * FILE:            driver/dll/driver_dll.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "main.h"
+#include "driver_dll.h"
 
 #include <stddef.h>
 
-#include "../driver/sys/ioctl.h"
+//#include "../driver/ioctl.h"
 
 HANDLE hDriverFile = INVALID_HANDLE_VALUE;
 const LPWSTR lpDriverName = L"Aspia";
+HINSTANCE hInst;
 
-#ifdef _ASPIA_PORTABLE_
-BOOL
-DRIVER_ExtractFromExe(OUT LPWSTR lpszDriverPath,
-                      IN SIZE_T PathSize)
-{
-    WCHAR szPath[MAX_PATH];
-    BOOL IsWin64 = IsWin64System();
-    HRSRC hRes = NULL;
-    HGLOBAL hData = NULL;
-    LPVOID pData = NULL;
-    DWORD dwSize, dwWritten;
-    HANDLE hFile;
-
-    if (!GetTempPath(sizeof(szPath)/sizeof(WCHAR), szPath))
-    {
-        StringCbCopy(lpszDriverPath, PathSize, L"aspia.sys");
-    }
-    else
-    {
-        StringCbPrintf(lpszDriverPath,
-                       PathSize,
-                       L"%s\\aspia",
-                       szPath);
-        CreateDirectory(lpszDriverPath, NULL);
-        StringCbCat(lpszDriverPath, PathSize, L"\\aspia.sys");
-    }
-    DeleteFile(lpszDriverPath);
-
-    DebugTrace(L"Extract %s driver to: %s",
-               IsWin64 ? L"amd64" : L"x86", lpszDriverPath);
-    
-    hRes = FindResource(hInstance,
-                        IsWin64 ?
-                            MAKEINTRESOURCE(ID_DRIVER_X64_SYS) :
-                            MAKEINTRESOURCE(ID_DRIVER_X32_SYS),
-                        L"SYS");
-    if (hRes == NULL) return FALSE;
-
-    dwSize = SizeofResource(hInstance, hRes);
-    if (dwSize == 0) return FALSE;
-
-    hData = LoadResource(hInstance, hRes);
-    if (hData == NULL) return FALSE;
-
-    pData = LockResource(hData);
-    if (pData == NULL) return FALSE;
-
-    hFile = CreateFile(lpszDriverPath,
-                       GENERIC_WRITE,
-                       FILE_SHARE_WRITE,
-                       0, OPEN_ALWAYS,
-                       0, 0);
-    if (hFile == INVALID_HANDLE_VALUE)
-        return FALSE;
-
-    if (!WriteFile(hFile, pData, dwSize, &dwWritten, 0))
-    {
-        CloseHandle(hFile);
-        return FALSE;
-    }
-
-    CloseHandle(hFile);
-    return TRUE;
-}
-#endif /* _ASPIA_PORTABLE_ */
 
 static BOOL
 InstallDriver(IN SC_HANDLE scHandle,
@@ -172,14 +108,9 @@ CloseDevice(IN HANDLE hHandle)
 }
 
 BOOL
-DRIVER_Unload(VOID)
+drv_unload(VOID)
 {
     SC_HANDLE scHandle;
-
-    if (!SettingsInfo.AllowKmDriver)
-        return FALSE;
-
-    DebugTrace(L"Unloading driver");
 
     if (hDriverFile != INVALID_HANDLE_VALUE)
     {
@@ -215,34 +146,75 @@ OpenDevice(VOID)
 }
 
 BOOL
-DRIVER_Load(VOID)
+GetCurrentPath(LPWSTR lpszPath, SIZE_T PathLen)
+{
+    SIZE_T Index;
+
+    if (!GetModuleFileName(hInst, lpszPath, PathLen))
+        return FALSE;
+
+    for (Index = lstrlen(lpszPath); Index > 0; Index--)
+    {
+        if (lpszPath[Index] == L'\\')
+        {
+            lpszPath[Index + 1] = 0;
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
+BOOL IsWin64System(VOID)
+{
+#ifdef _M_IX86
+    typedef BOOL (WINAPI *IW64P)(HANDLE, PBOOL);
+
+    IW64P IsWow64Process;
+    HINSTANCE hDLL;
+    BOOL Result;
+
+    hDLL = LoadLibrary(L"KERNEL32.DLL");
+    if (hDLL)
+    {
+        IsWow64Process = (IW64P)GetProcAddress(hDLL, "IsWow64Process");
+        if (IsWow64Process)
+        {
+            if (IsWow64Process(GetCurrentProcess(), &Result))
+            {
+                FreeLibrary(hDLL);
+                return Result;
+            }
+        }
+    }
+
+    FreeLibrary(hDLL);
+    return FALSE;
+#else
+    return TRUE;
+#endif
+}
+
+BOOL
+drv_load(VOID)
 {
     WCHAR szDriverExec[MAX_PATH];
-#ifndef _ASPIA_PORTABLE_
     WCHAR szCurrent[MAX_PATH];
+    WCHAR szCurrentPath[MAX_PATH];
     WCHAR szTemp[MAX_PATH];
-#endif
     SC_HANDLE scHandle;
     BOOLEAN   canDelete = TRUE;
     BOOLEAN   bStarted;
 
-    if (!SettingsInfo.AllowKmDriver)
+    if (!GetTempPath(MAX_PATH, szTemp) ||
+        !GetCurrentPath(szCurrentPath, MAX_PATH))
     {
-        DebugTrace(L"Kernel-mode driver disabled by user");
         return FALSE;
     }
 
-    DebugTrace(L"Loading driver...");
-
-#ifdef _ASPIA_PORTABLE_
-    if (!DRIVER_ExtractFromExe(szDriverExec, sizeof(szDriverExec)))
-        return FALSE;
-#else
-    if (!GetTempPath(MAX_PATH, szTemp)) return FALSE;
-
     StringCbPrintf(szCurrent, sizeof(szCurrent),
                    L"%s%s",
-                   ParamsInfo.szCurrentPath,
+                   szCurrentPath,
                    IsWin64System() ? L"aspia_x64.sys" : L"aspia_x32.sys");
 
     StringCbPrintf(szDriverExec, sizeof(szDriverExec), L"%saspia.sys", szTemp);
@@ -251,9 +223,6 @@ DRIVER_Load(VOID)
         StringCchCopy(szDriverExec, MAX_PATH, szCurrent);
         canDelete = FALSE;
     }
-    DebugTrace(L"Driver path: %s", szCurrent);
-    DebugTrace(L"Driver temp path: %s", szDriverExec);
-#endif
 
     scHandle = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
     if (!scHandle) return FALSE;
@@ -274,17 +243,15 @@ DRIVER_Load(VOID)
     hDriverFile = OpenDevice();
     if (hDriverFile == INVALID_HANDLE_VALUE)
     {
-        DRIVER_Unload();
+        drv_unload();
         return FALSE;
     }
-
-    DebugTrace(L"Driver was loaded successfully");
 
     return TRUE;
 }
 
 PVOID
-DRIVER_GetSMBIOSData(OUT DWORD* ReturnSize)
+drv_get_smbios_data(OUT DWORD* ReturnSize)
 {
     PVOID Data = NULL;
     DWORD ReadByte;
@@ -342,9 +309,9 @@ DRIVER_GetSMBIOSData(OUT DWORD* ReturnSize)
 // Data - указатель на переменную в которую запищутс€ данные MSR регистра
 // ¬озвращенает true или false 
 BOOL
-DRIVER_GetMSRData(IN UINT32 Register,
-                  IN UINT32 CpuIndex,
-                  OUT UINT64* Data)
+drv_read_msr(IN UINT32 Register,
+             IN UINT32 CpuIndex,
+             OUT UINT64* Data)
 {
     DWORD ReadByte;
     READ_MSR_QUERY Query;
@@ -361,7 +328,7 @@ DRIVER_GetMSRData(IN UINT32 Register,
 }
 
 WORD
-DRIVER_ReadIoPortWord(IN DWORD Port)
+drv_read_io_port_word(IN DWORD Port)
 {
     WORD Value = 0;
     DWORD ReadByte;
@@ -375,7 +342,7 @@ DRIVER_ReadIoPortWord(IN DWORD Port)
 }
 
 DWORD
-DRIVER_ReadIoPortDword(IN DWORD Port)
+drv_read_io_port_dword(IN DWORD Port)
 {
     DWORD ReadByte = 0, Value;
 
@@ -392,7 +359,7 @@ DRIVER_ReadIoPortDword(IN DWORD Port)
 }
 
 BYTE
-DRIVER_ReadIoPortByte(IN DWORD Port)
+drv_read_io_port_byte(IN DWORD Port)
 {
     DWORD ReadByte;
     WORD Value;
@@ -406,7 +373,7 @@ DRIVER_ReadIoPortByte(IN DWORD Port)
 }
 
 BOOL
-DRIVER_WriteIoPortWord(IN DWORD Port,
+drv_write_io_port_word(IN DWORD Port,
                        IN WORD Value)
 {
     PORT_WRITE_INPUT InBuffer;
@@ -426,7 +393,7 @@ DRIVER_WriteIoPortWord(IN DWORD Port,
 }
 
 BOOL
-DRIVER_WriteIoPortDword(IN DWORD Port,
+drv_write_io_port_dword(IN DWORD Port,
                         IN DWORD Value)
 {
     PORT_WRITE_INPUT InBuffer;
@@ -446,7 +413,7 @@ DRIVER_WriteIoPortDword(IN DWORD Port,
 }
 
 BOOL
-DRIVER_WriteIoPortByte(IN DWORD Port, IN BYTE Value)
+drv_write_io_port_byte(IN DWORD Port, IN BYTE Value)
 {
     PORT_WRITE_INPUT InBuffer;
     DWORD ReadByte, Length;
@@ -465,26 +432,26 @@ DRIVER_WriteIoPortByte(IN DWORD Port, IN BYTE Value)
 }
 
 DWORD
-DRIVER_GetRegisterDataDword(IN DWORD Register,
+drv_get_register_data_dword(IN DWORD Register,
                             IN INT Offset)
 {
-    DRIVER_WriteIoPortDword(CONFIG_ADDRESS, Register + Offset);
-    return DRIVER_ReadIoPortDword(CONFIG_DATA);
+    drv_write_io_port_dword(CONFIG_ADDRESS, Register + Offset);
+    return drv_read_io_port_dword(CONFIG_DATA);
 }
 
 WORD
-DRIVER_GetRegisterDataWord(IN DWORD Register,
+drv_get_register_data_word(IN DWORD Register,
                            IN INT Offset)
 {
-    DRIVER_WriteIoPortDword(CONFIG_ADDRESS, Register + Offset);
-    return DRIVER_ReadIoPortWord(CONFIG_DATA);
+    drv_write_io_port_dword(CONFIG_ADDRESS, Register + Offset);
+    return drv_read_io_port_word(CONFIG_DATA);
 }
 
 BOOL
-DRIVER_ReadPciConfig(IN DWORD PciAddress,
-                     IN DWORD RegAddress,
-                     OUT PBYTE Value,
-                     IN DWORD Size)
+drv_read_pci_config(IN DWORD PciAddress,
+                    IN DWORD RegAddress,
+                    OUT PBYTE Value,
+                    IN DWORD Size)
 {
     READ_PCI_CONFIG_INPUT InputBuffer;
     DWORD ReturnedLength = 0;
@@ -514,10 +481,10 @@ DRIVER_ReadPciConfig(IN DWORD PciAddress,
 }
 
 BOOL
-DRIVER_WritePciConfig(IN DWORD PciAddress,
-                      IN DWORD RegAddress,
-                      IN PBYTE Value,
-                      IN DWORD Size)
+drv_write_pci_config(IN DWORD PciAddress,
+                     IN DWORD RegAddress,
+                     IN PBYTE Value,
+                     IN DWORD Size)
 {
     DWORD ReturnedLength = 0;
     BOOL Result = FALSE;
@@ -537,7 +504,7 @@ DRIVER_WritePciConfig(IN DWORD PciAddress,
 
     InputSize = offsetof(WRITE_PCI_CONFIG_INPUT, Data) + Size;
 
-    InputBuffer = (PWRITE_PCI_CONFIG_INPUT)Alloc(InputSize);
+    InputBuffer = (PWRITE_PCI_CONFIG_INPUT)HeapAlloc(GetProcessHeap(), 0, InputSize);
     if (!InputBuffer) return FALSE;
 
     CopyMemory(InputBuffer->Data, Value, Size);
@@ -552,13 +519,13 @@ DRIVER_WritePciConfig(IN DWORD PciAddress,
                              0,
                              &ReturnedLength,
                              NULL);
-    Free(InputBuffer);
+    HeapFree(GetProcessHeap(), 0, InputBuffer);
 
     return Result;
 }
 
 BOOL
-DRIVER_ReadPMC(IN DWORD Index, OUT PDWORD eax, OUT PDWORD edx)
+drv_read_pmc(IN DWORD Index, OUT PDWORD eax, OUT PDWORD edx)
 {
     DWORD ReturnedLength = 0;
     BOOL Result = FALSE;
@@ -582,4 +549,22 @@ DRIVER_ReadPMC(IN DWORD Index, OUT PDWORD eax, OUT PDWORD edx)
     }
 
     return Result;
+}
+
+BOOL APIENTRY
+DllMain(HMODULE hinstDLL,
+        DWORD  dwReason,
+        LPVOID lpReserved)
+{
+    UNREFERENCED_PARAMETER(lpReserved);
+
+    switch (dwReason)
+    {
+        case DLL_PROCESS_ATTACH:
+        case DLL_THREAD_ATTACH:
+            hInst = hinstDLL;
+            break;
+    }
+
+    return TRUE;
 }

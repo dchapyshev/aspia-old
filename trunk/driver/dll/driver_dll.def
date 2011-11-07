@@ -1,0 +1,17 @@
+LIBRARY   ASPIA_DRV.DLL
+EXPORTS
+drv_load @1
+drv_unload @2
+drv_get_smbios_data @3
+drv_read_msr @4
+drv_read_io_port_word @5
+drv_read_io_port_dword @6
+drv_read_io_port_byte @7
+drv_write_io_port_word @8
+drv_write_io_port_dword @9
+drv_write_io_port_byte @10
+drv_get_register_data_dword @11
+drv_get_register_data_word @12
+drv_read_pci_config @13
+drv_write_pci_config @14
+drv_read_pmc @15
