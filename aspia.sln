@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aspia", "aspia\aspia.vcproj", "{6ED4C44D-8AEB-4F4D-9E70-C3F06203F321}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aspia_drv", "driver\aspia_drv.vcproj", "{E05D293E-15CC-401F-9D2C-FAA263B34C98}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ru-RU", "languages\ru-RU\ru-RU.vcproj", "{E4D72312-EA0D-4236-AEBE-472DE543669D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uk-UA", "languages\uk-UA\uk-UA.vcproj", "{752C64F4-0CDE-4D2F-99F4-E58E18FE8705}"
@@ -16,6 +14,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "languages", "languages", "{12485EE8-336A-4C0D-85C5-C67B8293EB8E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "icons", "icons", "{C0522561-A080-4D52-A327-8CD74BAF594D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aspia_drv", "driver\sys\aspia_drv.vcproj", "{E05D293E-15CC-401F-9D2C-FAA263B34C98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,12 +33,6 @@ Global
 		{6ED4C44D-8AEB-4F4D-9E70-C3F06203F321}.Release|Win32.Build.0 = Release|Win32
 		{6ED4C44D-8AEB-4F4D-9E70-C3F06203F321}.Release|x64.ActiveCfg = Release|x64
 		{6ED4C44D-8AEB-4F4D-9E70-C3F06203F321}.Release|x64.Build.0 = Release|x64
-		{E05D293E-15CC-401F-9D2C-FAA263B34C98}.Debug|Win32.ActiveCfg = Release|Win32
-		{E05D293E-15CC-401F-9D2C-FAA263B34C98}.Debug|x64.ActiveCfg = Release|x64
-		{E05D293E-15CC-401F-9D2C-FAA263B34C98}.Release|Win32.ActiveCfg = Release|Win32
-		{E05D293E-15CC-401F-9D2C-FAA263B34C98}.Release|Win32.Build.0 = Release|Win32
-		{E05D293E-15CC-401F-9D2C-FAA263B34C98}.Release|x64.ActiveCfg = Release|x64
-		{E05D293E-15CC-401F-9D2C-FAA263B34C98}.Release|x64.Build.0 = Release|x64
 		{E4D72312-EA0D-4236-AEBE-472DE543669D}.Debug|Win32.ActiveCfg = Debug|Win32
 		{E4D72312-EA0D-4236-AEBE-472DE543669D}.Debug|Win32.Build.0 = Debug|Win32
 		{E4D72312-EA0D-4236-AEBE-472DE543669D}.Debug|x64.ActiveCfg = Debug|x64
@@ -71,6 +65,13 @@ Global
 		{C23BA434-CB6A-4F9F-8D33-D470EC8821D4}.Release|Win32.Build.0 = Release|Win32
 		{C23BA434-CB6A-4F9F-8D33-D470EC8821D4}.Release|x64.ActiveCfg = Release|x64
 		{C23BA434-CB6A-4F9F-8D33-D470EC8821D4}.Release|x64.Build.0 = Release|x64
+		{E05D293E-15CC-401F-9D2C-FAA263B34C98}.Debug|Win32.ActiveCfg = Release|x64
+		{E05D293E-15CC-401F-9D2C-FAA263B34C98}.Debug|x64.ActiveCfg = Release|x64
+		{E05D293E-15CC-401F-9D2C-FAA263B34C98}.Debug|x64.Build.0 = Release|x64
+		{E05D293E-15CC-401F-9D2C-FAA263B34C98}.Release|Win32.ActiveCfg = Release|Win32
+		{E05D293E-15CC-401F-9D2C-FAA263B34C98}.Release|Win32.Build.0 = Release|Win32
+		{E05D293E-15CC-401F-9D2C-FAA263B34C98}.Release|x64.ActiveCfg = Release|x64
+		{E05D293E-15CC-401F-9D2C-FAA263B34C98}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
