@@ -292,7 +292,7 @@ InitIconsCombo(IN HWND hCombo)
 
     ItemIndex = SendMessage(hCombo, CB_ADDSTRING, 0,
                             (LPARAM)L"Tango Icons");
-    if (SafeStrLen(ThemesInfo.szIconsFile) == 0)
+    if (ThemesInfo.szIconsFile[0] == 0)
         SendMessage(hCombo, CB_SETCURSEL, ItemIndex, 0);
 
     StringCbPrintf(szIconDir, sizeof(szIconDir),
@@ -374,7 +374,7 @@ InitLangCombo(IN HWND hCombo)
 
     ItemIndex = SendMessage(hCombo, CB_ADDSTRING, 0,
                             (LPARAM)L"English");
-    if (SafeStrLen(ThemesInfo.szLangFile) == 0)
+    if (ThemesInfo.szLangFile[0] == 0)
         SendMessage(hCombo, CB_SETCURSEL, ItemIndex, 0);
 
 #ifdef _ASPIA_PORTABLE_
@@ -481,7 +481,7 @@ ShowSensorsList(HWND hList)
                            L"%S", DriveInfo.sModelNumber);
             ChopSpaces(szText, sizeof(szText));
 
-            if (SafeStrLen(szText) > 3)
+            if (szText[0] != 0)
             {
                 ItemIndex = AddItem(hList, -1, szText, (LPARAM)0);
                 if (GetPrivateProfileInt(L"sensors", szText, 0, szIniPath) > 0)
@@ -899,7 +899,7 @@ SaveSettingsFromDialog(HWND hDlg)
     LangFile = (WCHAR*)SendMessage(hLangList, CB_GETITEMDATA, Selected, 0);
     if (!LangFile)
     {
-        if (SafeStrLen(ThemesInfo.szLangFile) > 0)
+        if (ThemesInfo.szLangFile[0] != 0)
         {
             ThemesInfo.szLangFile[0] = 0;
             LoadLanguage();
@@ -925,7 +925,7 @@ SaveSettingsFromDialog(HWND hDlg)
 
     if (!IconFile)
     {
-        if (SafeStrLen(ThemesInfo.szIconsFile) > 0)
+        if (ThemesInfo.szIconsFile[0] != 0)
         {
              ThemesInfo.szIconsFile[0] = 0;
              LoadIcons();

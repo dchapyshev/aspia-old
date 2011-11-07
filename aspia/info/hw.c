@@ -649,7 +649,7 @@ HW_WinVideoInfo(VOID)
                                   &DispDevice.DeviceKey[18],
                                   L"HardwareInformation.ChipType",
                                   szText, MAX_STR_LEN) &&
-            SafeStrLen(szText) > 0)
+            szText[0] != 0)
         {
             Index = IoAddValueName(1, IDS_MONITOR_CHIP_TYPE, 0);
             IoSetItemText(Index, 1, szText);
@@ -660,7 +660,7 @@ HW_WinVideoInfo(VOID)
                                   &DispDevice.DeviceKey[18],
                                   L"HardwareInformation.DacType",
                                   szText, MAX_STR_LEN) &&
-            SafeStrLen(szText) > 0)
+            szText[0] != 0)
         {
             Index = IoAddValueName(1, IDS_MONITOR_DAC_TYPE, 0);
             IoSetItemText(Index, 1, szText);

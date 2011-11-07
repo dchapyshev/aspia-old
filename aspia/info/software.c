@@ -286,7 +286,7 @@ SOFTWARE_TaskMgr(VOID)
         Index = IoAddItem(0, IconIndex, pe32.szExeFile);
 
         IoSetItemText(Index, 1,
-                      (SafeStrLen(szFilePath) > 0) ? szFilePath : L"-");
+                      (szFilePath[0] != 0) ? szFilePath : L"-");
 
         MemCounters.cb = sizeof(MemCounters);
         if (GetProcessMemoryInfo(hProcess, &MemCounters, sizeof(MemCounters)))

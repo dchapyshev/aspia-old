@@ -86,7 +86,7 @@ HardDrivesInfo(VOID)
             continue;
         }
 
-        if (SafeStrLen(szVolumeName) > 0)
+        if (szVolumeName[0] != 0)
         {
             StringCbPrintf(szResult, sizeof(szResult),
                            L"%c: (%s)(%s)",
@@ -337,7 +337,7 @@ ShowNetAdaptersInfo(VOID)
                        pAdapter->AdapterName);
 
         StringCbPrintf(szText, sizeof(szText), L"%S", pAdapter->Description);
-        if (SafeStrLen(szText) == 0)
+        if (szText[0] == 0)
         {
             if (!GetAdapterFriendlyName(szKey, szText, MAX_STR_LEN))
                 StringCbCopy(szText, sizeof(szText), L"Unknown Adapter");

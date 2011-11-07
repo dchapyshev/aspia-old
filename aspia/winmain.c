@@ -270,7 +270,7 @@ ListViewCopySelectedStrings(VOID)
 
                 if (!pText)
                 {
-                    Size = (SafeStrLen(szText) + 1) * sizeof(WCHAR);
+                    Size = (wcslen(szText) + 1) * sizeof(WCHAR);
                     pText = (WCHAR*)Alloc(Size);
                     if (!pText)
                     {
@@ -283,7 +283,7 @@ ListViewCopySelectedStrings(VOID)
                 else
                 {
                     OldSize = HeapSize(hProcessHeap, 0, pText);
-                    Size = OldSize + ((SafeStrLen(szText) + 1) * sizeof(WCHAR));
+                    Size = OldSize + ((wcslen(szText) + 1) * sizeof(WCHAR));
 
                     pText = (WCHAR*)ReAlloc(pText, Size);
                     if (HeapSize(hProcessHeap, 0, pText) != OldSize)
@@ -706,7 +706,7 @@ LoadLanguage(VOID)
     if (hLangInst && hLangInst != hInstance)
         FreeLibrary(hLangInst);
 
-    if (SafeStrLen(ThemesInfo.szLangFile) == 0 && IsIniFileExists())
+    if (ThemesInfo.szLangFile[0] == 0 && IsIniFileExists())
     {
         hLangInst = hInstance;
     }
@@ -762,7 +762,7 @@ LoadIcons(VOID)
     if (hIconsInst && hIconsInst != hInstance)
         FreeLibrary(hIconsInst);
 
-    if (SafeStrLen(ThemesInfo.szIconsFile) == 0)
+    if (ThemesInfo.szIconsFile[0] == 0)
     {
         hIconsInst = hInstance;
     }

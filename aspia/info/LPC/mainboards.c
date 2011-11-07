@@ -170,6 +170,8 @@ MB_MODELS MbModelsList[] =
     { FH67, L"FH67" },
     /* EPOX */
     { _9NPA7I_9NPAI_9NPA7J_9NPAJ_3P, L"nForce4 DDR: 9NPA7I / 9NPAI / 9NPA7J / 9NPAJ-3P Series" },
+    /* MSI */
+    { G32M3_V2, L"G31M3 V2(MS-7529)" },
     {0}
 };
 
@@ -808,6 +810,47 @@ LPC_MainboardInfoInit(WORD wChipType)
                             InitVItem(1, L"CPU VCore", 0.0f,   1.0f, 0.0f);
                             InitVItem(7, L"VSB3V",     150.0f, 150.0f, 0.0f);
                             InitVItem(8, L"VBat",      150.0f, 150.0f, 0.0f);
+                            break;
+                    }
+                }
+                break;
+
+                case MSI_MB:
+                {
+                    switch (wModelId)
+                    {
+                        case G32M3_V2:
+                            InitVItem(0, L"CPU I/O",   150.0f, 150.0f, 0.0f);
+                            InitVItem(1, L"CPU Core0", 0.0f,   1.0f,   0.0f);
+                            InitVItem(2, L"VIN2",      0.0f,   1.0f,   0.0f);
+                            InitVItem(3, L"VIN3",      0.0f,   1.0f,   0.0f);
+                            InitVItem(4, L"+5V",       200.0f, 47.0f,  0.0f);
+                            InitVItem(5, L"+12V",      200.0f, 20.0f,  0.0f);
+                            InitVItem(6, L"VIN6",      0.0f,   1.0f,   0.0f);
+                            InitVItem(7, L"3VSB",      150.0f, 150.0f, 0.0f);
+                            InitVItem(8, L"VBat",      150.0f, 150.0f, 0.0f);
+
+                            InitTItem(0, L"CPU");
+                            InitTItem(1, L"Auxiliary");
+                            InitTItem(2, L"Motherboard");
+
+                            InitFItem(0, L"CPU Fan");
+                            break;
+
+                        default:
+                            InitVItem(0, L"CPU I/O",   150.0f, 150.0f, 0.0f);
+                            InitVItem(1, L"CPU Core0", 0.0f,   1.0f,   0.0f);
+                            InitVItem(2, L"VIN2",      0.0f,   1.0f,   0.0f);
+                            InitVItem(3, L"VIN3",      0.0f,   1.0f,   0.0f);
+                            InitVItem(4, L"+5V",       200.0f, 47.0f,  0.0f);
+                            InitVItem(5, L"+12V",      200.0f, 20.0f,  0.0f);
+                            InitVItem(6, L"VIN6",      0.0f,   1.0f,   0.0f);
+                            InitVItem(7, L"3VSB",      150.0f, 150.0f, 0.0f);
+                            InitVItem(8, L"VBat",      150.0f, 150.0f, 0.0f);
+
+                            InitTItem(0, L"CPU");
+
+                            InitFItem(0, L"CPU Fan");
                             break;
                     }
                 }

@@ -141,6 +141,8 @@ VOID NCT677X_GetInfo(WORD wChipType, BYTE revision, WORD port);
 #define FH67                  0x0037
 /* EPOX */
 #define _9NPA7I_9NPAI_9NPA7J_9NPAJ_3P 0x0038
+/* MSI */
+#define G32M3_V2              0x0039
 
 typedef struct
 {

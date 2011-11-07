@@ -45,7 +45,7 @@ DebugWriteLog(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, ...)
                    szTime, lpFile, iLine, lpFunc, szMsg);
 
     WriteFile(hDebugLog, szText,
-              SafeStrLen(szText) * sizeof(WCHAR),
+              wcslen(szText) * sizeof(WCHAR),
               &dwBytesWritten, NULL);
 
     UnlockFile(hDebugLog, (DWORD_PTR)NewPos.QuadPart, 0, (DWORD_PTR)FileSize.QuadPart, 0);

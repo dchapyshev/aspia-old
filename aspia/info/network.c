@@ -179,11 +179,14 @@ NETWORK_CardsInfo(VOID)
                        pAdapter->AdapterName);
 
         StringCbPrintf(szText, sizeof(szText), L"%S", pAdapter->Description);
-        if (SafeStrLen(szText) == 0)
+        if (szText[0] == 0)
         {
             if (!GetAdapterFriendlyName(szKey, szText, MAX_STR_LEN))
                 StringCbCopy(szText, sizeof(szText), L"Unknown Adapter");
         }
+
+        DebugTrace(L"Adapter Name: %s", szText);
+
         IoAddHeaderString(0, szText, 0);
 
         if (GetStringFromRegistry(HKEY_LOCAL_MACHINE,
@@ -248,7 +251,7 @@ NETWORK_CardsInfo(VOID)
         Index = IoAddValueName(1, IDS_NIC_GETEWAY, 0);
         StringCbPrintf(szText, sizeof(szText), L"%S",
                        pAdapter->GatewayList.IpAddress.String);
-        IoSetItemText(Index, 1, (SafeStrLen(szText) != 0) ? szText : szNo);
+        IoSetItemText(Index, 1, (szText[0] != 0) ? szText : szNo);
 
         pPerInfo = (PIP_PER_ADAPTER_INFO)Alloc(sizeof(IP_PER_ADAPTER_INFO));
         if (!pPerInfo)
@@ -451,7 +454,7 @@ NETWORK_SharedInfo(VOID)
                                 szText,
                                 MAX_STR_LEN);
                 IoSetItemText(Index, 1,
-                    (SafeStrLen(szText) > 0) ? szText : L"-");
+                    (szText[0] != 0) ? szText : L"-");
 
                 /* Description */
                 IoSetItemText(Index, 2, pPtr->shi502_remark);
