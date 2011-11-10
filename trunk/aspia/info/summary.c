@@ -359,9 +359,17 @@ ShowNetAdaptersInfo(VOID)
             return;
         }
 
-        StringCbPrintf(szText, sizeof(szText), L"%S (%ld Mbps)",
-                       pAdapter->IpAddressList.IpAddress.String,
-                       pIfRow->dwSpeed / (1000 * 1000));
+        if (pAdapter->IpAddressList.IpAddress.String[0] == '0' ||
+            pIfRow->dwSpeed == 0)
+        {
+            LoadMUIString(IDS_NOT_CONNECTED, szText, MAX_STR_LEN);
+        }
+        else
+        {
+            StringCbPrintf(szText, sizeof(szText), L"%S (%ld Mbps)",
+                           pAdapter->IpAddressList.IpAddress.String,
+                           pIfRow->dwSpeed / (1000 * 1000));
+        }
         IoSetItemText(Index, 1, szText);
 
         pAdapter = pAdapter->Next;

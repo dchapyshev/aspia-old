@@ -239,19 +239,29 @@ NETWORK_CardsInfo(VOID)
         IoSetItemText(Index, 1, szText);
 
         Index = IoAddValueName(1, IDS_NIC_IP, 0);
-        StringCbPrintf(szText, sizeof(szText), L"%S",
-                       pAdapter->IpAddressList.IpAddress.String);
+        if (pAdapter->IpAddressList.IpAddress.String[0] = '0')
+        {
+            LoadMUIString(IDS_NOT_CONNECTED, szText, MAX_STR_LEN);
+        }
+        else
+        {
+            StringCbPrintf(szText, sizeof(szText), L"%S",
+                           pAdapter->IpAddressList.IpAddress.String);
+        }
         IoSetItemText(Index, 1, szText);
 
-        Index = IoAddValueName(1, IDS_NIC_SUBNET_MASK, 0);
-        StringCbPrintf(szText, sizeof(szText), L"%S",
-                       pAdapter->IpAddressList.IpMask.String);
-        IoSetItemText(Index, 1, szText);
+        if (pAdapter->IpAddressList.IpMask.String[0] != '0')
+        {
+            Index = IoAddValueName(1, IDS_NIC_SUBNET_MASK, 0);
+            StringCbPrintf(szText, sizeof(szText), L"%S",
+                           pAdapter->IpAddressList.IpMask.String);
+            IoSetItemText(Index, 1, szText);
+        }
 
         Index = IoAddValueName(1, IDS_NIC_GETEWAY, 0);
         StringCbPrintf(szText, sizeof(szText), L"%S",
                        pAdapter->GatewayList.IpAddress.String);
-        IoSetItemText(Index, 1, (szText[0] != 0) ? szText : szNo);
+        IoSetItemText(Index, 1, (szText[0] != '0') ? szText : szNo);
 
         pPerInfo = (PIP_PER_ADAPTER_INFO)Alloc(sizeof(IP_PER_ADAPTER_INFO));
         if (!pPerInfo)
@@ -341,10 +351,13 @@ NETWORK_CardsInfo(VOID)
                            pAdapter->PrimaryWinsServer.IpAddress.String);
             IoSetItemText(Index, 1, szText);
 
-            Index = IoAddValueName(1, IDS_WINS2, 0);
-            StringCbPrintf(szText, sizeof(szText), L"%S",
-                           pAdapter->SecondaryWinsServer.IpAddress.String);
-            IoSetItemText(Index, 1, szText);
+            if (pAdapter->SecondaryWinsServer.IpAddress.String[0] != 0)
+            {
+                Index = IoAddValueName(1, IDS_WINS2, 0);
+                StringCbPrintf(szText, sizeof(szText), L"%S",
+                               pAdapter->SecondaryWinsServer.IpAddress.String);
+                IoSetItemText(Index, 1, szText);
+            }
         }
         else
         {

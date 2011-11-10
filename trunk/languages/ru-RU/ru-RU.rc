@@ -884,6 +884,7 @@ BEGIN
     IDS_SPD_MODULE_NORM_VOLTAGE, "Module Normal Voltage (VDD)"
     IDS_SPD_COLUMN_ADDR_BITS, "Column Address Bits"
     IDS_SPD_ROW_ADDRESS_BITS, "Row Address Bits"
+    IDS_NOT_CONNECTED, "Не подключен"
 
     IDS_CAT_SUMMARY, "Общая информация"
 

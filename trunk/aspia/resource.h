@@ -848,6 +848,7 @@
 #define IDS_SPD_MODULE_NORM_VOLTAGE      734
 #define IDS_SPD_COLUMN_ADDR_BITS         735
 #define IDS_SPD_ROW_ADDRESS_BITS         736
+#define IDS_NOT_CONNECTED                737
 
 #define IDS_CAT_SUMMARY           1000
 
