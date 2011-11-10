@@ -39,20 +39,7 @@ GetSpdExtensionOfByte42(BYTE Byte)
     return 0.00;
 }
 
-static double
-Round(double Argument, int Precision)
-{
-    double div = 1.0;
-
-    if (Precision < 0)
-        while(Precision++) div /= 10.0;
-    else
-        while(Precision--) div *= 10.0;
-
-    return floor(Argument * div + 0.5) / div;
-}
-
-static VOID
+VOID
 ShowMemoryTimings(BYTE *Spd, double Latency, int cl)
 {
     WCHAR szText[MAX_STR_LEN], szFormat[MAX_STR_LEN];

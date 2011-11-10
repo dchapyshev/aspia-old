@@ -483,8 +483,8 @@ SPD_INFO RamTypeInfo[] =
     { 0x07, L"DDR SDRAM" },
     { 0x08, L"DDR2 SDRAM" },
     { 0x09, L"DDR2 SDRAM FB-DIMM" },
-    { 0x10, L"DDR2 SDRAM FB-DIMM PROBE" },
-    { 0x11, L"DDR3 SDRAM" },
+    { 0x0A, L"DDR2 SDRAM FB-DIMM PROBE" },
+    { 0x0B, L"DDR3 SDRAM" },
     { 0, NULL }
 };
 

@@ -315,6 +315,7 @@ INT SafeStrLen(LPCWSTR lpString);
 LPWSTR SafeStrCpyN(LPWSTR lpString1, LPCWSTR lpString2, INT iMaxLength);
 INT SafeStrCmp(LPCWSTR lpString1, LPCWSTR lpString2);
 VOID IntSetWindowTheme(HWND hwnd);
+double Round(double Argument, int Precision);
 
 
 __inline INT

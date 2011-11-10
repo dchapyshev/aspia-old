@@ -202,15 +202,7 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
 
                 ItemIndex = IoAddItem(1, 3, L"VBat");
 
-                if (SafeStrLen(LpcVoltageDesc[i].szDesc) > 0)
-                {
-                    StringCbPrintf(szText, sizeof(szText), L"%.3f V",
-                        fvalue + (fvalue - LpcVoltageDesc[i].vf) * LpcVoltageDesc[i].ri / LpcVoltageDesc[i].rf);
-                }
-                else
-                {
-                    StringCbPrintf(szText, sizeof(szText), L"%.3f V", fvalue);
-                }
+                StringCbPrintf(szText, sizeof(szText), L"%.3f V", fvalue);
                 IoSetItemText(ItemIndex, 1, szText);
             }
         }

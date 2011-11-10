@@ -879,6 +879,11 @@ BEGIN
     IDS_NEVER_SEND_REPORT, "Предлагать отправить отчет"
     IDS_SEND_BTN, "Отправить"
     IDS_DEV_REPORT_TITLE, "Отправка отчета"
+    IDS_SPD_DEVICE_WIDTH, "Device Width"
+    IDS_SPD_BUS_WIDTH, "Bus Width"
+    IDS_SPD_MODULE_NORM_VOLTAGE, "Module Normal Voltage (VDD)"
+    IDS_SPD_COLUMN_ADDR_BITS, "Column Address Bits"
+    IDS_SPD_ROW_ADDRESS_BITS, "Row Address Bits"
 
     IDS_CAT_SUMMARY, "Общая информация"
 

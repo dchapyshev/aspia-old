@@ -880,6 +880,11 @@ BEGIN
     IDS_NEVER_SEND_REPORT, "Пропонувати відіслати звіт"
     IDS_SEND_BTN, "Відіслати"
     IDS_DEV_REPORT_TITLE, "Відсилання звіту"
+    IDS_SPD_DEVICE_WIDTH, "Device Width"
+    IDS_SPD_BUS_WIDTH, "Bus Width"
+    IDS_SPD_MODULE_NORM_VOLTAGE, "Module Normal Voltage (VDD)"
+    IDS_SPD_COLUMN_ADDR_BITS, "Column Address Bits"
+    IDS_SPD_ROW_ADDRESS_BITS, "Row Address Bits"
 
     IDS_CAT_SUMMARY, "Загальна інформація"
 
