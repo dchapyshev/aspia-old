@@ -428,7 +428,7 @@ OS_FontsInfo(VOID)
 }
 
 VOID
-AutorunShowRegPath(HKEY hRootKey, LPWSTR lpszPath)
+AutorunShowRegPath(HKEY hRootKey, LPWSTR lpszPath, LPWSTR lpszName)
 {
     WCHAR szName[MAX_PATH], szPath[MAX_PATH];
     DWORD dwIndex, dwSize, dwPathSize;
@@ -497,21 +497,23 @@ AutorunShowRegPath(HKEY hRootKey, LPWSTR lpszPath)
                 DestroyIcon(hIcon);
             }
 
+            if (Count == 0)
+            {
+                IoAddHeaderString(0, lpszName, 0);
+            }
+
             Index = IoAddItem(1, IconIndex, szName);
             IoSetItemText(Index, 1, szPath);
             ++Count;
         }
     }
 
-None:
-    if (!Count)
+    if (Count > 0)
     {
-        IconIndex = IoAddIcon(IDI_APPS);
-        LoadMUIString(IDS_NONE, szPath, MAX_PATH);
-        Index = IoAddItem(1, IconIndex, szPath);
-        IoSetItemText(Index, 1, L"\0");
+        IoAddFooter();
     }
 
+None:
     RegCloseKey(hKey);
 }
 
@@ -615,6 +617,11 @@ AutorunShowFolderContent(LPWSTR lpszPath)
                 IconIndex = IoAddIcon(IDI_APPS);
             }
 
+            if (Count == 0)
+            {
+                IoAddHeaderString(0, lpszPath, 1);
+            }
+
             Index = IoAddItem(1, IconIndex, FindFileData.cFileName);
             IoSetItemText(Index, 1, szCmd);
 
@@ -623,13 +630,7 @@ AutorunShowFolderContent(LPWSTR lpszPath)
     }
     while (FindNextFile(hFind, &FindFileData) != 0);
 
-    if (!Count)
-    {
-        IconIndex = IoAddIcon(IDI_APPS);
-        LoadMUIString(IDS_NONE, szPath, MAX_PATH);
-        Index = IoAddItem(1, IconIndex, szPath);
-        IoSetItemText(Index, 1, L"\0");
-    }
+    if (Count > 0) IoAddFooter();
 
     FindClose(hFind);
 }
@@ -646,82 +647,49 @@ OS_AutorunInfo(VOID)
     IoAddIcon(IDI_REG);
     IoAddIcon(IDI_FOLDER);
 
-    /* HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run */
-    IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", 0);
     AutorunShowRegPath(HKEY_LOCAL_MACHINE,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
+                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                       L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
 
-    IoAddFooter();
-
-    /* HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce */
-    IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce", 0);
     AutorunShowRegPath(HKEY_LOCAL_MACHINE,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce");
+                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+                       L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce");
 
-    IoAddFooter();
-
-    /* HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnceEx */
-    IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx", 0);
     AutorunShowRegPath(HKEY_LOCAL_MACHINE,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx");
+                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx",
+                       L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx");
 
-    IoAddFooter();
-
-    /* HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\RunServices */
-    IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServices", 0);
     AutorunShowRegPath(HKEY_LOCAL_MACHINE,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServices");
+                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServices",
+                       L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServices");
 
-    IoAddFooter();
-
-    /* HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\RunServicesOnce */
-    IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce", 0);
     AutorunShowRegPath(HKEY_LOCAL_MACHINE,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce");
+                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce",
+                       L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce");
 
-    IoAddFooter();
-
-    /* HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run */
-    IoAddHeaderString(0, L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", 0);
     AutorunShowRegPath(HKEY_CURRENT_USER,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
+                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                       L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
 
-    IoAddFooter();
-
-    /* HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce */
-    IoAddHeaderString(0, L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce", 0);
     AutorunShowRegPath(HKEY_CURRENT_USER,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce");
-
-    IoAddFooter();
+                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+                       L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce");
 
     /* Autorun folder for all users */
     SHGetSpecialFolderPath(hMainWnd, szPath, CSIDL_COMMON_STARTUP, FALSE);
-    IoAddHeaderString(0, szPath, 1);
     AutorunShowFolderContent(szPath);
-
-    IoAddFooter();
 
     /* Autorun folder for current user */
     SHGetSpecialFolderPath(hMainWnd, szPath, CSIDL_STARTUP, FALSE);
-    IoAddHeaderString(0, szPath, 1);
     AutorunShowFolderContent(szPath);
 
-    IoAddFooter();
-
-    /* HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Polices\Explorer\Run */
-    IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run", 0);
     AutorunShowRegPath(HKEY_LOCAL_MACHINE,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run");
+                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run",
+                       L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run");
 
-    IoAddFooter();
-
-    /* HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Polices\Explorer\Run */
-    IoAddHeaderString(0, L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run", 0);
     AutorunShowRegPath(HKEY_CURRENT_USER,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run");
-
-    IoAddFooter();
+                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run",
+                       L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run");
 
     /* HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon */
     IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", 0);
@@ -746,13 +714,6 @@ OS_AutorunInfo(VOID)
         Index = IoAddItem(1, IconIndex, L"Shell");
         IoSetItemText(Index, 1, szPath);
     }
-    else
-    {
-        IconIndex = IoAddIcon(IDI_APPS);
-        Index = IoAddItem(1, IconIndex, L"Shell");
-        LoadMUIString(IDS_NONE, szPath, MAX_PATH);
-        IoSetItemText(Index, 1, szPath);
-    }
 
     /* winlogon userinit for all users */
     IconIndex = IoAddIcon(IDI_APPS);
@@ -763,12 +724,9 @@ OS_AutorunInfo(VOID)
                           szPath,
                           MAX_PATH);
     IoSetItemText(Index, 1, szPath);
-
     IoAddFooter();
 
     /* HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon */
-    IoAddHeaderString(0, L"HKCU\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", 0);
-
     /* winlogon shell for current user */
     if (GetStringFromRegistry(HKEY_CURRENT_USER,
                               L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon",
@@ -786,14 +744,24 @@ OS_AutorunInfo(VOID)
         else
             IconIndex = IoAddIcon(IDI_APPS);
 
+        IoAddHeaderString(0, L"HKCU\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", 0);
         Index = IoAddItem(1, IconIndex, L"Shell");
         IoSetItemText(Index, 1, szPath);
+
+        IoAddFooter();
     }
-    else
+
+    /* AppInit_DLLs */
+    GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+                          L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows",
+                          L"AppInit_DLLs",
+                          szPath,
+                          MAX_PATH);
+    if (szPath[0] != 0)
     {
         IconIndex = IoAddIcon(IDI_APPS);
-        Index = IoAddItem(1, IconIndex, L"Shell");
-        LoadMUIString(IDS_NONE, szPath, MAX_PATH);
+        IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows", 0);
+        Index = IoAddItem(1, IconIndex, L"AppInit_DLLs");
         IoSetItemText(Index, 1, szPath);
     }
 

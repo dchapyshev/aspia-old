@@ -239,7 +239,7 @@ NETWORK_CardsInfo(VOID)
         IoSetItemText(Index, 1, szText);
 
         Index = IoAddValueName(1, IDS_NIC_IP, 0);
-        if (pAdapter->IpAddressList.IpAddress.String[0] = '0')
+        if (pAdapter->IpAddressList.IpAddress.String[0] == '0')
         {
             LoadMUIString(IDS_NOT_CONNECTED, szText, MAX_STR_LEN);
         }
