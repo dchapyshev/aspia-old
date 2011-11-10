@@ -2222,10 +2222,12 @@ SMBIOS_GetMainboardName(LPWSTR lpName, SIZE_T NameSize,
     {
         /* Product */
         GetStringResourceByID(Buf[0x05], pBuf, szText);
+        ChopSpaces(szText, sizeof(szText));
         StringCbCopy(lpName, NameSize, szText);
 
         /* Vendor */
         GetStringResourceByID(Buf[0x04], pBuf, szText);
+        ChopSpaces(szText, sizeof(szText));
         StringCbCopy(lpManuf, ManufSize, szText);
 
         return TRUE;

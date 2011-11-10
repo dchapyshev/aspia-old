@@ -26,6 +26,8 @@
 #define VENDOR_ID_ATI    0x1002
 #define VENDOR_ID_NVIDIA 0x10DE
 
+/* SPD contents size */
+#define SPD_MAX_SIZE 0x95
 
 DWORD
 ReadPciDword(BYTE bus, BYTE dev, BYTE func, BYTE offset)
@@ -239,11 +241,11 @@ quaere(BYTE *v)
 {
     INT i, j;
 
-    for (i = 0; i < 0x80; i++)
+    for (i = 0; i < SPD_MAX_SIZE; i++)
     {
-        if (v[i] == 0x80)
+        if (v[i] == SPD_MAX_SIZE)
         {
-            for (j = 0; j < 0x80; j++)
+            for (j = 0; j < SPD_MAX_SIZE; j++)
             {
                 v[j] = v[j + i];
             }
@@ -260,7 +262,7 @@ ReadICH789SmBus(BYTE *SpdData,
     INT error;
     BYTE flag, Index;
 
-    for (Index = 0; Index < 0x80; Index++)
+    for (Index = 0; Index < SPD_MAX_SIZE; Index++)
     {
         error = 0;
         do
@@ -313,7 +315,7 @@ ReadICHXSmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
     INT error;
     BYTE flag, Index;
 
-    for (Index = 0; Index < 0x80; Index++)
+    for (Index = 0; Index < SPD_MAX_SIZE; Index++)
     {
         error = 0;
         do
@@ -363,7 +365,7 @@ ReadSIS962SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
     INT error;
     BYTE flag, Index;
 
-    for (Index = 0; Index < 0x80; Index++)
+    for (Index = 0; Index < SPD_MAX_SIZE; Index++)
     {
         error = 0;
         do
@@ -413,7 +415,7 @@ ReadSIS968SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
     INT error;
     BYTE flag, Index;
 
-    for (Index = 0; Index < 0x80; Index++)
+    for (Index = 0; Index < SPD_MAX_SIZE; Index++)
     {
         error = 0;
         do
@@ -464,7 +466,7 @@ ReadNVCK804SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
     INT error;
     BYTE flag, Index;
 
-    for (Index = 0; Index < 0x80; Index++)
+    for (Index = 0; Index < SPD_MAX_SIZE; Index++)
     {
         error = 0;
         do
@@ -499,7 +501,7 @@ ReadNVCK804SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
             }
             Sleep(1);
         }
-        while (DRIVER_ReadIoPortByte(BaseAddress + 0x01) != 0x80);
+        while (DRIVER_ReadIoPortByte(BaseAddress + 0x01) != SPD_MAX_SIZE);
         Spd[Index] = DRIVER_ReadIoPortByte(BaseAddress + 0x04);
     }
     return TRUE;
@@ -512,7 +514,7 @@ ReadATISBSmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
     INT error;
     BYTE flag, Index;
 
-    for (Index = 0; Index < 0x80; Index++)
+    for (Index = 0; Index < SPD_MAX_SIZE; Index++)
     {
         error = 0;
         do
@@ -561,7 +563,7 @@ ReadVIA8235SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
     INT error;
     BYTE flag, Index;
 
-    for (Index = 0; Index < 0x80; Index++)
+    for (Index = 0; Index < SPD_MAX_SIZE; Index++)
     {
         error = 0;
 
@@ -679,11 +681,11 @@ ShowSpdData(BYTE *Spd)
             break;
         case 0x08: /* DDR2 SDRAM */
         case 0x09: /* DDR2 SDRAM FB-DIMM */
-        case 0x10: /* DDR2 SDRAM FB-DIMM PROBE */
+        case 0x0a: /* DDR2 SDRAM FB-DIMM PROBE */
             DebugTrace(L"DDR2 Memory (0x%x)", Spd[0x02]);
             ShowSpdDataForDDR2(Spd);
             break;
-        case 0x11: /* DDR3 SDRAM */
+        case 0x0b: /* DDR3 SDRAM */
             DebugTrace(L"DDR3 Memory (0x%x)", Spd[0x02]);
             ShowSpdDataForDDR3(Spd);
             break;
@@ -696,7 +698,7 @@ ShowSpdData(BYTE *Spd)
 VOID
 HW_SPDInfo(VOID)
 {
-    BYTE SpdData[0x80] = {0};
+    BYTE SpdData[SPD_MAX_SIZE] = {0};
     WORD BaseAddress = 0;
     DWORD dwType;
 

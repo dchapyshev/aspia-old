@@ -972,18 +972,24 @@ EnumPrintersInfo(DWORD dwFlag)
         if (pDevMode)
         {
             /* Paper size */
-            Index = IoAddValueName(1, IDS_PRINTER_PAPER_SIZE, 0);
-            StringCbPrintf(szText, sizeof(szText), L"%ld x %ld mm",
-                           pDevMode->dmPaperWidth / 10,
-                           pDevMode->dmPaperLength / 10);
-            IoSetItemText(Index, 1, szText);
+            if (pDevMode->dmPaperWidth && pDevMode->dmPaperLength)
+            {
+                Index = IoAddValueName(1, IDS_PRINTER_PAPER_SIZE, 0);
+                StringCbPrintf(szText, sizeof(szText), L"%ld x %ld mm",
+                               pDevMode->dmPaperWidth / 10,
+                               pDevMode->dmPaperLength / 10);
+                IoSetItemText(Index, 1, szText);
+            }
 
             /* Quality */
-            Index = IoAddValueName(1, IDS_PRINTER_QUALITY, 0);
-            StringCbPrintf(szText, sizeof(szText), L"%ld x %ld dpi",
-                           pDevMode->dmPrintQuality,
-                           pDevMode->dmPrintQuality);
-            IoSetItemText(Index, 1, szText);
+            if (pDevMode->dmPrintQuality)
+            {
+                Index = IoAddValueName(1, IDS_PRINTER_QUALITY, 0);
+                StringCbPrintf(szText, sizeof(szText), L"%ld x %ld dpi",
+                               pDevMode->dmPrintQuality,
+                               pDevMode->dmPrintQuality);
+                IoSetItemText(Index, 1, szText);
+            }
 
             /* Orientation */
             Index = IoAddValueName(1, IDS_PRINTER_ORIENTATION, 0);

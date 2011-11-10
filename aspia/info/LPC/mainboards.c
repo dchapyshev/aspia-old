@@ -142,6 +142,7 @@ MB_MODELS MbModelsList[] =
     { Rampage_II_GENE, L"Rampage II GENE" },
     { AT3GC_I, L"AT3GC-I" },
     { P5K_VM, L"P5K-VM" },
+    { P5QL_PRO, L"P5QL PRO" },
     /* DFI */
     { LP_BI_P45_T2RS_Elite, L"LP BI P45-T2RS Elite" },
     { LP_DK_P55_T3eH9, L"LP DK P55-T3eH9" },
@@ -172,6 +173,7 @@ MB_MODELS MbModelsList[] =
     { _9NPA7I_9NPAI_9NPA7J_9NPAJ_3P, L"nForce4 DDR: 9NPA7I / 9NPAI / 9NPA7J / 9NPAJ-3P Series" },
     /* MSI */
     { G32M3_V2, L"G31M3 V2(MS-7529)" },
+    { H55_G43, L"H55-G43(MS-7638)" },
     {0}
 };
 
@@ -837,6 +839,24 @@ LPC_MainboardInfoInit(WORD wChipType)
                             InitFItem(0, L"CPU Fan");
                             break;
 
+                        case H55_G43:
+                            InitVItem(0, L"CPU I/O",   150.0f, 150.0f, 0.0f);
+                            InitVItem(1, L"CPU Core0", 0.0f,   1.0f,   0.0f);
+                            InitVItem(2, L"VIN2",      0.0f,   1.0f,   0.0f);
+                            InitVItem(3, L"+5V",       200.0f, 47.0f,  0.0f);
+                            InitVItem(4, L"+12V",      200.0f, 20.0f,  0.0f);
+                            InitVItem(5, L"VIN5",      0.0f,   1.0f,   0.0f);
+                            InitVItem(6, L"VIN6",      0.0f,   1.0f,   0.0f);
+                            InitVItem(7, L"3VSB",      150.0f, 150.0f, 0.0f);
+                            InitVItem(8, L"VBat",      150.0f, 150.0f, 0.0f);
+
+                            InitTItem(0, L"CPU");
+                            InitTItem(1, L"Auxiliary");
+                            InitTItem(2, L"Motherboard");
+
+                            InitFItem(0, L"CPU Fan");
+                            break;
+
                         default:
                             InitVItem(0, L"CPU I/O",   150.0f, 150.0f, 0.0f);
                             InitVItem(1, L"CPU Core0", 0.0f,   1.0f,   0.0f);
@@ -1024,6 +1044,22 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         case P5K_VM: /* W83627DHG */
+                            InitVItem(0, L"CPU VCore",     0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"+12V",          12.0f, 2.0f, 0.0f);
+                            InitVItem(2, L"Analog +3.3V",  34.0f, 34.0f, 0.0f);
+                            InitVItem(3, L"+3.3V",         34.0f, 34.0f, 0.0f);
+                            InitVItem(5, L"+5V",           15.0f, 7.5f, 0.0f);
+                            InitVItem(7, L"Standby +3.3V", 34.0f, 34.0f, 0.0f);
+                            InitVItem(8, L"VBAT",          34.0f, 34.0f, 0.0f);
+
+                            InitTItem(0, L"CPU");
+                            InitTItem(1, L"Auxiliary");
+                            InitTItem(2, L"Motherboard");
+
+                            InitFItem(1, L"CPU Fan");
+                            break;
+
+                        case P5QL_PRO: /* W83667HG */
                             InitVItem(0, L"CPU VCore",     0.0f,  1.0f, 0.0f);
                             InitVItem(1, L"+12V",          12.0f, 2.0f, 0.0f);
                             InitVItem(2, L"Analog +3.3V",  34.0f, 34.0f, 0.0f);

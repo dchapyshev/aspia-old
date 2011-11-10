@@ -843,6 +843,11 @@
 #define IDS_NEVER_SEND_REPORT            729
 #define IDS_SEND_BTN                     730
 #define IDS_DEV_REPORT_TITLE             731
+#define IDS_SPD_DEVICE_WIDTH             732
+#define IDS_SPD_BUS_WIDTH                733
+#define IDS_SPD_MODULE_NORM_VOLTAGE      734
+#define IDS_SPD_COLUMN_ADDR_BITS         735
+#define IDS_SPD_ROW_ADDRESS_BITS         736
 
 #define IDS_CAT_SUMMARY           1000
 
