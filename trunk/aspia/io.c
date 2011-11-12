@@ -394,7 +394,7 @@ IoReportWriteColumnString(LPWSTR lpszString)
 }
 
 VOID
-IoAddColumnsList(COLUMN_LIST *List)
+IoAddColumnsList(COLUMN_LIST *List, LPWSTR lpCategoryName, LPWSTR lpIniPath)
 {
     WCHAR szText[MAX_STR_LEN];
     SIZE_T Index = 0;
@@ -408,8 +408,16 @@ IoAddColumnsList(COLUMN_LIST *List)
         switch (IoTarget)
         {
             case IO_TARGET_LISTVIEW:
-                ListViewAddColumn(Index + 1, List[Index].Width, szText);
-                break;
+            {
+                WCHAR szCol[3];
+                INT Width;
+
+                StringCbPrintf(szCol, sizeof(szCol), L"%d", Index);
+                Width = GetPrivateProfileInt(lpCategoryName, szCol, 0, lpIniPath);
+
+                ListViewAddColumn(Index + 1, (Width > 0) ? Width : List[Index].Width, szText);
+            }
+            break;
 
             case IO_TARGET_HTML:
             case IO_TARGET_CSV:
@@ -714,7 +722,15 @@ IoRunInfoFunc(UINT Category, CATEGORY_LIST *List)
     {
         if (List[Index].StringID == Category)
         {
-            IoAddColumnsList(List[Index].ColumnList);
+            WCHAR szIniPath[MAX_PATH] = {0}, szName[10] = {0};
+
+            if (IoTarget == IO_TARGET_LISTVIEW)
+            {
+                GetIniFilePath(szIniPath, MAX_PATH);
+                StringCbPrintf(szName, sizeof(szName), L"col-%d", Category);
+            }
+            IoAddColumnsList(List[Index].ColumnList, szName, szIniPath);
+
             List[Index].InfoFunc();
             break;
         }
