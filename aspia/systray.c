@@ -10,6 +10,8 @@
 
 #define IDT_SENSORS_UPDATE_TIMER 1326
 #define MAX_HDD_COUNT 32
+#define MAINWND_ICON_ID 0
+#define CPU_ICON_ID 1
 
 
 typedef struct _HDD_DRIVES_
@@ -20,7 +22,7 @@ typedef struct _HDD_DRIVES_
     struct _HDD_DRIVES_ *Next;
 } HDD_DRIVES, *PHDD_DRIVES;
 
-static UINT HddIconsCount = 0;
+static INT HddIconsCount = 0;
 static PHDD_DRIVES HddDrivesInfo = NULL;
 static WCHAR szIniPath[MAX_PATH] = {0};
 BOOL IsMainWindowHiden = FALSE;
@@ -89,7 +91,10 @@ CreateTrayIcon(LPWSTR szText, COLORREF crBackground, COLORREF crFont)
 VOID
 AddTrayIcon(HWND hWnd, UINT uID, UINT Msg, HICON hIcon, LPWSTR lpszToolTip)
 {
-    NOTIFYICONDATA tnid;
+    NOTIFYICONDATA tnid = {0};
+
+    DebugTrace(L"hwnd = 0x%x, uid = %d, msg = %d, hicon = 0x%x, tooltip = '%s'",
+               hWnd, uID, Msg, hIcon, lpszToolTip);
 
     tnid.cbSize = sizeof(NOTIFYICONDATA);
     tnid.hWnd = hWnd;
@@ -106,7 +111,9 @@ AddTrayIcon(HWND hWnd, UINT uID, UINT Msg, HICON hIcon, LPWSTR lpszToolTip)
 VOID
 DeleteTrayIcon(HWND hWnd, UINT uID)
 {
-    NOTIFYICONDATA tnid;
+    NOTIFYICONDATA tnid = {0};
+
+    DebugTrace(L"hwnd = 0x%x, uid = %d", hWnd, uID);
 
     tnid.cbSize = sizeof(NOTIFYICONDATA);
     tnid.hWnd = hWnd;
@@ -118,7 +125,10 @@ DeleteTrayIcon(HWND hWnd, UINT uID)
 VOID
 UpdateTrayIcon(HWND hWnd, UINT uID, UINT Msg, HICON hIcon, LPWSTR lpszToolTip)
 {
-    NOTIFYICONDATA tnid;
+    NOTIFYICONDATA tnid = {0};
+
+    DebugTrace(L"hwnd = 0x%x, uid = %d, msg = %d, hicon = 0x%x, tooltip = '%s'",
+               hWnd, uID, Msg, hIcon, lpszToolTip);
 
     tnid.cbSize = sizeof(NOTIFYICONDATA);
     tnid.hWnd = hWnd;
@@ -170,12 +180,12 @@ GetCPUTemperature(VOID)
 VOID
 AddCPUSensor(BOOL IsUpdate)
 {
-    WCHAR szText[MAX_STR_LEN], szValue[MAX_STR_LEN];
+    WCHAR szCpuName[MAX_STR_LEN], szValue[MAX_STR_LEN];
     HICON hIcon;
 
-    if (GetCPUName(szText, sizeof(szText)))
+    if (GetCPUName(szCpuName, sizeof(szCpuName)))
     {
-        if (GetPrivateProfileInt(L"sensors", szText, 0, szIniPath) > 0)
+        if (GetPrivateProfileInt(L"sensors", szCpuName, 0, szIniPath) > 0)
         {
             StringCbPrintf(szValue, sizeof(szValue),
                            L"%ld", GetCPUTemperature());
@@ -183,11 +193,11 @@ AddCPUSensor(BOOL IsUpdate)
 
             if (IsUpdate)
             {
-                UpdateTrayIcon(hMainWnd, 1, WM_NOTIFYICONMSG_SENSORS, hIcon, szText);
+                UpdateTrayIcon(hMainWnd, CPU_ICON_ID, WM_NOTIFYICONMSG_SENSORS, hIcon, szCpuName);
             }
             else
             {
-                AddTrayIcon(hMainWnd, 1, WM_NOTIFYICONMSG_SENSORS, hIcon, szText);
+                AddTrayIcon(hMainWnd, CPU_ICON_ID, WM_NOTIFYICONMSG_SENSORS, hIcon, szCpuName);
             }
             DestroyIcon(hIcon);
         }
@@ -278,6 +288,8 @@ DeleteTraySensors(VOID)
 {
     PHDD_DRIVES HddDrives, Temp;
 
+    KillTimer(hMainWnd, IDT_SENSORS_UPDATE_TIMER);
+
     HddDrives = HddDrivesInfo;
 
     while (HddIconsCount)
@@ -292,9 +304,7 @@ DeleteTraySensors(VOID)
         --HddIconsCount;
     }
 
-    DeleteTrayIcon(hMainWnd, 1);
-
-    KillTimer(hMainWnd, IDT_SENSORS_UPDATE_TIMER);
+    DeleteTrayIcon(hMainWnd, CPU_ICON_ID);
 }
 
 VOID
@@ -329,7 +339,7 @@ AddMainWindowToTray(VOID)
                              LR_CREATEDIBSECTION);
     if (!hIcon) return;
 
-    AddTrayIcon(hMainWnd, 0, WM_NOTIFYICONMSG_WINDOW, hIcon, L"Aspia");
+    AddTrayIcon(hMainWnd, MAINWND_ICON_ID, WM_NOTIFYICONMSG_WINDOW, hIcon, L"Aspia");
     DestroyIcon(hIcon);
 }
 
@@ -345,7 +355,7 @@ HideMainWindowToTray(VOID)
 VOID
 DeleteMainWindowFromTray(VOID)
 {
-    DeleteTrayIcon(hMainWnd, 0);
+    DeleteTrayIcon(hMainWnd, MAINWND_ICON_ID);
 }
 
 VOID

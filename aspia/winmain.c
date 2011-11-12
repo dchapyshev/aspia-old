@@ -588,11 +588,14 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
         case WM_DESTROY:
         {
-            DeleteMainWindowFromTray();
-            DeleteTraySensors();
             SaveSettings();
+
+            DeleteTraySensors();
+            DeleteMainWindowFromTray();
+
             if (hImageTreeView) ImageList_Destroy(hImageTreeView);
             if (hListViewImageList) ImageList_Destroy(hListViewImageList);
+
             PostQuitMessage(0);
             return 0;
         }
