@@ -40,7 +40,9 @@ ListViewClear(VOID)
     ListView_DeleteAllItems(hListView);
 
     for (i = IoGetColumnsCount(); i >= 0; --i)
+    {
         ListView_DeleteColumn(hListView, i);
+    }
 
     IoSetColumnsCount(0);
 }

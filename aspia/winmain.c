@@ -159,6 +159,7 @@ VOID
 GUIInfoThread(LPVOID lpParameter)
 {
     UINT Category = (UINT)lpParameter;
+    INT i, count = IoGetColumnsCount();
 
     if (!IsLoadingDone) return;
 
@@ -167,7 +168,26 @@ GUIInfoThread(LPVOID lpParameter)
     SetMainWindowTitle(Category);
 
     if (CurrentCategory != Category)
+    {
+        WCHAR szName[10], szCol[3], szIniPath[MAX_PATH];
+
+        GetIniFilePath(szIniPath, MAX_PATH);
+        StringCbPrintf(szName, sizeof(szName), L"col-%d", CurrentCategory);
+
+        for (i = 0; i < count; i++)
+        {
+            LVCOLUMN lvcol = {0};
+
+            lvcol.mask = LVCF_WIDTH;
+
+            ListView_GetColumn(hListView, i, &lvcol);
+            StringCbPrintf(szCol, sizeof(szCol), L"%d", i);
+
+            WritePrivateProfileInt(szName, szCol, lvcol.cx, szIniPath);
+        }
+
         CurrentCategory = Category;
+    }
 
     /* Enable ListView control */
     EnableWindow(hListView, TRUE);
