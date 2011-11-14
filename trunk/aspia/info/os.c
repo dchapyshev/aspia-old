@@ -22,7 +22,8 @@ ShowRegInfo(UINT StringID, LPWSTR lpszKeyName)
     WCHAR szText[MAX_STR_LEN] = {0};
     INT Index;
 
-    GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+    GetStringFromRegistry(TRUE,
+                          HKEY_LOCAL_MACHINE,
                           L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
                           lpszKeyName,
                           szText,
@@ -635,11 +636,77 @@ AutorunShowFolderContent(LPWSTR lpszPath)
     FindClose(hFind);
 }
 
+typedef struct
+{
+    HKEY hKey;
+    LPWSTR lpKeyPath;
+    LPWSTR lpName;
+} AUTORUN_INFO;
+
+AUTORUN_INFO AutorunInfo[] =
+{
+    {
+        HKEY_LOCAL_MACHINE,
+        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+        L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
+    },
+
+    {
+        HKEY_LOCAL_MACHINE,
+        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+        L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce"
+    },
+
+    {
+        HKEY_LOCAL_MACHINE,
+        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx",
+        L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx"
+    },
+
+    {
+        HKEY_LOCAL_MACHINE,
+        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServices",
+        L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServices"
+    },
+
+    {
+        HKEY_LOCAL_MACHINE,
+        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce",
+        L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce"
+    },
+
+    {
+        HKEY_CURRENT_USER,
+        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+        L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
+    },
+
+    {
+        HKEY_CURRENT_USER,
+        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+        L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce"
+    },
+
+    {
+        HKEY_LOCAL_MACHINE,
+        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run",
+        L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run"
+    },
+
+    {
+        HKEY_CURRENT_USER,
+        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run",
+        L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run"
+    },
+
+    {0}
+};
+
 VOID
 OS_AutorunInfo(VOID)
 {
     WCHAR szPath[MAX_PATH];
-    INT Index, IconIndex;
+    INT Index, IconIndex, i = 0;
     HICON hIcon;
 
     DebugStartReceiving();
@@ -647,33 +714,13 @@ OS_AutorunInfo(VOID)
     IoAddIcon(IDI_REG);
     IoAddIcon(IDI_FOLDER);
 
-    AutorunShowRegPath(HKEY_LOCAL_MACHINE,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
-                       L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
-
-    AutorunShowRegPath(HKEY_LOCAL_MACHINE,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
-                       L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce");
-
-    AutorunShowRegPath(HKEY_LOCAL_MACHINE,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx",
-                       L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx");
-
-    AutorunShowRegPath(HKEY_LOCAL_MACHINE,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServices",
-                       L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServices");
-
-    AutorunShowRegPath(HKEY_LOCAL_MACHINE,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce",
-                       L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce");
-
-    AutorunShowRegPath(HKEY_CURRENT_USER,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
-                       L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
-
-    AutorunShowRegPath(HKEY_CURRENT_USER,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
-                       L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce");
+    do
+    {
+        AutorunShowRegPath(AutorunInfo[i].hKey,
+                           AutorunInfo[i].lpKeyPath,
+                           AutorunInfo[i].lpName);
+    }
+    while (AutorunInfo[++i].hKey != 0);
 
     /* Autorun folder for all users */
     SHGetSpecialFolderPath(hMainWnd, szPath, CSIDL_COMMON_STARTUP, FALSE);
@@ -683,19 +730,12 @@ OS_AutorunInfo(VOID)
     SHGetSpecialFolderPath(hMainWnd, szPath, CSIDL_STARTUP, FALSE);
     AutorunShowFolderContent(szPath);
 
-    AutorunShowRegPath(HKEY_LOCAL_MACHINE,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run",
-                       L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run");
-
-    AutorunShowRegPath(HKEY_CURRENT_USER,
-                       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run",
-                       L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run");
-
     /* HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon */
     IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", 0);
 
     /* winlogon shell for all users */
-    if (GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+    if (GetStringFromRegistry(TRUE,
+                              HKEY_LOCAL_MACHINE,
                               L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon",
                               L"Shell",
                               szPath,
@@ -718,7 +758,8 @@ OS_AutorunInfo(VOID)
     /* winlogon userinit for all users */
     IconIndex = IoAddIcon(IDI_APPS);
     Index = IoAddItem(1, IconIndex, L"Userinit");
-    GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+    GetStringFromRegistry(TRUE,
+                          HKEY_LOCAL_MACHINE,
                           L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon",
                           L"Userinit",
                           szPath,
@@ -728,7 +769,8 @@ OS_AutorunInfo(VOID)
 
     /* HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon */
     /* winlogon shell for current user */
-    if (GetStringFromRegistry(HKEY_CURRENT_USER,
+    if (GetStringFromRegistry(TRUE,
+                              HKEY_CURRENT_USER,
                               L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon",
                               L"Shell",
                               szPath,
@@ -752,7 +794,8 @@ OS_AutorunInfo(VOID)
     }
 
     /* AppInit_DLLs */
-    GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+    GetStringFromRegistry(TRUE,
+                          HKEY_LOCAL_MACHINE,
                           L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows",
                           L"AppInit_DLLs",
                           szPath,
@@ -761,6 +804,20 @@ OS_AutorunInfo(VOID)
     {
         IconIndex = IoAddIcon(IDI_APPS);
         IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows", 0);
+        Index = IoAddItem(1, IconIndex, L"AppInit_DLLs");
+        IoSetItemText(Index, 1, szPath);
+    }
+
+    GetStringFromRegistry(FALSE,
+                          HKEY_LOCAL_MACHINE,
+                          L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows",
+                          L"AppInit_DLLs",
+                          szPath,
+                          MAX_PATH);
+    if (szPath[0] != 0)
+    {
+        IconIndex = IoAddIcon(IDI_APPS);
+        IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows NT\\CurrentVersion\\Windows", 0);
         Index = IoAddItem(1, IconIndex, L"AppInit_DLLs");
         IoSetItemText(Index, 1, szPath);
     }
@@ -1060,7 +1117,8 @@ OS_DesktopInfo(VOID)
     IoSetItemText(Index, 1, szText);
 
     /* Wallpaper */
-    if (GetStringFromRegistry(HKEY_CURRENT_USER,
+    if (GetStringFromRegistry(TRUE,
+                              HKEY_CURRENT_USER,
                               L"Control Panel\\Desktop",
                               L"Wallpaper",
                               szText,

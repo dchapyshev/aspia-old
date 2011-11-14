@@ -645,7 +645,8 @@ HW_WinVideoInfo(VOID)
         }
 
         /* Chip type */
-        if (GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+        if (GetStringFromRegistry(TRUE,
+                                  HKEY_LOCAL_MACHINE,
                                   &DispDevice.DeviceKey[18],
                                   L"HardwareInformation.ChipType",
                                   szText, MAX_STR_LEN) &&
@@ -656,7 +657,8 @@ HW_WinVideoInfo(VOID)
         }
 
         /* DAC type */
-        if (GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+        if (GetStringFromRegistry(TRUE,
+                                  HKEY_LOCAL_MACHINE,
                                   &DispDevice.DeviceKey[18],
                                   L"HardwareInformation.DacType",
                                   szText, MAX_STR_LEN) &&

@@ -405,7 +405,8 @@ ShowSummaryInfo(VOID)
     Index = IoAddValueName(1, IDS_OS_PRODUCT_NAME, 0);
 
     szText[0] = 0;
-    if (GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+    if (GetStringFromRegistry(TRUE,
+                              HKEY_LOCAL_MACHINE,
                               L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
                               L"ProductName",
                               szText,

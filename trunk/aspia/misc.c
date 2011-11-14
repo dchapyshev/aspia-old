@@ -105,7 +105,8 @@ IsWindows2000(VOID)
 }
 
 BOOL
-GetStringFromRegistry(HKEY hRootKey,
+GetStringFromRegistry(BOOL Is64KeyRequired,
+                      HKEY hRootKey,
                       LPWSTR lpszPath,
                       LPWSTR lpszKeyName,
                       LPWSTR lpszValue,
@@ -115,7 +116,7 @@ GetStringFromRegistry(HKEY hRootKey,
     HKEY hKey;
 
     /* Check Win2000 (KEY_WOW64_64KEY - not supported) */
-    if (!IsWindows2000())
+    if (!IsWindows2000() && Is64KeyRequired)
     {
         samDesired |= KEY_WOW64_64KEY;
     }

@@ -73,7 +73,8 @@ GetAdapterFriendlyName(LPWSTR lpszKey, LPWSTR lpszName, INT NameLen)
     if (hDevInfo == INVALID_HANDLE_VALUE)
         return FALSE;
 
-    if (!GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+    if (!GetStringFromRegistry(TRUE,
+                               HKEY_LOCAL_MACHINE,
                                lpszKey, L"PnpInstanceID",
                                AdapterID,
                                MAX_PATH))
@@ -189,7 +190,8 @@ NETWORK_CardsInfo(VOID)
 
         IoAddHeaderString(0, szText, 0);
 
-        if (GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+        if (GetStringFromRegistry(TRUE,
+                                  HKEY_LOCAL_MACHINE,
                                   szKey, L"Name",
                                   szText, MAX_STR_LEN))
         {
@@ -593,7 +595,8 @@ ShowIERegInfo(UINT StringID, LPWSTR lpszPath, LPWSTR lpszKeyName, INT IconIndex)
     WCHAR szText[MAX_STR_LEN];
     INT Index;
 
-    if (GetStringFromRegistry(HKEY_CURRENT_USER,
+    if (GetStringFromRegistry(TRUE,
+                              HKEY_CURRENT_USER,
                               lpszPath,
                               lpszKeyName,
                               szText,
@@ -613,7 +616,8 @@ ShowIEShortInfo(INT IconIndex)
     DWORD dwSize;
     INT Index;
 
-    if (GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+    if (GetStringFromRegistry(TRUE,
+                              HKEY_LOCAL_MACHINE,
                               L"Software\\Microsoft\\Internet Explorer",
                               L"Version", szText,
                               MAX_STR_LEN))

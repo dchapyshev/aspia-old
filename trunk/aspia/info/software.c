@@ -450,7 +450,8 @@ SOFTWARE_LicensesInfo(VOID)
     while (MsLicensies[++i].lpProductName != 0);
 
     /* Visual Studio 2010 Key */
-    if (GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+    if (GetStringFromRegistry(TRUE,
+                              HKEY_LOCAL_MACHINE,
                               L"SOFTWARE\\Microsoft\\VisualStudio\\10.0\\Registration",
                               L"PIDKEY",
                               szTemp,
@@ -462,7 +463,8 @@ SOFTWARE_LicensesInfo(VOID)
     }
 
     /* Visual Studio 2008 Key */
-    if (GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+    if (GetStringFromRegistry(TRUE,
+                              HKEY_LOCAL_MACHINE,
                               L"SOFTWARE\\Microsoft\\VisualStudio\\9.0\\Registration",
                               L"PIDKEY",
                               szTemp,
@@ -474,7 +476,8 @@ SOFTWARE_LicensesInfo(VOID)
     }
 
     /* Visual Studio 2005 Key */
-    if (GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+    if (GetStringFromRegistry(TRUE,
+                              HKEY_LOCAL_MACHINE,
                               L"SOFTWARE\\Microsoft\\VisualStudio\\8.0\\Registration",
                               L"PIDKEY",
                               szTemp,

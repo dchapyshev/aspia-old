@@ -295,7 +295,7 @@ VOID ShowSummaryInfo(VOID);
 /* misc.c */
 BOOL IsUserAdmin(VOID);
 SIZE_T StrToHex(LPWSTR, SIZE_T);
-BOOL GetStringFromRegistry(HKEY, LPWSTR, LPWSTR, LPWSTR, DWORD);
+BOOL GetStringFromRegistry(BOOL, HKEY, LPWSTR, LPWSTR, LPWSTR, DWORD);
 BOOL GetBinaryFromRegistry(HKEY, LPWSTR, LPWSTR, LPBYTE, DWORD);
 HICON GetFolderAssocIcon(LPWSTR);
 INT GetSystemColorDepth(VOID);
