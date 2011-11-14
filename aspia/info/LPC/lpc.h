@@ -20,7 +20,9 @@
 #define F71889AD   0x1005
 #define F71889ED   0x0909
 #define F71889F    0x0723
+#define F71808     0x0901
 
+#define IT8512F    0x8512
 #define IT8712F    0x8712
 #define IT8716F    0x8716
 #define IT8718F    0x8718
@@ -28,19 +30,25 @@
 #define IT8721F    0x8721
 #define IT8726F    0x8726
 #define IT8728F    0x8728
+#define IT8752F    0x8752
 #define IT8772E    0x8772
 
 #define NCT6771F   0xB470
 #define NCT6776F   0xC330
 
 #define W83627DHG  0xA020
+#define W83627UHG  0xA230
 #define W83627DHGP 0xB070
 #define W83627EHF  0x8800
 #define W83627HF   0x5200
+#define W83627SF   0x5950
+#define W83637HF   0x7080
 #define W83627THF  0x8280
 #define W83667HG   0xA510
 #define W83667HGB  0xB350
 #define W83687THF  0x8541
+#define W83697HF   0x6010
+#define W83697SF   0x6810
 
 
 typedef struct
@@ -92,6 +100,7 @@ VOID NCT677X_GetInfo(WORD wChipType, BYTE revision, WORD port);
 #define SUPERMICRO_MB  0x0019
 #define TOSHIBA_MB     0x0020
 #define XFX_MB         0x0021
+#define TYAN_MB        0x0022
 
 /* Mainboard Model Ids */
 #define UNKNOWN_MODEL         0x0000
@@ -145,6 +154,8 @@ VOID NCT677X_GetInfo(WORD wChipType, BYTE revision, WORD port);
 /* MSI */
 #define G32M3_V2              0x0040
 #define H55_G43               0x0041
+/* TYAN */
+#define S2882                 0x0042
 
 typedef struct
 {

@@ -42,7 +42,9 @@ CHIP_INFO ChipInfo[] =
     { F71889AD,   L"Fintek F71889AD" },
     { F71889ED,   L"Fintek F71889ED" },
     { F71889F,    L"Fintek F71889F" },
+    { F71808,     L"Fintek F71808" },
 
+    { IT8512F,    L"ITE IT8512F" },
     { IT8712F,    L"ITE IT8712F" },
     { IT8716F,    L"ITE IT8716F" },
     { IT8718F,    L"ITE IT8718F" },
@@ -50,19 +52,25 @@ CHIP_INFO ChipInfo[] =
     { IT8721F,    L"ITE IT8721F" },
     { IT8726F,    L"ITE IT8726F" },
     { IT8728F,    L"ITE IT8728F" },
+    { IT8752F,    L"ITE IT8752F" },
     { IT8772E,    L"ITE IT8772E" },
 
     { NCT6771F,   L"Nuvoton NCT6771F" },
     { NCT6776F,   L"Nuvoton NCT6776F" },
 
     { W83627DHG,  L"Winbond W83627DHG" },
+    { W83627UHG,  L"Winbond W83627UHG" },
     { W83627DHGP, L"Winbond W83627DHG-P" },
     { W83627EHF,  L"Winbond W83627EHF" },
     { W83627HF,   L"Winbond W83627HF" },
+    { W83627SF,   L"Winbond W83627SF" },
+    { W83637HF,   L"Winbond W83637HF" },
     { W83627THF,  L"Winbond W83627THF" },
     { W83667HG,   L"Winbond W83667HG" },
     { W83667HGB,  L"Winbond W83667HG-B" },
     { W83687THF,  L"Winbond W83687THF" },
+    { W83697HF,   L"Winbond W83697HF" },
+    { W83697SF,   L"Winbond W83697SF" },
 
     { 0 }
 };
@@ -203,6 +211,11 @@ DetectWinbondFintek(BYTE bRegisterPort,
         case 0x09:
             switch (rev)
             {
+                case 0x01:
+                    chip = F71808;
+                    devnum = FINTEK_HARDWARE_MONITOR_LDN;
+                    break;
+
                 case 0x09:
                     chip = F71889ED;
                     devnum = FINTEK_HARDWARE_MONITOR_LDN;
@@ -227,6 +240,46 @@ DetectWinbondFintek(BYTE bRegisterPort,
                 case 0x3A:
                 case 0x41:
                     chip = W83627HF;
+                    devnum = WINBOND_NUVOTON_HARDWARE_MONITOR_LDN;
+                    break;
+            }
+            break;
+
+        case 0x59:
+            switch (rev & 0xF0)
+            {
+                case 0x50:
+                    chip = W83627SF;
+                    devnum = WINBOND_NUVOTON_HARDWARE_MONITOR_LDN;
+                    break;
+            }
+            break;
+
+        case 0x60:
+            switch (rev & 0xF0)
+            {
+                case 0x10:
+                    chip = W83697HF;
+                    devnum = WINBOND_NUVOTON_HARDWARE_MONITOR_LDN;
+                    break;
+            }
+            break;
+
+        case 0x68:
+            switch (rev & 0xF0)
+            {
+                case 0x10:
+                    chip = W83697SF;
+                    devnum = WINBOND_NUVOTON_HARDWARE_MONITOR_LDN;
+                    break;
+            }
+            break;
+
+        case 0x70:
+            switch (rev & 0xF0)
+            {
+                case 0x80:
+                    chip = W83637HF;
                     devnum = WINBOND_NUVOTON_HARDWARE_MONITOR_LDN;
                     break;
             }
@@ -268,6 +321,16 @@ DetectWinbondFintek(BYTE bRegisterPort,
             {
                 case 0x20:
                     chip = W83627DHG;
+                    devnum = WINBOND_NUVOTON_HARDWARE_MONITOR_LDN;
+                    break;
+            }
+            break;
+
+        case 0xA2:
+            switch (rev & 0xF0)
+            {
+                case 0x30:
+                    chip = W83627UHG;
                     devnum = WINBOND_NUVOTON_HARDWARE_MONITOR_LDN;
                     break;
             }
@@ -329,6 +392,7 @@ DetectWinbondFintek(BYTE bRegisterPort,
         if (id != 0 && id != 0xFF)
         {
             WinbondNuvotonFintekExit(bRegisterPort);
+            DebugTrace(L"Unknown chip: id = %x, rev = %x", id, rev);
         }
         return;
     }
@@ -342,14 +406,21 @@ DetectWinbondFintek(BYTE bRegisterPort,
 
     WinbondNuvotonFintekExit(bRegisterPort);
 
-    if (wAddress != verify) return;
+    if (wAddress != verify)
+    {
+        DebugTrace(L"Address verification failed");
+        return;
+    }
 
     /* some Fintek chips have address register offset 0x05 added already */
     if ((wAddress & 0x07) == 0x05)
         wAddress &= 0xFFF8;
 
     if (wAddress < 0x100 || (wAddress & 0xF007) != 0)
+    {
+        DebugTrace(L"Invalid address: 0x%x", wAddress);
         return;
+    }
 
     DebugTrace(L"RegPort = 0x%x, ValPort = 0x%x, wChipType = 0x%x, wAddress = 0x%x",
                bRegisterPort, bValuePort, chip, wAddress);
@@ -359,17 +430,23 @@ DetectWinbondFintek(BYTE bRegisterPort,
     switch (chip)
     {
         case W83627DHG:
+        case W83627UHG:
         case W83627DHGP:
         case W83627EHF:
+        case W83627SF:
+        case W83637HF:
         case W83627HF:
         case W83627THF:
         case W83667HG:
         case W83667HGB:
         case W83687THF:
+        case W83697HF:
+        case W83697SF:
             W836XX_GetInfo(chip, 0, wAddress);
             break;
 
         case F71805F:
+        case F71808:
         case F71858:
         case F71862:
         case F71869:
@@ -378,6 +455,11 @@ DetectWinbondFintek(BYTE bRegisterPort,
         case F71889AD:
         case F71889ED:
         case F71889F:
+            if (vendorID != FINTEK_VENDOR_ID)
+            {
+                DebugTrace(L"Invalid vendor ID: 0x%x", vendorID);
+                return;
+            }
             F718XX_GetInfo(chip, wAddress);
             break;
 
@@ -423,6 +505,9 @@ DetectIT87(BYTE bRegisterPort, BYTE bValuePort)
 
     switch (id)
     {
+        case 0x8512:
+            chip = IT8512F;
+            break;
         case 0x8712:
             chip = IT8712F;
             break;
@@ -444,6 +529,9 @@ DetectIT87(BYTE bRegisterPort, BYTE bValuePort)
         case 0x8728:
             chip = IT8728F;
             break;
+        case 0x8752:
+            chip = IT8752F;
+            break;
         case 0x8772:
             chip = IT8772E;
             break;
@@ -457,6 +545,7 @@ DetectIT87(BYTE bRegisterPort, BYTE bValuePort)
         if (chip != 0 && chip != 0xFFFF)
         {
             IT87Exit(bRegisterPort, bValuePort);
+            DebugTrace(L"Unknown ITI chip: %x", chip);
         }
     }
 

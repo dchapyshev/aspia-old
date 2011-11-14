@@ -139,7 +139,7 @@ ReportAction(LPWSTR lpszRootName, BOOL IsSaveAll, CATEGORY_LIST *List)
             if (!List[Index].Child)
             {
                 IoWriteBeginTable();
-                IoAddColumnsList(List[Index].ColumnList);
+                IoAddColumnsList(List[Index].ColumnList, 0, 0);
                 List[Index].InfoFunc();
                 IoWriteEndTable();
                 DestroyIcon(hIcon);
@@ -341,7 +341,7 @@ ReportCategoryInfo(IN UINT Category,
         {
             if (Category == List[Index].StringID)
             {
-                IoAddColumnsList(List[Index].ColumnList);
+                IoAddColumnsList(List[Index].ColumnList, 0, 0);
                 LoadMUIString(List[Index].StringID, szText, MAX_STR_LEN);
 
                 IoWriteTableTitle(szText,

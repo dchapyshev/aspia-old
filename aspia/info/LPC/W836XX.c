@@ -53,11 +53,9 @@ W836XX_WriteByte(WORD address, BYTE bank, BYTE reg, BYTE value)
 DWORD
 W836XX_SetBit(DWORD target, WORD bit, WORD value)
 {
-    DWORD mask;
-
     if (((value & 1) == value) && bit >= 0 && bit <= 63)
     {
-        mask = (((DWORD)1) << bit);
+        DWORD mask = (((DWORD)1) << bit);
         return value > 0 ? target | mask : target & ~mask;
     }
 
@@ -81,7 +79,8 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
     BYTE voltageBank[10] = {0};
     INT iMaxVoltages = 0, iMaxFans = 0, i, value;
     FLOAT fvalue, voltageGain = 0.008f;
-    DWORD newBits, bits;
+    DWORD offset, divisor, count;
+    DWORD newBits, bits = 0;
     INT ItemIndex;
 
     if (!IsWinbondVendor(address))
@@ -138,8 +137,8 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
 
             voltageRegister[0] = 0x20; voltageRegister[1] = 0x21;
             voltageRegister[2] = 0x22; voltageRegister[3] = 0x23;
-            voltageRegister[4] = 0x24; voltageRegister[5] = 0x50;
-            voltageRegister[6] = 0x51;
+            voltageRegister[4] = 0x24; voltageRegister[5] = 0x25;
+            voltageRegister[6] = 0x26;
 
             voltageBank[5] = 5; voltageBank[6] = 5;
 
@@ -233,7 +232,6 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
         }
     }
 
-    bits = 0;
     for (i = 0; i < 5; i++)
     {
         bits = (bits << 8) | W836XX_ReadByte(address, 0, FAN_BIT_REG[i]);
@@ -243,8 +241,6 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
 
     for (i = 0; i < iMaxFans; i++)
     {
-        BYTE offset, divisor, count;
-
         /* assemble fan divisor */
         offset = (((bits >> FAN_DIV_BIT2[i]) & 1) << 2) |
                  (((bits >> FAN_DIV_BIT1[i]) & 1) << 1) |
@@ -264,9 +260,9 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
             offset--;
         }
 
-        fvalue = (count < 0xff) ? 1.35e6f / ((FLOAT)(count * divisor * 2)) : 0;
+        fvalue = (count < 0xff) ? 1.35e6f / ((FLOAT)count * (FLOAT)divisor) : 0;
 
-        DebugTrace(L"Fans[%d] = %f", i, fvalue);
+        DebugTrace(L"count = %d, divisor = %d, Fans[%d] = %f", count, divisor, i, fvalue);
 
         if (fvalue > 0.0f)
         {

@@ -374,7 +374,7 @@ INT IoAddValueName(INT, UINT, INT);
 INT IoAddItem(INT, INT, LPWSTR);
 VOID IoAddFooter(VOID);
 VOID IoSetItemText(INT, INT, LPWSTR);
-VOID IoAddColumnsList(COLUMN_LIST*);
+VOID IoAddColumnsList(COLUMN_LIST*, LPWSTR lpCategoryName, LPWSTR lpIniPath);
 INT IoAddIcon(UINT);
 INT IoGetColumnsCount(VOID);
 VOID IoSetColumnsCount(INT);

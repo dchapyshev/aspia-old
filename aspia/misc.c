@@ -400,6 +400,9 @@ GetMSProductKey(BOOL is64, LPSTR lpszKeyPath, LPWSTR lpszKey, INT iSize)
     HKEY hKey;
     BOOL bOk;
 
+    DebugTrace(L"is64 = %d, lpszKeyPath = %S, lpszKey = %s, iSize = %d",
+               is64, lpszKeyPath, lpszKey, iSize);
+
     KeyChars[0] = "B"; KeyChars[1] = "C";
     KeyChars[2] = "D"; KeyChars[3] = "F";
     KeyChars[4] = "G"; KeyChars[5] = "H";
@@ -431,7 +434,7 @@ GetMSProductKey(BOOL is64, LPSTR lpszKeyPath, LPWSTR lpszKey, INT iSize)
 #define KEY_WOW64_64KEY 0x0100
 #endif
     /* Check Win2000 (KEY_WOW64_64KEY - not supported) */
-    if (!IsWindows2000())
+    if (!IsWindows2000() && is64)
     {
         samDesired |= KEY_WOW64_64KEY;
     }
