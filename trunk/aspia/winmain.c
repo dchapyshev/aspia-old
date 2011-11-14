@@ -74,7 +74,7 @@ ShowCategoriesTree(UINT Category)
     ListViewClear();
 
     /* Add column */
-    IoAddColumnsList(CategoryColumnList);
+    IoAddColumnsList(CategoryColumnList, 0, 0);
 
     /* Get current selected item */
     hRootItem = TreeView_GetSelection(hTreeView);
@@ -169,7 +169,7 @@ GUIInfoThread(LPVOID lpParameter)
 
     if (CurrentCategory != Category)
     {
-        WCHAR szName[10], szCol[3], szIniPath[MAX_PATH];
+        WCHAR szName[15], szCol[3], szIniPath[MAX_PATH];
 
         GetIniFilePath(szIniPath, MAX_PATH);
         StringCbPrintf(szName, sizeof(szName), L"col-%d", CurrentCategory);

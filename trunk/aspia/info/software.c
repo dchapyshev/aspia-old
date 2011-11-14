@@ -391,92 +391,63 @@ GetVMWareLicenses(VOID)
     RegCloseKey(hKey);
 }
 
+typedef struct
+{
+    LPWSTR lpProductName;
+    LPSTR lpKeyPath;
+} MS_LICENSIES_INFO;
+
+MS_LICENSIES_INFO MsLicensies[] =
+{
+    {L"Microsoft Windows",     "SOFTWARE\\MICROSOFT\\Windows NT\\CurrentVersion"},
+
+    {L"Microsoft Office 2010", "SOFTWARE\\Microsoft\\Office\\14.0\\Registration\\{90140000-0057-0000-0000-0000000FF1CE}"},
+
+    {L"Microsoft Office 2007", "SOFTWARE\\Microsoft\\Office\\12.0\\Registration\\{90120000-0030-0000-0000-0000000FF1CE}"},
+    {L"Microsoft Office 2007", "SOFTWARE\\Microsoft\\Office\\12.0\\Registration\\{90120000-0011-0000-0000-0000000FF1CE}"},
+
+    {L"Microsoft Office 2003", "SOFTWARE\\Microsoft\\Office\\11.0\\Registration\\{90170409-6000-11D3-8CFE-0150048383C9}"},
+    {L"Microsoft Office 2003", "SOFTWARE\\Microsoft\\Office\\11.0\\Registration\\{90110419-6000-11D3-8CFE-0150048383C9}"},
+
+    {L"Microsoft Office XP", "SOFTWARE\\Microsoft\\Office\\10.0\\Registration\\{90280409-6000-11D3-8CFE-0050048383C9}"},
+
+    {L"Office Web Developer 2007", "SOFTWARE\\Microsoft\\Office\\12.0\\Registration\\{90120000-0021-0000-0000-0000000FF1CE}"},
+
+    {L"Windows Mobile Device Center 6.1", "SOFTWARE\\Microsoft\\Windows Mobile Device Center\\6.1\\Registration"},
+
+    {L"Internet Explorer", "SOFTWARE\\Microsoft\\Internet Explorer\\Registration"},
+
+    {0}
+};
+
 VOID
 SOFTWARE_LicensesInfo(VOID)
 {
     WCHAR szText[MAX_STR_LEN], szTemp[MAX_STR_LEN];
-    INT Index;
+    INT Index, i = 0;
 
     DebugStartReceiving();
 
     IoAddIcon(IDI_CONTACT);
 
-    /* Window Key */
-    if (GetMSProductKey(FALSE,
-                        "SOFTWARE\\MICROSOFT\\Windows NT\\CurrentVersion",
-                        szText, sizeof(szText)/sizeof(WCHAR)))
+    do
     {
-        Index = IoAddItem(0, 0, L"Microsoft Windows");
-        IoSetItemText(Index, 1, szText);
-    }
-
-    /* Office 2010 Key */
-    if (GetMSProductKey(FALSE,
-                        "SOFTWARE\\Microsoft\\Office\\14.0\\Registration\\{90140000-0057-0000-0000-0000000FF1CE}",
-                        szText, sizeof(szText)/sizeof(WCHAR)))
-    {
-        Index = IoAddItem(0, 0, L"Microsoft Office 2010");
-        IoSetItemText(Index, 1, szText);
-    }
-
-    /* Office 2007 Key */
-    if (GetMSProductKey(FALSE,
-                        "SOFTWARE\\Microsoft\\Office\\12.0\\Registration\\{90120000-0030-0000-0000-0000000FF1CE}",
-                        szText, sizeof(szText)/sizeof(WCHAR)))
-    {
-        Index = IoAddItem(0, 0, L"Microsoft Office 2007");
-        IoSetItemText(Index, 1, szText);
-    }
-
-    /* Office 2003 Key */
-    if (!GetMSProductKey(FALSE,
-                         "SOFTWARE\\Microsoft\\Office\\11.0\\Registration\\{90170409-6000-11D3-8CFE-0150048383C9}",
-                         szText, sizeof(szText)/sizeof(WCHAR)))
-    {
-        if (GetMSProductKey(FALSE,
-               "SOFTWARE\\Microsoft\\Office\\11.0\\Registration\\{90110419-6000-11D3-8CFE-0150048383C9}",
-               szText, sizeof(szText)/sizeof(WCHAR)))
+        szText[0] = 0;
+        if (!GetMSProductKey(FALSE,
+                             MsLicensies[i].lpKeyPath,
+                             szText, MAX_STR_LEN))
         {
-            Index = IoAddItem(0, 0, L"Microsoft Office 2003");
+            GetMSProductKey(TRUE,
+                            MsLicensies[i].lpKeyPath,
+                            szText, MAX_STR_LEN);
+        }
+        if (szText[0] != 0)
+        {
+            Index = IoAddItem(0, 0, MsLicensies[i].lpProductName);
             IoSetItemText(Index, 1, szText);
         }
     }
-
-    /* Office XP Key */
-    if (GetMSProductKey(FALSE,
-                        "SOFTWARE\\Microsoft\\Office\\10.0\\Registration\\{90280409-6000-11D3-8CFE-0050048383C9}",
-                        szText, sizeof(szText)/sizeof(WCHAR)))
-    {
-        Index = IoAddItem(0, 0, L"Microsoft Office XP");
-        IoSetItemText(Index, 1, szText);
-    }
-
-    /* Office Web Developer 2007 Key */
-    if (GetMSProductKey(FALSE,
-                        "SOFTWARE\\Microsoft\\Office\\12.0\\Registration\\{90120000-0021-0000-0000-0000000FF1CE}",
-                        szText, sizeof(szText)/sizeof(WCHAR)))
-    {
-        Index = IoAddItem(0, 0, L"Microsoft Office Visual Web Developer 2007");
-        IoSetItemText(Index, 1, szText);
-    }
-
-    /* Windows Mobile Device Center 6.1 */
-    if (GetMSProductKey(FALSE,
-                        "SOFTWARE\\Microsoft\\Windows Mobile Device Center\\6.1\\Registration",
-                        szText, sizeof(szText)/sizeof(WCHAR)))
-    {
-        Index = IoAddItem(0, 0, L"Windows Mobile Device Center 6.1");
-        IoSetItemText(Index, 1, szText);
-    }
-
-    /* Internet Explorer Key */
-    if (GetMSProductKey(FALSE,
-                        "SOFTWARE\\Microsoft\\Internet Explorer\\Registration",
-                        szText, sizeof(szText)/sizeof(WCHAR)))
-    {
-        Index = IoAddItem(0, 0, L"Internet Explorer");
-        IoSetItemText(Index, 1, szText);
-    }
+    while (MsLicensies[++i].lpProductName != 0);
 
     /* Visual Studio 2010 Key */
     if (GetStringFromRegistry(HKEY_LOCAL_MACHINE,

@@ -108,9 +108,9 @@ LPC_GetMBManufacturerId(LPWSTR lpManufacturer)
     {
         return XFX_MB;
     }
-    else if (wcscmp(lpManufacturer, L"To be filled by O.E.M.") == 0)
+    else if (wcscmp(lpManufacturer, L"TYAN") == 0)
     {
-        return UNKNOWN_MB;
+        return TYAN_MB;
     }
 
     return UNKNOWN_MB;
@@ -174,6 +174,8 @@ MB_MODELS MbModelsList[] =
     /* MSI */
     { G32M3_V2, L"G31M3 V2(MS-7529)" },
     { H55_G43, L"H55-G43(MS-7638)" },
+    /* TYAN */
+    { S2882, L"TYAN High-End Dual AMD Opteron, S2882" },
     {0}
 };
 
@@ -1121,18 +1123,62 @@ LPC_MainboardInfoInit(WORD wChipType)
         case W83627THF:
         case W83687THF:
         {
-            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
-            InitVItem(3, L"AVCC",      34.0f, 51.0f, 0.0f);
-            InitVItem(5, L"5VSB",      34.0f, 51.0f, 0.0f);
-            InitVItem(6, L"VBAT",      0.0f,  1.0f, 0.0f);
+            switch (wManufId)
+            {
+                case TYAN_MB:
+                {
+                    switch (wModelId)
+                    {
+                        case S2882:
+                            InitVItem(0, L"Vcore1", 0.0f,  1.0f,  0.0f);
+                            InitVItem(1, L"Vcore2", 0.0f,  1.0f,  0.0f);
+                            InitVItem(2, L"+3.3V",  0.0f,  1.0f,  0.0f);
+                            InitVItem(3, L"+5V",    34.0f, 51.0f, 0.0f);
+                            InitVItem(4, L"+12V",   34.0f, 4.2f,  0.0f);
+                            InitVItem(5, L"+5VSB",  34.0f, 34.0f,  0.0f);
 
-            InitTItem(0, L"CPU");
-            InitTItem(1, L"Auxiliary");
-            InitTItem(2, L"System");
+                            InitTItem(0, L"Motherboard");
+                            InitTItem(1, L"Auxiliary");
+                            InitTItem(2, L"CPU");
 
-            InitFItem(0, L"System Fan");
-            InitFItem(1, L"CPU Fan");
-            InitFItem(2, L"Auxiliary Fan");
+                            InitFItem(0, L"Chassis Fan");
+                            InitFItem(1, L"CPU1 Fan");
+                            InitFItem(2, L"Power Fan");
+                            break;
+
+                        default:
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(3, L"AVCC",      34.0f, 51.0f, 0.0f);
+                            InitVItem(5, L"5VSB",      34.0f, 51.0f, 0.0f);
+                            InitVItem(6, L"VBAT",      0.0f,  1.0f, 0.0f);
+
+                            InitTItem(0, L"CPU");
+                            InitTItem(1, L"Auxiliary");
+                            InitTItem(2, L"System");
+
+                            InitFItem(0, L"System Fan");
+                            InitFItem(1, L"CPU Fan");
+                            InitFItem(2, L"Auxiliary Fan");
+                            break;
+                    }
+                }
+                break;
+
+                default:
+                    InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                    InitVItem(3, L"AVCC",      34.0f, 51.0f, 0.0f);
+                    InitVItem(5, L"5VSB",      34.0f, 51.0f, 0.0f);
+                    InitVItem(6, L"VBAT",      0.0f,  1.0f, 0.0f);
+
+                    InitTItem(0, L"CPU");
+                    InitTItem(1, L"Auxiliary");
+                    InitTItem(2, L"System");
+
+                    InitFItem(0, L"System Fan");
+                    InitFItem(1, L"CPU Fan");
+                    InitFItem(2, L"Auxiliary Fan");
+                    break;
+            }
         }
         break;
 

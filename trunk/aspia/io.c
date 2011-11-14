@@ -722,7 +722,7 @@ IoRunInfoFunc(UINT Category, CATEGORY_LIST *List)
     {
         if (List[Index].StringID == Category)
         {
-            WCHAR szIniPath[MAX_PATH] = {0}, szName[10] = {0};
+            WCHAR szIniPath[MAX_PATH] = {0}, szName[15] = {0};
 
             if (IoTarget == IO_TARGET_LISTVIEW)
             {
