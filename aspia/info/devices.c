@@ -241,7 +241,8 @@ HW_DevicesInfo(VOID)
             StringCbPrintf(KeyPath, sizeof(KeyPath),
                            L"%s%s", szClassRootPath, DriverName);
 
-            if (!GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+            if (!GetStringFromRegistry(TRUE,
+                                       HKEY_LOCAL_MACHINE,
                                        KeyPath, L"DriverVersion",
                                        DriverName,
                                        MAX_STR_LEN))
@@ -250,7 +251,8 @@ HW_DevicesInfo(VOID)
             }
             IoSetItemText(ItemIndex, 2, DriverName);
 
-            if (!GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+            if (!GetStringFromRegistry(TRUE,
+                                       HKEY_LOCAL_MACHINE,
                                        KeyPath, L"DriverDate",
                                        DriverName,
                                        MAX_STR_LEN))
@@ -259,7 +261,8 @@ HW_DevicesInfo(VOID)
             }
             IoSetItemText(ItemIndex, 3, DriverName);
 
-            if (!GetStringFromRegistry(HKEY_LOCAL_MACHINE,
+            if (!GetStringFromRegistry(TRUE,
+                                       HKEY_LOCAL_MACHINE,
                                        KeyPath, L"ProviderName",
                                        DriverName,
                                        MAX_STR_LEN))
