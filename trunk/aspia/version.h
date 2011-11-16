@@ -9,8 +9,6 @@
 
 #include <wchar.h>
 
-//#define _ASPIA_PORTABLE_
-
 #define VER_FILEVERSION             0,2,6,0
 #define VER_FILEVERSION_STR         L"0.2.6\0"
 

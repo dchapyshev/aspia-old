@@ -579,69 +579,6 @@ LoadMUIString(UINT ResID, LPWSTR Buffer, INT BufLen)
     return i;
 }
 
-#ifdef _ASPIA_PORTABLE_
-BOOL
-ExtractDLLFromResources(IN UINT FileID,
-                        IN LPWSTR lpszFileName,
-                        OUT LPWSTR lpszPath,
-                        IN SIZE_T PathSize)
-{
-    WCHAR szPath[MAX_PATH];
-    HRSRC hRes = NULL;
-    HGLOBAL hData = NULL;
-    LPVOID pData = NULL;
-    DWORD dwSize, dwWritten;
-    HANDLE hFile;
-
-    if (!GetTempPath(MAX_PATH, szPath))
-    {
-        StringCbCopy(lpszPath, PathSize, lpszFileName);
-    }
-    else
-    {
-        StringCbPrintf(lpszPath, PathSize, L"%saspia\\", szPath);
-        CreateDirectory(lpszPath, NULL);
-
-        StringCbCat(lpszPath, PathSize, L"languages\\");
-        CreateDirectory(lpszPath, NULL);
-
-        StringCbCat(lpszPath, PathSize, lpszFileName);
-    }
-    DeleteFile(lpszPath);
-
-    hRes = FindResource(hInstance,
-                        MAKEINTRESOURCE(FileID),
-                        L"DLL");
-    if (!hRes) return FALSE;
-
-    dwSize = SizeofResource(hInstance, hRes);
-    if (!dwSize) return FALSE;
-
-    hData = LoadResource(hInstance, hRes);
-    if (!hData) return FALSE;
-
-    pData = LockResource(hData);
-    if (!pData) return FALSE;
-
-    hFile = CreateFile(lpszPath,
-                       GENERIC_WRITE,
-                       FILE_SHARE_WRITE,
-                       0, OPEN_ALWAYS,
-                       0, 0);
-    if (hFile == INVALID_HANDLE_VALUE)
-        return FALSE;
-
-    if (!WriteFile(hFile, pData, dwSize, &dwWritten, 0))
-    {
-        CloseHandle(hFile);
-        return FALSE;
-    }
-
-    CloseHandle(hFile);
-    return TRUE;
-}
-#endif /* _ASPIA_PORTABLE_ */
-
 BOOL
 GetCurrentPath(LPWSTR lpszPath, SIZE_T PathLen)
 {
