@@ -7,16 +7,6 @@
 
 #pragma once
 
-#ifdef _ASPIA_PORTABLE_
-
-#define ID_DRIVER_X32_SYS 7777
-#define ID_DRIVER_X64_SYS 7778
-
-#define ID_LANG_RU_RU_DLL 7800
-#define ID_LANG_UK_UA_DLL 7801
-
-#endif /* _ASPIA_PORTABLE_ */
-
 /* Icons */
 #define IDI_MAINICON      100
 #define IDI_ASK           101

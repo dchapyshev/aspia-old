@@ -377,18 +377,7 @@ InitLangCombo(IN HWND hCombo)
     if (ThemesInfo.szLangFile[0] == 0)
         SendMessage(hCombo, CB_SETCURSEL, ItemIndex, 0);
 
-#ifdef _ASPIA_PORTABLE_
-
-    if (!GetTempPath(MAX_PATH, szLangDir))
-        return;
-
-    StringCbCat(szLangDir, sizeof(szLangDir), L"aspia\\");
-
-#else
-
     StringCbCopy(szLangDir, sizeof(szLangDir), ParamsInfo.szCurrentPath);
-
-#endif /* _ASPIA_PORTABLE_ */
 
     StringCbCat(szLangDir, sizeof(szLangDir), L"languages\\");
     StringCbPrintf(szPath, sizeof(szPath), L"%s*.dll", szLangDir);

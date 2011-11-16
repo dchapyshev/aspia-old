@@ -14,71 +14,6 @@
 HANDLE hDriverFile = INVALID_HANDLE_VALUE;
 const LPWSTR lpDriverName = L"Aspia";
 
-#ifdef _ASPIA_PORTABLE_
-BOOL
-DRIVER_ExtractFromExe(OUT LPWSTR lpszDriverPath,
-                      IN SIZE_T PathSize)
-{
-    WCHAR szPath[MAX_PATH];
-    BOOL IsWin64 = IsWin64System();
-    HRSRC hRes = NULL;
-    HGLOBAL hData = NULL;
-    LPVOID pData = NULL;
-    DWORD dwSize, dwWritten;
-    HANDLE hFile;
-
-    if (!GetTempPath(sizeof(szPath)/sizeof(WCHAR), szPath))
-    {
-        StringCbCopy(lpszDriverPath, PathSize, L"aspia.sys");
-    }
-    else
-    {
-        StringCbPrintf(lpszDriverPath,
-                       PathSize,
-                       L"%s\\aspia",
-                       szPath);
-        CreateDirectory(lpszDriverPath, NULL);
-        StringCbCat(lpszDriverPath, PathSize, L"\\aspia.sys");
-    }
-    DeleteFile(lpszDriverPath);
-
-    DebugTrace(L"Extract %s driver to: %s",
-               IsWin64 ? L"amd64" : L"x86", lpszDriverPath);
-    
-    hRes = FindResource(hInstance,
-                        IsWin64 ?
-                            MAKEINTRESOURCE(ID_DRIVER_X64_SYS) :
-                            MAKEINTRESOURCE(ID_DRIVER_X32_SYS),
-                        L"SYS");
-    if (hRes == NULL) return FALSE;
-
-    dwSize = SizeofResource(hInstance, hRes);
-    if (dwSize == 0) return FALSE;
-
-    hData = LoadResource(hInstance, hRes);
-    if (hData == NULL) return FALSE;
-
-    pData = LockResource(hData);
-    if (pData == NULL) return FALSE;
-
-    hFile = CreateFile(lpszDriverPath,
-                       GENERIC_WRITE,
-                       FILE_SHARE_WRITE,
-                       0, OPEN_ALWAYS,
-                       0, 0);
-    if (hFile == INVALID_HANDLE_VALUE)
-        return FALSE;
-
-    if (!WriteFile(hFile, pData, dwSize, &dwWritten, 0))
-    {
-        CloseHandle(hFile);
-        return FALSE;
-    }
-
-    CloseHandle(hFile);
-    return TRUE;
-}
-#endif /* _ASPIA_PORTABLE_ */
 
 static BOOL
 InstallDriver(IN SC_HANDLE scHandle,
@@ -229,10 +164,8 @@ BOOL
 DRIVER_Load(VOID)
 {
     WCHAR szDriverExec[MAX_PATH];
-#ifndef _ASPIA_PORTABLE_
     WCHAR szCurrent[MAX_PATH];
     WCHAR szTemp[MAX_PATH];
-#endif
     SC_HANDLE scHandle;
     BOOLEAN   canDelete = TRUE;
     BOOLEAN   bStarted;
@@ -245,10 +178,6 @@ DRIVER_Load(VOID)
 
     DebugTrace(L"Loading driver...");
 
-#ifdef _ASPIA_PORTABLE_
-    if (!DRIVER_ExtractFromExe(szDriverExec, sizeof(szDriverExec)))
-        return FALSE;
-#else
     if (!GetTempPath(MAX_PATH, szTemp)) return FALSE;
 
     StringCbPrintf(szCurrent, sizeof(szCurrent),
@@ -264,7 +193,6 @@ DRIVER_Load(VOID)
     }
     DebugTrace(L"Driver path: %s", szCurrent);
     DebugTrace(L"Driver temp path: %s", szDriverExec);
-#endif
 
     scHandle = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
     if (!scHandle) return FALSE;

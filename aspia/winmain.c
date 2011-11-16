@@ -751,23 +751,7 @@ LoadLanguage(VOID)
             hLangInst = hInstance;
         }
 
-#ifdef _ASPIA_PORTABLE_
-
-        ExtractDLLFromResources(ID_LANG_RU_RU_DLL, L"ru-RU.dll",
-                                szPath, sizeof(szPath));
-        ExtractDLLFromResources(ID_LANG_UK_UA_DLL, L"uk-UA.dll",
-                                szPath, sizeof(szPath));
-
-        if (!GetTempPath(MAX_PATH, szPath))
-            hLangInst = hInstance;
-
-        StringCbCat(szPath, sizeof(szPath), L"aspia\\");
-
-#else
-
         StringCbCopy(szPath, sizeof(szPath), ParamsInfo.szCurrentPath);
-
-#endif /* _ASPIA_PORTABLE_ */
 
         StringCbCat(szPath, sizeof(szPath), L"languages\\");
         StringCbCat(szPath, sizeof(szPath), ThemesInfo.szLangFile);
