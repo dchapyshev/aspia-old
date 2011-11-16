@@ -6,6 +6,7 @@
  */
 
 #include "../main.h"
+#include "../../include/driver.h"
 #include "spd.h"
 
 
@@ -35,7 +36,7 @@ ReadPciDword(BYTE bus, BYTE dev, BYTE func, BYTE offset)
     DWORD value, ind;
         
     ind = 0x80000000 + bus * 0x10000 + dev * 0x800 + func * 0x100;
-    value = DRIVER_GetRegisterDataDword(ind, offset);
+    value = drv_get_register_data_dword(ind, offset);
 
     return value;
 }
@@ -49,7 +50,7 @@ ReadPciWord(BYTE bus, BYTE dev, BYTE func, BYTE offset)
     ind = 0x80000000 + bus * 0x10000 + dev * 0x800 + func * 0x100 + offset;
     div = (BYTE)(ind % (0x04));
     ind = ind - div;
-    value = DRIVER_GetRegisterDataDword(ind, 0);
+    value = drv_get_register_data_dword(ind, 0);
 
     return (value >> (8 * div)) & 0xffff;
 }
@@ -63,7 +64,7 @@ WritePciByte(BYTE bus, BYTE dev, BYTE func, BYTE offset, BYTE byte_data)
     ind = 0x80000000 + bus * 0x10000 + dev * 0x800 + func * 0x100 + offset;
     div = (BYTE)(ind % (0x04));
     ind = ind - div;
-    value = DRIVER_GetRegisterDataDword(ind, 0);
+    value = drv_get_register_data_dword(ind, 0);
 
     switch (div)
     {
@@ -82,7 +83,7 @@ WritePciByte(BYTE bus, BYTE dev, BYTE func, BYTE offset, BYTE byte_data)
         default:
         break;
     }
-    DRIVER_WriteIoPortDword(CONFIG_DATA, value);
+    drv_write_io_port_dword(CONFIG_DATA, value);
 }
 
 BYTE
@@ -94,7 +95,7 @@ ReadPciByte(BYTE bus, BYTE dev, BYTE func, BYTE offset)
     ind = 0x80000000 + bus * 0x10000 + dev * 0x800 + func * 0x100 + offset;
     div = (BYTE)(ind % (0x04));
     ind = ind - div;
-    value = DRIVER_GetRegisterDataDword(ind, 0);
+    value = drv_get_register_data_dword(ind, 0);
 
     return (value >> (8 * div)) & 0xff;
 }
@@ -108,7 +109,7 @@ WritePciWord(BYTE bus, BYTE dev, BYTE func, BYTE offset, WORD word_data)
     ind = 0x80000000 + bus * 0x10000 + dev * 0x800 + func * 0x100 + offset;
     div = (BYTE)(ind % (0x04));
     ind = ind - div;
-    Value = DRIVER_GetRegisterDataDword(ind, 0);
+    Value = drv_get_register_data_dword(ind, 0);
 
     switch (div)
     {
@@ -121,7 +122,7 @@ WritePciWord(BYTE bus, BYTE dev, BYTE func, BYTE offset, WORD word_data)
         default:
             break;
     }
-    DRIVER_WriteIoPortDword(CONFIG_DATA, Value);
+    drv_write_io_port_dword(CONFIG_DATA, Value);
 }
 
 DWORD
@@ -162,11 +163,11 @@ GetSmBusBaseAddress(WORD *BaseAddress)
 
         for (io_cf8 = 0x80000000; io_cf8 < 0x80ffff00; io_cf8 += 0x100)
         {
-            io_cfc = DRIVER_GetRegisterDataDword(io_cf8, 0);
+            io_cfc = drv_get_register_data_dword(io_cf8, 0);
 
             if ((io_cfc != 0x00000000) && (io_cfc != 0xffffffff) && (io_cfc != io_cfc_bak))
             {
-                Class = DRIVER_GetRegisterDataDword(io_cf8, 8);
+                Class = drv_get_register_data_dword(io_cf8, 8);
 
                 if ((Class / 0x100) == SMBUS_CLASS_CODE)
                 {
@@ -176,7 +177,7 @@ GetSmBusBaseAddress(WORD *BaseAddress)
                     {
                         case VENDOR_ID_ATI:
                         {
-                            DWORD DevId = DRIVER_GetRegisterDataDword(io_cf8, 2);
+                            DWORD DevId = drv_get_register_data_dword(io_cf8, 2);
 
                             DebugTrace(L"ATI SMBus, DevId = 0x%x", DevId);
 
@@ -188,7 +189,7 @@ GetSmBusBaseAddress(WORD *BaseAddress)
 
                                 /* ATI SB400/SB600 */
                                 default:
-                                    *BaseAddress = DRIVER_GetRegisterDataWord(io_cf8, 0x10) & 0xFFF0;
+                                    *BaseAddress = drv_get_register_data_word(io_cf8, 0x10) & 0xFFF0;
                                     break;
                             }
                             return ATISB_SMBUS;
@@ -201,12 +202,12 @@ GetSmBusBaseAddress(WORD *BaseAddress)
 
                             if ((level == 0x27008086)||(level == 0x28008086)||(level == 0x29008086))
                             {
-                                *BaseAddress = DRIVER_GetRegisterDataWord(io_cf8, 0x20) & 0xFFF0;
+                                *BaseAddress = drv_get_register_data_word(io_cf8, 0x20) & 0xFFF0;
                                 return ICH789_SMBUS;
                             }
                             else
                             {
-                                *BaseAddress = DRIVER_GetRegisterDataWord(io_cf8, 0x20) & 0xFFF0;
+                                *BaseAddress = drv_get_register_data_word(io_cf8, 0x20) & 0xFFF0;
                                 return ICHX_SMBUS;
                             }
                         }
@@ -267,8 +268,8 @@ ReadICH789SmBus(BYTE *SpdData,
         error = 0;
         do
         {
-            DRIVER_WriteIoPortByte(BaseAddress + 0x00, 0xFF);
-            flag = DRIVER_ReadIoPortByte(BaseAddress + 0x00);
+            drv_write_io_port_byte(BaseAddress + 0x00, 0xFF);
+            flag = drv_read_io_port_byte(BaseAddress + 0x00);
 
             if (++error > 0x8000)
             {
@@ -278,14 +279,14 @@ ReadICH789SmBus(BYTE *SpdData,
         }
         while ((flag & 0x9F) != 0);
 
-        DRIVER_WriteIoPortByte((BaseAddress + 0x04), Slot);
-        DRIVER_WriteIoPortByte((BaseAddress + 0x03), Index);
-        DRIVER_WriteIoPortByte((BaseAddress + 0x02), 0x48);
+        drv_write_io_port_byte((BaseAddress + 0x04), Slot);
+        drv_write_io_port_byte((BaseAddress + 0x03), Index);
+        drv_write_io_port_byte((BaseAddress + 0x02), 0x48);
 
         error = 0;
         do
         {
-            if ((DRIVER_ReadIoPortByte(BaseAddress + 0x00) & 0x04) == 0x04)
+            if ((drv_read_io_port_byte(BaseAddress + 0x00) & 0x04) == 0x04)
             {
                 /* No module in channel */
                 return FALSE;
@@ -299,9 +300,9 @@ ReadICH789SmBus(BYTE *SpdData,
 
             Sleep(1);
         }
-        while ((DRIVER_ReadIoPortByte(BaseAddress + 0x00) & 0x02) != 0x02);
+        while ((drv_read_io_port_byte(BaseAddress + 0x00) & 0x02) != 0x02);
 
-        SpdData[Index] = DRIVER_ReadIoPortByte(BaseAddress + 0x05);
+        SpdData[Index] = drv_read_io_port_byte(BaseAddress + 0x05);
     }
 
     quaere(SpdData);
@@ -320,8 +321,8 @@ ReadICHXSmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
         error = 0;
         do
         {
-            DRIVER_WriteIoPortByte(BaseAddress + 0x00, 0xFF);
-            flag = DRIVER_ReadIoPortByte(BaseAddress + 0x00);
+            drv_write_io_port_byte(BaseAddress + 0x00, 0xFF);
+            flag = drv_read_io_port_byte(BaseAddress + 0x00);
 
             if (++error > 0x8000)
             {
@@ -331,14 +332,14 @@ ReadICHXSmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
         }
         while ((flag & 0x9F) != 0);
 
-        DRIVER_WriteIoPortByte((BaseAddress + 0x04), Slot);
-        DRIVER_WriteIoPortByte((BaseAddress + 0x03), Index);
-        DRIVER_WriteIoPortByte((BaseAddress + 0x02), 0x48);
+        drv_write_io_port_byte((BaseAddress + 0x04), Slot);
+        drv_write_io_port_byte((BaseAddress + 0x03), Index);
+        drv_write_io_port_byte((BaseAddress + 0x02), 0x48);
 
         error = 0;
         do
         {
-            if ((DRIVER_ReadIoPortByte(BaseAddress + 0x00) & 0x04) == 0x04)
+            if ((drv_read_io_port_byte(BaseAddress + 0x00) & 0x04) == 0x04)
             {
                 /* No module in channel */
                 return FALSE;
@@ -350,9 +351,9 @@ ReadICHXSmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
             }
             Sleep(1);
         }
-        while ((DRIVER_ReadIoPortByte(BaseAddress + 0x00) & 0x02) != 0x02);
+        while ((drv_read_io_port_byte(BaseAddress + 0x00) & 0x02) != 0x02);
 
-        Spd[Index] = DRIVER_ReadIoPortByte(BaseAddress + 0x05);
+        Spd[Index] = drv_read_io_port_byte(BaseAddress + 0x05);
     }
     quaere(Spd);
 
@@ -370,8 +371,8 @@ ReadSIS962SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
         error = 0;
         do
         {
-            DRIVER_WriteIoPortByte(BaseAddress + 0x00, 0xFF);
-            flag = DRIVER_ReadIoPortByte(BaseAddress + 0x00);
+            drv_write_io_port_byte(BaseAddress + 0x00, 0xFF);
+            flag = drv_read_io_port_byte(BaseAddress + 0x00);
 
             if (++error > 0x8000)
             {
@@ -381,14 +382,14 @@ ReadSIS962SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
         }
         while (flag != 0);
 
-        DRIVER_WriteIoPortByte((BaseAddress + 0x04), Slot);
-        DRIVER_WriteIoPortByte((BaseAddress + 0x05), Index);
-        DRIVER_WriteIoPortByte((BaseAddress + 0x03), 0x12);
+        drv_write_io_port_byte((BaseAddress + 0x04), Slot);
+        drv_write_io_port_byte((BaseAddress + 0x05), Index);
+        drv_write_io_port_byte((BaseAddress + 0x03), 0x12);
 
         error = 0;
         do
         {
-            if ((DRIVER_ReadIoPortByte(BaseAddress + 0x00) & 0x02) == 0x02)
+            if ((drv_read_io_port_byte(BaseAddress + 0x00) & 0x02) == 0x02)
             {
                 /* No module in channel */
                 return FALSE;
@@ -400,9 +401,9 @@ ReadSIS962SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
             }
             Sleep(1);
         }
-        while (DRIVER_ReadIoPortByte(BaseAddress + 0x00) != 0x08);
+        while (drv_read_io_port_byte(BaseAddress + 0x00) != 0x08);
 
-        Spd[Index] = DRIVER_ReadIoPortByte(BaseAddress + 0x08);
+        Spd[Index] = drv_read_io_port_byte(BaseAddress + 0x08);
     }
     quaere(Spd);
 
@@ -420,8 +421,8 @@ ReadSIS968SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
         error = 0;
         do
         {
-            DRIVER_WriteIoPortByte(BaseAddress + 0x00, 0xFF);
-            flag = DRIVER_ReadIoPortByte(BaseAddress + 0x00);
+            drv_write_io_port_byte(BaseAddress + 0x00, 0xFF);
+            flag = drv_read_io_port_byte(BaseAddress + 0x00);
 
             if (++error > 0x8000)
             {
@@ -431,14 +432,14 @@ ReadSIS968SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
         }
         while(flag != 0);
 
-        DRIVER_WriteIoPortByte((BaseAddress + 0x04), Slot);
-        DRIVER_WriteIoPortByte((BaseAddress + 0x05), Index);
-        DRIVER_WriteIoPortByte((BaseAddress + 0x03), 0x12);
+        drv_write_io_port_byte((BaseAddress + 0x04), Slot);
+        drv_write_io_port_byte((BaseAddress + 0x05), Index);
+        drv_write_io_port_byte((BaseAddress + 0x03), 0x12);
 
         error = 0;
         do
         {
-            if ((DRIVER_ReadIoPortByte(BaseAddress + 0x00) & 0x02) == 0x02)
+            if ((drv_read_io_port_byte(BaseAddress + 0x00) & 0x02) == 0x02)
             {
                 /* No module in channel */
                 return FALSE;
@@ -450,10 +451,10 @@ ReadSIS968SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
             }
             Sleep(1);
         }
-        while ((DRIVER_ReadIoPortByte(BaseAddress + 0x00) & 0x08) != 0x08);
+        while ((drv_read_io_port_byte(BaseAddress + 0x00) & 0x08) != 0x08);
 
-        Spd[Index] = DRIVER_ReadIoPortByte(BaseAddress + 0x10);
-        DRIVER_WriteIoPortByte(BaseAddress + 0x00, flag & 0x08);
+        Spd[Index] = drv_read_io_port_byte(BaseAddress + 0x10);
+        drv_write_io_port_byte(BaseAddress + 0x00, flag & 0x08);
     }
     quaere(Spd);
 
@@ -471,8 +472,8 @@ ReadNVCK804SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
         error = 0;
         do
         {
-            DRIVER_WriteIoPortByte(BaseAddress + 0x00, 0xFF);
-            flag = DRIVER_ReadIoPortByte(BaseAddress + 0x00);
+            drv_write_io_port_byte(BaseAddress + 0x00, 0xFF);
+            flag = drv_read_io_port_byte(BaseAddress + 0x00);
 
             if (++error > 0x8000)
             {
@@ -482,9 +483,9 @@ ReadNVCK804SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
         }
         while ((flag & 0x9F) != 0);
 
-        DRIVER_WriteIoPortByte((BaseAddress + 0x02), Slot - 1);
-        DRIVER_WriteIoPortByte((BaseAddress + 0x03), Index);
-        DRIVER_WriteIoPortByte((BaseAddress + 0x00), 0x07);
+        drv_write_io_port_byte((BaseAddress + 0x02), Slot - 1);
+        drv_write_io_port_byte((BaseAddress + 0x03), Index);
+        drv_write_io_port_byte((BaseAddress + 0x00), 0x07);
 
         error = 0;
         do
@@ -494,15 +495,15 @@ ReadNVCK804SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
                 /* Read error */
                 return FALSE;
             }
-            if ((DRIVER_ReadIoPortByte(BaseAddress + 0x01) & 0x10) == 0x10)
+            if ((drv_read_io_port_byte(BaseAddress + 0x01) & 0x10) == 0x10)
             {
                 /* No module in channel */
                 return FALSE;
             }
             Sleep(1);
         }
-        while (DRIVER_ReadIoPortByte(BaseAddress + 0x01) != SPD_MAX_SIZE);
-        Spd[Index] = DRIVER_ReadIoPortByte(BaseAddress + 0x04);
+        while (drv_read_io_port_byte(BaseAddress + 0x01) != SPD_MAX_SIZE);
+        Spd[Index] = drv_read_io_port_byte(BaseAddress + 0x04);
     }
     return TRUE;
   //quaere(Spd);
@@ -519,8 +520,8 @@ ReadATISBSmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
         error = 0;
         do
         {
-            DRIVER_WriteIoPortByte(BaseAddress + 0x00, 0xFF);
-            flag = DRIVER_ReadIoPortByte(BaseAddress + 0x00);
+            drv_write_io_port_byte(BaseAddress + 0x00, 0xFF);
+            flag = drv_read_io_port_byte(BaseAddress + 0x00);
 
             if (++error > 0x8000)
             {
@@ -530,9 +531,9 @@ ReadATISBSmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
         }
         while ((flag & 0x9F) != 0);
 
-        DRIVER_WriteIoPortByte((BaseAddress + 0x04), Slot);
-        DRIVER_WriteIoPortByte((BaseAddress + 0x03), Index);
-        DRIVER_WriteIoPortByte((BaseAddress + 0x02), 0x48);
+        drv_write_io_port_byte((BaseAddress + 0x04), Slot);
+        drv_write_io_port_byte((BaseAddress + 0x03), Index);
+        drv_write_io_port_byte((BaseAddress + 0x02), 0x48);
 
         error = 0;
         do
@@ -542,15 +543,15 @@ ReadATISBSmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
                 /* Read error */
                 return FALSE;
             }
-            if ((DRIVER_ReadIoPortByte(BaseAddress + 0x00) & 0x06) == 0x06)
+            if ((drv_read_io_port_byte(BaseAddress + 0x00) & 0x06) == 0x06)
             {
                 /* No module in channel */
                 return FALSE;
             }
             //Sleep(1);
         }
-        while ((DRIVER_ReadIoPortByte(BaseAddress + 0x00) & 0x06) != 0x02);
-        Spd[Index] = DRIVER_ReadIoPortByte(BaseAddress + 0x05);
+        while ((drv_read_io_port_byte(BaseAddress + 0x00) & 0x06) != 0x02);
+        Spd[Index] = drv_read_io_port_byte(BaseAddress + 0x05);
     }
     quaere(Spd);
 
@@ -567,10 +568,10 @@ ReadVIA8235SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
     {
         error = 0;
 
-        DRIVER_WriteIoPortByte(BaseAddress + 0x00, 0xFF);
+        drv_write_io_port_byte(BaseAddress + 0x00, 0xFF);
         do
         {
-            flag = DRIVER_ReadIoPortByte(BaseAddress + 0x00);
+            flag = drv_read_io_port_byte(BaseAddress + 0x00);
 
             if (++error > 0x8000)
             {
@@ -580,13 +581,13 @@ ReadVIA8235SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
         }
         while ((flag & 0x40) != 0x40);
 
-        DRIVER_WriteIoPortByte((BaseAddress + 0x04), Slot);
-        DRIVER_WriteIoPortByte((BaseAddress + 0x03), Index);
-        DRIVER_WriteIoPortByte((BaseAddress + 0x02), 0x48);
+        drv_write_io_port_byte((BaseAddress + 0x04), Slot);
+        drv_write_io_port_byte((BaseAddress + 0x03), Index);
+        drv_write_io_port_byte((BaseAddress + 0x02), 0x48);
 
         error = 0;
 
-        flag = DRIVER_ReadIoPortByte(BaseAddress + 0x00);
+        flag = drv_read_io_port_byte(BaseAddress + 0x00);
         do
         {
             if (++error > 0x100)
@@ -600,11 +601,11 @@ ReadVIA8235SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
                 return FALSE;
             }
             Sleep(1);
-            flag = DRIVER_ReadIoPortByte(BaseAddress + 0x00);
+            flag = drv_read_io_port_byte(BaseAddress + 0x00);
         }
         while ((flag & 0x02) != 0x02);
 
-        Spd[Index] = DRIVER_ReadIoPortByte(BaseAddress + 0x05);
+        Spd[Index] = drv_read_io_port_byte(BaseAddress + 0x05);
     }
     quaere(Spd);
 

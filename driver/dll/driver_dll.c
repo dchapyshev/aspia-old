@@ -373,7 +373,7 @@ BYTE
 drv_read_io_port_byte(IN DWORD Port)
 {
     DWORD ReadByte;
-    WORD Value;
+    DWORD Value;
 
     DeviceIoControl(hDriverFile,
                     (DWORD)IOCTL_READ_PORT_BYTE,

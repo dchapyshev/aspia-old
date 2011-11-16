@@ -6,6 +6,7 @@
  */
 
 #include "main.h"
+#include "../include/driver.h"
 #include "smart/smart.h"
 
 #define IDT_SENSORS_UPDATE_TIMER 1326
@@ -154,7 +155,7 @@ GetCPUTemperature(VOID)
         UINT Temp;
 
         /* Only for first core */
-        DRIVER_GetMSRData(IA32_THERM_STATUS, 0, &Value);
+        drv_read_msr(IA32_THERM_STATUS, 0, &Value);
 
         Temp = ((Value >> 16) & 0xFF);
         if (Temp == 0) return 0;

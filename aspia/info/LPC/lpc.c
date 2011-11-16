@@ -95,8 +95,8 @@ LPC_ChipTypeToText(DWORD dwChip, LPWSTR lpText, SIZE_T Size)
 BYTE
 LPC_ReadByte(BYTE bRegisterPort, BYTE bValuePort, BYTE bRegister)
 {
-    DRIVER_WriteIoPortByte(bRegisterPort, bRegister);
-    return DRIVER_ReadIoPortByte(bValuePort);
+    drv_write_io_port_byte(bRegisterPort, bRegister);
+    return drv_read_io_port_byte(bValuePort);
 }
 
 WORD
@@ -109,21 +109,21 @@ LPC_ReadWord(BYTE bRegisterPort, BYTE bValuePort, BYTE bRegister)
 VOID
 LPC_Select(BYTE bRegisterPort, BYTE bValuePort, BYTE devnum)
 {
-    DRIVER_WriteIoPortByte(bRegisterPort, DEVCIE_SELECT_REGISTER);
-    DRIVER_WriteIoPortByte(bValuePort, devnum);
+    drv_write_io_port_byte(bRegisterPort, DEVCIE_SELECT_REGISTER);
+    drv_write_io_port_byte(bValuePort, devnum);
 }
 
 VOID
 WinbondNuvotonFintekEnter(BYTE bRegisterPort)
 {
-    DRIVER_WriteIoPortByte(bRegisterPort, 0x87);
-    DRIVER_WriteIoPortByte(bRegisterPort, 0x87);
+    drv_write_io_port_byte(bRegisterPort, 0x87);
+    drv_write_io_port_byte(bRegisterPort, 0x87);
 }
 
 VOID
 WinbondNuvotonFintekExit(BYTE bRegisterPort)
 {
-    DRIVER_WriteIoPortByte(bRegisterPort, 0xAA);
+    drv_write_io_port_byte(bRegisterPort, 0xAA);
 }
 
 VOID
@@ -477,17 +477,17 @@ DetectWinbondFintek(BYTE bRegisterPort,
 VOID
 IT87Enter(BYTE bRegisterPort)
 {
-    DRIVER_WriteIoPortByte(bRegisterPort, 0x87);
-    DRIVER_WriteIoPortByte(bRegisterPort, 0x01);
-    DRIVER_WriteIoPortByte(bRegisterPort, 0x55);
-    DRIVER_WriteIoPortByte(bRegisterPort, 0x55);
+    drv_write_io_port_byte(bRegisterPort, 0x87);
+    drv_write_io_port_byte(bRegisterPort, 0x01);
+    drv_write_io_port_byte(bRegisterPort, 0x55);
+    drv_write_io_port_byte(bRegisterPort, 0x55);
 }
 
 VOID
 IT87Exit(BYTE bRegisterPort, BYTE bValuePort)
 {
-    DRIVER_WriteIoPortByte(bRegisterPort, CONFIGURATION_CONTROL_REGISTER);
-    DRIVER_WriteIoPortByte(bValuePort, 0x02);
+    drv_write_io_port_byte(bRegisterPort, CONFIGURATION_CONTROL_REGISTER);
+    drv_write_io_port_byte(bValuePort, 0x02);
 }
 
 VOID
