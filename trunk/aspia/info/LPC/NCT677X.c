@@ -90,11 +90,11 @@ NCT677X_ReadByte(WORD port, WORD address)
     BYTE bank = (BYTE)(address >> 8);
     BYTE reg = (BYTE)(address & 0xFF);
 
-    DRIVER_WriteIoPortByte((WORD)(port + ADDRESS_REGISTER_OFFSET), BANK_SELECT_REGISTER);
-    DRIVER_WriteIoPortByte((WORD)(port + DATA_REGISTER_OFFSET), bank);
-    DRIVER_WriteIoPortByte((WORD)(port + ADDRESS_REGISTER_OFFSET), reg);
+    drv_write_io_port_byte((WORD)(port + ADDRESS_REGISTER_OFFSET), BANK_SELECT_REGISTER);
+    drv_write_io_port_byte((WORD)(port + DATA_REGISTER_OFFSET), bank);
+    drv_write_io_port_byte((WORD)(port + ADDRESS_REGISTER_OFFSET), reg);
 
-    return DRIVER_ReadIoPortByte((WORD)(port + DATA_REGISTER_OFFSET));
+    return drv_read_io_port_byte((WORD)(port + DATA_REGISTER_OFFSET));
 }
 
 VOID
@@ -103,10 +103,10 @@ NCT677X_WriteByte(WORD port, WORD address, BYTE value)
     BYTE bank = (BYTE)(address >> 8);
     BYTE reg = (BYTE)(address & 0xFF);
 
-    DRIVER_WriteIoPortByte((WORD)(port + ADDRESS_REGISTER_OFFSET), BANK_SELECT_REGISTER);
-    DRIVER_WriteIoPortByte((WORD)(port + DATA_REGISTER_OFFSET), bank);
-    DRIVER_WriteIoPortByte((WORD)(port + ADDRESS_REGISTER_OFFSET), reg);
-    DRIVER_WriteIoPortByte((WORD)(port + DATA_REGISTER_OFFSET), value);
+    drv_write_io_port_byte((WORD)(port + ADDRESS_REGISTER_OFFSET), BANK_SELECT_REGISTER);
+    drv_write_io_port_byte((WORD)(port + DATA_REGISTER_OFFSET), bank);
+    drv_write_io_port_byte((WORD)(port + ADDRESS_REGISTER_OFFSET), reg);
+    drv_write_io_port_byte((WORD)(port + DATA_REGISTER_OFFSET), value);
 }
 
 BOOL

@@ -6,6 +6,7 @@
  */
 
 #include "../main.h"
+#include "../../include/driver.h"
 #include "../smart/smart.h"
 
 
@@ -19,7 +20,7 @@ GetTjmaxFromMSR(DWORD CpuIndex)
 {
     UINT64 Value = 0;
 
-    if (DRIVER_GetMSRData(IA32_TEMPERATURE_TARGET, CpuIndex, &Value))
+    if (drv_read_msr(IA32_TEMPERATURE_TARGET, CpuIndex, &Value))
     {
         if (Value != 0)
             return (Value >> 16) & 0xff;
@@ -152,7 +153,7 @@ GetIntelCpuInfo(VOID)
         UINT Temp, Tjmax;
         bIndex = 0;
 
-        while (DRIVER_GetMSRData(IA32_THERM_STATUS, bIndex, &Value))
+        while (drv_read_msr(IA32_THERM_STATUS, bIndex, &Value))
         {
             Temp = ((Value >> 16) & 0xFF);
 

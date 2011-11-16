@@ -212,8 +212,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msvcrt_win2000.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib"
-				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\i386\&quot;;&quot;$(DDK)\lib\wlh\i386\&quot;"
+				AdditionalDependencies="msvcrt_win2000.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib aspia_drv.lib"
+				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\i386\&quot;;&quot;$(OutDir)\&quot;;&quot;$(DDK)\lib\wlh\i386\&quot;"
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames=""
 				AddModuleNamesToAssembly=""
@@ -347,10 +347,6 @@
 			</File>
 			<File
 				RelativePath=".\dev_report.c"
-				>
-			</File>
-			<File
-				RelativePath=".\driver.c"
 				>
 			</File>
 			<File
@@ -515,6 +511,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\include\driver.h"
+				>
+			</File>
 			<File
 				RelativePath=".\main.h"
 				>

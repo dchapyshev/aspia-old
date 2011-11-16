@@ -11,6 +11,10 @@
 #define CONFIG_DATA    0xCFC
 #define CONFIG_ADDRESS 0xCF8
 
+#define IA32_THERM_STATUS        0x019c
+#define IA32_TEMPERATURE_TARGET  0x01A2
+#define IA32_PERF_STATUS         0x0198
+
 #define IOCTL_GET_SMBIOS        CTL_CODE(FILE_DEVICE_UNKNOWN, 1,  METHOD_BUFFERED, FILE_ALL_ACCESS)
 #define IOCTL_GET_MSR           CTL_CODE(FILE_DEVICE_UNKNOWN, 2,  METHOD_BUFFERED, FILE_ALL_ACCESS)
 #define IOCTL_GET_PMC           CTL_CODE(FILE_DEVICE_UNKNOWN, 3,  METHOD_BUFFERED, FILE_ALL_ACCESS)
@@ -99,3 +103,51 @@ BOOL drv_read_pci_config(IN DWORD PciAddress, IN DWORD RegAddress, OUT PBYTE Val
 BOOL drv_write_pci_config(IN DWORD PciAddress, IN DWORD RegAddress, IN PBYTE Value, IN DWORD Size);
 
 BOOL drv_read_pmc(IN DWORD Index, OUT PDWORD eax, OUT PDWORD edx);
+
+__inline BYTE
+ReadPciConfigByte(IN DWORD PciAddress, IN BYTE RegAddress)
+{
+    BYTE Value;
+    if (drv_read_pci_config(PciAddress, RegAddress, (PBYTE)&Value, sizeof(BYTE)))
+        return Value;
+    else
+        return 0xFF;
+}
+
+__inline WORD
+ReadPciConfigWord(IN DWORD PciAddress, IN BYTE RegAddress)
+{
+    WORD Value;
+    if (drv_read_pci_config(PciAddress, RegAddress, (PBYTE)&Value, sizeof(WORD)))
+        return Value;
+    else
+        return 0xFFFF;
+}
+
+__inline DWORD
+ReadPciConfigDword(IN DWORD PciAddress, IN BYTE RegAddress)
+{
+    DWORD Value;
+    if (drv_read_pci_config(PciAddress, RegAddress, (PBYTE)&Value, sizeof(DWORD)))
+        return Value;
+    else
+        return 0xFFFFFFFF;
+}
+
+__inline VOID
+WritePciConfigByte(IN DWORD PciAddress, IN BYTE RegAddress, IN BYTE Value)
+{
+    drv_write_pci_config(PciAddress, RegAddress, (PBYTE)&Value , sizeof(BYTE));
+}
+
+__inline VOID
+WritePciConfigWord(IN DWORD PciAddress, IN BYTE RegAddress, IN WORD Value)
+{
+    drv_write_pci_config(PciAddress, RegAddress, (PBYTE)&Value , sizeof(WORD));
+}
+
+__inline VOID
+WritePciConfigDword(IN DWORD PciAddress, IN BYTE RegAddress, IN DWORD Value)
+{
+    drv_write_pci_config(PciAddress, RegAddress, (PBYTE)&Value , sizeof(DWORD));
+}

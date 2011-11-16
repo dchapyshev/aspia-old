@@ -12,6 +12,7 @@
 */
 
 #include "../main.h"
+#include "../../include/driver.h"
 #include "smbios.h"
 
 #pragma warning(disable: 4996)
@@ -630,10 +631,6 @@ const INFO_STRUCT BatteryDeviceChemistryList[] =
     { 0 }
 };
 
-
-PVOID
-DRIVER_GetSMBIOSData(OUT DWORD* ReturnSize);
-
 /* Definition for the GetSystemFirmwareTable function */
 typedef BOOL (WINAPI *PGSFT)(DWORD, DWORD, PVOID, DWORD);
 
@@ -698,7 +695,7 @@ InitSmBIOSData(VOID)
         return TRUE;
     }
 
-    buf = DRIVER_GetSMBIOSData(&dwSize);
+    buf = drv_get_smbios_data(&dwSize);
     if (!buf)
     {
         return FALSE;

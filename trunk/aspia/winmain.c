@@ -6,6 +6,7 @@
  */
 
 #include "main.h"
+#include "../include/driver.h"
 
 
 HINSTANCE hInstance = NULL;
@@ -680,7 +681,7 @@ HandleCommandLine(VOID)
     if (ParamsInfo.DebugMode && NumArgs == 2)
         return FALSE;
 
-    DRIVER_Load();
+    drv_load();
 
     ReportSaveAll(FALSE, szPath, bNavMenu);
 
@@ -939,7 +940,7 @@ wWinMain(HINSTANCE hInst,
     DebugTrace(L"Start with debug mode");
 
     /* Загружаем драйвер режима ядра */
-    DRIVER_Load();
+    drv_load();
 
     InitCommonControls();
 
@@ -1022,7 +1023,7 @@ wWinMain(HINSTANCE hInst,
         }
     }
 
-    DRIVER_Unload();
+    drv_unload();
 
     DeleteCriticalSection(&CriticalSection);
 

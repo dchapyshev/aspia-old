@@ -6,6 +6,7 @@
  */
 
 #include "main.h"
+#include "../include/driver.h"
 #include "smart/smart.h"
 
 
@@ -853,11 +854,11 @@ SaveSettingsFromDialog(HWND hDlg)
         if (KmDriverNew)
         {
             SettingsInfo.AllowKmDriver = KmDriverNew;
-            DRIVER_Load();
+            drv_load();
         }
         else
         {
-            DRIVER_Unload();
+            drv_unload();
             SettingsInfo.AllowKmDriver = KmDriverNew;
         }
     }

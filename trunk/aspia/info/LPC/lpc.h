@@ -8,6 +8,8 @@
 #include <windows.h>
 #include <wchar.h>
 
+#include "../../../include/driver.h"
+
 
 #define ATK0110    0x0110
 

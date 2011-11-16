@@ -34,20 +34,20 @@ const BYTE FAN_DIV_BIT2[]   = { 5,    6,    7,    23,   15   };
 BYTE
 W836XX_ReadByte(WORD address, BYTE bank, BYTE reg)
 {
-    DRIVER_WriteIoPortByte((WORD)(address + ADDRESS_REGISTER_OFFSET), BANK_SELECT_REGISTER);
-    DRIVER_WriteIoPortByte((WORD)(address + DATA_REGISTER_OFFSET), bank);
-    DRIVER_WriteIoPortByte((WORD)(address + ADDRESS_REGISTER_OFFSET), reg);
+    drv_write_io_port_byte((WORD)(address + ADDRESS_REGISTER_OFFSET), BANK_SELECT_REGISTER);
+    drv_write_io_port_byte((WORD)(address + DATA_REGISTER_OFFSET), bank);
+    drv_write_io_port_byte((WORD)(address + ADDRESS_REGISTER_OFFSET), reg);
 
-    return DRIVER_ReadIoPortByte((WORD)(address + DATA_REGISTER_OFFSET));
+    return drv_read_io_port_byte((WORD)(address + DATA_REGISTER_OFFSET));
 }
 
 VOID
 W836XX_WriteByte(WORD address, BYTE bank, BYTE reg, BYTE value)
 {
-    DRIVER_WriteIoPortByte((WORD)(address + ADDRESS_REGISTER_OFFSET), BANK_SELECT_REGISTER);
-    DRIVER_WriteIoPortByte((WORD)(address + DATA_REGISTER_OFFSET), bank);
-    DRIVER_WriteIoPortByte((WORD)(address + ADDRESS_REGISTER_OFFSET), reg);
-    DRIVER_WriteIoPortByte((WORD)(address + DATA_REGISTER_OFFSET), value);
+    drv_write_io_port_byte((WORD)(address + ADDRESS_REGISTER_OFFSET), BANK_SELECT_REGISTER);
+    drv_write_io_port_byte((WORD)(address + DATA_REGISTER_OFFSET), bank);
+    drv_write_io_port_byte((WORD)(address + ADDRESS_REGISTER_OFFSET), reg);
+    drv_write_io_port_byte((WORD)(address + DATA_REGISTER_OFFSET), value);
 }
 
 DWORD
