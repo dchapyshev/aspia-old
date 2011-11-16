@@ -833,8 +833,7 @@ AddDMIFooter(VOID)
 
     Index = IoAddValueName(0, IDS_DMI_HEADER_TITLE, 1);
 
-    LoadMUIString(IDS_DMI_HEADER, szText,
-                  sizeof(szText)/sizeof(WCHAR));
+    LoadMUIString(IDS_DMI_HEADER, szText, MAX_STR_LEN);
     IoSetItemText(Index, 1, szText);
 }
 
@@ -843,7 +842,7 @@ SMBIOS_FormFactorToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
 {
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (FormFactorList[Index].dwValue == Form)
@@ -860,7 +859,7 @@ SMBIOS_MemoryDeviceToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
 {
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (MemDevicesList[Index].dwValue == Form)
@@ -992,7 +991,7 @@ SMBIOS_SramToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
 {
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (SramTypeList[Index].dwValue == Form)
@@ -1155,7 +1154,7 @@ SMBIOS_ProcessorTypeToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
 {
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (ProcessorTypeList[Index].dwValue == Form)
@@ -1172,7 +1171,7 @@ SMBIOS_ProcessorFamilyToText(WORD Form, LPWSTR lpszText, SIZE_T Size)
 {
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (ProcessorFamilyList[Index].dwValue == Form)
@@ -1190,7 +1189,7 @@ SMBIOS_ProcessorStatusToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
     BYTE CpuStatus = Form & CPU_STATUS_MASK;
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (ProcessorStatusList[Index].dwValue == CpuStatus)
@@ -1207,7 +1206,7 @@ SMBIOS_ProcessorUpgradeToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
 {
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (ProcessorUpgradeList[Index].dwValue == Form)
@@ -1352,7 +1351,8 @@ VOID
 DMI_BIOSInfo(VOID)
 {
     SIZE_T NumberOptionalBytes;
-    BYTE bValue, Buf[MAX_DATA] = {0};
+    DWORD bValue;
+	BYTE Buf[MAX_DATA] = {0};
     BYTE* pBuf = Buf;
     SIZE_T Len = MAX_DATA;
     WCHAR szText[MAX_STR_LEN];
@@ -1394,7 +1394,7 @@ DMI_BIOSInfo(VOID)
         CopyMemory(&bValue, &Buf[0x12], NumberOptionalBytes);
 
         /* Boot devices */
-        StringCbCopy(szText, sizeof(szText), L"");
+        szText[0] = 0;
         if (dwValue & BIOS_CD_BOOT_SUPPORTED)
             StringCbCat(szText, sizeof(szText), L"CD-ROM, ");
         if (dwValue & BIOS_PCCARD_BOOT_SUPPORTED)
@@ -1413,7 +1413,7 @@ DMI_BIOSInfo(VOID)
         /* Fatures */
         Index = IoAddValueName(1, IDS_BIOS_FATURES, 0);
 
-        StringCbCopy(szText, sizeof(szText), L"");
+        szText[0] = 0;
         if (dwValue & BIOS_FLASHABLE)
             StringCbCat(szText, sizeof(szText), L"Flash BIOS, ");
         if (dwValue & BIOS_SHADOW_SUPPORTED)
@@ -1430,7 +1430,7 @@ DMI_BIOSInfo(VOID)
         /* Supported standards */
         Index = IoAddValueName(1, IDS_BIOS_STANDATDS, 0);
 
-        StringCbCopy(szText, sizeof(szText), L"");
+        szText[0] = 0;
         if (dwValue & BIOS_APM_SUPPORTED)
             StringCbCat(szText, sizeof(szText), L"APM, ");
         if (dwValue & BIOS_PNP_SUPPORTED)
@@ -1445,7 +1445,7 @@ DMI_BIOSInfo(VOID)
         /* Slots */
         Index = IoAddValueName(1, IDS_BIOS_SLOTS, 0);
 
-        StringCbCopy(szText, sizeof(szText), L"");
+        szText[0] = 0;
         if (dwValue & BIOS_ISA_SUPPORTED)
             StringCbCat(szText, sizeof(szText), L"ISA, ");
         if (dwValue & BIOS_MCS_SUPPORTED)
@@ -1474,7 +1474,7 @@ SMBIOS_WakeupTypeToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
 {
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (WakeupTypeList[Index].dwValue == Form)
@@ -1581,7 +1581,7 @@ SMBIOS_EnclStateToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
 {
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (EnclStatusList[Index].dwValue == Form)
@@ -1598,7 +1598,7 @@ SMBIOS_EnclTypeToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
 {
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (EnclTypesList[Index].dwValue == Form)
@@ -1615,7 +1615,7 @@ SMBIOS_EnclSecStatusToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
 {
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (EnclSecStatusList[Index].dwValue == Form)
@@ -1790,7 +1790,7 @@ SMBIOS_SlotTypeToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
 {
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (SlotTypeList[Index].dwValue == Form)
@@ -1807,7 +1807,7 @@ SMBIOS_BusWidthToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
 {
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (BusWidthList[Index].dwValue == Form)
@@ -1824,7 +1824,7 @@ SMBIOS_SlotLengthToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
 {
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (SlotLengthList[Index].dwValue == Form)
@@ -1896,7 +1896,7 @@ SMBIOS_PortTypesToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
 {
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (PortTypesList[Index].dwValue == Form)
@@ -1913,7 +1913,7 @@ SMBIOS_PortConnectorToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
 {
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (PortConnectorList[Index].dwValue == Form)
@@ -2012,7 +2012,7 @@ SMBIOS_OnboardDeviceTypeToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
 {
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (OnboardDeviceTypesList[Index].dwValue == Form)
@@ -2081,7 +2081,7 @@ SMBIOS_BatteryChemistryToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
 {
     SIZE_T Index = 0;
 
-    if (lpszText) lpszText[0] = 0;
+    lpszText[0] = 0;
     do
     {
         if (BatteryDeviceChemistryList[Index].dwValue == Form)

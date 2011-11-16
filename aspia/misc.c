@@ -321,7 +321,7 @@ BOOL IsWin64System(VOID)
     FreeLibrary(hDLL);
     return FALSE;
 #else
-	return TRUE;
+    return TRUE;
 #endif
 }
 
@@ -754,4 +754,93 @@ Round(double Argument, int Precision)
         while(Precision--) div *= 10.0;
 
     return floor(Argument * div + 0.5) / div;
+}
+
+BOOL
+CenterWindow(HWND hWnd, HWND hWndCenter)
+{
+    DWORD dwStyle = GetWindowLongPtr(hWnd, GWL_STYLE);
+    HMONITOR hMonitor = NULL;
+    RECT rcDlg;
+    RECT rcArea;
+    RECT rcCenter;
+    HWND hWndParent;
+    BOOL bResult;
+    MONITORINFO minfo;
+    INT DlgWidth;
+    INT DlgHeight;
+    INT xLeft;
+    INT yTop;
+
+    if (!hWndCenter)
+    {
+        if (dwStyle & WS_CHILD)
+            hWndCenter = GetParent(hWnd);
+        else
+            hWndCenter = GetWindow(hWnd, GW_OWNER);
+    }
+
+    /* get coordinates of the window relative to its parent */
+    GetWindowRect(hWnd, &rcDlg);
+    if (!(dwStyle & WS_CHILD))
+    {
+        /* don't center against invisible or minimized windows */
+        if (hWndCenter)
+        {
+            DWORD dwStyleCenter = GetWindowLongPtr(hWndCenter, GWL_STYLE);
+            if (!(dwStyleCenter & WS_VISIBLE) || (dwStyleCenter & WS_MINIMIZE))
+                hWndCenter = NULL;
+        }
+
+        /* center within screen coordinates */
+        if (hWndCenter)
+        {
+            hMonitor = MonitorFromWindow(hWndCenter, MONITOR_DEFAULTTONEAREST);
+        }
+        else
+        {
+            hMonitor = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
+        }
+        
+        minfo.cbSize = sizeof(MONITORINFO);
+        bResult = GetMonitorInfo(hMonitor, &minfo);
+        
+        rcArea = minfo.rcWork;
+
+        if (!hWndCenter)
+            rcCenter = rcArea;
+        else
+            GetWindowRect(hWndCenter, &rcCenter);
+    }
+    else
+    {
+        /* center within parent client coordinates */
+        hWndParent = GetParent(hWnd);
+
+        GetClientRect(hWndParent, &rcArea);
+        GetClientRect(hWndCenter, &rcCenter);
+        MapWindowPoints(hWndCenter, hWndParent, (POINT*)&rcCenter, 2);
+    }
+
+    DlgWidth = rcDlg.right - rcDlg.left;
+    DlgHeight = rcDlg.bottom - rcDlg.top;
+
+    /* find dialog's upper left based on rcCenter */
+    xLeft = (rcCenter.left + rcCenter.right) / 2 - DlgWidth / 2;
+    yTop = (rcCenter.top + rcCenter.bottom) / 2 - DlgHeight / 2;
+
+    /* if the dialog is outside the screen, move it inside */
+    if (xLeft + DlgWidth > rcArea.right)
+        xLeft = rcArea.right - DlgWidth;
+    if (xLeft < rcArea.left)
+        xLeft = rcArea.left;
+
+    if (yTop + DlgHeight > rcArea.bottom)
+        yTop = rcArea.bottom - DlgHeight;
+    if (yTop < rcArea.top)
+        yTop = rcArea.top;
+
+    /* map screen coordinates to child coordinates */
+    return SetWindowPos(hWnd, NULL, xLeft, yTop, -1, -1,
+        SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 }

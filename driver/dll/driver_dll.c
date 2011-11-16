@@ -21,6 +21,7 @@ InstallDriver(IN SC_HANDLE scHandle,
               IN LPCTSTR lpDriverExec)
 {
     SC_HANDLE hService;
+    BOOL bRes = TRUE;
 
     hService = CreateService(scHandle,
                              lpDriverName,
@@ -32,10 +33,16 @@ InstallDriver(IN SC_HANDLE scHandle,
                              lpDriverExec,
                              NULL, NULL, NULL,
                              NULL, NULL);
-    if (!hService) return FALSE;
+    if (!hService) 
+    {
+        DWORD dwErr = GetLastError();
 
-    CloseServiceHandle(hService);
-    return TRUE;
+        if (dwErr != ERROR_SERVICE_EXISTS)
+            bRes = FALSE;
+    }
+    if (hService)
+        CloseServiceHandle(hService);
+    return bRes;
 }
 
 static BOOL
@@ -62,6 +69,7 @@ static BOOL
 StartDriver(IN SC_HANDLE scHandle)
 {
     SC_HANDLE hService;
+    BOOL bRes = TRUE;
 
     hService = OpenService(scHandle,
                            lpDriverName,
@@ -70,12 +78,15 @@ StartDriver(IN SC_HANDLE scHandle)
 
     if (!StartService(hService, 0, NULL))
     {
-        CloseServiceHandle(hService);
-        return FALSE;
-    }
+        DWORD dwErr = GetLastError();
 
-    CloseServiceHandle(hService);
-    return TRUE;
+        if (dwErr != ERROR_SERVICE_ALREADY_RUNNING)
+            bRes = FALSE;
+    }
+    if (hService)
+        CloseServiceHandle(hService);
+
+    return bRes;
 }
 
 static BOOL

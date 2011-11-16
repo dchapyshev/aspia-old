@@ -672,6 +672,7 @@ DetectUnknownDevices(VOID)
         return;
     }
 
+	CenterWindow(hWnd, NULL);
     /* Show it */
     ShowWindow(hWnd, SW_SHOW);
     UpdateWindow(hWnd);
