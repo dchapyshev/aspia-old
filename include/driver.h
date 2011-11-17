@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <windows.h>
+
 /* PCI Ports */
 #define CONFIG_DATA    0xCFC
 #define CONFIG_ADDRESS 0xCF8
@@ -81,10 +83,14 @@ typedef struct _WRITE_PCI_CONFIG_INPUT
     UCHAR Data[1];
 } WRITE_PCI_CONFIG_INPUT, *PWRITE_PCI_CONFIG_INPUT;
 
+/* SPD contents size */
+#define SPD_MAX_SIZE 0x95
+
 BOOL drv_load(VOID);
 BOOL drv_unload(VOID);
 
 PVOID drv_get_smbios_data(OUT DWORD* ReturnSize);
+BOOL drv_read_spd_data(BYTE Slot, BYTE *SpdData);
 
 BOOL drv_read_msr(IN UINT32 Register, IN UINT32 CpuIndex, OUT UINT64* Data);
 
@@ -151,3 +157,12 @@ WritePciConfigDword(IN DWORD PciAddress, IN BYTE RegAddress, IN DWORD Value)
 {
     drv_write_pci_config(PciAddress, RegAddress, (PBYTE)&Value , sizeof(DWORD));
 }
+
+BOOL drv_init_debug_log(LPWSTR lpVersion);
+VOID drv_close_debug_log(VOID);
+VOID drv_write_debug_log(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, ...);
+
+#define DebugTrace(_msg, ...) drv_write_debug_log(__FILE__, __LINE__, __FUNCTION__, _msg, ##__VA_ARGS__)
+#define DebugStartReceiving() DebugTrace(L"Start data receiving")
+#define DebugEndReceiving() DebugTrace(L"End data receiving")
+#define DebugAllocFailed() DebugTrace(L"Alloc() failed")

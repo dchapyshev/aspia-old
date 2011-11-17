@@ -194,6 +194,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)/include/&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -339,10 +340,6 @@
 			</File>
 			<File
 				RelativePath=".\controls.c"
-				>
-			</File>
-			<File
-				RelativePath=".\debug.c"
 				>
 			</File>
 			<File

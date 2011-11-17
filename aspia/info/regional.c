@@ -6,6 +6,8 @@
  */
 
 #include "../main.h"
+#include "driver.h"
+
 
 static VOID
 AddLocaleInfoString2(INT Icon, UINT StringID, LCTYPE Type1, LCTYPE Type2)

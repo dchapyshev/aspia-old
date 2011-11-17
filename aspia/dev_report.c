@@ -6,6 +6,8 @@
  */
 
 #include "main.h"
+#include "driver.h"
+
 #include <wininet.h>
 #include <urlmon.h>
 

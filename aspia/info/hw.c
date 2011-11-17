@@ -8,6 +8,7 @@
 #include <intrin.h>
 
 #include "../main.h"
+#include "driver.h"
 #include "../smart/smart.h"
 //#include "scsi/scsi.h"
 #include "edid.h"

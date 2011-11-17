@@ -6,6 +6,7 @@
  */
 
 #include "main.h"
+#include "driver.h"
 
 
 /* Definition for the SetWindowTheme function */

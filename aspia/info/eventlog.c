@@ -6,6 +6,7 @@
  */
 
 #include "..\main.h"
+#include "driver.h"
 
 
 #define EVENT_MESSAGE_FILE_BUFFER       1024*10
