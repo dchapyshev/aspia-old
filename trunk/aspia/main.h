@@ -485,16 +485,6 @@ VOID DeleteMainWindowFromTray(VOID);
 VOID AddMainWindowToTray(VOID);
 VOID UpdateTrayIcons(VOID);
 
-/* debug.c */
-BOOL DebugCreateLog(VOID);
-VOID DebugCloseLog(VOID);
-VOID DebugWriteLog(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, ...);
-
-#define DebugTrace(_msg, ...) DebugWriteLog(__FILE__, __LINE__, __FUNCTION__, _msg, ##__VA_ARGS__)
-#define DebugStartReceiving() DebugTrace(L"Start data receiving")
-#define DebugEndReceiving() DebugTrace(L"End data receiving")
-#define DebugAllocFailed() DebugTrace(L"Alloc() failed")
-
 /* lpc.c */
 VOID GetLPCSensorsInfo(VOID);
 

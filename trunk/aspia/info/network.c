@@ -6,6 +6,7 @@
  */
 
 #include "../main.h"
+#include "driver.h"
 
 #include <urlhist.h>
 #include <iphlpapi.h>

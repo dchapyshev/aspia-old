@@ -6,6 +6,7 @@
  */
 
 #include "../main.h"
+#include "driver.h"
 
 #include <initguid.h>
 #include <mstask.h>

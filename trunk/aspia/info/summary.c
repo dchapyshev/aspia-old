@@ -6,6 +6,7 @@
  */
 
 #include "../main.h"
+#include "driver.h"
 #include "edid.h"
 
 #include <iphlpapi.h>

@@ -6,7 +6,7 @@
  */
 
 #include "main.h"
-#include "../include/driver.h"
+#include "driver.h"
 
 
 HINSTANCE hInstance = NULL;
@@ -934,8 +934,8 @@ wWinMain(HINSTANCE hInst,
 #ifdef _DEBUG
     ParamsInfo.DebugMode = TRUE;
 #endif
-    if (ParamsInfo.DebugMode) 
-        ParamsInfo.DebugMode = DebugCreateLog();
+    if (ParamsInfo.DebugMode)
+        ParamsInfo.DebugMode = drv_init_debug_log(VER_FILEVERSION_STR);
 
     DebugTrace(L"Start with debug mode");
 
@@ -1030,7 +1030,7 @@ wWinMain(HINSTANCE hInst,
 Exit:
     if (hMutex) CloseHandle(hMutex);
 
-    DebugCloseLog();
+    drv_close_debug_log();
 
     return 0;
 }

@@ -12,7 +12,7 @@
 */
 
 #include "../main.h"
-#include "../../include/driver.h"
+#include "driver.h"
 #include "smbios.h"
 
 #pragma warning(disable: 4996)

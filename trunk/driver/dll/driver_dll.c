@@ -5,15 +5,16 @@
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "driver_dll.h"
-
+#include <windows.h>
 #include <stddef.h>
+#include <strsafe.h>
+#include "driver.h"
 
-//#include "../driver/ioctl.h"
 
 HANDLE hDriverFile = INVALID_HANDLE_VALUE;
 const LPWSTR lpDriverName = L"Aspia";
 HINSTANCE hInst;
+BOOL IsDebugEnabled = FALSE;
 
 
 static BOOL
@@ -372,15 +373,15 @@ drv_read_io_port_dword(IN DWORD Port)
 BYTE
 drv_read_io_port_byte(IN DWORD Port)
 {
-    DWORD ReadByte;
-    DWORD Value;
+    DWORD ReadByte = 0;
+    DWORD Value = 0;
 
     DeviceIoControl(hDriverFile,
                     (DWORD)IOCTL_READ_PORT_BYTE,
                     &Port, sizeof(Port),
                     &Value, sizeof(Value),
                     &ReadByte, 0);
-    return (BYTE)Value;
+    return (BYTE)(Value & 0xFF);
 }
 
 BOOL
@@ -391,7 +392,7 @@ drv_write_io_port_word(IN DWORD Port,
     DWORD ReadByte, Length;
 
     InBuffer.u.ShortData = Value;
-    InBuffer.PortNumber = (ULONG)Port;
+    InBuffer.PortNumber = Port;
 
     Length = offsetof(PORT_WRITE_INPUT, u.CharData) +
         sizeof(InBuffer.u.ShortData);
@@ -411,7 +412,7 @@ drv_write_io_port_dword(IN DWORD Port,
     DWORD ReadByte, Length;
 
     InBuffer.u.LongData = Value;
-    InBuffer.PortNumber = (ULONG)Port;
+    InBuffer.PortNumber = Port;
 
     Length = offsetof(PORT_WRITE_INPUT, u.CharData) +
         sizeof(InBuffer.u.LongData);
@@ -430,7 +431,7 @@ drv_write_io_port_byte(IN DWORD Port, IN BYTE Value)
     DWORD ReadByte, Length;
 
     InBuffer.u.CharData = Value;
-    InBuffer.PortNumber = (ULONG)Port;
+    InBuffer.PortNumber = Port;
 
     Length = offsetof(PORT_WRITE_INPUT, u.CharData) +
         sizeof(InBuffer.u.CharData);

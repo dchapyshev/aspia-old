@@ -115,6 +115,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;DLL_EXPORTS"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="false"
@@ -177,6 +178,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\debug.c"
+				>
+			</File>
+			<File
 				RelativePath=".\driver_dll.c"
 				>
 				<FileConfiguration
@@ -195,6 +200,10 @@
 				RelativePath=".\driver_dll.def"
 				>
 			</File>
+			<File
+				RelativePath=".\spd.c"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Заголовочные файлы"
@@ -205,16 +214,16 @@
 				RelativePath="..\..\include\driver.h"
 				>
 			</File>
-			<File
-				RelativePath=".\driver_dll.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Файлы ресурсов"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath=".\version.rc"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

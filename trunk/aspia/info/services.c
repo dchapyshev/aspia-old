@@ -6,6 +6,7 @@
  */
 
 #include "../main.h"
+#include "driver.h"
 
 
 ENUM_SERVICE_STATUS_PROCESS *pAllServices = NULL;

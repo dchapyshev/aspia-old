@@ -6,7 +6,7 @@
  */
 
 #include "../main.h"
-#include "../../include/driver.h"
+#include "driver.h"
 #include "../smart/smart.h"
 
 

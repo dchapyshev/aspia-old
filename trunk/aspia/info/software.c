@@ -6,6 +6,7 @@
  */
 
 #include "../main.h"
+#include "driver.h"
 #include <tlhelp32.h>
 
 

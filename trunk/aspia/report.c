@@ -6,6 +6,7 @@
  */
 
 #include "main.h"
+#include "driver.h"
 
 
 static HIMAGELIST hReportImageList = NULL;
