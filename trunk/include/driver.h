@@ -8,6 +8,7 @@
 #pragma once
 
 #include <windows.h>
+#include <batclass.h>
 
 /* PCI Ports */
 #define CONFIG_DATA    0xCFC
@@ -158,10 +159,134 @@ WritePciConfigDword(IN DWORD PciAddress, IN BYTE RegAddress, IN DWORD Value)
     drv_write_pci_config(PciAddress, RegAddress, (PBYTE)&Value , sizeof(DWORD));
 }
 
+/* SMART Defines */
+#define INDEX_ATTRIB_INDEX       0
+#define INDEX_ATTRIB_UNKNOWN1    1
+#define INDEX_ATTRIB_UNKNOWN2    2
+#define INDEX_ATTRIB_VALUE       3
+#define INDEX_ATTRIB_WORST       4
+#define INDEX_ATTRIB_RAW         5
+
+/* SMART structures */
+typedef struct 
+{
+    WORD wGenConfig;
+    WORD wNumCyls;
+    WORD wReserved;
+    WORD wNumHeads;
+    WORD wBytesPerTrack;
+    WORD wBytesPerSector;
+    WORD wSectorsPerTrack;
+    WORD wVendorUnique[3];
+    BYTE sSerialNumber[20];
+    WORD wBufferType;
+    WORD wBufferSize;
+    WORD wECCSize;
+    BYTE sFirmwareRev[8];
+    BYTE sModelNumber[39];
+    WORD wMoreVendorUnique;
+    WORD wDoubleWordIO;
+    WORD wCapabilities;
+    WORD wReserved1;
+    WORD wPIOTiming;
+    WORD wDMATiming;
+    WORD wBS;
+    WORD wNumCurrentCyls;
+    WORD wNumCurrentHeads;
+    WORD wNumCurrentSectorsPerTrack;
+    WORD ulCurrentSectorCapacity;
+    WORD wMultSectorStuff;
+    DWORD ulTotalAddressableSectors;
+    WORD wSingleWordDMA;
+    WORD wMultiWordDMA;
+    BYTE bReserved[127];
+} IDSECTOR;
+
+typedef struct
+{
+    BYTE m_ucAttribIndex;
+    DWORD m_dwAttribValue;
+    BYTE m_ucValue;
+    BYTE m_ucWorst;
+    DWORD m_dwThreshold;
+    BYTE bAttribId;
+} SMART_INFO;
+
+typedef struct
+{
+    IDSECTOR m_stInfo;
+    SMART_INFO m_stSmartInfo[256];
+    BYTE m_ucSmartValues;
+    BYTE m_ucDriveIndex;
+} SMART_DRIVE_INFO;
+
+typedef struct
+{
+    DWORD dwAttrID;
+    DWORD dwAttrValue;
+    DWORD dwWarrantyThreshold;
+    DWORD dwWorstValue;
+    WCHAR szName[256];
+    BYTE bValue;
+} SMART_RESULT;
+
+typedef struct
+{
+    BYTE bDriverError;
+    BYTE bIDEStatus;
+    BYTE bReserved[2];
+    DWORD dwReserved[2];
+} SMART_DRIVERSTAT;
+
+typedef struct
+{
+    DWORD cBufferSize;
+    SMART_DRIVERSTAT DriverStatus;
+    BYTE bBuffer[1];
+} SMART_ATAOUTPARAM;
+
+/* SMART Functions */
+HANDLE drv_open_smart(BYTE bDevNumber);
+BOOL drv_close_smart(HANDLE hHandle);
+BOOL drv_get_smart_version(HANDLE hHandle, GETVERSIONINPARAMS *pVersion);
+BOOL drv_enable_smart(HANDLE hHandle, BYTE bDevNumber);
+BOOL drv_read_smart_info(HANDLE hHandle, BYTE bDevNumber, IDSECTOR *Info);
+BOOL drv_read_smart_attributes(HANDLE hHandle, BYTE bDevNumber, SMART_DRIVE_INFO *Info);
+BOOL drv_read_smart_thresholds(HANDLE hHandle, BYTE bDriveNum, SMART_DRIVE_INFO *Info);
+typedef BOOL (CALLBACK *SMART_ENUMDATAPROC)(SMART_RESULT *Result);
+BOOL drv_enum_smart_data(HANDLE hSmartHandle, BYTE bDevNumber, SMART_ENUMDATAPROC lpEnumProc);
+DWORD drv_get_smart_temperature(HANDLE hSmartHandle, BYTE bDevNumber);
+BOOL drv_get_smart_disk_geometry(BYTE bDevNumber, DISK_GEOMETRY *DiskGeometry);
+
+/* SCSI Structures */
+typedef struct _SRB_IO_CONTROL
+{
+    ULONG HeaderLength;
+    UCHAR Signature[8];
+    ULONG Timeout;
+    ULONG ControlCode;
+    ULONG ReturnCode;
+    ULONG Length;
+} SRB_IO_CONTROL, *PSRB_IO_CONTROL;
+
+/* SCSI Functions */
+HANDLE drv_open_scsi(BYTE bDevNumber);
+BOOL drv_close_scsi(HANDLE hHandle);
+BOOL drv_read_scsi_info(HANDLE hHandle, BYTE bDevNumber, IDSECTOR *Info);
+
+/* Battery Functions */
+HANDLE drv_open_battery(LPWSTR lpszDevice);
+BOOL drv_close_battery(HANDLE hHandle);
+ULONG drv_get_battery_tag(HANDLE hHandle);
+BOOL drv_query_battery_info(HANDLE hHandle, BATTERY_QUERY_INFORMATION_LEVEL InfoLevel, LPVOID lpBuffer, DWORD dwBufferSize);
+BOOL drv_query_battery_status(HANDLE hHandle, BATTERY_STATUS *lpBatteryStatus, DWORD dwBufferSize);
+
+/* DEBUG Functions */
 BOOL drv_init_debug_log(LPWSTR lpVersion);
 VOID drv_close_debug_log(VOID);
 VOID drv_write_debug_log(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, ...);
 
+/* DEBUG Defines */
 #define DebugTrace(_msg, ...) drv_write_debug_log(__FILE__, __LINE__, __FUNCTION__, _msg, ##__VA_ARGS__)
 #define DebugStartReceiving() DebugTrace(L"Start data receiving")
 #define DebugEndReceiving() DebugTrace(L"End data receiving")

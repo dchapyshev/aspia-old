@@ -7,7 +7,6 @@
 
 #include "../main.h"
 #include "driver.h"
-#include "../smart/smart.h"
 
 
 /* For AMD 0xF0 Family */
@@ -308,12 +307,12 @@ HW_SensorInfo(VOID)
     /* Hard Drives */
     for (bIndex = 0; bIndex <= 32; ++bIndex)
     {
-        hHandle = SMART_Open(bIndex);
+        hHandle = drv_open_smart(bIndex);
         if (hHandle == INVALID_HANDLE_VALUE) continue;
 
-        if (SMART_ReadDriveInformation(hHandle, bIndex, &DriveInfo))
+        if (drv_read_smart_info(hHandle, bIndex, &DriveInfo))
         {
-            DWORD dwTemp = SMART_GetHDDTemperature(hHandle, bIndex);
+            DWORD dwTemp = drv_get_smart_temperature(hHandle, bIndex);
 
             if (dwTemp == 0) continue;
 
@@ -334,7 +333,7 @@ HW_SensorInfo(VOID)
             IoAddFooter();
         }
 
-        SMART_Close(hHandle);
+        drv_close_smart(hHandle);
     }
 
     /* CPUs */

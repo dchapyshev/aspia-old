@@ -809,18 +809,21 @@ OS_AutorunInfo(VOID)
         IoSetItemText(Index, 1, szPath);
     }
 
-    GetStringFromRegistry(FALSE,
-                          HKEY_LOCAL_MACHINE,
-                          L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows",
-                          L"AppInit_DLLs",
-                          szPath,
-                          MAX_PATH);
-    if (szPath[0] != 0)
+    if (IsWin64System())
     {
-        IconIndex = IoAddIcon(IDI_APPS);
-        IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows NT\\CurrentVersion\\Windows", 0);
-        Index = IoAddItem(1, IconIndex, L"AppInit_DLLs");
-        IoSetItemText(Index, 1, szPath);
+        GetStringFromRegistry(FALSE,
+                              HKEY_LOCAL_MACHINE,
+                              L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows",
+                              L"AppInit_DLLs",
+                              szPath,
+                              MAX_PATH);
+        if (szPath[0] != 0)
+        {
+            IconIndex = IoAddIcon(IDI_APPS);
+            IoAddHeaderString(0, L"HKLM\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows NT\\CurrentVersion\\Windows", 0);
+            Index = IoAddItem(1, IconIndex, L"AppInit_DLLs");
+            IoSetItemText(Index, 1, szPath);
+        }
     }
 
     DebugEndReceiving();

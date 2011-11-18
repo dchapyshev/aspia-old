@@ -19,45 +19,6 @@ typedef struct
 } CHEMISTRY_INFO;
 
 
-static HANDLE
-BatteryOpen(LPWSTR lpszDevice)
-{
-    return CreateFile(lpszDevice,
-                      GENERIC_READ | GENERIC_WRITE,
-                      FILE_SHARE_READ | FILE_SHARE_WRITE, 
-                      NULL,
-                      OPEN_EXISTING,
-                      FILE_ATTRIBUTE_SYSTEM,
-                      NULL);
-}
-
-static BOOL
-BatteryClose(HANDLE hHandle)
-{
-    return CloseHandle(hHandle);
-}
-
-static ULONG
-BatteryGetTag(HANDLE hHandle)
-{
-    ULONG uBatteryTag = 0;
-    DWORD cbBytesReturned, dwTmp = 0;
-
-    if (!DeviceIoControl(hHandle,
-                         IOCTL_BATTERY_QUERY_TAG,
-                         &dwTmp,
-                         sizeof(DWORD),
-                         &uBatteryTag,
-                         sizeof(ULONG),
-                         &cbBytesReturned,
-                         NULL))
-    {
-        return 0;
-    }
-
-    return uBatteryTag;
-}
-
 static BOOL
 EnumBatteryDevices(BATTERYENUMPROC lpBatteryEnumProc)
 {
@@ -128,52 +89,6 @@ EnumBatteryDevices(BATTERYENUMPROC lpBatteryEnumProc)
     SetupDiDestroyDeviceInfoList(hDevInfo);
 
     return TRUE;
-}
-
-static BOOL
-BatteryQueryInformation(HANDLE hHandle,
-                        BATTERY_QUERY_INFORMATION_LEVEL InfoLevel,
-                        LPVOID lpBuffer,
-                        DWORD dwBufferSize)
-{
-    BATTERY_QUERY_INFORMATION BatteryQueryInfo;
-    DWORD cbBytesReturned;
-
-    BatteryQueryInfo.BatteryTag = BatteryGetTag(hHandle);
-    if (!BatteryQueryInfo.BatteryTag)
-        return FALSE;
-
-    BatteryQueryInfo.InformationLevel = InfoLevel;
-    return DeviceIoControl(hHandle,
-                           IOCTL_BATTERY_QUERY_INFORMATION,
-                           &BatteryQueryInfo,
-                           sizeof(BATTERY_QUERY_INFORMATION),
-                           lpBuffer,
-                           dwBufferSize,
-                           &cbBytesReturned,
-                           NULL);
-}
-
-static BOOL
-BatteryQueryStatus(HANDLE hHandle,
-                   BATTERY_STATUS *lpBatteryStatus,
-                   DWORD dwBufferSize)
-{
-    BATTERY_WAIT_STATUS BatteryWaitStatus = {0};
-    DWORD cbBytesReturned;
-
-    BatteryWaitStatus.BatteryTag = BatteryGetTag(hHandle);
-    if (!BatteryWaitStatus.BatteryTag)
-        return FALSE;
-
-    return DeviceIoControl(hHandle,
-                           IOCTL_BATTERY_QUERY_STATUS,
-                           &BatteryWaitStatus,
-                           sizeof(BATTERY_WAIT_STATUS),
-                           lpBatteryStatus,
-                           dwBufferSize,
-                           &cbBytesReturned,
-                           NULL);
 }
 
 const CHEMISTRY_INFO ChemistryList[] =
@@ -257,7 +172,7 @@ BatteryEnumProc(LPWSTR lpszBattery)
     HANDLE hHandle;
     INT Index;
 
-    hHandle = BatteryOpen(lpszBattery);
+    hHandle = drv_open_battery(lpszBattery);
     if (hHandle == INVALID_HANDLE_VALUE)
     {
         DebugTrace(L"Invalid handle value");
@@ -265,30 +180,30 @@ BatteryEnumProc(LPWSTR lpszBattery)
     }
 
     /* Device name */
-    if (BatteryQueryInformation(hHandle,
-                                BatteryDeviceName,
-                                (LPVOID)szText,
-                                sizeof(szText)))
+    if (drv_query_battery_info(hHandle,
+                               BatteryDeviceName,
+                               (LPVOID)szText,
+                               sizeof(szText)))
     {
         Index = IoAddValueName(1, IDS_NAME, 1);
         IoSetItemText(Index, 1, szText);
     }
 
     /* Manufacture name */
-    if (BatteryQueryInformation(hHandle,
-                                BatteryManufactureName,
-                                (LPVOID)szText,
-                                sizeof(szText)))
+    if (drv_query_battery_info(hHandle,
+                               BatteryManufactureName,
+                               (LPVOID)szText,
+                               sizeof(szText)))
     {
         Index = IoAddValueName(1, IDS_MANUFACTURER, 1);
         IoSetItemText(Index, 1, szText);
     }
 
     /* Manufacture date */
-    if (BatteryQueryInformation(hHandle,
-                                BatteryManufactureDate,
-                                (LPVOID)&BatteryDate,
-                                sizeof(BatteryDate)))
+    if (drv_query_battery_info(hHandle,
+                               BatteryManufactureDate,
+                               (LPVOID)&BatteryDate,
+                               sizeof(BatteryDate)))
     {
         Index = IoAddValueName(1, IDS_BAT_MANUFACTUREDATE, 1);
         StringCbPrintf(szText, sizeof(szText),
@@ -300,39 +215,39 @@ BatteryEnumProc(LPWSTR lpszBattery)
     }
 
     /* ID */
-    if (BatteryQueryInformation(hHandle,
-                                BatteryUniqueID,
-                                (LPVOID)szText,
-                                sizeof(szText)))
+    if (drv_query_battery_info(hHandle,
+                               BatteryUniqueID,
+                               (LPVOID)szText,
+                               sizeof(szText)))
     {
         Index = IoAddValueName(1, IDS_BAT_ID, 1);
         IoSetItemText(Index, 1, szText);
     }
 
     /* Serial number */
-    if (BatteryQueryInformation(hHandle,
-                                BatterySerialNumber,
-                                (LPVOID)szText,
-                                sizeof(szText)))
+    if (drv_query_battery_info(hHandle,
+                               BatterySerialNumber,
+                               (LPVOID)szText,
+                               sizeof(szText)))
     {
         Index = IoAddValueName(1, IDS_SERIAL_NUMBER, 1);
         IoSetItemText(Index, 1, szText);
     }
 
     /* Temperature */
-    if (BatteryQueryInformation(hHandle,
-                                BatteryTemperature,
-                                (LPVOID)szText,
-                                sizeof(szText)))
+    if (drv_query_battery_info(hHandle,
+                               BatteryTemperature,
+                               (LPVOID)szText,
+                               sizeof(szText)))
     {
         Index = IoAddValueName(1, IDS_BAT_TEMPERATURE, 1);
         IoSetItemText(Index, 1, szText);
     }
 
-    if (BatteryQueryInformation(hHandle,
-                                BatteryInformation,
-                                (LPVOID)&BatteryInfo,
-                                sizeof(BatteryInfo)))
+    if (drv_query_battery_info(hHandle,
+                               BatteryInformation,
+                               (LPVOID)&BatteryInfo,
+                               sizeof(BatteryInfo)))
     {
         /* Capacity */
         Index = IoAddValueName(1, IDS_BAT_CAPACITY, 1);
@@ -360,9 +275,9 @@ BatteryEnumProc(LPWSTR lpszBattery)
         IoSetItemText(Index, 1, szText);
     }
 
-    if (BatteryQueryStatus(hHandle,
-                           &BatteryStatus,
-                           sizeof(BatteryStatus)))
+    if (drv_query_battery_status(hHandle,
+                                 &BatteryStatus,
+                                 sizeof(BatteryStatus)))
     {
         /* Current capacity */
         Index = IoAddValueName(1, IDS_BAT_CURRENT_CAPACITY, 1);
@@ -386,7 +301,7 @@ BatteryEnumProc(LPWSTR lpszBattery)
 
     IoAddFooter();
 
-    BatteryClose(hHandle);
+    drv_close_battery(hHandle);
     return TRUE;
 }
 

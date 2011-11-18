@@ -8,11 +8,8 @@
 #include <windows.h>
 #include <tchar.h>
 #include <strsafe.h>
+#include "driver.h"
 
-#include "smart.h"
-
-#pragma warning(disable: 4995)
-#pragma warning(disable: 4996)
 
 #define SMART_GET_VERSION        CTL_CODE(IOCTL_DISK_BASE, 0x0020, METHOD_BUFFERED, FILE_READ_ACCESS)
 #define SMART_SEND_DRIVE_COMMAND CTL_CODE(IOCTL_DISK_BASE, 0x0021, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
@@ -27,7 +24,7 @@
 
 
 HANDLE
-SMART_Open(BYTE bDevNumber)
+drv_open_smart(BYTE bDevNumber)
 {
     WCHAR szPath[MAX_PATH];
 
@@ -46,13 +43,13 @@ SMART_Open(BYTE bDevNumber)
 }
 
 BOOL
-SMART_Close(HANDLE hHandle)
+drv_close_smart(HANDLE hHandle)
 {
     return CloseHandle(hHandle);
 }
 
 BOOL
-SMART_GetVersion(HANDLE hHandle, GETVERSIONINPARAMS *pVersion)
+drv_get_smart_version(HANDLE hHandle, GETVERSIONINPARAMS *pVersion)
 {
     GETVERSIONINPARAMS Version = {0};
     DWORD cbBytesReturned;
@@ -74,7 +71,7 @@ SMART_GetVersion(HANDLE hHandle, GETVERSIONINPARAMS *pVersion)
 }
 
 BOOL
-SMART_Enable(HANDLE hHandle, BYTE bDevNumber)
+drv_enable_smart(HANDLE hHandle, BYTE bDevNumber)
 {
     SENDCMDOUTPARAMS CmdOut = {0};
     SENDCMDINPARAMS CmdIn = {0};
@@ -101,7 +98,7 @@ SMART_Enable(HANDLE hHandle, BYTE bDevNumber)
 }
 
 BOOL
-SMART_ReadDriveInformation(HANDLE hHandle, BYTE bDevNumber, IDSECTOR *Info)
+drv_read_smart_info(HANDLE hHandle, BYTE bDevNumber, IDSECTOR *Info)
 {
     SENDCMDINPARAMS CmdIn = {0};
     DWORD cbBytesReturned;
@@ -134,7 +131,7 @@ SMART_ReadDriveInformation(HANDLE hHandle, BYTE bDevNumber, IDSECTOR *Info)
 }
 
 BOOL
-SMART_ReadAttributesCmd(HANDLE hHandle, BYTE bDevNumber, SMART_DRIVE_INFO *Info)
+drv_read_smart_attributes(HANDLE hHandle, BYTE bDevNumber, SMART_DRIVE_INFO *Info)
 {
     SENDCMDINPARAMS CmdIn = {0};
     DWORD cbBytesReturned;
@@ -194,7 +191,7 @@ SMART_ReadAttributesCmd(HANDLE hHandle, BYTE bDevNumber, SMART_DRIVE_INFO *Info)
 }
 
 BOOL
-SMART_ReadThresholdsCmd(HANDLE hHandle, BYTE bDriveNum, SMART_DRIVE_INFO *Info)
+drv_read_smart_thresholds(HANDLE hHandle, BYTE bDriveNum, SMART_DRIVE_INFO *Info)
 {
     BYTE szOut[sizeof(SMART_ATAOUTPARAM) + READ_ATTRIBUTE_BUFFER_SIZE - 1];
     SMART_INFO *pSmartValues;
@@ -320,7 +317,7 @@ SMART_IDToText(DWORD dwIndex, LPWSTR lpszText, SIZE_T Size)
 }
 
 BOOL
-SMART_EnumData(HANDLE hSmartHandle, BYTE bDevNumber, SMART_ENUMDATAPROC lpEnumProc)
+drv_enum_smart_data(HANDLE hSmartHandle, BYTE bDevNumber, SMART_ENUMDATAPROC lpEnumProc)
 {
     GETVERSIONINPARAMS Version;
     SMART_DRIVE_INFO m_stDrivesInfo;
@@ -330,7 +327,7 @@ SMART_EnumData(HANDLE hSmartHandle, BYTE bDevNumber, SMART_ENUMDATAPROC lpEnumPr
 
     if (!hSmartHandle)
     {
-        hHandle = SMART_Open(bDevNumber);
+        hHandle = drv_open_smart(bDevNumber);
         if (hHandle == INVALID_HANDLE_VALUE)
             return FALSE;
     }
@@ -339,16 +336,16 @@ SMART_EnumData(HANDLE hSmartHandle, BYTE bDevNumber, SMART_ENUMDATAPROC lpEnumPr
         hHandle = hSmartHandle;
     }
 
-    if (!SMART_GetVersion(hHandle, &Version))
+    if (!drv_get_smart_version(hHandle, &Version))
         goto Failed;
 
-    if (!SMART_Enable(hHandle, bDevNumber))
+    if (!drv_enable_smart(hHandle, bDevNumber))
         goto Failed;
 
-    if (!SMART_ReadAttributesCmd(hHandle, bDevNumber, &m_stDrivesInfo))
+    if (!drv_read_smart_attributes(hHandle, bDevNumber, &m_stDrivesInfo))
         goto Failed;
 
-    if (!SMART_ReadThresholdsCmd(hHandle, bDevNumber, &m_stDrivesInfo))
+    if (!drv_read_smart_thresholds(hHandle, bDevNumber, &m_stDrivesInfo))
         goto Failed;
 
     for (bIndex = 0; bIndex < m_stDrivesInfo.m_ucSmartValues; ++bIndex)
@@ -371,17 +368,17 @@ SMART_EnumData(HANDLE hSmartHandle, BYTE bDevNumber, SMART_ENUMDATAPROC lpEnumPr
         if (!lpEnumProc(&Result)) break;
     }
 
-    if (!hSmartHandle) SMART_Close(hHandle);
+    if (!hSmartHandle) drv_close_smart(hHandle);
     return TRUE;
 
 Failed:
-    if (!hSmartHandle) SMART_Close(hHandle);
+    if (!hSmartHandle) drv_close_smart(hHandle);
     return FALSE;
 }
 
 DWORD
-SMART_GetHDDTemperature(HANDLE hSmartHandle,
-                        BYTE bDevNumber)
+drv_get_smart_temperature(HANDLE hSmartHandle,
+                          BYTE bDevNumber)
 {
     SMART_DRIVE_INFO m_stDrivesInfo;
     BYTE bIndex;
@@ -389,7 +386,7 @@ SMART_GetHDDTemperature(HANDLE hSmartHandle,
 
     if (!hSmartHandle)
     {
-        hHandle = SMART_Open(bDevNumber);
+        hHandle = drv_open_smart(bDevNumber);
         if (hHandle == INVALID_HANDLE_VALUE)
             return 0;
     }
@@ -398,13 +395,13 @@ SMART_GetHDDTemperature(HANDLE hSmartHandle,
         hHandle = hSmartHandle;
     }
 
-    if (!SMART_Enable(hHandle, bDevNumber))
+    if (!drv_enable_smart(hHandle, bDevNumber))
         goto Failed;
 
-    if (!SMART_ReadAttributesCmd(hHandle, bDevNumber, &m_stDrivesInfo))
+    if (!drv_read_smart_attributes(hHandle, bDevNumber, &m_stDrivesInfo))
         goto Failed;
 
-    if (!SMART_ReadThresholdsCmd(hHandle, bDevNumber, &m_stDrivesInfo))
+    if (!drv_read_smart_thresholds(hHandle, bDevNumber, &m_stDrivesInfo))
         goto Failed;
 
     for (bIndex = 0; bIndex < m_stDrivesInfo.m_ucSmartValues; ++bIndex)
@@ -412,12 +409,44 @@ SMART_GetHDDTemperature(HANDLE hSmartHandle,
         if (m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId == 0xC2 ||
             m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId == 0xe7)
         {
-            if (!hSmartHandle) SMART_Close(hHandle);
+            if (!hSmartHandle) drv_close_smart(hHandle);
             return m_stDrivesInfo.m_stSmartInfo[bIndex].m_dwAttribValue;
         }
     }
 
 Failed:
-    if (!hSmartHandle) SMART_Close(hHandle);
+    if (!hSmartHandle) drv_close_smart(hHandle);
     return 0;
+}
+
+BOOL
+drv_get_smart_disk_geometry(BYTE bDevNumber, DISK_GEOMETRY *DiskGeometry)
+{
+    WCHAR szPath[MAX_PATH];
+    HANDLE hDevice;
+    DWORD temp;
+    BOOL Result;
+
+    StringCbPrintf(szPath,
+                   sizeof(szPath),
+                   L"\\\\.\\PhysicalDrive%d",
+                   bDevNumber);
+
+    hDevice = CreateFile(szPath, 0,
+                         FILE_SHARE_READ | FILE_SHARE_WRITE,
+                         NULL, OPEN_EXISTING, 0, NULL);
+
+    if (hDevice == INVALID_HANDLE_VALUE)
+        return FALSE;
+
+    Result = DeviceIoControl(hDevice,
+                             IOCTL_DISK_GET_DRIVE_GEOMETRY,
+                             NULL, 0,
+                             DiskGeometry, sizeof(*DiskGeometry),
+                             &temp,
+                             NULL);
+
+    CloseHandle(hDevice);
+
+    return Result;
 }

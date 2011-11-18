@@ -149,15 +149,16 @@ VOID NCT677X_GetInfo(WORD wChipType, BYTE revision, WORD port);
 #define X58A_UD3R             0x0035
 #define Z68X_UD7_B3           0x0036
 #define G31M_ES2C             0x0037
+#define _965GM_S2             0x0038
 /* Shuttle */
-#define FH67                  0x0038
+#define FH67                  0x0039
 /* EPOX */
-#define _9NPA7I_9NPAI_9NPA7J_9NPAJ_3P 0x0039
+#define _9NPA7I_9NPAI_9NPA7J_9NPAJ_3P 0x0040
 /* MSI */
-#define G32M3_V2              0x0040
-#define H55_G43               0x0041
+#define G32M3_V2              0x0041
+#define H55_G43               0x0042
 /* TYAN */
-#define S2882                 0x0042
+#define S2882                 0x0043
 
 typedef struct
 {

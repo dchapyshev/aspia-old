@@ -178,6 +178,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\battery.c"
+				>
+			</File>
+			<File
 				RelativePath=".\debug.c"
 				>
 			</File>
@@ -198,6 +202,14 @@
 			</File>
 			<File
 				RelativePath=".\driver_dll.def"
+				>
+			</File>
+			<File
+				RelativePath=".\scsi.c"
+				>
+			</File>
+			<File
+				RelativePath=".\smart.c"
 				>
 			</File>
 			<File

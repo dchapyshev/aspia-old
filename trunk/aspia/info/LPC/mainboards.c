@@ -167,6 +167,7 @@ MB_MODELS MbModelsList[] =
     { X58A_UD3R, L"X58A-UD3R" },
     { Z68X_UD7_B3, L"Z68X-UD7-B3" },
     { G31M_ES2C, L"G31M-ES2C" },
+    { _965GM_S2, L"965GM-S2" },
     /* Shuttle */
     { FH67, L"FH67" },
     /* EPOX */
@@ -398,6 +399,7 @@ LPC_MainboardInfoInit(WORD wChipType)
                 {
                     switch (wModelId)
                     {
+                        case _965GM_S2:
                         case _965P_S3: /* IT8718F */
                             InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
                             InitVItem(1, L"DRAM",      0.0f,  1.0f, 0.0f);
