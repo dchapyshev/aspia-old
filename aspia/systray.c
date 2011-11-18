@@ -7,7 +7,6 @@
 
 #include "main.h"
 #include "driver.h"
-#include "smart/smart.h"
 
 #define IDT_SENSORS_UPDATE_TIMER 1326
 #define MAX_HDD_COUNT 32
@@ -226,11 +225,11 @@ AddHDDSensor(BOOL IsUpdate)
     {
         if (!IsUpdate)
         {
-            HddDrives->hDrive = SMART_Open(bIndex);
+            HddDrives->hDrive = drv_open_smart(bIndex);
             if (HddDrives->hDrive == INVALID_HANDLE_VALUE)
                 continue;
 
-            if (!SMART_ReadDriveInformation(HddDrives->hDrive, bIndex, &DriveInfo))
+            if (!drv_read_smart_info(HddDrives->hDrive, bIndex, &DriveInfo))
                 continue;
 
             ChangeByteOrder((PCHAR)DriveInfo.sModelNumber,
@@ -243,7 +242,7 @@ AddHDDSensor(BOOL IsUpdate)
         if (GetPrivateProfileInt(L"sensors", HddDrives->szName, 0, szIniPath) > 0)
         {
             StringCbPrintf(szValue, sizeof(szValue), L"%ld",
-                           SMART_GetHDDTemperature(HddDrives->hDrive, bIndex));
+                           drv_get_smart_temperature(HddDrives->hDrive, bIndex));
             hIcon = CreateTrayIcon(szValue, SettingsInfo.HddBackground, SettingsInfo.HddFontColor);
 
             if (IsUpdate)
@@ -295,7 +294,7 @@ DeleteTraySensors(VOID)
 
     while (HddIconsCount)
     {
-        SMART_Close(HddDrives->hDrive);
+        drv_close_smart(HddDrives->hDrive);
         DeleteTrayIcon(hMainWnd, HddDrives->IconID);
 
         Temp = HddDrives->Next;

@@ -7,7 +7,6 @@
 
 #include "main.h"
 #include "driver.h"
-#include "smart/smart.h"
 
 
 SETTINGS_STRUCT SettingsInfo = {0};
@@ -460,10 +459,10 @@ ShowSensorsList(HWND hList)
     /* Hard Drives */
     for (bIndex = 0; bIndex <= 32; ++bIndex)
     {
-        hHandle = SMART_Open(bIndex);
+        hHandle = drv_open_smart(bIndex);
         if (!hHandle) continue;
 
-        if (SMART_ReadDriveInformation(hHandle, bIndex, &DriveInfo))
+        if (drv_read_smart_info(hHandle, bIndex, &DriveInfo))
         {
             ChangeByteOrder((PCHAR)DriveInfo.sModelNumber,
                             sizeof(DriveInfo.sModelNumber));
@@ -481,7 +480,7 @@ ShowSensorsList(HWND hList)
             }
         }
 
-        SMART_Close(hHandle);
+        drv_close_smart(hHandle);
     }
 
     /* CPUs */

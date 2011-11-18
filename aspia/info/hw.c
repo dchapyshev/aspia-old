@@ -9,8 +9,6 @@
 
 #include "../main.h"
 #include "driver.h"
-#include "../smart/smart.h"
-//#include "scsi/scsi.h"
 #include "edid.h"
 
 const BYTE EdidV1DescriptorFlag[] = { 0x00, 0x00 };
@@ -60,38 +58,6 @@ EnumSmartDataProc(SMART_RESULT *Result)
     return TRUE;
 }
 
-BOOL
-GetDiskGeometry(BYTE bDevNumber, DISK_GEOMETRY *DiskGeometry)
-{
-    WCHAR szPath[MAX_PATH];
-    HANDLE hDevice;
-    DWORD temp;
-    BOOL Result;
-
-    StringCbPrintf(szPath,
-                   sizeof(szPath),
-                   L"\\\\.\\PhysicalDrive%d",
-                   bDevNumber);
-
-    hDevice = CreateFile(szPath, 0,
-                         FILE_SHARE_READ | FILE_SHARE_WRITE,
-                         NULL, OPEN_EXISTING, 0, NULL);
-
-    if (hDevice == INVALID_HANDLE_VALUE)
-        return FALSE;
-
-    Result = DeviceIoControl(hDevice,
-                             IOCTL_DISK_GET_DRIVE_GEOMETRY,
-                             NULL, 0,
-                             DiskGeometry, sizeof(*DiskGeometry),
-                             &temp,
-                             NULL);
-
-    CloseHandle(hDevice);
-
-    return Result;
-}
-
 VOID
 HW_HDDATAInfo(VOID)
 {
@@ -108,10 +74,10 @@ HW_HDDATAInfo(VOID)
 
     for (bIndex = 0; bIndex <= 32; ++bIndex)
     {
-        hHandle = SMART_Open(bIndex);
+        hHandle = drv_open_smart(bIndex);
         if (!hHandle) continue;
 
-        if (SMART_ReadDriveInformation(hHandle, bIndex, &DriveInfo))
+        if (drv_read_smart_info(hHandle, bIndex, &DriveInfo))
         {
             ChangeByteOrder((PCHAR)DriveInfo.sModelNumber,
                             sizeof(DriveInfo.sModelNumber));
@@ -138,7 +104,7 @@ HW_HDDATAInfo(VOID)
                            L"%S", DriveInfo.sFirmwareRev);
             IoSetItemText(Index, 1, szText);
 
-            if (GetDiskGeometry(bIndex, &DiskGeometry))
+            if (drv_get_smart_disk_geometry(bIndex, &DiskGeometry))
             {
                 ULONGLONG DiskSize;
 
@@ -189,7 +155,7 @@ HW_HDDATAInfo(VOID)
             IoAddFooter();
         }
 
-        SMART_Close(hHandle);
+        drv_close_smart(hHandle);
     }
 
     DebugEndReceiving();
@@ -299,10 +265,10 @@ HW_HDDSMARTInfo(VOID)
 
     for (bIndex = 0; bIndex <= 32; ++bIndex)
     {
-        hHandle = SMART_Open(bIndex);
+        hHandle = drv_open_smart(bIndex);
         if (!hHandle) continue;
 
-        if (SMART_ReadDriveInformation(hHandle, bIndex, &DriveInfo))
+        if (drv_read_smart_info(hHandle, bIndex, &DriveInfo))
         {
             Index = IoAddHeaderString(0, L"\0", 0);
             ChangeByteOrder((PCHAR)DriveInfo.sModelNumber,
@@ -317,9 +283,9 @@ HW_HDDSMARTInfo(VOID)
             IoSetItemText(Index, 5, L"\0");
         }
 
-        if (SMART_EnumData(hHandle, bIndex, EnumSmartDataProc))
+        if (drv_enum_smart_data(hHandle, bIndex, EnumSmartDataProc))
             IoAddFooter();
-        SMART_Close(hHandle);
+        drv_close_smart(hHandle);
     }
 
     DebugEndReceiving();

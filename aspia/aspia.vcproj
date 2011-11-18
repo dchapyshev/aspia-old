@@ -487,14 +487,6 @@
 				</Filter>
 			</Filter>
 			<Filter
-				Name="smart"
-				>
-				<File
-					RelativePath=".\smart\smart.c"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="sysmon"
 				>
 				<File
@@ -528,14 +520,6 @@
 				RelativePath=".\version.h"
 				>
 			</File>
-			<Filter
-				Name="smart"
-				>
-				<File
-					RelativePath=".\smart\smart.h"
-					>
-				</File>
-			</Filter>
 			<Filter
 				Name="info"
 				>
