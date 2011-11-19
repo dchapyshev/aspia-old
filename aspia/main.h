@@ -489,4 +489,7 @@ VOID UpdateTrayIcons(VOID);
 VOID GetLPCSensorsInfo(VOID);
 
 /* sysmon.c */
-VOID CreateSysMonWindow(HWND hParentWnd);
+VOID CreateSysMonWindow(VOID);
+
+/* disk.c */
+VOID CreateDiskBenchWindow(VOID);

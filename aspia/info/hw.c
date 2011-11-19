@@ -75,7 +75,7 @@ HW_HDDATAInfo(VOID)
     for (bIndex = 0; bIndex <= 32; ++bIndex)
     {
         hHandle = drv_open_smart(bIndex);
-        if (!hHandle) continue;
+        if (hHandle == INVALID_HANDLE_VALUE) continue;
 
         if (drv_read_smart_info(hHandle, bIndex, &DriveInfo))
         {

@@ -1,4 +1,4 @@
-LIBRARY   ASPIA_DRV.DLL
+LIBRARY ASPIA_DRV.DLL
 EXPORTS
 drv_load @1
 drv_unload @2

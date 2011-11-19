@@ -35,7 +35,7 @@ drv_open_smart(BYTE bDevNumber)
 
     return CreateFile(szPath,
                       GENERIC_READ | GENERIC_WRITE,
-                      FILE_SHARE_READ | FILE_SHARE_WRITE, 
+                      FILE_SHARE_READ | FILE_SHARE_WRITE,
                       NULL,
                       OPEN_EXISTING,
                       FILE_ATTRIBUTE_SYSTEM,
@@ -92,7 +92,7 @@ drv_enable_smart(HANDLE hHandle, BYTE bDevNumber)
                            &CmdIn, 
                            sizeof(SENDCMDINPARAMS),
                            &CmdOut,
-                           sizeof(SENDCMDOUTPARAMS), 
+                           sizeof(SENDCMDOUTPARAMS),
                            &lpcbBytesReturned,
                            NULL);
 }
@@ -105,25 +105,29 @@ drv_read_smart_info(HANDLE hHandle, BYTE bDevNumber, IDSECTOR *Info)
     char szOut[IDENTIFY_BUFFER_SIZE + 16];
     BOOL bResult;
 
-    CmdIn.cBufferSize = IDENTIFY_BUFFER_SIZE; 
-    CmdIn.irDriveRegs.bFeaturesReg = 0; 
+    if (!Info) return FALSE;
+
+    CmdIn.cBufferSize = IDENTIFY_BUFFER_SIZE;
     CmdIn.irDriveRegs.bSectorCountReg = 1;
     CmdIn.irDriveRegs.bSectorNumberReg = 1;
-    CmdIn.irDriveRegs.bCylLowReg = 0;
-    CmdIn.irDriveRegs.bCylHighReg = 0;
-    CmdIn.irDriveRegs.bDriveHeadReg = DRIVE_HEAD_REG;
+    CmdIn.irDriveRegs.bDriveHeadReg = 0xA0 | ((bDevNumber & 1) << 4);
     CmdIn.irDriveRegs.bCommandReg = ID_CMD;
     CmdIn.bDriveNumber = bDevNumber;
 
     bResult = DeviceIoControl(hHandle,
-                              SMART_RCV_DRIVE_DATA, 
+                              SMART_RCV_DRIVE_DATA,
                               &CmdIn,
                               sizeof(SENDCMDINPARAMS),
                               &szOut,
                               IDENTIFY_BUFFER_SIZE + 16,
                               &cbBytesReturned,
                               NULL);
-    if (!bResult || !Info) return FALSE;
+
+    if (!bResult)
+    {
+        DebugTrace(L"DeviceIoControl() failed. Error code = %d", GetLastError());
+        return FALSE;
+    }
 
     CopyMemory(Info, szOut + 16, sizeof(IDSECTOR));
 
@@ -153,7 +157,7 @@ drv_read_smart_attributes(HANDLE hHandle, BYTE bDevNumber, SMART_DRIVE_INFO *Inf
     CmdIn.bDriveNumber = bDevNumber;
 
     bResult = DeviceIoControl(hHandle,
-                              SMART_RCV_DRIVE_DATA, 
+                              SMART_RCV_DRIVE_DATA,
                               &CmdIn,
                               sizeof(SENDCMDINPARAMS),
                               szOut,

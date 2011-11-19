@@ -404,7 +404,11 @@ OnCommand(UINT Command)
         break;
 
         case ID_SYSMON:
-            CreateSysMonWindow(hMainWnd);
+            CreateSysMonWindow();
+            break;
+
+        case ID_BENCH:
+            CreateDiskBenchWindow();
             break;
 
         case ID_EXIT:
