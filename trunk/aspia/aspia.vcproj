@@ -494,6 +494,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="benchmarks"
+				>
+				<File
+					RelativePath=".\benchmarks\disk.c"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Заголовочные файлы"

@@ -23,7 +23,7 @@ static const TBBUTTON SysMonButtons[] =
 {   /* iBitmap, idCommand, fsState, fsStyle, bReserved[2], dwData, iString */
     { 0, ID_SYSMON_START,TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szSysMonStart},
     { 1, ID_SYSMON_STOP, TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szSysMonStop},
-    { 2, ID_SYSMON_TEST, TBSTATE_ENABLED, BTNS_CHECK | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szSysMonTest},
+    { 2, ID_SYSMON_TEST, TBSTATE_ENABLED, BTNS_CHECK | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szSysMonTest}
 };
 
 VOID
@@ -239,7 +239,7 @@ SysMonWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 }
 
 VOID
-CreateSysMonWindow(HWND hParentWnd)
+CreateSysMonWindow(VOID)
 {
     WNDCLASSEX WndClass = {0};
     WCHAR szWindowClass[] = L"ASPIAISSYSMON";
@@ -275,6 +275,8 @@ CreateSysMonWindow(HWND hParentWnd)
         UnregisterClass(szWindowClass, hInstance);
         return;
     }
+
+    CenterWindow(hSysMonWnd, NULL);
 
     /* Show it */
     ShowWindow(hSysMonWnd, SW_SHOW);

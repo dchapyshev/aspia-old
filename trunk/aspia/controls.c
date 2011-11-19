@@ -15,6 +15,8 @@ HWND hSplitter = NULL;
 
 static WCHAR szSaveReportBtn[MAX_STR_LEN] = {0};
 static WCHAR szReloadBtn[MAX_STR_LEN] = {0};
+static WCHAR szSysMonBtn[MAX_STR_LEN] = {0};
+static WCHAR szBenchBtn[MAX_STR_LEN] = {0};
 
 HIMAGELIST hImageTreeView = NULL;
 
@@ -24,10 +26,12 @@ static const TBBUTTON Buttons[] =
     { 0, ID_SAVE,     TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szSaveReportBtn},
     { 1, ID_RELOAD,   TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szReloadBtn},
     {-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
-    //{ 2, ID_SYSMON,   TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0},
-    { 3, ID_SETTINGS, TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0},
+    { 2, ID_SYSMON,   TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szSysMonBtn},
+    { 3, ID_BENCH,    TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szBenchBtn},
     {-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
-    { 4, ID_ABOUT,    TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0}
+    { 4, ID_SETTINGS, TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0},
+    {-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
+    { 5, ID_ABOUT,    TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0}
 };
 
 
@@ -220,7 +224,7 @@ VOID
 ToolBarOnGetDispInfo(LPTOOLTIPTEXT lpttt)
 {
     UINT idButton = (UINT)lpttt->hdr.idFrom;
-    UINT StringID;
+    UINT StringID = 0;
 
     switch (idButton)
     {
@@ -239,8 +243,9 @@ ToolBarOnGetDispInfo(LPTOOLTIPTEXT lpttt)
         case ID_SYSMON:
             StringID = IDS_SYSMON;
             break;
-        default:
-            return;
+        case ID_BENCH:
+            StringID = IDS_HWBENCH;
+            break;
     }
 
     LoadMUIString(StringID, lpttt->szText, 80);
@@ -335,6 +340,8 @@ InitToolBar(HWND hwnd)
 
     LoadMUIString(IDS_RELOAD, szReloadBtn, MAX_STR_LEN);
     LoadMUIString(IDS_SAVE, szSaveReportBtn, MAX_STR_LEN);
+    LoadMUIString(IDS_SYSMON_BTN, szSysMonBtn, MAX_STR_LEN);
+    LoadMUIString(IDS_BENCH_BTN, szBenchBtn, MAX_STR_LEN);
 
     /* Create toolbar */
     hToolBar = CreateWindowEx(0,
@@ -367,6 +374,7 @@ InitToolBar(HWND hwnd)
     AddImageToImageList(hImageList, IDI_SAVE);
     AddImageToImageList(hImageList, IDI_RELOAD);
     AddImageToImageList(hImageList, IDI_TASKMGR);
+    AddImageToImageList(hImageList, IDI_HWBENCH);
     AddImageToImageList(hImageList, IDI_SETTINGS);
     AddImageToImageList(hImageList, IDI_INFO);
 
