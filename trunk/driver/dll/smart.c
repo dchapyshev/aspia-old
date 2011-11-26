@@ -6,7 +6,7 @@
  */
 
 #include <windows.h>
-#include <tchar.h>
+#include <wchar.h>
 #include <strsafe.h>
 #include "driver.h"
 
@@ -30,7 +30,7 @@ drv_open_smart(BYTE bDevNumber)
 
     StringCbPrintf(szPath,
                    sizeof(szPath),
-                   _T("\\\\.\\PhysicalDrive%d"),
+                   L"\\\\.\\PhysicalDrive%d",
                    bDevNumber);
 
     return CreateFile(szPath,
@@ -258,49 +258,49 @@ typedef struct
 
 const INFO_STRUCT SmartAttribList[] =
 {
-    { 0x01, TRUE, _T("Raw Read Error Rate") },
-    { 0x02, FALSE, _T("Throughput Performance") },
-    { 0x03, FALSE, _T("Spin Up Time") },
-    { 0x04, FALSE, _T("Start/Stop Count") },
-    { 0x05, TRUE, _T("Reallocated Sectors Count") },
-    { 0x06, FALSE, _T("Read Channel Margin") },
-    { 0x07, FALSE, _T("Seek Error Rate") },
-    { 0x08, FALSE, _T("Seek Time Performance") },
-    { 0x09, FALSE, _T("Power-On Hours") },
-    { 0x0A, FALSE, _T("Spin Retry Count") },
-    { 0x0B, FALSE, _T("Recalibration Retries") },
-    { 0x0C, FALSE, _T("Device Power Cycle Count") },
-    { 0x0D, FALSE, _T("Soft Read Error Rate") },
-    { 0xC1, FALSE, _T("Load/Unload Cycle Count") },
-    { 0xC2, FALSE, _T("Temperature") },
-    { 0xC4, TRUE, _T("Reallocation Event Count") },
-    { 0xC5, TRUE, _T("Current Pending Sector Count") },
-    { 0xC6, TRUE, _T("Uncorrectable Sector Count") },
-    { 0xC7, FALSE, _T("UltraDMA CRC Error Count") },
-    { 0xC8, FALSE, _T("Write Error Rate") },
-    { 0xC9, FALSE, _T("Soft read error rate") },
-    { 0xCA, FALSE, _T("Data Address Mark errors") },
-    { 0xCB, FALSE, _T("Run out cancel") },
-    { 0xCC, FALSE, _T("Soft ECC correction") },
-    { 0xCD, FALSE, _T("Thermal asperity rate (TAR)") },
-    { 0xCE, FALSE, _T("Flying height") },
-    { 0xCF, FALSE, _T("Spin high current") },
-    { 0xD0, FALSE, _T("Spin buzz") },
-    { 0xD1, FALSE, _T("Offline seek performance") },
-    { 0xDC, TRUE, _T("Disk Shift") },
-    { 0xDD, FALSE, _T("G-Sense Error Rate") },
-    { 0xDE, FALSE, _T("Loaded Hours") },
-    { 0xDF, FALSE, _T("Load/Unload Retry Count") },
-    { 0xE0, FALSE, _T("Load Friction") },
-    { 0xE2, FALSE, _T("Load-in Time") },
-    { 0xE3, FALSE, _T("Torque Amplification Count") },
-    { 0xE4, FALSE, _T("Power-Off Retract Count") },
-    { 0xE6, FALSE, _T("GMR Head Amplitude") },
-    { 0xE7, FALSE, _T("Temperature") },
-    { 0xF0, FALSE, _T("Head flying hours") },
-    { 0xFA, FALSE, _T("Read error retry rate") },
-    { 0xFE, FALSE, _T("Free Fall Event Count") },
-    { 0x0, FALSE, NULL }
+    { 0x01, TRUE, L"Raw Read Error Rate" },
+    { 0x02, FALSE, L"Throughput Performance" },
+    { 0x03, FALSE, L"Spin Up Time" },
+    { 0x04, FALSE, L"Start/Stop Count" },
+    { 0x05, TRUE, L"Reallocated Sectors Count" },
+    { 0x06, FALSE, L"Read Channel Margin" },
+    { 0x07, FALSE, L"Seek Error Rate" },
+    { 0x08, FALSE, L"Seek Time Performance" },
+    { 0x09, FALSE, L"Power-On Hours" },
+    { 0x0A, FALSE, L"Spin Retry Count" },
+    { 0x0B, FALSE, L"Recalibration Retries" },
+    { 0x0C, FALSE, L"Device Power Cycle Count" },
+    { 0x0D, FALSE, L"Soft Read Error Rate" },
+    { 0xC1, FALSE, L"Load/Unload Cycle Count" },
+    { 0xC2, FALSE, L"Temperature" },
+    { 0xC4, TRUE, L"Reallocation Event Count" },
+    { 0xC5, TRUE, L"Current Pending Sector Count" },
+    { 0xC6, TRUE, L"Uncorrectable Sector Count" },
+    { 0xC7, FALSE, L"UltraDMA CRC Error Count" },
+    { 0xC8, FALSE, L"Write Error Rate" },
+    { 0xC9, FALSE, L"Soft read error rate" },
+    { 0xCA, FALSE, L"Data Address Mark errors" },
+    { 0xCB, FALSE, L"Run out cancel" },
+    { 0xCC, FALSE, L"Soft ECC correction" },
+    { 0xCD, FALSE, L"Thermal asperity rate (TAR)" },
+    { 0xCE, FALSE, L"Flying height" },
+    { 0xCF, FALSE, L"Spin high current" },
+    { 0xD0, FALSE, L"Spin buzz" },
+    { 0xD1, FALSE, L"Offline seek performance" },
+    { 0xDC, TRUE, L"Disk Shift" },
+    { 0xDD, FALSE, L"G-Sense Error Rate" },
+    { 0xDE, FALSE, L"Loaded Hours" },
+    { 0xDF, FALSE, L"Load/Unload Retry Count" },
+    { 0xE0, FALSE, L"Load Friction" },
+    { 0xE2, FALSE, L"Load-in Time" },
+    { 0xE3, FALSE, L"Torque Amplification Count" },
+    { 0xE4, FALSE, L"Power-Off Retract Count" },
+    { 0xE6, FALSE, L"GMR Head Amplitude" },
+    { 0xE7, FALSE, L"Temperature" },
+    { 0xF0, FALSE, L"Head flying hours" },
+    { 0xFA, FALSE, L"Read error retry rate" },
+    { 0xFE, FALSE, L"Free Fall Event Count" },
+    { 0 }
 };
 
 VOID

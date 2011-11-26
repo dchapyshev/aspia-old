@@ -49,6 +49,9 @@ BEGIN
     BEGIN
         MENUITEM "&Показать окно", ID_SHOW_WINDOW
         MENUITEM SEPARATOR
+        MENUITEM "Системный монитор", ID_SYSMON
+        MENUITEM "Disk Benchmark", ID_BENCH
+        MENUITEM SEPARATOR
         MENUITEM "Отчет: &все категории", ID_SAVE_ALL
         MENUITEM "Отчет: &выбранные...", ID_SAVE_REPORT
         MENUITEM SEPARATOR
@@ -61,6 +64,9 @@ BEGIN
     POPUP "popup"
     BEGIN
         MENUITEM "&Спрятать окно", ID_HIDE_WINDOW
+        MENUITEM SEPARATOR
+        MENUITEM "Системный монитор", ID_SYSMON
+        MENUITEM "Disk Benchmark", ID_BENCH
         MENUITEM SEPARATOR
         MENUITEM "Отчет: &все категории", ID_SAVE_ALL
         MENUITEM "Отчет: &выбранные...", ID_SAVE_REPORT
@@ -195,8 +201,6 @@ BEGIN
 
     LTEXT "ЦП максимальная:", -1, 386, 167, 73, 11
     EDITTEXT IDC_CPU_MAXIMUM, 385, 178, 98, 14, WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP | ES_READONLY | ES_AUTOVSCROLL
-
-    AUTOCHECKBOX "Низкоуровневый тест", IDC_LOW_LEVEL_TEST, 387, 232, 97, 15
 
     CONTROL "", IDC_GRAPH_WND, "STATIC", SS_ETCHEDFRAME, 3, 23, 378, 253
 END
@@ -934,6 +938,11 @@ BEGIN
     IDS_DISK_BUFFRED_WRITE, "Запись с буфером"
     IDS_SYSMON_BTN, "Датчики"
     IDS_BENCH_BTN, "Тесты"
+    IDS_DISK_READONLY, "Выбранный диск не доступен для записи."
+    IDS_DISK_NO_FREE_SPACE, "Недостаточно свободного места на диске для проведения теста!"
+    IDS_DISK_FILECREATE, "Создание файла для тестирования..."
+    IDS_DISK_TESTING, "Тестирование..."
+    IDS_DISK_TEST_COMPLETE, "Тестирование завершено"
 
     IDS_CAT_SUMMARY, "Общая информация"
 

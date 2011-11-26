@@ -177,7 +177,6 @@
 #define IDC_CPU_CURRENT         153
 #define IDC_CPU_MINIMUM         154
 #define IDC_CPU_MAXIMUM         155
-#define IDC_LOW_LEVEL_TEST      156
 
 /* Strings */
 #define IDS_APPTITLE                100
@@ -870,6 +869,11 @@
 #define IDS_DISK_BUFFRED_WRITE           747
 #define IDS_SYSMON_BTN                   748
 #define IDS_BENCH_BTN                    749
+#define IDS_DISK_READONLY                750
+#define IDS_DISK_NO_FREE_SPACE           751
+#define IDS_DISK_FILECREATE              752
+#define IDS_DISK_TESTING                 753
+#define IDS_DISK_TEST_COMPLETE           754
 
 #define IDS_CAT_SUMMARY           1000
 
