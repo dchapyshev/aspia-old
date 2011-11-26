@@ -50,6 +50,9 @@ BEGIN
     BEGIN
         MENUITEM "&Показати вікно", ID_SHOW_WINDOW
         MENUITEM SEPARATOR
+        MENUITEM "System Monitor", ID_SYSMON
+        MENUITEM "Disk Benchmark", ID_BENCH
+        MENUITEM SEPARATOR
         MENUITEM "Звіт: &всі категорії", ID_SAVE_ALL
         MENUITEM "Звіт: &обрані...", ID_SAVE_REPORT
         MENUITEM SEPARATOR
@@ -62,6 +65,9 @@ BEGIN
     POPUP "popup"
     BEGIN
         MENUITEM "&Сховати вікно", ID_HIDE_WINDOW
+        MENUITEM SEPARATOR
+        MENUITEM "System Monitor", ID_SYSMON
+        MENUITEM "Disk Benchmark", ID_BENCH
         MENUITEM SEPARATOR
         MENUITEM "Звіт: &всі категорії", ID_SAVE_ALL
         MENUITEM "Звіт: &обрані...", ID_SAVE_REPORT
@@ -196,8 +202,6 @@ BEGIN
 
     LTEXT "CPU Maximum:", -1, 386, 167, 73, 11
     EDITTEXT IDC_CPU_MAXIMUM, 385, 178, 98, 14, WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP | ES_READONLY | ES_AUTOVSCROLL
-
-    AUTOCHECKBOX "Low-Level Test", IDC_LOW_LEVEL_TEST, 387, 232, 97, 15
 
     CONTROL "", IDC_GRAPH_WND, "STATIC", SS_ETCHEDFRAME, 3, 23, 378, 253
 END
@@ -935,6 +939,11 @@ BEGIN
     IDS_DISK_BUFFRED_WRITE, "Buffred Write"
     IDS_SYSMON_BTN, "Sensors"
     IDS_BENCH_BTN, "Benchmarks"
+    IDS_DISK_READONLY, "The disk is not writable."
+    IDS_DISK_NO_FREE_SPACE, "Not enough free disk space for the test!"
+    IDS_DISK_FILECREATE, "Create a file for testing..."
+    IDS_DISK_TESTING, "Testing..."
+    IDS_DISK_TEST_COMPLETE, "Testing complete"
 
     IDS_CAT_SUMMARY, "Загальна інформація"
 
