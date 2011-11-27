@@ -177,6 +177,7 @@
 #define IDC_CPU_CURRENT         153
 #define IDC_CPU_MINIMUM         154
 #define IDC_CPU_MAXIMUM         155
+#define IDC_DISK_TIME           156
 
 /* Strings */
 #define IDS_APPTITLE                100

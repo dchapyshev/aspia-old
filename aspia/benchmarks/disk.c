@@ -9,7 +9,8 @@
 #include "driver.h"
 
 
-#define IDT_SECONDS_COUNTER_TIMER 3476
+#define IDT_SECONDS_COUNTER_TIMER  3476
+#define IDT_CPU_USAGE_UPDATE_TIMER 3477
 
 #define TEST_TYPE_RAMDOM_READ    1
 #define TEST_TYPE_SEQ_READ       2
@@ -65,8 +66,15 @@ static DWORD gCurrentSpeed = 0;
 static double gMaxSpeed = 0;
 static double gMinSpeed = 0;
 
+static INT gCurrentCpuUsage = 0;
+static INT gMaxCpuUsage = 0;
+static INT gMinCpuUsage = 0;
+
+static DWORD gStartTime = 0;
+
 static HANDLE hFileHandle = INVALID_HANDLE_VALUE;
 static WCHAR szFilePath[MAX_PATH] = {0};
+static char *pData = NULL;
 
 static BOOL IsTestCanceled = FALSE;
 
@@ -240,6 +248,8 @@ DiskClearResults(HWND hDlg)
     SetWindowText(GetDlgItem(hDlg, IDC_CPU_MINIMUM), L"0 %");
     SetWindowText(GetDlgItem(hDlg, IDC_CPU_MAXIMUM), L"0 %");
 
+    SetWindowText(GetDlgItem(hDlg, IDC_DISK_TIME), L"00:00:00");
+
     GraphClear(GetDlgItem(hDlg, IDC_GRAPH_WND));
 
     SecondsCount = 0;
@@ -360,7 +370,6 @@ CreateFileForTest(WCHAR *pDrive,
 {
     ULARGE_INTEGER TotalNumberOfBytes, TotalNumberOfFreeBytes;
     DWORD dwFileSystemFlags, dwBytesWritten;
-    char *pData = NULL;
     INT i, count;
 
     if (!GetDiskFreeSpaceEx(pDrive,
@@ -548,6 +557,61 @@ SecondsCounterProc(HWND hDlg, UINT msg, UINT id, DWORD systime)
     gOperationsCount = 0;
 }
 
+VOID CALLBACK
+CpuUsageUpdateProc(HWND hDlg, UINT msg, UINT id, DWORD systime)
+{
+    INT CpuUsage = GetCPUUsage();
+    WCHAR szText[MAX_STR_LEN];
+    LONGLONG Hours, Mins, Secs;
+    DWORD time;
+
+    if (CpuUsage == 0) return;
+
+    if (SecondsCount < 7)
+    {
+        gMinCpuUsage = CpuUsage;
+
+        StringCbPrintf(szText, sizeof(szText), L"%d %%", gMinCpuUsage);
+        SetWindowText(GetDlgItem(hDlg, IDC_CPU_MINIMUM), szText);
+
+        return;
+    }
+
+    gCurrentCpuUsage = CpuUsage;
+
+    StringCbPrintf(szText, sizeof(szText), L"%d %%", gCurrentCpuUsage);
+    SetWindowText(GetDlgItem(hDlg, IDC_CPU_CURRENT), szText);
+
+    if (gCurrentCpuUsage < gMinCpuUsage)
+    {
+        gMinCpuUsage = gCurrentCpuUsage;
+
+        StringCbPrintf(szText, sizeof(szText), L"%d %%", gMinCpuUsage);
+        SetWindowText(GetDlgItem(hDlg, IDC_CPU_MINIMUM), szText);
+    }
+
+    if (gCurrentCpuUsage > gMaxCpuUsage)
+    {
+        gMaxCpuUsage = gCurrentCpuUsage;
+
+        StringCbPrintf(szText, sizeof(szText), L"%d %%", gMaxCpuUsage);
+        SetWindowText(GetDlgItem(hDlg, IDC_CPU_MAXIMUM), szText);
+    }
+
+    time = (timeGetTime() - gStartTime) / 1000;
+
+    Hours = ((time % 86400) / 3600);
+    Mins  = ((time % 86400) % 3600) / 60;
+    Secs  = ((time % 86400) % 3600) % 60;
+
+    DebugTrace(L"t = %d, %d", time % 3600, (time % 3600) % 60);
+
+    StringCbPrintf(szText, sizeof(szText),
+                   L"%02I64u:%02I64u:%02I64u",
+                   Hours, Mins, Secs);
+    SetWindowText(GetDlgItem(hDlg, IDC_DISK_TIME), szText);
+}
+
 /* 
  *   Функция генерирует псевдослучайные числа
  *   Алгоритм найден на http://en.wikipedia.org/wiki/Xorshift
@@ -573,7 +637,6 @@ ReadDiskTest(HWND hDlg, WCHAR *pDrive, INT TestType,
     DWORD dwBytesWritten;
     LARGE_INTEGER MoveTo;
     INT i, count;
-    char *pData;
 
     switch (TestType)
     {
@@ -586,6 +649,8 @@ ReadDiskTest(HWND hDlg, WCHAR *pDrive, INT TestType,
         default:
             return;
     }
+
+    IsTestCanceled = FALSE;
 
     /* Генерируем имя файла */
     CreateFilePathForReadingTest(pDrive, szFilePath,
@@ -633,20 +698,27 @@ ReadDiskTest(HWND hDlg, WCHAR *pDrive, INT TestType,
         return;
     }
 
-    IsTestCanceled = FALSE;
-
     gMaxSpeed = 0;
     gMinSpeed = 0;
+
+    gMinCpuUsage = 1;
+    gMaxCpuUsage = 0;
+    gCurrentCpuUsage = 0;
 
     /* Создаем таймер, который будет считать количество секунд с начала теста */
     SecondsCount = 0;
     SetTimer(hDlg, IDT_SECONDS_COUNTER_TIMER, 250, SecondsCounterProc);
+
+    CpuUsageUpdateProc(hDlg, 0, 0, 0);
+    SetTimer(hDlg, IDT_CPU_USAGE_UPDATE_TIMER, 1000, CpuUsageUpdateProc);
 
     count = (INT)(dwFileSize / dwBlockSize);
     DebugTrace(L"Start file reading. count = %d", count);
 
     gFileSize = dwFileSize;
     gBlockSize = dwBlockSize;
+
+    gStartTime = timeGetTime();
 
     i = 0;
     do
@@ -693,6 +765,7 @@ ReadDiskTest(HWND hDlg, WCHAR *pDrive, INT TestType,
     /* Проводим очистку */
     VirtualFree(pData, dwBlockSize, MEM_DECOMMIT);
     KillTimer(hDlg, IDT_SECONDS_COUNTER_TIMER);
+    KillTimer(hDlg, IDT_CPU_USAGE_UPDATE_TIMER);
     CloseHandle(hFileHandle);
     DeleteFile(szFilePath);
 }
@@ -705,7 +778,6 @@ WriteDiskTest(HWND hDlg, WCHAR *pDrive, INT TestType,
     DWORD dwBytesWritten;
     LARGE_INTEGER MoveTo;
     INT i = 0, count;
-    char *pData;
 
     switch (TestType)
     {
@@ -770,15 +842,24 @@ WriteDiskTest(HWND hDlg, WCHAR *pDrive, INT TestType,
     gMaxSpeed = 0;
     gMinSpeed = 0;
 
+    gMinCpuUsage = 1;
+    gMaxCpuUsage = 0;
+    gCurrentCpuUsage = 0;
+
     /* Создаем таймер, который будет считать количество секунд с начала теста */
     SecondsCount = 0;
     SetTimer(hDlg, IDT_SECONDS_COUNTER_TIMER, 250, SecondsCounterProc);
+
+    CpuUsageUpdateProc(hDlg, 0, 0, 0);
+    SetTimer(hDlg, IDT_CPU_USAGE_UPDATE_TIMER, 1000, CpuUsageUpdateProc);
 
     count = (INT)(dwFileSize / dwBlockSize);
     DebugTrace(L"Start file writing. count = %d", count);
 
     gFileSize = dwFileSize;
     gBlockSize = dwBlockSize;
+
+    gStartTime = timeGetTime();
 
     i = 0;
     do
@@ -825,6 +906,7 @@ Cleanup:
 
     VirtualFree(pData, dwBlockSize, MEM_DECOMMIT);
     KillTimer(hDlg, IDT_SECONDS_COUNTER_TIMER);
+    KillTimer(hDlg, IDT_CPU_USAGE_UPDATE_TIMER);
     CloseHandle(hFileHandle);
     DeleteFile(szFilePath);
 }
@@ -971,6 +1053,11 @@ DiskBenchDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                 CloseHandle(hFileHandle);
                 DeleteFile(szFilePath);
             }
+
+            KillTimer(hDlg, IDT_SECONDS_COUNTER_TIMER);
+            KillTimer(hDlg, IDT_CPU_USAGE_UPDATE_TIMER);
+
+            if (pData) VirtualFree(pData, TEST_BLOCK_SIZE_1MB, MEM_DECOMMIT);
 
             ClearDrivesCombo(hDriveCombo);
 
