@@ -10,22 +10,21 @@
 
 
 #define IDT_SECONDS_COUNTER_TIMER 3476
-#define IDT_UPDATE_INFO_TIMER     3477
 
 #define TEST_TYPE_RAMDOM_READ    1
-#define TEST_TYPE_BUFFERED_READ  2
+#define TEST_TYPE_SEQ_READ       2
 #define TEST_TYPE_RANDOM_WRITE   3
-#define TEST_TYPE_BUFFERED_WRITE 4
+#define TEST_TYPE_SEQ_WRITE      4
 
-#define TEST_FILE_SIZE_50MB   (50  * 1024 * 1024)
-#define TEST_FILE_SIZE_100MB  (100 * 1024 * 1024)
-#define TEST_FILE_SIZE_300MB  (300 * 1024 * 1024)
-#define TEST_FILE_SIZE_500MB  (500 * 1024 * 1024)
-#define TEST_FILE_SIZE_700MB  (700 * 1024 * 1024)
-#define TEST_FILE_SIZE_1GB    (1   * 1024 * 1024 * 1024)
-#define TEST_FILE_SIZE_3GB    (3   * 1024 * 1024 * 1024)
-#define TEST_FILE_SIZE_5GB    (5   * 1024 * 1024 * 1024)
-#define TEST_FILE_SIZE_10GB   (10  * 1024 * 1024 * 1024)
+#define TEST_FILE_SIZE_50MB   1
+#define TEST_FILE_SIZE_100MB  2
+#define TEST_FILE_SIZE_300MB  3
+#define TEST_FILE_SIZE_500MB  4
+#define TEST_FILE_SIZE_700MB  5
+#define TEST_FILE_SIZE_1GB    6
+#define TEST_FILE_SIZE_3GB    7
+#define TEST_FILE_SIZE_5GB    8
+#define TEST_FILE_SIZE_10GB   9
 
 #define TEST_BLOCK_SIZE_4KB      (4    * 1024)
 #define TEST_BLOCK_SIZE_8KB      (8    * 1024)
@@ -57,15 +56,17 @@ static WCHAR szClear[MAX_STR_LEN] = {0};
 
 static BOOL IsDiskBenchLaunched = FALSE;
 static DWORD SecondsCount = 0;
-static DWORD gFileSize = 0;
+static DWORD64 gFileSize = 0;
 static DWORD gBlockSize = 0;
-static DWORD gCurrentSpeed = 0;
-static INT gReadingCount = 0;
-static INT gReadingTotal = 0;
-static INT gReadingPercent = 0;
+static INT gOperationsCount = 0;
+static INT gOperationsPercent = 0;
 
+static DWORD gCurrentSpeed = 0;
 static double gMaxSpeed = 0;
 static double gMinSpeed = 0;
+
+static HANDLE hFileHandle = INVALID_HANDLE_VALUE;
+static WCHAR szFilePath[MAX_PATH] = {0};
 
 static BOOL IsTestCanceled = FALSE;
 
@@ -239,6 +240,8 @@ DiskClearResults(HWND hDlg)
     SetWindowText(GetDlgItem(hDlg, IDC_CPU_MINIMUM), L"0 %");
     SetWindowText(GetDlgItem(hDlg, IDC_CPU_MAXIMUM), L"0 %");
 
+    GraphClear(GetDlgItem(hDlg, IDC_GRAPH_WND));
+
     SecondsCount = 0;
 }
 
@@ -315,9 +318,9 @@ InitDiskBenchDlg(HWND hDlg)
     SendMessage(hBlockCombo, CB_SETCURSEL, 0, 0);
 
     AddStringIdToCombo(hTestCombo, TEST_TYPE_RAMDOM_READ, IDS_DISK_RANDOM_READ);
-    AddStringIdToCombo(hTestCombo, TEST_TYPE_BUFFERED_READ, IDS_DISK_BUFFRED_READ);
+    AddStringIdToCombo(hTestCombo, TEST_TYPE_SEQ_READ, IDS_DISK_SEQ_READ);
     AddStringIdToCombo(hTestCombo, TEST_TYPE_RANDOM_WRITE, IDS_DISK_RANDOM_WRITE);
-    AddStringIdToCombo(hTestCombo, TEST_TYPE_BUFFERED_WRITE, IDS_DISK_BUFFRED_WRITE);
+    AddStringIdToCombo(hTestCombo, TEST_TYPE_SEQ_WRITE, IDS_DISK_SEQ_WRITE);
     SendMessage(hTestCombo, CB_SETCURSEL, 0, 0);
 
     AddStringToCombo(hFileSizeCombo, TEST_FILE_SIZE_50MB, L"50 MB");
@@ -352,26 +355,46 @@ InitDiskBenchDlg(HWND hDlg)
 }
 
 BOOL
-CreateFileForReadingTest(WCHAR *pDrive,
-                         WCHAR *pFilePath,
-                         DWORD dwFileSize)
+CreateFileForTest(WCHAR *pDrive,
+                  DWORD64 dwFileSize)
 {
+    ULARGE_INTEGER TotalNumberOfBytes, TotalNumberOfFreeBytes;
     DWORD dwFileSystemFlags, dwBytesWritten;
-    char *pData;
+    char *pData = NULL;
     INT i, count;
-    HANDLE hFile;
+
+    if (!GetDiskFreeSpaceEx(pDrive,
+                            NULL,
+                            &TotalNumberOfBytes,
+                            &TotalNumberOfFreeBytes))
+    {
+        DebugTrace(L"GetDiskFreeSpaceEx() failed. Error code = %d",
+                   GetLastError());
+        return FALSE;
+    }
+
+    /* Проверяем достаточно ли свободного места на диске */
+    if (TotalNumberOfFreeBytes.QuadPart < dwFileSize)
+    {
+        WCHAR szText[MAX_STR_LEN];
+
+        LoadMUIString(IDS_DISK_NO_FREE_SPACE, szText, MAX_STR_LEN);
+        MessageBox(0, szText, NULL, MB_OK | MB_ICONHAND);
+
+        return FALSE;
+    }
 
     /* Создаем файл для тестирования чтения */
-    hFile = CreateFile(pFilePath,
-                       GENERIC_READ | GENERIC_WRITE,
-                       FILE_SHARE_READ | FILE_SHARE_WRITE,
-                       NULL,
-                       CREATE_ALWAYS,
-                       FILE_ATTRIBUTE_NORMAL | FILE_FLAG_NO_BUFFERING |
-                       FILE_FLAG_SEQUENTIAL_SCAN,
-                       NULL);
+    hFileHandle = CreateFile(szFilePath,
+                             GENERIC_READ | GENERIC_WRITE,
+                             FILE_SHARE_READ | FILE_SHARE_WRITE,
+                             NULL,
+                             CREATE_ALWAYS,
+                             FILE_ATTRIBUTE_NORMAL | FILE_FLAG_NO_BUFFERING |
+                             FILE_FLAG_SEQUENTIAL_SCAN,
+                             NULL);
 
-    if (hFile == INVALID_HANDLE_VALUE)
+    if (hFileHandle == INVALID_HANDLE_VALUE)
     {
         DebugTrace(L"CreateFile() failed. Error code = %d",
                    GetLastError());
@@ -385,7 +408,7 @@ CreateFileForReadingTest(WCHAR *pDrive,
                               NULL, NULL))
     {
         DebugTrace(L"GetVolumeInformation() failed!");
-        return FALSE;
+        goto Cleanup;
     }
 
     /* Проверяем включено ли сжатие для данных на разделе */
@@ -397,7 +420,7 @@ CreateFileForReadingTest(WCHAR *pDrive,
         DebugTrace(L"Compressed file system.");
 
         /* Снимаем сжатие с файла, если оно включено */
-        if (!DeviceIoControl(hFile,
+        if (!DeviceIoControl(hFileHandle,
                              FSCTL_SET_COMPRESSION,
                              (LPVOID)&lpInBuffer,
                              sizeof(USHORT),
@@ -406,8 +429,7 @@ CreateFileForReadingTest(WCHAR *pDrive,
                              NULL))
         {
             DebugTrace(L"DeviceIoControl() failed!");
-            CloseHandle(hFile);
-            return FALSE;
+            goto Cleanup;
         }
     }
 
@@ -419,8 +441,7 @@ CreateFileForReadingTest(WCHAR *pDrive,
     if (!pData)
     {
         DebugTrace(L"VirtualAlloc() failed!");
-        CloseHandle(hFile);
-        return FALSE;
+        goto Cleanup;
     }
 
     /* Заполняем буфер */
@@ -434,7 +455,9 @@ CreateFileForReadingTest(WCHAR *pDrive,
     /* Пишем файл заданного размера */
     for (i = 0; i < count; i++)
     {
-        WriteFile(hFile, pData,
+        if (IsTestCanceled) goto Cleanup;
+
+        WriteFile(hFileHandle, pData,
                   TEST_BLOCK_SIZE_1MB,
                   &dwBytesWritten,
                   NULL);
@@ -444,9 +467,16 @@ CreateFileForReadingTest(WCHAR *pDrive,
 
     /* Освобождаем буфер и закрываем файл */
     VirtualFree(pData, TEST_BLOCK_SIZE_1MB, MEM_DECOMMIT);
-    CloseHandle(hFile);
+    CloseHandle(hFileHandle);
 
     return TRUE;
+
+Cleanup:
+    if (pData) VirtualFree(pData, TEST_BLOCK_SIZE_1MB, MEM_DECOMMIT);
+    CloseHandle(hFileHandle);
+    DeleteFile(szFilePath);
+
+    return FALSE;
 }
 
 VOID
@@ -476,7 +506,7 @@ SecondsCounterProc(HWND hDlg, UINT msg, UINT id, DWORD systime)
     UNREFERENCED_PARAMETER(id);
     UNREFERENCED_PARAMETER(systime);
 
-    speed = ((double)(gReadingCount * gBlockSize) / (double)(1024 * 1024)) * 4.0;
+    speed = ((double)(gOperationsCount * gBlockSize) / (double)(1024 * 1024)) * 4.0;
 
     StringCbPrintf(szText, sizeof(szText), L"%.2f MB/s", speed);
     SetWindowText(GetDlgItem(hDlg, IDC_DISK_CURRENT), szText);
@@ -510,12 +540,12 @@ SecondsCounterProc(HWND hDlg, UINT msg, UINT id, DWORD systime)
     }
     else
     {
-        DrawDiagram(hwnd, gReadingPercent, speed);
+        DrawDiagram(hwnd, gOperationsPercent, speed);
     }
 
     SecondsCount++;
     /* Обнуляем счетчик количества чтений */
-    gReadingCount = 0;
+    gOperationsCount = 0;
 }
 
 /* 
@@ -537,24 +567,21 @@ DWORD xor128(VOID)
 
 VOID
 ReadDiskTest(HWND hDlg, WCHAR *pDrive, INT TestType,
-             DWORD dwFileSize, DWORD dwBlockSize)
+             DWORD64 dwFileSize, DWORD dwBlockSize)
 {
-    DWORD dwAttrib = FILE_ATTRIBUTE_NORMAL;
+    DWORD dwAttrib = FILE_ATTRIBUTE_NORMAL | FILE_FLAG_NO_BUFFERING;
     DWORD dwBytesWritten;
-    WCHAR szFilePath[MAX_PATH];
     LARGE_INTEGER MoveTo;
     INT i, count;
-    HANDLE hFile;
     char *pData;
 
     switch (TestType)
     {
         case TEST_TYPE_RAMDOM_READ:
             dwAttrib |= FILE_FLAG_RANDOM_ACCESS;
-            dwAttrib |= FILE_FLAG_NO_BUFFERING;
             break;
-        case TEST_TYPE_BUFFERED_READ:
-            dwAttrib |= FILE_FLAG_NO_BUFFERING;
+        case TEST_TYPE_SEQ_READ:
+            dwAttrib |= FILE_FLAG_SEQUENTIAL_SCAN;
             break;
         default:
             return;
@@ -569,9 +596,9 @@ ReadDiskTest(HWND hDlg, WCHAR *pDrive, INT TestType,
 
     /* Создаем файл для тестирования */
     UpdateStatusTitle(hDlg, IDS_DISK_FILECREATE);
-    if (!CreateFileForReadingTest(pDrive, szFilePath,
-                                  dwFileSize, dwBlockSize))
+    if (!CreateFileForTest(pDrive, dwFileSize))
     {
+        UpdateStatusTitle(hDlg, 0);
         DeleteFile(szFilePath);
         return;
     }
@@ -580,12 +607,13 @@ ReadDiskTest(HWND hDlg, WCHAR *pDrive, INT TestType,
     UpdateStatusTitle(hDlg, IDS_DISK_TESTING);
 
     /* Открываем файл, который будем читать */
-    hFile = CreateFile(szFilePath,
-                       GENERIC_READ | GENERIC_WRITE,
-                       0, NULL, OPEN_EXISTING,
-                       dwAttrib, NULL);
-    if (hFile == INVALID_HANDLE_VALUE)
+    hFileHandle = CreateFile(szFilePath,
+                             GENERIC_READ | GENERIC_WRITE,
+                             0, NULL, OPEN_EXISTING,
+                             dwAttrib, NULL);
+    if (hFileHandle == INVALID_HANDLE_VALUE)
     {
+        UpdateStatusTitle(hDlg, 0);
         DebugTrace(L"CreateFile() failed. Error code = %d",
                    GetLastError());
         DeleteFile(szFilePath);
@@ -599,8 +627,9 @@ ReadDiskTest(HWND hDlg, WCHAR *pDrive, INT TestType,
                                 PAGE_READWRITE);
     if (!pData)
     {
+        UpdateStatusTitle(hDlg, 0);
         DebugTrace(L"VirtualAlloc() failed!");
-        CloseHandle(hFile);
+        CloseHandle(hFileHandle);
         return;
     }
 
@@ -618,22 +647,38 @@ ReadDiskTest(HWND hDlg, WCHAR *pDrive, INT TestType,
 
     gFileSize = dwFileSize;
     gBlockSize = dwBlockSize;
-    gReadingTotal = count;
 
     i = 0;
     do
     {
         if (IsTestCanceled) break;
 
-        MoveTo.QuadPart = xor128() % (count * dwBlockSize);
-
-        if (SetFilePointerEx(hFile, MoveTo, NULL, FILE_BEGIN))
+        if (TestType == TEST_TYPE_RAMDOM_READ)
         {
-            gReadingPercent = (i * 100) / count;
-            ReadFile(hFile, pData, dwBlockSize, &dwBytesWritten, NULL);
+            MoveTo.QuadPart = xor128() % (count * dwBlockSize);
 
-            gReadingCount++;
+            if (SetFilePointerEx(hFileHandle, MoveTo, NULL, FILE_BEGIN))
+            {
+                gOperationsPercent = (i * 100) / count;
+                ReadFile(hFileHandle, pData, dwBlockSize, &dwBytesWritten, NULL);
+
+                gOperationsCount++;
+                i++;
+            }
+        }
+        else if (TestType == TEST_TYPE_SEQ_READ)
+        {
+            if (!ReadFile(hFileHandle, pData, dwBlockSize, &dwBytesWritten, NULL))
+                break;
+
+            gOperationsPercent = (i * 100) / count;
+
+            gOperationsCount++;
             i++;
+        }
+        else
+        {
+            break;
         }
     }
     while (i < count);
@@ -648,65 +693,232 @@ ReadDiskTest(HWND hDlg, WCHAR *pDrive, INT TestType,
     /* Проводим очистку */
     VirtualFree(pData, dwBlockSize, MEM_DECOMMIT);
     KillTimer(hDlg, IDT_SECONDS_COUNTER_TIMER);
-    CloseHandle(hFile);
+    CloseHandle(hFileHandle);
     DeleteFile(szFilePath);
 }
 
 VOID
 WriteDiskTest(HWND hDlg, WCHAR *pDrive, INT TestType,
-              INT FileSize, INT BlockSize)
+              DWORD64 dwFileSize, DWORD dwBlockSize)
 {
+    DWORD dwAttrib = FILE_ATTRIBUTE_NORMAL | FILE_FLAG_NO_BUFFERING;
+    DWORD dwBytesWritten;
+    LARGE_INTEGER MoveTo;
+    INT i = 0, count;
+    char *pData;
 
+    switch (TestType)
+    {
+        case TEST_TYPE_RANDOM_WRITE:
+            dwAttrib |= FILE_FLAG_RANDOM_ACCESS;
+            break;
+        case TEST_TYPE_SEQ_WRITE:
+            dwAttrib |= FILE_FLAG_SEQUENTIAL_SCAN;
+            break;
+        default:
+            return;
+    }
+
+    /* Генерируем имя файла */
+    CreateFilePathForReadingTest(pDrive, szFilePath,
+                                 sizeof(szFilePath));
+
+    DebugTrace(L"drive = %s, path = %s, file size = %ld, block size = %ld",
+               pDrive, szFilePath, dwFileSize, dwBlockSize);
+
+    /* Создаем файл для тестирования */
+    UpdateStatusTitle(hDlg, IDS_DISK_FILECREATE);
+    if (!CreateFileForTest(pDrive, dwFileSize))
+    {
+        UpdateStatusTitle(hDlg, 0);
+        DeleteFile(szFilePath);
+        return;
+    }
+
+    /* Начинаем тест */
+    UpdateStatusTitle(hDlg, IDS_DISK_TESTING);
+
+    hFileHandle = CreateFile(szFilePath,
+                             GENERIC_READ | GENERIC_WRITE,
+                             FILE_SHARE_READ | FILE_SHARE_WRITE,
+                             NULL,
+                             OPEN_EXISTING,
+                             dwAttrib,
+                             NULL);
+    if (hFileHandle == INVALID_HANDLE_VALUE)
+    {
+        UpdateStatusTitle(hDlg, 0);
+        DebugTrace(L"CreateFile() failed. Error code = %d",
+                   GetLastError());
+        return;
+    }
+
+    /* Выделяем буфер с размером блока */
+    pData = (char*)VirtualAlloc(NULL,
+                                dwBlockSize,
+                                MEM_COMMIT,
+                                PAGE_READWRITE);
+    if (!pData)
+    {
+        UpdateStatusTitle(hDlg, 0);
+        DebugTrace(L"VirtualAlloc() failed!");
+        goto Cleanup;
+    }
+
+    IsTestCanceled = FALSE;
+
+    gMaxSpeed = 0;
+    gMinSpeed = 0;
+
+    /* Создаем таймер, который будет считать количество секунд с начала теста */
+    SecondsCount = 0;
+    SetTimer(hDlg, IDT_SECONDS_COUNTER_TIMER, 250, SecondsCounterProc);
+
+    count = (INT)(dwFileSize / dwBlockSize);
+    DebugTrace(L"Start file writing. count = %d", count);
+
+    gFileSize = dwFileSize;
+    gBlockSize = dwBlockSize;
+
+    i = 0;
+    do
+    {
+        if (IsTestCanceled) break;
+
+        if (TestType == TEST_TYPE_RANDOM_WRITE)
+        {
+            MoveTo.QuadPart = xor128() % (count * dwBlockSize);
+
+            if (SetFilePointerEx(hFileHandle, MoveTo, NULL, FILE_BEGIN))
+            {
+                gOperationsPercent = (i * 100) / count;
+                WriteFile(hFileHandle, pData, dwBlockSize, &dwBytesWritten, NULL);
+
+                gOperationsCount++;
+                i++;
+            }
+        }
+        else if (TestType == TEST_TYPE_SEQ_WRITE)
+        {
+            if (!WriteFile(hFileHandle, pData, dwBlockSize, &dwBytesWritten, NULL))
+                break;
+
+            gOperationsPercent = (i * 100) / count;
+
+            gOperationsCount++;
+            i++;
+        }
+        else
+        {
+            break;
+        }
+    }
+    while (i < count);
+
+    SecondsCounterProc(hDlg, 0, 0, 0);
+
+    DebugTrace(L"End file writing.");
+
+Cleanup:
+    /* Пишем, что тест завершен */
+    UpdateStatusTitle(hDlg, IDS_DISK_TEST_COMPLETE);
+
+    VirtualFree(pData, dwBlockSize, MEM_DECOMMIT);
+    KillTimer(hDlg, IDT_SECONDS_COUNTER_TIMER);
+    CloseHandle(hFileHandle);
+    DeleteFile(szFilePath);
+}
+
+DWORD64
+GetFileSizeInBytes(INT FileSize)
+{
+    DWORD64 tmp = (DWORD64)1024 * (DWORD64)1024;
+
+    switch (FileSize)
+    {
+        case TEST_FILE_SIZE_50MB:
+            return (50  * tmp);
+        case TEST_FILE_SIZE_100MB:
+            return (100 * tmp);
+        case TEST_FILE_SIZE_300MB:
+            return (300 * tmp);
+        case TEST_FILE_SIZE_500MB:
+            return (500 * tmp);
+        case TEST_FILE_SIZE_700MB:
+            return (700 * tmp);
+        case TEST_FILE_SIZE_1GB:
+            return (1 * 1024 * tmp);
+        case TEST_FILE_SIZE_3GB:
+            return (3 * 1024 * tmp);
+        case TEST_FILE_SIZE_5GB:
+            return (5 * 1024 * tmp);
+        case TEST_FILE_SIZE_10GB:
+            return (10 * 1024 * tmp);
+        default:
+            return 0;
+    }
 }
 
 VOID
 TestThread(LPVOID lpParameter)
 {
     HWND hDlg = (HWND)lpParameter;
-    DWORD dwFileSize, dwBlockSize;
-    INT Index, TestType;
+    HWND hFileSizeWnd = GetDlgItem(hDlg, IDC_TEST_FILE_SIZE);
+    HWND hBlockSizeWnd = GetDlgItem(hDlg, IDC_BLOCK_SIZE);
+    HWND hTestTypeWnd = GetDlgItem(hDlg, IDC_TEST_TYPE);
+    DWORD dwBlockSize;
+    DWORD64 dwFileSize;
+    INT Index, TestType, FileSize;
     WCHAR *pDrive;
 
     GraphClear(GetDlgItem(hDlg, IDC_GRAPH_WND));
 
     /* Получаем размер файла */
-    Index = SendMessage(GetDlgItem(hDlg, IDC_TEST_FILE_SIZE),
-                        CB_GETCURSEL, 0, 0);
-    dwFileSize = SendMessage(GetDlgItem(hDlg, IDC_TEST_FILE_SIZE),
-                             CB_GETITEMDATA, Index, 0);
+    Index = SendMessage(hFileSizeWnd, CB_GETCURSEL, 0, 0);
+    FileSize = SendMessage(hFileSizeWnd, CB_GETITEMDATA, Index, 0);
+    dwFileSize = GetFileSizeInBytes(FileSize);
+
     /* Получаем размер блока */
-    Index = SendMessage(GetDlgItem(hDlg, IDC_BLOCK_SIZE),
-                        CB_GETCURSEL, 0, 0);
-    dwBlockSize = SendMessage(GetDlgItem(hDlg, IDC_BLOCK_SIZE),
-                              CB_GETITEMDATA, Index, 0);
+    Index = SendMessage(hBlockSizeWnd, CB_GETCURSEL, 0, 0);
+    dwBlockSize = SendMessage(hBlockSizeWnd, CB_GETITEMDATA, Index, 0);
+
     /* Получаем тип теста */
-    Index = SendMessage(GetDlgItem(hDlg, IDC_TEST_TYPE),
-                        CB_GETCURSEL, 0, 0);
-    TestType = SendMessage(GetDlgItem(hDlg, IDC_TEST_TYPE),
-                           CB_GETITEMDATA, Index, 0);
+    Index = SendMessage(hTestTypeWnd, CB_GETCURSEL, 0, 0);
+    TestType = SendMessage(hTestTypeWnd, CB_GETITEMDATA, Index, 0);
 
     /* Получаем строку устройства (буква диска или точка монтирования) */
     Index = SendMessage(hDriveCombo, CB_GETCURSEL, 0, 0);
     pDrive = (WCHAR*)SendMessage(hDriveCombo, CB_GETITEMDATA, Index, 0);
 
-    if (!pDrive || (INT)pDrive == CB_ERR || dwFileSize == CB_ERR ||
+    if (!pDrive || (INT)pDrive == CB_ERR || FileSize == CB_ERR || dwFileSize == 0 ||
         TestType == CB_ERR || dwBlockSize == CB_ERR)
     {
-        _endthread();
+        goto Cleanup;
     }
+
+    EnableWindow(hFileSizeWnd, FALSE);
+    EnableWindow(hBlockSizeWnd, FALSE);
+    EnableWindow(hTestTypeWnd, FALSE);
+    EnableWindow(hDriveCombo, FALSE);
 
     switch (TestType)
     {
         case TEST_TYPE_RAMDOM_READ:
-        case TEST_TYPE_BUFFERED_READ:
+        case TEST_TYPE_SEQ_READ:
             ReadDiskTest(hDlg, pDrive, TestType, dwFileSize, dwBlockSize);
             break;
 
         case TEST_TYPE_RANDOM_WRITE:
-        case TEST_TYPE_BUFFERED_WRITE:
+        case TEST_TYPE_SEQ_WRITE:
             WriteDiskTest(hDlg, pDrive, TestType, dwFileSize, dwBlockSize);
             break;
     }
+
+Cleanup:
+    EnableWindow(hFileSizeWnd, TRUE);
+    EnableWindow(hBlockSizeWnd, TRUE);
+    EnableWindow(hTestTypeWnd, TRUE);
+    EnableWindow(hDriveCombo, TRUE);
 
     _endthread();
 }
@@ -714,6 +926,8 @@ TestThread(LPVOID lpParameter)
 INT_PTR CALLBACK
 DiskBenchDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
+    UNREFERENCED_PARAMETER(lParam);
+
     switch (Msg)
     {
         case WM_INITDIALOG:
@@ -740,6 +954,10 @@ DiskBenchDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                     IsTestCanceled = TRUE;
                     break;
 
+                case ID_DISK_SAVE:
+                    CreateScreenShot(hDlg);
+                    break;
+
                 case ID_DISK_CLEAR:
                     DiskClearResults(hDlg);
                     break;
@@ -748,6 +966,12 @@ DiskBenchDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 
         case WM_CLOSE:
         {
+            if (hFileHandle != INVALID_HANDLE_VALUE)
+            {
+                CloseHandle(hFileHandle);
+                DeleteFile(szFilePath);
+            }
+
             ClearDrivesCombo(hDriveCombo);
 
             DestroyIcon(hDialogIcon);

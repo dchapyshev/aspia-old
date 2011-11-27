@@ -118,7 +118,6 @@ DrawPolygon(HWND hwnd, HDC hdc)
         MoveToEx(hdc, LEFT_INDENT, y, NULL);
         LineTo(hdc, Width - RIGHT_INDENT, y);
 
-        DebugTrace(L"val = %f", (double)(((y_max/10) / Y_GRID) * i));
         StringCbPrintf(buf, sizeof(buf), L"%.1f",
             (y_div) ? (double)(((y_max/y_div) / Y_GRID) * i) : ((y_max / Y_GRID) * i));
         TextOut(hdc, LEFT_INDENT - 25, y - 7, buf, wcslen(buf));
@@ -203,13 +202,11 @@ GraphSetCoordMaxValues(HWND hwnd, double x, double y)
     {
         y_div = 10;
         y_max = (int)(y * y_div);
-        DebugTrace(L"y_max = %d", y_max);
     }
-    else if (y < 1.0)
+    else if (y < 2.0)
     {
         y_div = 100;
         y_max = (int)(y * y_div);
-        DebugTrace(L"y_max = %d", y_max);
     }
     else
     {
