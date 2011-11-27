@@ -992,3 +992,50 @@ Cleanup:
 
     return FALSE;
 }
+
+typedef NTSTATUS (NTAPI* PNQSI) (SYSTEM_INFORMATION_CLASS, PVOID, ULONG, PULONG);
+
+typedef struct _SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION
+{
+    LARGE_INTEGER IdleTime;
+    LARGE_INTEGER KernelTime;
+    LARGE_INTEGER UserTime;
+    LARGE_INTEGER DpcTime;
+    LARGE_INTEGER InterruptTime;
+    ULONG InterruptCount;
+} SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION, *PSYSTEM_PROCESSOR_PERFORMANCE_INFORMATION;
+
+INT
+GetCPUUsage(VOID)
+{
+    static PNQSI pNtQuerySystemInformation = NULL;
+    static SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION LastInfo = {0};
+    SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION CurrentInfo = {0};
+    double CpuUsage = 0;
+    ULONG Size;
+
+    if (pNtQuerySystemInformation == NULL)
+    {
+        HMODULE hDLL = GetModuleHandle(L"ntdll.dll");
+        if (hDLL == NULL) return 0;
+
+        pNtQuerySystemInformation =
+            (PNQSI)GetProcAddress(hDLL ,"NtQuerySystemInformation");
+        if (pNtQuerySystemInformation == NULL)
+            return 0;
+    }
+
+    pNtQuerySystemInformation(8, /* SystemProcessorPerformanceInformation */
+                              &CurrentInfo, sizeof(CurrentInfo), &Size);
+
+    if (LastInfo.KernelTime.QuadPart != 0 || LastInfo.UserTime.QuadPart != 0)
+    {
+        CpuUsage = 100.0 - (double)(CurrentInfo.IdleTime.QuadPart - LastInfo.IdleTime.QuadPart) /
+        (double)(CurrentInfo.KernelTime.QuadPart - LastInfo.KernelTime.QuadPart +
+                 CurrentInfo.UserTime.QuadPart - LastInfo.UserTime.QuadPart) * 100.0;
+    }
+
+    LastInfo = CurrentInfo;
+
+    return (INT)CpuUsage;
+}
