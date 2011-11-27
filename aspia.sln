@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "driver_sys", "driver\sys\as
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "driver_dll", "driver\dll\dll.vcproj", "{B7D8AE56-5576-429E-B793-751AAF3CEE87}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "diskbench", "diskbench\diskbench.vcproj", "{8BC53AD3-9D1F-454D-A536-5BA04A72A3D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -80,6 +82,12 @@ Global
 		{B7D8AE56-5576-429E-B793-751AAF3CEE87}.Release|Win32.ActiveCfg = Release|Win32
 		{B7D8AE56-5576-429E-B793-751AAF3CEE87}.Release|Win32.Build.0 = Release|Win32
 		{B7D8AE56-5576-429E-B793-751AAF3CEE87}.Release|x64.ActiveCfg = Release|Win32
+		{8BC53AD3-9D1F-454D-A536-5BA04A72A3D2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8BC53AD3-9D1F-454D-A536-5BA04A72A3D2}.Debug|Win32.Build.0 = Debug|Win32
+		{8BC53AD3-9D1F-454D-A536-5BA04A72A3D2}.Debug|x64.ActiveCfg = Debug|Win32
+		{8BC53AD3-9D1F-454D-A536-5BA04A72A3D2}.Release|Win32.ActiveCfg = Release|Win32
+		{8BC53AD3-9D1F-454D-A536-5BA04A72A3D2}.Release|Win32.Build.0 = Release|Win32
+		{8BC53AD3-9D1F-454D-A536-5BA04A72A3D2}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

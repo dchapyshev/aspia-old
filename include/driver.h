@@ -282,7 +282,7 @@ BOOL drv_query_battery_info(HANDLE hHandle, BATTERY_QUERY_INFORMATION_LEVEL Info
 BOOL drv_query_battery_status(HANDLE hHandle, BATTERY_STATUS *lpBatteryStatus, DWORD dwBufferSize);
 
 /* DEBUG Functions */
-BOOL drv_init_debug_log(LPWSTR lpVersion);
+BOOL drv_init_debug_log(LPWSTR lpLogName, LPWSTR lpVersion);
 VOID drv_close_debug_log(VOID);
 VOID drv_write_debug_log(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, ...);
 
@@ -291,3 +291,9 @@ VOID drv_write_debug_log(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, .
 #define DebugStartReceiving() DebugTrace(L"Start data receiving")
 #define DebugEndReceiving() DebugTrace(L"End data receiving")
 #define DebugAllocFailed() DebugTrace(L"Alloc() failed")
+
+/* Misc Functions */
+INT drv_get_system_color_depth(VOID);
+INT drv_get_cpu_usage(VOID);
+BOOL drv_create_screenshot(HWND hwnd);
+BOOL drv_center_window(HWND hWnd, HWND hWndCenter);

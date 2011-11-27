@@ -6,6 +6,7 @@
  */
 
 #include "../main.h"
+#include "driver.h"
 
 
 HWND hSysMonWnd = NULL;
@@ -276,7 +277,7 @@ CreateSysMonWindow(VOID)
         return;
     }
 
-    CenterWindow(hSysMonWnd, NULL);
+    drv_center_window(hSysMonWnd, NULL);
 
     /* Show it */
     ShowWindow(hSysMonWnd, SW_SHOW);

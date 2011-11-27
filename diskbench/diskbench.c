@@ -1,86 +1,55 @@
 /*
  * PROJECT:         Aspia
- * FILE:            aspia/benchmarks/disk.c
+ * FILE:            diskbench/diskbench.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "../main.h"
+#include "diskbench.h"
 #include "driver.h"
+#include "resource.h"
+#include "version.h"
 
 
-#define IDT_SECONDS_COUNTER_TIMER  3476
-#define IDT_CPU_USAGE_UPDATE_TIMER 3477
+HWND hDiskToolBar = NULL;
+HWND hDriveCombo = NULL;
+HIMAGELIST hDiskImgList = NULL;
+HICON hDialogIcon = NULL;
 
-#define TEST_TYPE_RAMDOM_READ    1
-#define TEST_TYPE_SEQ_READ       2
-#define TEST_TYPE_RANDOM_WRITE   3
-#define TEST_TYPE_SEQ_WRITE      4
+WCHAR szStart[MAX_STR_LEN] = {0};
+WCHAR szStop[MAX_STR_LEN] = {0};
+WCHAR szSave[MAX_STR_LEN] = {0};
+WCHAR szClear[MAX_STR_LEN] = {0};
 
-#define TEST_FILE_SIZE_50MB   1
-#define TEST_FILE_SIZE_100MB  2
-#define TEST_FILE_SIZE_300MB  3
-#define TEST_FILE_SIZE_500MB  4
-#define TEST_FILE_SIZE_700MB  5
-#define TEST_FILE_SIZE_1GB    6
-#define TEST_FILE_SIZE_3GB    7
-#define TEST_FILE_SIZE_5GB    8
-#define TEST_FILE_SIZE_10GB   9
+DWORD SecondsCount = 0;
+DWORD64 gFileSize = 0;
+DWORD gBlockSize = 0;
+INT gOperationsCount = 0;
+INT gOperationsPercent = 0;
 
-#define TEST_BLOCK_SIZE_4KB      (4    * 1024)
-#define TEST_BLOCK_SIZE_8KB      (8    * 1024)
-#define TEST_BLOCK_SIZE_16KB     (16   * 1024)
-#define TEST_BLOCK_SIZE_32KB     (32   * 1024)
-#define TEST_BLOCK_SIZE_64KB     (64   * 1024)
-#define TEST_BLOCK_SIZE_128KB    (128  * 1024)
-#define TEST_BLOCK_SIZE_256KB    (256  * 1024)
-#define TEST_BLOCK_SIZE_512KB    (512  * 1024)
-#define TEST_BLOCK_SIZE_1MB      (1024 * 1024)
+DWORD gCurrentSpeed = 0;
+double gMaxSpeed = 0;
+double gMinSpeed = 0;
 
-VOID DrawDiagram(HWND hwnd, double x, double y);
-VOID GraphOnPaint(HWND hwnd);
-VOID GraphSetCoordNames(WCHAR *x, WCHAR *y);
-VOID GraphSetCoordMaxValues(HWND hwnd, double x, double y);
-VOID GraphSetBeginCoord(int x, int y);
-VOID GraphClear(HWND hwnd);
+INT gCurrentCpuUsage = 0;
+INT gMaxCpuUsage = 0;
+INT gMinCpuUsage = 0;
 
+DWORD gStartTime = 0;
 
-static HWND hDiskToolBar = NULL;
-static HWND hDriveCombo = NULL;
-static HIMAGELIST hDiskImgList = NULL;
-static HICON hDialogIcon = NULL;
+HANDLE hFileHandle = INVALID_HANDLE_VALUE;
+WCHAR szFilePath[MAX_PATH] = {0};
+char *pData = NULL;
 
-static WCHAR szStart[MAX_STR_LEN] = {0};
-static WCHAR szStop[MAX_STR_LEN] = {0};
-static WCHAR szSave[MAX_STR_LEN] = {0};
-static WCHAR szClear[MAX_STR_LEN] = {0};
+BOOL IsTestCanceled = FALSE;
 
-static BOOL IsDiskBenchLaunched = FALSE;
-static DWORD SecondsCount = 0;
-static DWORD64 gFileSize = 0;
-static DWORD gBlockSize = 0;
-static INT gOperationsCount = 0;
-static INT gOperationsPercent = 0;
+HINSTANCE hInstance;
 
-static DWORD gCurrentSpeed = 0;
-static double gMaxSpeed = 0;
-static double gMinSpeed = 0;
-
-static INT gCurrentCpuUsage = 0;
-static INT gMaxCpuUsage = 0;
-static INT gMinCpuUsage = 0;
-
-static DWORD gStartTime = 0;
-
-static HANDLE hFileHandle = INVALID_HANDLE_VALUE;
-static WCHAR szFilePath[MAX_PATH] = {0};
-static char *pData = NULL;
-
-static BOOL IsTestCanceled = FALSE;
+BOOL DebugMode = FALSE;
 
 
 /* Toolbar buttons */
-static const TBBUTTON Buttons[] =
+const TBBUTTON Buttons[] =
 {   /* iBitmap, idCommand, fsState, fsStyle, bReserved[2], dwData, iString */
     { 0, ID_DISK_START,TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szStart},
     { 1, ID_DISK_STOP, TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szStop},
@@ -96,11 +65,11 @@ UpdateStatusTitle(HWND hDlg, UINT StringId)
     WCHAR szText[MAX_STR_LEN], szName[MAX_STR_LEN],
           szTitle[MAX_STR_LEN];
 
-    LoadMUIString(IDS_ASPIA_DISK_BENCH, szName, MAX_STR_LEN);
+    LoadString(hInstance, IDS_ASPIA_DISK_BENCH, szName, MAX_STR_LEN);
 
     if (StringId != 0)
     {
-        LoadMUIString(StringId, szText, MAX_STR_LEN);
+        LoadString(hInstance, StringId, szText, MAX_STR_LEN);
         StringCbPrintf(szTitle, sizeof(szTitle),
                        L"%s - %s", szName, szText);
         SetWindowText(hDlg, szTitle);
@@ -213,7 +182,7 @@ DiskToolBarOnGetDispInfo(LPTOOLTIPTEXT lpttt)
             break;
     }
 
-    LoadMUIString(StringID, lpttt->szText, 80);
+    LoadString(hInstance, StringID, lpttt->szText, 80);
 }
 
 VOID
@@ -222,7 +191,7 @@ AddStringIdToCombo(HWND hCombo, LPARAM lParam, UINT StringID)
     WCHAR szText[MAX_STR_LEN];
     INT Index;
 
-    LoadMUIString(StringID, szText, MAX_STR_LEN);
+    LoadString(hInstance, StringID, szText, MAX_STR_LEN);
 
     Index = SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)szText);
     SendMessage(hCombo, CB_SETITEMDATA, Index, lParam);
@@ -255,6 +224,26 @@ DiskClearResults(HWND hDlg)
     SecondsCount = 0;
 }
 
+INT
+AddImageToImageList(HIMAGELIST hImageList, UINT ImageIndex)
+{
+    HICON hIcon = NULL;
+    INT Index;
+
+    hIcon = (HICON)LoadImage(hInstance,
+                             MAKEINTRESOURCE(ImageIndex),
+                             IMAGE_ICON,
+                             TOOLBAR_HEIGHT,
+                             TOOLBAR_HEIGHT,
+                             LR_CREATEDIBSECTION);
+
+    if (!hIcon) return -1;
+
+    Index = ImageList_AddIcon(hImageList, hIcon);
+    DestroyIcon(hIcon);
+    return Index;
+}
+
 VOID
 InitDiskBenchDlg(HWND hDlg)
 {
@@ -263,16 +252,16 @@ InitDiskBenchDlg(HWND hDlg)
     HWND hTestCombo = GetDlgItem(hDlg, IDC_TEST_TYPE);
     HWND hFileSizeCombo = GetDlgItem(hDlg, IDC_TEST_FILE_SIZE);
 
-    hDialogIcon = LoadImage(hIconsInst,
-                            MAKEINTRESOURCE(IDI_HDD),
+    hDialogIcon = LoadImage(hInstance,
+                            MAKEINTRESOURCE(IDI_MAIN),
                             IMAGE_ICON,
                             16, 16, 0);
     SendMessage(hDlg, WM_SETICON, ICON_SMALL, (LPARAM)hDialogIcon);
 
-    LoadMUIString(IDS_DISK_START, szStart, MAX_STR_LEN);
-    LoadMUIString(IDS_DISK_STOP, szStop, MAX_STR_LEN);
-    LoadMUIString(IDS_DISK_SAVE, szSave, MAX_STR_LEN);
-    LoadMUIString(IDS_DISK_CLEAR, szClear, MAX_STR_LEN);
+    LoadString(hInstance, IDS_DISK_START, szStart, MAX_STR_LEN);
+    LoadString(hInstance, IDS_DISK_STOP, szStop, MAX_STR_LEN);
+    LoadString(hInstance, IDS_DISK_SAVE, szSave, MAX_STR_LEN);
+    LoadString(hInstance, IDS_DISK_CLEAR, szClear, MAX_STR_LEN);
 
     /* Create toolbar */
     hDiskToolBar = CreateWindowEx(0,
@@ -296,7 +285,7 @@ InitDiskBenchDlg(HWND hDlg)
     /* Create image list for ToolBar */
     hDiskImgList = ImageList_Create(TOOLBAR_HEIGHT,
                                     TOOLBAR_HEIGHT,
-                                    ILC_MASK | ParamsInfo.SysColorDepth,
+                                    ILC_MASK | drv_get_system_color_depth(),
                                     1, 1);
     if (!hDiskImgList)
         return;
@@ -387,7 +376,7 @@ CreateFileForTest(WCHAR *pDrive,
     {
         WCHAR szText[MAX_STR_LEN];
 
-        LoadMUIString(IDS_DISK_NO_FREE_SPACE, szText, MAX_STR_LEN);
+        LoadString(hInstance, IDS_DISK_NO_FREE_SPACE, szText, MAX_STR_LEN);
         MessageBox(0, szText, NULL, MB_OK | MB_ICONHAND);
 
         return FALSE;
@@ -560,7 +549,7 @@ SecondsCounterProc(HWND hDlg, UINT msg, UINT id, DWORD systime)
 VOID CALLBACK
 CpuUsageUpdateProc(HWND hDlg, UINT msg, UINT id, DWORD systime)
 {
-    INT CpuUsage = GetCPUUsage();
+    INT CpuUsage = drv_get_cpu_usage();
     WCHAR szText[MAX_STR_LEN];
     LONGLONG Hours, Mins, Secs;
     DWORD time;
@@ -1014,10 +1003,8 @@ DiskBenchDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         case WM_INITDIALOG:
         {
-            CenterWindow(hDlg, NULL);
+            drv_center_window(hDlg, NULL);
             InitDiskBenchDlg(hDlg);
-
-            IsDiskBenchLaunched = TRUE;
         }
         break;
 
@@ -1037,7 +1024,7 @@ DiskBenchDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                     break;
 
                 case ID_DISK_SAVE:
-                    CreateScreenShot(hDlg);
+                    drv_create_screenshot(hDlg);
                     break;
 
                 case ID_DISK_CLEAR:
@@ -1064,8 +1051,6 @@ DiskBenchDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             DestroyIcon(hDialogIcon);
             ImageList_Destroy(hDiskImgList);
 
-            IsDiskBenchLaunched = FALSE;
-
             EndDialog(hDlg, LOWORD(wParam));
         }
         break;
@@ -1074,14 +1059,48 @@ DiskBenchDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
     return FALSE;
 }
 
-VOID
-CreateDiskBenchWindow(VOID)
+INT WINAPI
+wWinMain(HINSTANCE hInst,
+         HINSTANCE hPrevInstance,
+         LPWSTR lpCmdLine,
+         INT nShowCmd)
 {
-    if (IsDiskBenchLaunched)
-        return;
+    LPWSTR *lpCmd, ptr;
+    HANDLE hMutex;
+    INT NumArgs;
 
-    DialogBox(hLangInst,
+    hInstance = hInst;
+
+    hMutex = CreateMutex(NULL, FALSE, L"ASPIADISKBENCHMARK");
+    if (!hMutex || GetLastError() == ERROR_ALREADY_EXISTS)
+    {
+        return 1;
+    }
+
+    lpCmd = CommandLineToArgvW(GetCommandLine(), &NumArgs);
+    if (lpCmd && NumArgs == 2)
+    {
+        ptr = lpCmd[1];
+
+        if (*ptr == L'-' || *ptr == L'/')
+        {
+            ++ptr;
+
+            if (wcscmp(ptr, L"debug") == 0)
+            {
+                DebugMode = drv_init_debug_log(L"diskbench.log", VER_FILEVERSION_STR);
+            }
+        }
+    }
+
+    DialogBox(hInstance,
               MAKEINTRESOURCE(IDD_DISK_BENCH_DIALOG),
               NULL,
               DiskBenchDlgProc);
+
+    if (DebugMode) drv_close_debug_log();
+
+    if (hMutex) CloseHandle(hMutex);
+
+    return 0;
 }

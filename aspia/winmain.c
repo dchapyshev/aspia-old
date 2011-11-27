@@ -408,8 +408,16 @@ OnCommand(UINT Command)
             break;
 
         case ID_BENCH:
-            CreateDiskBenchWindow();
-            break;
+        {
+            WCHAR szPath[MAX_PATH];
+
+            if (GetCurrentPath(szPath, MAX_PATH))
+            {
+                StringCbCat(szPath, sizeof(szPath), L"diskbench.exe");
+                ShellExecute(NULL, NULL, szPath, NULL, NULL, SW_SHOW);
+            }
+        }
+        break;
 
         case ID_EXIT:
             PostMessage(hMainWnd, WM_CLOSE, 0, 0);
@@ -587,7 +595,7 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         {
             INT SxSmIcon = GetSystemMetrics(SM_CXSMICON);
             INT SySmIcon = GetSystemMetrics(SM_CYSMICON);
-            INT SysColorDepth = GetSystemColorDepth();
+            INT SysColorDepth = drv_get_system_color_depth();
 
             if (ParamsInfo.SxSmIcon != SxSmIcon ||
                 ParamsInfo.SySmIcon != SySmIcon ||
@@ -915,7 +923,7 @@ wWinMain(HINSTANCE hInst,
     }
     ParamsInfo.SxSmIcon = GetSystemMetrics(SM_CXSMICON);
     ParamsInfo.SySmIcon = GetSystemMetrics(SM_CYSMICON);
-    ParamsInfo.SysColorDepth = GetSystemColorDepth();
+    ParamsInfo.SysColorDepth = drv_get_system_color_depth();
 
     GetCurrentPath(ParamsInfo.szCurrentPath, MAX_PATH);
 
@@ -939,7 +947,7 @@ wWinMain(HINSTANCE hInst,
     ParamsInfo.DebugMode = TRUE;
 #endif
     if (ParamsInfo.DebugMode)
-        ParamsInfo.DebugMode = drv_init_debug_log(VER_FILEVERSION_STR);
+        ParamsInfo.DebugMode = drv_init_debug_log(L"aspia.log", VER_FILEVERSION_STR);
 
     DebugTrace(L"Start with debug mode");
 

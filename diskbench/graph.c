@@ -1,11 +1,11 @@
 /*
- * PROJECT:         Aspia
- * FILE:            aspia/graph.c
+ * PROJECT:         Aspia Disk Benchmark
+ * FILE:            diskbench/graph.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "main.h"
+#include "diskbench.h"
 #include "driver.h"
 
 

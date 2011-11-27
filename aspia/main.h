@@ -316,9 +316,6 @@ LPWSTR SafeStrCpyN(LPWSTR lpString1, LPCWSTR lpString2, INT iMaxLength);
 INT SafeStrCmp(LPCWSTR lpString1, LPCWSTR lpString2);
 VOID IntSetWindowTheme(HWND hwnd);
 double Round(double Argument, int Precision);
-BOOL CenterWindow(HWND hWnd, HWND hWndCenter);
-BOOL CreateScreenShot(HWND hwnd);
-INT GetCPUUsage(VOID);
 
 
 __inline INT
@@ -492,6 +489,3 @@ VOID GetLPCSensorsInfo(VOID);
 
 /* sysmon.c */
 VOID CreateSysMonWindow(VOID);
-
-/* disk.c */
-VOID CreateDiskBenchWindow(VOID);
