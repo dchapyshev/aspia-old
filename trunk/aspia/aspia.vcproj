@@ -347,10 +347,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\graph.c"
-				>
-			</File>
-			<File
 				RelativePath=".\io.c"
 				>
 			</File>
@@ -495,14 +491,6 @@
 				>
 				<File
 					RelativePath=".\sysmon\sysmon.c"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="benchmarks"
-				>
-				<File
-					RelativePath=".\benchmarks\disk.c"
 					>
 				</File>
 			</Filter>

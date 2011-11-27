@@ -40,3 +40,7 @@ drv_close_battery @37
 drv_get_battery_tag @38
 drv_query_battery_info @39
 drv_query_battery_status @40
+drv_get_system_color_depth @41
+drv_get_cpu_usage @42
+drv_create_screenshot @43
+drv_center_window @44

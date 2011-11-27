@@ -55,7 +55,7 @@ drv_write_debug_log(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, ...)
 }
 
 BOOL
-drv_init_debug_log(LPWSTR lpVersion)
+drv_init_debug_log(LPWSTR lpLogName, LPWSTR lpVersion)
 {
     WCHAR szPath[MAX_PATH], szMsg[MAX_STR_LEN],
           szCurrentPath[MAX_PATH];
@@ -67,7 +67,7 @@ drv_init_debug_log(LPWSTR lpVersion)
     StringCbPrintf(szPath, sizeof(szPath),
                    L"%s%s",
                    szCurrentPath,
-                   L"aspia.log");
+                   lpLogName);
 
     hDebugLog = CreateFile(szPath,
                            GENERIC_WRITE,

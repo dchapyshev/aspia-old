@@ -85,7 +85,6 @@
 #define IDI_TEMPERATURE   176
 #define IDI_FAN           177
 #define IDI_HWBENCH       178
-#define IDI_CLEAR         179
 
 /* Dialogs */
 #define IDD_ABOUT_DIALOG         5000
@@ -94,7 +93,6 @@
 #define IDD_SETTINGS_GENERAL     5003
 #define IDD_SETTINGS_FILTER      5004
 #define IDD_SETTINGS_SYSTRAY     5005
-#define IDD_DISK_BENCH_DIALOG    5006
 
 /* Menu */
 #define IDR_POPUP           500
@@ -123,10 +121,6 @@
 #define ID_SYSMON_STOP    1022
 #define ID_SYSMON_TEST    1023
 #define ID_BENCH          1024
-#define ID_DISK_START     1025
-#define ID_DISK_STOP      1026
-#define ID_DISK_SAVE      1027
-#define ID_DISK_CLEAR     1028
 
 /* Controls */
 #define IDC_SET_PATH_BTN        102
@@ -167,17 +161,6 @@
 #define IDC_ALLOW_KM_DRIVER     143
 #define IDC_FILEPATH_TITLE      144
 #define IDC_FILETYPE_TITLE      145
-#define IDC_TEST_TYPE           146
-#define IDC_TEST_FILE_SIZE      147
-#define IDC_BLOCK_SIZE          148
-#define IDC_GRAPH_WND           149
-#define IDC_DISK_CURRENT        150
-#define IDC_DISK_MINIMUM        151
-#define IDC_DISK_MAXIMUM        152
-#define IDC_CPU_CURRENT         153
-#define IDC_CPU_MINIMUM         154
-#define IDC_CPU_MAXIMUM         155
-#define IDC_DISK_TIME           156
 
 /* Strings */
 #define IDS_APPTITLE                100
@@ -859,22 +842,8 @@
 #define IDS_SPD_ROW_ADDRESS_BITS         736
 #define IDS_NOT_CONNECTED                737
 #define IDS_HWBENCH                      738
-#define IDS_ASPIA_DISK_BENCH             739
-#define IDS_DISK_SAVE                    740
-#define IDS_DISK_CLEAR                   741
-#define IDS_DISK_START                   742
-#define IDS_DISK_STOP                    743
-#define IDS_DISK_RANDOM_READ             744
-#define IDS_DISK_SEQ_READ                745
-#define IDS_DISK_RANDOM_WRITE            746
-#define IDS_DISK_SEQ_WRITE               747
 #define IDS_SYSMON_BTN                   748
 #define IDS_BENCH_BTN                    749
-#define IDS_DISK_READONLY                750
-#define IDS_DISK_NO_FREE_SPACE           751
-#define IDS_DISK_FILECREATE              752
-#define IDS_DISK_TESTING                 753
-#define IDS_DISK_TEST_COMPLETE           754
 
 #define IDS_CAT_SUMMARY           1000
 
