@@ -864,9 +864,9 @@
 #define IDS_DISK_START                   742
 #define IDS_DISK_STOP                    743
 #define IDS_DISK_RANDOM_READ             744
-#define IDS_DISK_BUFFRED_READ            745
+#define IDS_DISK_SEQ_READ                745
 #define IDS_DISK_RANDOM_WRITE            746
-#define IDS_DISK_BUFFRED_WRITE           747
+#define IDS_DISK_SEQ_WRITE               747
 #define IDS_SYSMON_BTN                   748
 #define IDS_BENCH_BTN                    749
 #define IDS_DISK_READONLY                750

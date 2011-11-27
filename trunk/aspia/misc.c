@@ -782,3 +782,213 @@ CenterWindow(HWND hWnd, HWND hWndCenter)
     return SetWindowPos(hWnd, NULL, xLeft, yTop, -1, -1,
         SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 }
+
+BOOL
+CreateScreenShot(HWND hwnd)
+{
+    WCHAR szFilter[] = L"24 bit Bitmap (*.bmp,*.dib)\0*.bmp\0";
+    WCHAR szFileName[MAX_PATH];
+    HDC hBitmapDC, hWindowDC;
+    LPBITMAPINFO lpBitmapInfo;
+    BITMAPFILEHEADER FileHeader;
+    OPENFILENAME ofn = {0};
+    INT width, height;
+    HBITMAP hBitmap;
+    BITMAP Bitmap;
+    WORD cClrBits;
+    LPVOID lpvBits;
+    HANDLE hFile;
+    RECT rect;
+
+    /* get window resolution */
+    GetClientRect(hwnd, &rect);
+
+    width = rect.right - rect.left;
+    height = rect.bottom - rect.top;
+
+    /* get a DC for the window */
+    hWindowDC = GetDC(hwnd);
+
+    /* get a bitmap handle for the screen
+     * needed to convert to a DIB */
+    hBitmap = CreateCompatibleBitmap(hWindowDC,
+                                     width,
+                                     height);
+    if (hBitmap == NULL)
+    {
+        ReleaseDC(hwnd, hWindowDC);
+        return FALSE;
+    }
+
+    /* get a DC compatable with the window DC */
+    hBitmapDC = CreateCompatibleDC(hWindowDC);
+    if (hBitmapDC == NULL)
+    {
+        ReleaseDC(hwnd, hWindowDC);
+        return FALSE;
+    }
+
+    /* select the bitmap into the DC */
+    SelectObject(hBitmapDC, hBitmap);
+
+    /* copy the window DC to the bitmap */
+    BitBlt(hBitmapDC,
+           0,
+           0,
+           width,
+           height,
+           hWindowDC,
+           0,
+           0,
+           SRCCOPY);
+
+    /* we're finished with the screen DC */
+    ReleaseDC(hwnd, hWindowDC);
+
+    if (!GetObjectW(hBitmap,
+                    sizeof(BITMAP),
+                    (LPWSTR)&Bitmap))
+    {
+        return FALSE;
+    }
+
+    cClrBits = (WORD)(Bitmap.bmPlanes * Bitmap.bmBitsPixel);
+    if (cClrBits == 1)
+        cClrBits = 1;
+    else if (cClrBits <= 4)
+        cClrBits = 4;
+    else if (cClrBits <= 8)
+        cClrBits = 8;
+    else if (cClrBits <= 16)
+        cClrBits = 16;
+    else if (cClrBits <= 24)
+        cClrBits = 24;
+    else cClrBits = 32;
+
+    if (cClrBits != 24)
+    {
+        lpBitmapInfo =
+            (LPBITMAPINFO)Alloc(sizeof(BITMAPINFOHEADER) +
+                                sizeof(RGBQUAD) * (1 << cClrBits));
+    }
+    else
+    {
+        lpBitmapInfo = (LPBITMAPINFO)Alloc(sizeof(BITMAPINFOHEADER));
+    }
+
+    if (lpBitmapInfo == NULL)
+        return FALSE;
+
+    lpBitmapInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    lpBitmapInfo->bmiHeader.biWidth = Bitmap.bmWidth;
+    lpBitmapInfo->bmiHeader.biHeight = Bitmap.bmHeight;
+    lpBitmapInfo->bmiHeader.biPlanes = Bitmap.bmPlanes;
+    lpBitmapInfo->bmiHeader.biBitCount = Bitmap.bmBitsPixel;
+
+    if (cClrBits < 24)
+        lpBitmapInfo->bmiHeader.biClrUsed = (1 << cClrBits);
+
+    lpBitmapInfo->bmiHeader.biCompression = BI_RGB;
+    lpBitmapInfo->bmiHeader.biSizeImage = ((lpBitmapInfo->bmiHeader.biWidth * cClrBits +31) & ~31) /8
+                                           * lpBitmapInfo->bmiHeader.biHeight;
+
+    lpBitmapInfo->bmiHeader.biClrImportant = 0;
+
+    lpvBits = Alloc(lpBitmapInfo->bmiHeader.biSizeImage);
+    if (lpvBits == NULL) return FALSE;
+
+    /* convert the DDB to a DIB */
+    if (!GetDIBits(hBitmapDC,
+                   hBitmap,
+                   0,
+                   height,
+                   lpvBits,
+                   lpBitmapInfo,
+                   DIB_RGB_COLORS))
+    {
+        return FALSE;
+    }
+
+    wcscpy(szFileName, L"screenshot.bmp");
+    ofn.lStructSize   = sizeof(OPENFILENAME);
+    ofn.hwndOwner     = hwnd;
+    ofn.nMaxFile      = MAX_PATH;
+    ofn.nMaxFileTitle = MAX_PATH;
+    ofn.lpstrDefExt   = L"bmp";
+    ofn.lpstrFilter   = szFilter;
+    ofn.lpstrFile     = szFileName;
+    ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
+
+    if (GetSaveFileName(&ofn))
+    {
+        DWORD dwBytesWritten;
+        BOOL bSuccess;
+
+        hFile = CreateFile(ofn.lpstrFile,
+                           GENERIC_WRITE,
+                           0,
+                           NULL,
+                           CREATE_ALWAYS,
+                           FILE_ATTRIBUTE_NORMAL,
+                           NULL);
+
+        if (hFile == INVALID_HANDLE_VALUE)
+            return FALSE;
+
+        /* write the BITMAPFILEHEADER to file */
+        FileHeader.bfType = *(WORD*)"BM";  /* 0x4D 0x42 */
+        FileHeader.bfReserved1 = 0;
+        FileHeader.bfReserved2 = 0;
+
+        bSuccess = WriteFile(hFile,
+                             &FileHeader,
+                             sizeof(FileHeader),
+                             &dwBytesWritten,
+                             NULL);
+        if ((!bSuccess) || (dwBytesWritten < sizeof(FileHeader)))
+            goto Cleanup;
+
+        /* write the BITMAPINFOHEADER to file */
+        bSuccess = WriteFile(hFile,
+                             &lpBitmapInfo->bmiHeader,
+                             sizeof(BITMAPINFOHEADER),
+                             &dwBytesWritten,
+                             NULL);
+        if ((!bSuccess) || (dwBytesWritten < sizeof(BITMAPINFOHEADER)))
+            goto Cleanup;
+
+        /* save the current file position at the final file size */
+        FileHeader.bfOffBits = SetFilePointer(hFile, 0, 0, FILE_CURRENT);
+
+        /* write the bitmap bits to file */
+        bSuccess = WriteFile(hFile,
+                             lpvBits,
+                             lpBitmapInfo->bmiHeader.biSizeImage,
+                             &dwBytesWritten,
+                             NULL);
+        if ((!bSuccess) || (dwBytesWritten < lpBitmapInfo->bmiHeader.biSizeImage))
+            goto Cleanup;
+
+        /* save the current file position at the final file size */
+        FileHeader.bfSize = SetFilePointer(hFile, 0, 0, FILE_CURRENT);
+
+        /* rewrite the updated file headers */
+        SetFilePointer(hFile, 0, 0, FILE_BEGIN);
+        bSuccess = WriteFile(hFile,
+                             &FileHeader,
+                             sizeof(FileHeader),
+                             &dwBytesWritten,
+                             NULL);
+        if ((!bSuccess) || (dwBytesWritten < sizeof(FileHeader)))
+            goto Cleanup;
+
+        CloseHandle(hFile);
+        return TRUE;
+
+Cleanup:
+        CloseHandle(hFile);
+        DeleteFile(ofn.lpstrFile);
+    }
+
+    return FALSE;
+}
