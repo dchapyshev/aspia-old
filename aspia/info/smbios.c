@@ -695,7 +695,7 @@ InitSmBIOSData(VOID)
         return TRUE;
     }
 
-    buf = drv_get_smbios_data(&dwSize);
+    buf = GetSmbiosData(&dwSize);
     if (!buf)
     {
         return FALSE;
@@ -1657,6 +1657,7 @@ DMI_EnclosureInfo(VOID)
 
             /* Vendor */
             GetStringResourceByID(Buf[0x04], pBuf, szText);
+            ChopSpaces(szText, sizeof(szText));
             if (szText[0] != 0)
             {
                 Index = IoAddValueName(1, IDS_MANUFACTURER, 0);
@@ -1761,6 +1762,7 @@ DMI_BoardInfo(VOID)
 
         /* Version */
         GetStringResourceByID(Buf[0x06], pBuf, szText);
+        ChopSpaces(szText, sizeof(szText));
         if (szText[0] != 0)
         {
             Index = IoAddValueName(1, IDS_VERSION, 0);

@@ -6,6 +6,7 @@
  */
 
 #include "main.h"
+#include "driver.h"
 
 
 HWND hToolBar = NULL;
@@ -200,26 +201,6 @@ MainWndOnSize(LPARAM lParam)
     EndDeferWindowPos(hdwp);
 }
 
-INT
-AddImageToImageList(HIMAGELIST hImageList, UINT ImageIndex)
-{
-    HICON hIcon = NULL;
-    INT Index;
-
-    hIcon = (HICON)LoadImage(hIconsInst,
-                             MAKEINTRESOURCE(ImageIndex),
-                             IMAGE_ICON,
-                             TOOLBAR_HEIGHT,
-                             TOOLBAR_HEIGHT,
-                             LR_CREATEDIBSECTION);
-
-    if (!hIcon) return -1;
-
-    Index = ImageList_AddIcon(hImageList, hIcon);
-    DestroyIcon(hIcon);
-    return Index;
-}
-
 VOID
 ToolBarOnGetDispInfo(LPTOOLTIPTEXT lpttt)
 {
@@ -371,12 +352,12 @@ InitToolBar(HWND hwnd)
         return;
 
     /* Add images to ImageList */
-    AddImageToImageList(hImageList, IDI_SAVE);
-    AddImageToImageList(hImageList, IDI_RELOAD);
-    AddImageToImageList(hImageList, IDI_TASKMGR);
-    AddImageToImageList(hImageList, IDI_HWBENCH);
-    AddImageToImageList(hImageList, IDI_SETTINGS);
-    AddImageToImageList(hImageList, IDI_INFO);
+    AddIconToImageList(hIconsInst, hImageList, IDI_SAVE);
+    AddIconToImageList(hIconsInst, hImageList, IDI_RELOAD);
+    AddIconToImageList(hIconsInst, hImageList, IDI_TASKMGR);
+    AddIconToImageList(hIconsInst, hImageList, IDI_HWBENCH);
+    AddIconToImageList(hIconsInst, hImageList, IDI_SETTINGS);
+    AddIconToImageList(hIconsInst, hImageList, IDI_INFO);
 
     ImageList_Destroy((HIMAGELIST)SendMessage(hToolBar,
                                               TB_SETIMAGELIST,

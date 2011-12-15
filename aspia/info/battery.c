@@ -172,7 +172,7 @@ BatteryEnumProc(LPWSTR lpszBattery)
     HANDLE hHandle;
     INT Index;
 
-    hHandle = drv_open_battery(lpszBattery);
+    hHandle = OpenBattery(lpszBattery);
     if (hHandle == INVALID_HANDLE_VALUE)
     {
         DebugTrace(L"Invalid handle value");
@@ -180,30 +180,30 @@ BatteryEnumProc(LPWSTR lpszBattery)
     }
 
     /* Device name */
-    if (drv_query_battery_info(hHandle,
-                               BatteryDeviceName,
-                               (LPVOID)szText,
-                               sizeof(szText)))
+    if (QueryBatteryInfo(hHandle,
+                         BatteryDeviceName,
+                         (LPVOID)szText,
+                         sizeof(szText)))
     {
         Index = IoAddValueName(1, IDS_NAME, 1);
         IoSetItemText(Index, 1, szText);
     }
 
     /* Manufacture name */
-    if (drv_query_battery_info(hHandle,
-                               BatteryManufactureName,
-                               (LPVOID)szText,
-                               sizeof(szText)))
+    if (QueryBatteryInfo(hHandle,
+                         BatteryManufactureName,
+                         (LPVOID)szText,
+                         sizeof(szText)))
     {
         Index = IoAddValueName(1, IDS_MANUFACTURER, 1);
         IoSetItemText(Index, 1, szText);
     }
 
     /* Manufacture date */
-    if (drv_query_battery_info(hHandle,
-                               BatteryManufactureDate,
-                               (LPVOID)&BatteryDate,
-                               sizeof(BatteryDate)))
+    if (QueryBatteryInfo(hHandle,
+                         BatteryManufactureDate,
+                         (LPVOID)&BatteryDate,
+                         sizeof(BatteryDate)))
     {
         Index = IoAddValueName(1, IDS_BAT_MANUFACTUREDATE, 1);
         StringCbPrintf(szText, sizeof(szText),
@@ -215,36 +215,36 @@ BatteryEnumProc(LPWSTR lpszBattery)
     }
 
     /* ID */
-    if (drv_query_battery_info(hHandle,
-                               BatteryUniqueID,
-                               (LPVOID)szText,
-                               sizeof(szText)))
+    if (QueryBatteryInfo(hHandle,
+                         BatteryUniqueID,
+                         (LPVOID)szText,
+                         sizeof(szText)))
     {
         Index = IoAddValueName(1, IDS_BAT_ID, 1);
         IoSetItemText(Index, 1, szText);
     }
 
     /* Serial number */
-    if (drv_query_battery_info(hHandle,
-                               BatterySerialNumber,
-                               (LPVOID)szText,
-                               sizeof(szText)))
+    if (QueryBatteryInfo(hHandle,
+                         BatterySerialNumber,
+                         (LPVOID)szText,
+                         sizeof(szText)))
     {
         Index = IoAddValueName(1, IDS_SERIAL_NUMBER, 1);
         IoSetItemText(Index, 1, szText);
     }
 
     /* Temperature */
-    if (drv_query_battery_info(hHandle,
-                               BatteryTemperature,
-                               (LPVOID)szText,
-                               sizeof(szText)))
+    if (QueryBatteryInfo(hHandle,
+                         BatteryTemperature,
+                         (LPVOID)szText,
+                         sizeof(szText)))
     {
         Index = IoAddValueName(1, IDS_BAT_TEMPERATURE, 1);
         IoSetItemText(Index, 1, szText);
     }
 
-    if (drv_query_battery_info(hHandle,
+    if (QueryBatteryInfo(hHandle,
                                BatteryInformation,
                                (LPVOID)&BatteryInfo,
                                sizeof(BatteryInfo)))
@@ -275,9 +275,9 @@ BatteryEnumProc(LPWSTR lpszBattery)
         IoSetItemText(Index, 1, szText);
     }
 
-    if (drv_query_battery_status(hHandle,
-                                 &BatteryStatus,
-                                 sizeof(BatteryStatus)))
+    if (QueryBatteryStatus(hHandle,
+                           &BatteryStatus,
+                           sizeof(BatteryStatus)))
     {
         /* Current capacity */
         Index = IoAddValueName(1, IDS_BAT_CURRENT_CAPACITY, 1);
@@ -301,7 +301,7 @@ BatteryEnumProc(LPWSTR lpszBattery)
 
     IoAddFooter();
 
-    drv_close_battery(hHandle);
+    CloseBattery(hHandle);
     return TRUE;
 }
 

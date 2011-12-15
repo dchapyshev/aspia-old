@@ -28,8 +28,8 @@ static const BYTE F71872F_FAN_TACHOMETER_REG[] = { 0x20, 0x22, 0x24 };
 BYTE
 F718XX_ReadByte(WORD wAddress, BYTE bRegister)
 {
-    drv_write_io_port_byte((WORD)(wAddress + ADDRESS_REGISTER_OFFSET), bRegister);
-    return drv_read_io_port_byte((WORD)(wAddress + DATA_REGISTER_OFFSET));
+    WriteIoPortByte((WORD)(wAddress + ADDRESS_REGISTER_OFFSET), bRegister);
+    return ReadIoPortByte((WORD)(wAddress + DATA_REGISTER_OFFSET));
 }
 
 VOID

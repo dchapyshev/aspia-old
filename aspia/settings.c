@@ -459,10 +459,10 @@ ShowSensorsList(HWND hList)
     /* Hard Drives */
     for (bIndex = 0; bIndex <= 32; ++bIndex)
     {
-        hHandle = drv_open_smart(bIndex);
+        hHandle = OpenSmart(bIndex);
         if (!hHandle) continue;
 
-        if (drv_read_smart_info(hHandle, bIndex, &DriveInfo))
+        if (ReadSmartInfo(hHandle, bIndex, &DriveInfo))
         {
             ChangeByteOrder((PCHAR)DriveInfo.sModelNumber,
                             sizeof(DriveInfo.sModelNumber));
@@ -480,7 +480,7 @@ ShowSensorsList(HWND hList)
             }
         }
 
-        drv_close_smart(hHandle);
+        CloseSmart(hHandle);
     }
 
     /* CPUs */
@@ -853,11 +853,11 @@ SaveSettingsFromDialog(HWND hDlg)
         if (KmDriverNew)
         {
             SettingsInfo.AllowKmDriver = KmDriverNew;
-            drv_load();
+            LoadDriver();
         }
         else
         {
-            drv_unload();
+            UnloadDriver();
             SettingsInfo.AllowKmDriver = KmDriverNew;
         }
     }

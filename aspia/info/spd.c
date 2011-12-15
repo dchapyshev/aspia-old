@@ -70,7 +70,7 @@ HW_SPDInfo(VOID)
     {
         if (IsCanceled) break;
 
-        if (drv_read_spd_data(i + 1, SpdData))
+        if (ReadSpdData(i + 1, SpdData))
         {
             DebugTrace(L"Show info in 0x%x slot", i + 1);
             ShowSpdData(SpdData);

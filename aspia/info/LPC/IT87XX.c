@@ -33,10 +33,10 @@ IT87XX_ReadByte(WORD wAddressReg, WORD wDataReg, BYTE bRegister, BOOL *Valid)
 {
     BYTE bValue;
 
-    drv_write_io_port_byte(wAddressReg, bRegister);
-    bValue = drv_read_io_port_byte(wDataReg);
+    WriteIoPortByte(wAddressReg, bRegister);
+    bValue = ReadIoPortByte(wDataReg);
 
-    *Valid = (bRegister == drv_read_io_port_byte(wAddressReg));
+    *Valid = (bRegister == ReadIoPortByte(wAddressReg));
 
     return bValue;
 }
@@ -44,10 +44,10 @@ IT87XX_ReadByte(WORD wAddressReg, WORD wDataReg, BYTE bRegister, BOOL *Valid)
 BOOL
 IT87XX_WriteByte(WORD wAddressReg, WORD wDataReg, BYTE bRegister, BYTE bValue)
 {
-    drv_write_io_port_byte(wAddressReg, bRegister);
-    drv_write_io_port_byte(wDataReg, bValue);
+    WriteIoPortByte(wAddressReg, bRegister);
+    WriteIoPortByte(wDataReg, bValue);
 
-    return (bRegister == drv_read_io_port_byte(wAddressReg));
+    return (bRegister == ReadIoPortByte(wAddressReg));
 }
 
 BYTE
@@ -56,7 +56,7 @@ IT87XX_ReadGPIO(INT iIndex, INT iGPIOCount, WORD wGPIOAddress)
     if (iIndex >= iGPIOCount)
         return 0;
 
-    return drv_read_io_port_byte((WORD)(wGPIOAddress + iIndex));
+    return ReadIoPortByte((WORD)(wGPIOAddress + iIndex));
 }
 
 VOID
@@ -65,7 +65,7 @@ IT87XX_WriteGPIO(INT iIndex, INT iGPIOCount, WORD wGPIOAddress, BYTE bValue)
     if (iIndex >= iGPIOCount)
         return;
 
-    drv_write_io_port_byte((WORD)(wGPIOAddress + iIndex), bValue);
+    WriteIoPortByte((WORD)(wGPIOAddress + iIndex), bValue);
 }
 
 VOID

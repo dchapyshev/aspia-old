@@ -674,7 +674,7 @@ DetectUnknownDevices(VOID)
         return;
     }
 
-    drv_center_window(hWnd, NULL);
+    CenterWindow(hWnd, NULL);
 
     /* Show it */
     ShowWindow(hWnd, SW_SHOW);

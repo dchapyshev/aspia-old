@@ -9,6 +9,7 @@
 
 #include <windows.h>
 #include <batclass.h>
+#include <commctrl.h>
 
 /* PCI Ports */
 #define CONFIG_DATA    0xCFC
@@ -87,35 +88,35 @@ typedef struct _WRITE_PCI_CONFIG_INPUT
 /* SPD contents size */
 #define SPD_MAX_SIZE 0x95
 
-BOOL drv_load(VOID);
-BOOL drv_unload(VOID);
+BOOL LoadDriver(VOID);
+BOOL UnloadDriver(VOID);
 
-PVOID drv_get_smbios_data(OUT DWORD* ReturnSize);
-BOOL drv_read_spd_data(BYTE Slot, BYTE *SpdData);
+PVOID GetSmbiosData(OUT DWORD* ReturnSize);
+BOOL ReadSpdData(BYTE Slot, BYTE *SpdData);
 
-BOOL drv_read_msr(IN UINT32 Register, IN UINT32 CpuIndex, OUT UINT64* Data);
+BOOL ReadMsr(IN UINT32 Register, IN UINT32 CpuIndex, OUT UINT64* Data);
 
-WORD drv_read_io_port_word(IN DWORD Port);
-DWORD drv_read_io_port_dword(IN DWORD Port);
-BYTE drv_read_io_port_byte(IN DWORD Port);
+WORD ReadIoPortWord(IN DWORD Port);
+DWORD ReadIoPortDword(IN DWORD Port);
+BYTE ReadIoPortByte(IN DWORD Port);
 
-BOOL drv_write_io_port_word(IN DWORD Port, IN WORD Value);
-BOOL drv_write_io_port_dword(IN DWORD Port, IN DWORD Value);
-BOOL drv_write_io_port_byte(IN DWORD Port, IN BYTE Value);
+BOOL WriteIoPortWord(IN DWORD Port, IN WORD Value);
+BOOL WriteIoPortDword(IN DWORD Port, IN DWORD Value);
+BOOL WriteIoPortByte(IN DWORD Port, IN BYTE Value);
 
-DWORD drv_get_register_data_dword(IN DWORD Register, IN INT Offset);
-WORD drv_get_register_data_word(IN DWORD Register, IN INT Offset);
+DWORD GetRegisterDataDword(IN DWORD Register, IN INT Offset);
+WORD GetRegisterDataWord(IN DWORD Register, IN INT Offset);
 
-BOOL drv_read_pci_config(IN DWORD PciAddress, IN DWORD RegAddress, OUT PBYTE Value, IN DWORD Size);
-BOOL drv_write_pci_config(IN DWORD PciAddress, IN DWORD RegAddress, IN PBYTE Value, IN DWORD Size);
+BOOL ReadPciConfig(IN DWORD PciAddress, IN DWORD RegAddress, OUT PBYTE Value, IN DWORD Size);
+BOOL WritePciConfig(IN DWORD PciAddress, IN DWORD RegAddress, IN PBYTE Value, IN DWORD Size);
 
-BOOL drv_read_pmc(IN DWORD Index, OUT PDWORD eax, OUT PDWORD edx);
+BOOL ReadPmc(IN DWORD Index, OUT PDWORD eax, OUT PDWORD edx);
 
 __inline BYTE
 ReadPciConfigByte(IN DWORD PciAddress, IN BYTE RegAddress)
 {
     BYTE Value;
-    if (drv_read_pci_config(PciAddress, RegAddress, (PBYTE)&Value, sizeof(BYTE)))
+    if (ReadPciConfig(PciAddress, RegAddress, (PBYTE)&Value, sizeof(BYTE)))
         return Value;
     else
         return 0xFF;
@@ -125,7 +126,7 @@ __inline WORD
 ReadPciConfigWord(IN DWORD PciAddress, IN BYTE RegAddress)
 {
     WORD Value;
-    if (drv_read_pci_config(PciAddress, RegAddress, (PBYTE)&Value, sizeof(WORD)))
+    if (ReadPciConfig(PciAddress, RegAddress, (PBYTE)&Value, sizeof(WORD)))
         return Value;
     else
         return 0xFFFF;
@@ -135,7 +136,7 @@ __inline DWORD
 ReadPciConfigDword(IN DWORD PciAddress, IN BYTE RegAddress)
 {
     DWORD Value;
-    if (drv_read_pci_config(PciAddress, RegAddress, (PBYTE)&Value, sizeof(DWORD)))
+    if (ReadPciConfig(PciAddress, RegAddress, (PBYTE)&Value, sizeof(DWORD)))
         return Value;
     else
         return 0xFFFFFFFF;
@@ -144,19 +145,19 @@ ReadPciConfigDword(IN DWORD PciAddress, IN BYTE RegAddress)
 __inline VOID
 WritePciConfigByte(IN DWORD PciAddress, IN BYTE RegAddress, IN BYTE Value)
 {
-    drv_write_pci_config(PciAddress, RegAddress, (PBYTE)&Value , sizeof(BYTE));
+    WritePciConfig(PciAddress, RegAddress, (PBYTE)&Value , sizeof(BYTE));
 }
 
 __inline VOID
 WritePciConfigWord(IN DWORD PciAddress, IN BYTE RegAddress, IN WORD Value)
 {
-    drv_write_pci_config(PciAddress, RegAddress, (PBYTE)&Value , sizeof(WORD));
+    WritePciConfig(PciAddress, RegAddress, (PBYTE)&Value , sizeof(WORD));
 }
 
 __inline VOID
 WritePciConfigDword(IN DWORD PciAddress, IN BYTE RegAddress, IN DWORD Value)
 {
-    drv_write_pci_config(PciAddress, RegAddress, (PBYTE)&Value , sizeof(DWORD));
+    WritePciConfig(PciAddress, RegAddress, (PBYTE)&Value , sizeof(DWORD));
 }
 
 /* SMART Defines */
@@ -246,17 +247,17 @@ typedef struct
 } SMART_ATAOUTPARAM;
 
 /* SMART Functions */
-HANDLE drv_open_smart(BYTE bDevNumber);
-BOOL drv_close_smart(HANDLE hHandle);
-BOOL drv_get_smart_version(HANDLE hHandle, GETVERSIONINPARAMS *pVersion);
-BOOL drv_enable_smart(HANDLE hHandle, BYTE bDevNumber);
-BOOL drv_read_smart_info(HANDLE hHandle, BYTE bDevNumber, IDSECTOR *Info);
-BOOL drv_read_smart_attributes(HANDLE hHandle, BYTE bDevNumber, SMART_DRIVE_INFO *Info);
-BOOL drv_read_smart_thresholds(HANDLE hHandle, BYTE bDriveNum, SMART_DRIVE_INFO *Info);
+HANDLE OpenSmart(BYTE bDevNumber);
+BOOL CloseSmart(HANDLE hHandle);
+BOOL GetSmartVersion(HANDLE hHandle, GETVERSIONINPARAMS *pVersion);
+BOOL EnableSmart(HANDLE hHandle, BYTE bDevNumber);
+BOOL ReadSmartInfo(HANDLE hHandle, BYTE bDevNumber, IDSECTOR *Info);
+BOOL ReadSmartAttributes(HANDLE hHandle, BYTE bDevNumber, SMART_DRIVE_INFO *Info);
+BOOL ReadSmartThresholds(HANDLE hHandle, BYTE bDriveNum, SMART_DRIVE_INFO *Info);
 typedef BOOL (CALLBACK *SMART_ENUMDATAPROC)(SMART_RESULT *Result);
-BOOL drv_enum_smart_data(HANDLE hSmartHandle, BYTE bDevNumber, SMART_ENUMDATAPROC lpEnumProc);
-DWORD drv_get_smart_temperature(HANDLE hSmartHandle, BYTE bDevNumber);
-BOOL drv_get_smart_disk_geometry(BYTE bDevNumber, DISK_GEOMETRY *DiskGeometry);
+BOOL EnumSmartData(HANDLE hSmartHandle, BYTE bDevNumber, SMART_ENUMDATAPROC lpEnumProc);
+DWORD GetSmartTemperature(HANDLE hSmartHandle, BYTE bDevNumber);
+BOOL GetSmartDiskGeometry(BYTE bDevNumber, DISK_GEOMETRY *DiskGeometry);
 
 /* SCSI Structures */
 typedef struct _SRB_IO_CONTROL
@@ -270,30 +271,42 @@ typedef struct _SRB_IO_CONTROL
 } SRB_IO_CONTROL, *PSRB_IO_CONTROL;
 
 /* SCSI Functions */
-HANDLE drv_open_scsi(BYTE bDevNumber);
-BOOL drv_close_scsi(HANDLE hHandle);
-BOOL drv_read_scsi_info(HANDLE hHandle, BYTE bDevNumber, IDSECTOR *Info);
+HANDLE OpenScsi(BYTE bDevNumber);
+BOOL CloseScsi(HANDLE hHandle);
+BOOL ReadScsiInfo(HANDLE hHandle, BYTE bDevNumber, IDSECTOR *Info);
 
 /* Battery Functions */
-HANDLE drv_open_battery(LPWSTR lpszDevice);
-BOOL drv_close_battery(HANDLE hHandle);
-ULONG drv_get_battery_tag(HANDLE hHandle);
-BOOL drv_query_battery_info(HANDLE hHandle, BATTERY_QUERY_INFORMATION_LEVEL InfoLevel, LPVOID lpBuffer, DWORD dwBufferSize);
-BOOL drv_query_battery_status(HANDLE hHandle, BATTERY_STATUS *lpBatteryStatus, DWORD dwBufferSize);
+HANDLE OpenBattery(LPWSTR lpszDevice);
+BOOL CloseBattery(HANDLE hHandle);
+ULONG GetBatteryTag(HANDLE hHandle);
+BOOL QueryBatteryInfo(HANDLE hHandle, BATTERY_QUERY_INFORMATION_LEVEL InfoLevel, LPVOID lpBuffer, DWORD dwBufferSize);
+BOOL QueryBatteryStatus(HANDLE hHandle, BATTERY_STATUS *lpBatteryStatus, DWORD dwBufferSize);
 
 /* DEBUG Functions */
-BOOL drv_init_debug_log(LPWSTR lpLogName, LPWSTR lpVersion);
-VOID drv_close_debug_log(VOID);
-VOID drv_write_debug_log(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, ...);
+BOOL InitDebugLog(LPWSTR lpLogName, LPWSTR lpVersion);
+VOID CloseDebugLog(VOID);
+VOID WriteDebugLog(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, ...);
 
 /* DEBUG Defines */
-#define DebugTrace(_msg, ...) drv_write_debug_log(__FILE__, __LINE__, __FUNCTION__, _msg, ##__VA_ARGS__)
+#define DebugTrace(_msg, ...) WriteDebugLog(__FILE__, __LINE__, __FUNCTION__, _msg, ##__VA_ARGS__)
 #define DebugStartReceiving() DebugTrace(L"Start data receiving")
 #define DebugEndReceiving() DebugTrace(L"End data receiving")
 #define DebugAllocFailed() DebugTrace(L"Alloc() failed")
 
 /* Misc Functions */
-INT drv_get_system_color_depth(VOID);
-INT drv_get_cpu_usage(VOID);
-BOOL drv_create_screenshot(HWND hwnd);
-BOOL drv_center_window(HWND hWnd, HWND hWndCenter);
+INT GetSystemColorDepth(VOID);
+INT GetCpuUsage(VOID);
+BOOL CreateScreenshot(HWND hwnd);
+BOOL CenterWindow(HWND hWnd, HWND hWndCenter);
+VOID ChangeByteOrder(PCHAR pString, USHORT StrSize);
+BOOL GetCurrentPath(LPWSTR lpszPath, SIZE_T PathLen);
+BOOL IsWin64System(VOID);
+INT SafeStrLen(LPCWSTR lpString);
+LPWSTR SafeStrCpyN(LPWSTR lpString1, LPCTSTR lpString2, INT iMaxLength);
+INT SafeStrCmp(LPCTSTR lpString1, LPCTSTR lpString2);
+BOOL IsUserAdmin(VOID);
+SIZE_T StrToHex(LPWSTR lpszStr, SIZE_T StrLen);
+BOOL IsWindows2000(VOID);
+BOOL GetBinaryFromRegistry(HKEY hRootKey, LPWSTR lpszPath, LPWSTR lpszKeyName, LPBYTE lpdwValue, DWORD dwSize);
+BOOL GetStringFromRegistry(BOOL Is64KeyRequired, HKEY hRootKey, LPWSTR lpszPath, LPWSTR lpszKeyName, LPWSTR lpszValue, DWORD dwSize);
+INT AddIconToImageList(HINSTANCE hInst, HIMAGELIST hImageList, UINT IconIndex);

@@ -80,9 +80,9 @@ SysMonInitControls(HWND hwnd)
     if (!hSysMonImgList2)
         return;
 
-    AddImageToImageList(hSysMonImgList2, IDI_START);
-    AddImageToImageList(hSysMonImgList2, IDI_STOP);
-    AddImageToImageList(hSysMonImgList2, IDI_STRESS_TEST);
+    AddIconToImageList(hIconsInst, hSysMonImgList2, IDI_START);
+    AddIconToImageList(hIconsInst, hSysMonImgList2, IDI_STOP);
+    AddIconToImageList(hIconsInst, hSysMonImgList2, IDI_STRESS_TEST);
 
     SendMessage(hSysMonToolBar,
                 TB_SETIMAGELIST,
@@ -277,7 +277,7 @@ CreateSysMonWindow(VOID)
         return;
     }
 
-    drv_center_window(hSysMonWnd, NULL);
+    CenterWindow(hSysMonWnd, NULL);
 
     /* Show it */
     ShowWindow(hSysMonWnd, SW_SHOW);

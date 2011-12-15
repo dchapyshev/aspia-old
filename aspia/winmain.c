@@ -595,7 +595,7 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         {
             INT SxSmIcon = GetSystemMetrics(SM_CXSMICON);
             INT SySmIcon = GetSystemMetrics(SM_CYSMICON);
-            INT SysColorDepth = drv_get_system_color_depth();
+            INT SysColorDepth = GetSystemColorDepth();
 
             if (ParamsInfo.SxSmIcon != SxSmIcon ||
                 ParamsInfo.SySmIcon != SySmIcon ||
@@ -693,7 +693,7 @@ HandleCommandLine(VOID)
     if (ParamsInfo.DebugMode && NumArgs == 2)
         return FALSE;
 
-    drv_load();
+    LoadDriver();
 
     ReportSaveAll(FALSE, szPath, bNavMenu);
 
@@ -923,7 +923,7 @@ wWinMain(HINSTANCE hInst,
     }
     ParamsInfo.SxSmIcon = GetSystemMetrics(SM_CXSMICON);
     ParamsInfo.SySmIcon = GetSystemMetrics(SM_CYSMICON);
-    ParamsInfo.SysColorDepth = drv_get_system_color_depth();
+    ParamsInfo.SysColorDepth = GetSystemColorDepth();
 
     GetCurrentPath(ParamsInfo.szCurrentPath, MAX_PATH);
 
@@ -947,12 +947,12 @@ wWinMain(HINSTANCE hInst,
     ParamsInfo.DebugMode = TRUE;
 #endif
     if (ParamsInfo.DebugMode)
-        ParamsInfo.DebugMode = drv_init_debug_log(L"aspia.log", VER_FILEVERSION_STR);
+        ParamsInfo.DebugMode = InitDebugLog(L"aspia.log", VER_FILEVERSION_STR);
 
     DebugTrace(L"Start with debug mode");
 
     /* Загружаем драйвер режима ядра */
-    drv_load();
+    LoadDriver();
 
     InitCommonControls();
 
@@ -1035,14 +1035,14 @@ wWinMain(HINSTANCE hInst,
         }
     }
 
-    drv_unload();
+    UnloadDriver();
 
     DeleteCriticalSection(&CriticalSection);
 
 Exit:
     if (hMutex) CloseHandle(hMutex);
 
-    drv_close_debug_log();
+    CloseDebugLog();
 
     return 0;
 }
