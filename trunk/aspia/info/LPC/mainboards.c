@@ -27,7 +27,8 @@ LPC_GetMBManufacturerId(LPWSTR lpManufacturer)
     {
         return ASROCK_MB;
     }
-    else if (wcscmp(lpManufacturer, L"ASUSTeK Computer INC.") == 0)
+    else if (wcscmp(lpManufacturer, L"ASUSTeK Computer INC.") == 0 ||
+             wcscmp(lpManufacturer, L"ASUSTeK Computer Inc.") == 0)
     {
         return ASUS_MB;
     }
@@ -143,6 +144,8 @@ MB_MODELS MbModelsList[] =
     { AT3GC_I, L"AT3GC-I" },
     { P5K_VM, L"P5K-VM" },
     { P5QL_PRO, L"P5QL PRO" },
+    { K8V_MX, L"K8V-MX" },
+    { P4P800_VM, L"P4P800-VM" },
     /* DFI */
     { LP_BI_P45_T2RS_Elite, L"LP BI P45-T2RS Elite" },
     { LP_DK_P55_T3eH9, L"LP DK P55-T3eH9" },
@@ -168,6 +171,8 @@ MB_MODELS MbModelsList[] =
     { Z68X_UD7_B3, L"Z68X-UD7-B3" },
     { G31M_ES2C, L"G31M-ES2C" },
     { _965GM_S2, L"965GM-S2" },
+    { G31M_ES2L, L"G31M-ES2L" },
+    { _8I865GVMK, L"8I865GVMK" },
     /* Shuttle */
     { FH67, L"FH67" },
     /* EPOX */
@@ -538,6 +543,7 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         case G31M_ES2C: /* IT8718F */
+                        case G31M_ES2L: /* IT8718F */
                             InitVItem(0, L"CPU VCore", 0.0f, 1.0f, 0.0f);
                             InitVItem(1, L"DRAM",      0.0f, 1.0f, 0.0f);
                             InitVItem(2, L"+3.3V",     0.0f, 1.0f, 0.0f);
@@ -546,6 +552,24 @@ LPC_MainboardInfoInit(WORD wChipType)
                             InitVItem(8, L"VBat",      0.0f, 1.0f, 0.0f);
 
                             InitTItem(2, L"CPU");
+                            break;
+
+                        case _8I865GVMK: /* IT8712F */
+                            InitVItem(0, L"CPU VCore", 0.0f, 1.0f, 0.0f);
+                            InitVItem(1, L"DRAM",      0.0f, 1.0f, 0.0f);
+                            InitVItem(2, L"+3.3V",     0.0f, 1.0f, 0.0f);
+                            InitVItem(3, L"+5V",       34.0f, 34.0f, 0.0f);
+                            InitVItem(4, L"+12V",      27.0f, 9.1f, 0.0f);
+                            InitVItem(5, L"VIN5",      0.0f, 1.0f, 0.0f);
+                            InitVItem(6, L"VIN6",      0.0f, 1.0f, 0.0f);
+                            InitVItem(7, L"5VSB",      34.0f, 34.0f, 0.0f);
+
+                            InitTItem(0, L"Temperature #1");
+                            InitTItem(1, L"Temperature #2");
+                            InitTItem(2, L"Temperature #3");
+
+                            InitFItem(0, L"Fan #1");
+                            InitFItem(1, L"Fan #2");
                             break;
 
                         default:
@@ -894,6 +918,47 @@ LPC_MainboardInfoInit(WORD wChipType)
         {
             switch (wManufId)
             {
+                case ASUS_MB:
+                {
+                    switch (wModelId)
+                    {
+                        case K8V_MX: /* W83627EHF */
+                            InitVItem(0, L"CPU VCore",     0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"Analog +3.3V",  34.0f, 34.0f, 0.0f);
+                            InitVItem(4, L"+3.3V",         10.0f, 10.0f, 0.0f);
+                            InitVItem(5, L"+5V",           20.0f, 10.0f, 0.0f);
+                            InitVItem(6, L"+12V",          28.0f, 5.0f, 0.0f);
+                            InitVItem(7, L"Standby +3.3V", 34.0f, 34.0f, 0.0f);
+                            InitVItem(8, L"VBAT",          34.0f, 34.0f, 0.0f);
+
+                            InitTItem(0, L"CPU");
+                            InitTItem(2, L"Motherboard");
+
+                            InitFItem(0, L"CPU Fan");
+                            InitFItem(1, L"Chassis Fan");
+                            break;
+
+                        default:
+                            InitVItem(0, L"CPU VCore", 0.0f,  1.0f, 0.0f);
+                            InitVItem(2, L"AVCC",      34.0f, 34.0f, 0.0f);
+                            InitVItem(3, L"3VCC",      34.0f, 34.0f, 0.0f);
+                            InitVItem(7, L"3VSB",      34.0f, 34.0f, 0.0f);
+                            InitVItem(8, L"VBAT",      34.0f, 34.0f, 0.0f);
+
+                            InitTItem(0, L"CPU");
+                            InitTItem(1, L"Auxiliary");
+                            InitTItem(2, L"System");
+
+                            InitFItem(0, L"System Fan");
+                            InitFItem(1, L"CPU Fan");
+                            InitFItem(2, L"Auxiliary Fan");
+                            InitFItem(3, L"CPU Fan #2");
+                            InitFItem(4, L"Auxiliary Fan #2");
+                            break;
+                    }
+                }
+                break;
+
                 case ASROCK_MB:
                 {
                     switch (wModelId)
@@ -1127,6 +1192,28 @@ LPC_MainboardInfoInit(WORD wChipType)
         {
             switch (wManufId)
             {
+                case ASUS_MB:
+                {
+                    switch (wModelId)
+                    {
+                        case P4P800_VM:
+                            InitVItem(0, L"Vcore1", 0.0f,  1.0f,  0.0f);
+                            InitVItem(1, L"Vccp2", 0.0f,  1.0f,  0.0f);
+                            InitVItem(2, L"+3.3V",  0.0f,  1.0f,  0.0f);
+                            InitVItem(3, L"+5V",    34.0f, 51.0f, 0.0f);
+                            InitVItem(4, L"+12V",   27.0f, 9.1f, 0.0f);
+                            InitVItem(5, L"+5VSB",  34.0f, 34.0f,  0.0f);
+
+                            InitTItem(0, L"Temperature #1");
+                            InitTItem(1, L"Temperature #2");
+
+                            InitFItem(0, L"Fan #1");
+                            InitFItem(1, L"Fan #2");
+                            break;
+                    }
+                }
+                break;
+
                 case TYAN_MB:
                 {
                     switch (wModelId)

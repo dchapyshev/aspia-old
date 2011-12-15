@@ -224,26 +224,6 @@ DiskClearResults(HWND hDlg)
     SecondsCount = 0;
 }
 
-INT
-AddImageToImageList(HIMAGELIST hImageList, UINT ImageIndex)
-{
-    HICON hIcon = NULL;
-    INT Index;
-
-    hIcon = (HICON)LoadImage(hInstance,
-                             MAKEINTRESOURCE(ImageIndex),
-                             IMAGE_ICON,
-                             TOOLBAR_HEIGHT,
-                             TOOLBAR_HEIGHT,
-                             LR_CREATEDIBSECTION);
-
-    if (!hIcon) return -1;
-
-    Index = ImageList_AddIcon(hImageList, hIcon);
-    DestroyIcon(hIcon);
-    return Index;
-}
-
 VOID
 InitDiskBenchDlg(HWND hDlg)
 {
@@ -285,15 +265,15 @@ InitDiskBenchDlg(HWND hDlg)
     /* Create image list for ToolBar */
     hDiskImgList = ImageList_Create(TOOLBAR_HEIGHT,
                                     TOOLBAR_HEIGHT,
-                                    ILC_MASK | drv_get_system_color_depth(),
+                                    ILC_MASK | GetSystemColorDepth(),
                                     1, 1);
     if (!hDiskImgList)
         return;
 
-    AddImageToImageList(hDiskImgList, IDI_START);
-    AddImageToImageList(hDiskImgList, IDI_STOP);
-    AddImageToImageList(hDiskImgList, IDI_SAVE);
-    AddImageToImageList(hDiskImgList, IDI_CLEAR);
+    AddIconToImageList(hInstance, hDiskImgList, IDI_START);
+    AddIconToImageList(hInstance, hDiskImgList, IDI_STOP);
+    AddIconToImageList(hInstance, hDiskImgList, IDI_SAVE);
+    AddIconToImageList(hInstance, hDiskImgList, IDI_CLEAR);
 
     SendMessage(hDiskToolBar,
                 TB_SETIMAGELIST,
@@ -549,7 +529,7 @@ SecondsCounterProc(HWND hDlg, UINT msg, UINT id, DWORD systime)
 VOID CALLBACK
 CpuUsageUpdateProc(HWND hDlg, UINT msg, UINT id, DWORD systime)
 {
-    INT CpuUsage = drv_get_cpu_usage();
+    INT CpuUsage = GetCpuUsage();
     WCHAR szText[MAX_STR_LEN];
     LONGLONG Hours, Mins, Secs;
     DWORD time;
@@ -1003,7 +983,7 @@ DiskBenchDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         case WM_INITDIALOG:
         {
-            drv_center_window(hDlg, NULL);
+            CenterWindow(hDlg, NULL);
             InitDiskBenchDlg(hDlg);
         }
         break;
@@ -1024,7 +1004,7 @@ DiskBenchDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                     break;
 
                 case ID_DISK_SAVE:
-                    drv_create_screenshot(hDlg);
+                    CreateScreenshot(hDlg);
                     break;
 
                 case ID_DISK_CLEAR:
@@ -1088,7 +1068,7 @@ wWinMain(HINSTANCE hInst,
 
             if (wcscmp(ptr, L"debug") == 0)
             {
-                DebugMode = drv_init_debug_log(L"diskbench.log", VER_FILEVERSION_STR);
+                DebugMode = InitDebugLog(L"diskbench.log", VER_FILEVERSION_STR);
             }
         }
     }
@@ -1098,7 +1078,7 @@ wWinMain(HINSTANCE hInst,
               NULL,
               DiskBenchDlgProc);
 
-    if (DebugMode) drv_close_debug_log();
+    if (DebugMode) CloseDebugLog();
 
     if (hMutex) CloseHandle(hMutex);
 

@@ -99,7 +99,6 @@ INT_PTR CALLBACK AboutDlgProc(HWND, UINT, WPARAM, LPARAM);
 VOID MainWndOnSize(LPARAM);
 VOID ToolBarOnGetDispInfo(LPTOOLTIPTEXT);
 VOID InitControls(HWND);
-INT AddImageToImageList(HIMAGELIST, UINT);
 VOID ReInitControls(VOID);
 
 __inline VOID
@@ -293,27 +292,14 @@ VOID TESTS_StressTest(VOID);
 VOID ShowSummaryInfo(VOID);
 
 /* misc.c */
-BOOL IsUserAdmin(VOID);
-SIZE_T StrToHex(LPWSTR, SIZE_T);
-BOOL GetStringFromRegistry(BOOL, HKEY, LPWSTR, LPWSTR, LPWSTR, DWORD);
-BOOL GetBinaryFromRegistry(HKEY, LPWSTR, LPWSTR, LPBYTE, DWORD);
 HICON GetFolderAssocIcon(LPWSTR);
-INT GetSystemColorDepth(VOID);
 BOOL GetFileDescription(LPWSTR, LPWSTR, SIZE_T);
-INT GetDesktopColorDepth(VOID);
 VOID CopyTextToClipboard(LPCWSTR);
-BOOL IsWin64System(VOID);
 VOID ConvertSecondsToString(LONGLONG, LPWSTR, SIZE_T);
 VOID ChopSpaces(LPWSTR, SIZE_T);
 BOOL TimeToString(time_t, LPWSTR, SIZE_T);
 BOOL GetMSProductKey(BOOL, LPSTR, LPWSTR, INT);
-VOID ChangeByteOrder(PCHAR, USHORT);
 INT LoadMUIString(UINT, LPWSTR, INT);
-BOOL ExtractDLLFromResources(UINT, LPWSTR, LPWSTR, SIZE_T);
-BOOL GetCurrentPath(LPWSTR, SIZE_T);
-INT SafeStrLen(LPCWSTR lpString);
-LPWSTR SafeStrCpyN(LPWSTR lpString1, LPCWSTR lpString2, INT iMaxLength);
-INT SafeStrCmp(LPCWSTR lpString1, LPCWSTR lpString2);
 VOID IntSetWindowTheme(HWND hwnd);
 double Round(double Argument, int Precision);
 

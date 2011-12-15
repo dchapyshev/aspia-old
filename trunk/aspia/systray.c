@@ -154,7 +154,7 @@ GetCPUTemperature(VOID)
         UINT Temp;
 
         /* Only for first core */
-        drv_read_msr(IA32_THERM_STATUS, 0, &Value);
+        ReadMsr(IA32_THERM_STATUS, 0, &Value);
 
         Temp = ((Value >> 16) & 0xFF);
         if (Temp == 0) return 0;
@@ -225,11 +225,11 @@ AddHDDSensor(BOOL IsUpdate)
     {
         if (!IsUpdate)
         {
-            HddDrives->hDrive = drv_open_smart(bIndex);
+            HddDrives->hDrive = OpenSmart(bIndex);
             if (HddDrives->hDrive == INVALID_HANDLE_VALUE)
                 continue;
 
-            if (!drv_read_smart_info(HddDrives->hDrive, bIndex, &DriveInfo))
+            if (!ReadSmartInfo(HddDrives->hDrive, bIndex, &DriveInfo))
                 continue;
 
             ChangeByteOrder((PCHAR)DriveInfo.sModelNumber,
@@ -242,7 +242,7 @@ AddHDDSensor(BOOL IsUpdate)
         if (GetPrivateProfileInt(L"sensors", HddDrives->szName, 0, szIniPath) > 0)
         {
             StringCbPrintf(szValue, sizeof(szValue), L"%ld",
-                           drv_get_smart_temperature(HddDrives->hDrive, bIndex));
+                           GetSmartTemperature(HddDrives->hDrive, bIndex));
             hIcon = CreateTrayIcon(szValue, SettingsInfo.HddBackground, SettingsInfo.HddFontColor);
 
             if (IsUpdate)
@@ -294,7 +294,7 @@ DeleteTraySensors(VOID)
 
     while (HddIconsCount)
     {
-        drv_close_smart(HddDrives->hDrive);
+        CloseSmart(HddDrives->hDrive);
         DeleteTrayIcon(hMainWnd, HddDrives->IconID);
 
         Temp = HddDrives->Next;

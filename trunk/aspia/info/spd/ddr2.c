@@ -87,8 +87,16 @@ ShowSpdDataForDDR2(BYTE *Spd)
     IoSetItemText(ItemIndex, 1, szText);
 
     ItemIndex = IoAddValueName(1, IDS_SERIAL_NUMBER, 0);
-    StringCbPrintf(szText, sizeof(szText), L"%02X%02X%02X%02X",
-                   Spd[0x5F], Spd[0x60], Spd[0x61], Spd[0x62]);
+    if (Spd[0x5F] == 0xFF && Spd[0x60] == 0xFF &&
+        Spd[0x61] == 0xFF && Spd[0x62] == 0xFF)
+    {
+        StringCbCopy(szText, sizeof(szText), L"N/A");
+    }
+    else
+    {
+        StringCbPrintf(szText, sizeof(szText), L"%02X%02X%02X%02X",
+                       Spd[0x5F], Spd[0x60], Spd[0x61], Spd[0x62]);
+    }
     IoSetItemText(ItemIndex, 1, szText);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_PRODUCT_DATE, 0);

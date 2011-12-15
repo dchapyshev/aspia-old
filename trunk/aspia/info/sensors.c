@@ -19,7 +19,7 @@ GetTjmaxFromMSR(DWORD CpuIndex)
 {
     UINT64 Value = 0;
 
-    if (drv_read_msr(IA32_TEMPERATURE_TARGET, CpuIndex, &Value))
+    if (ReadMsr(IA32_TEMPERATURE_TARGET, CpuIndex, &Value))
     {
         if (Value != 0)
             return (Value >> 16) & 0xff;
@@ -152,7 +152,7 @@ GetIntelCpuInfo(VOID)
         UINT Temp, Tjmax;
         bIndex = 0;
 
-        while (drv_read_msr(IA32_THERM_STATUS, bIndex, &Value))
+        while (ReadMsr(IA32_THERM_STATUS, bIndex, &Value))
         {
             Temp = ((Value >> 16) & 0xFF);
 
@@ -307,12 +307,12 @@ HW_SensorInfo(VOID)
     /* Hard Drives */
     for (bIndex = 0; bIndex <= 32; ++bIndex)
     {
-        hHandle = drv_open_smart(bIndex);
+        hHandle = OpenSmart(bIndex);
         if (hHandle == INVALID_HANDLE_VALUE) continue;
 
-        if (drv_read_smart_info(hHandle, bIndex, &DriveInfo))
+        if (ReadSmartInfo(hHandle, bIndex, &DriveInfo))
         {
-            DWORD dwTemp = drv_get_smart_temperature(hHandle, bIndex);
+            DWORD dwTemp = GetSmartTemperature(hHandle, bIndex);
 
             if (dwTemp == 0) continue;
 
@@ -333,7 +333,7 @@ HW_SensorInfo(VOID)
             IoAddFooter();
         }
 
-        drv_close_smart(hHandle);
+        CloseSmart(hHandle);
     }
 
     /* CPUs */
