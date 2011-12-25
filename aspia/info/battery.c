@@ -220,8 +220,12 @@ BatteryEnumProc(LPWSTR lpszBattery)
                          (LPVOID)szText,
                          sizeof(szText)))
     {
-        Index = IoAddValueName(1, IDS_BAT_ID, 1);
-        IoSetItemText(Index, 1, szText);
+        ChopSpaces(szText, sizeof(szText));
+        if (szText[0] != 0)
+        {
+            Index = IoAddValueName(1, IDS_BAT_ID, 1);
+            IoSetItemText(Index, 1, szText);
+        }
     }
 
     /* Serial number */
@@ -230,8 +234,12 @@ BatteryEnumProc(LPWSTR lpszBattery)
                          (LPVOID)szText,
                          sizeof(szText)))
     {
-        Index = IoAddValueName(1, IDS_SERIAL_NUMBER, 1);
-        IoSetItemText(Index, 1, szText);
+        ChopSpaces(szText, sizeof(szText));
+        if (szText[0] != 0)
+        {
+            Index = IoAddValueName(1, IDS_SERIAL_NUMBER, 1);
+            IoSetItemText(Index, 1, szText);
+        }
     }
 
     /* Temperature */
