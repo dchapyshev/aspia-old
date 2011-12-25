@@ -1,6 +1,6 @@
 /*
- * PROJECT:         Aspia (Driver Helper DLL)
- * FILE:            driver/dll/driver_dll.c
+ * PROJECT:         Aspia (Helper DLL)
+ * FILE:            dll/aspia_dll.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */

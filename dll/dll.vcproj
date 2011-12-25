@@ -211,6 +211,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\nvidia.c"
+				>
+			</File>
+			<File
 				RelativePath=".\scsi.c"
 				>
 			</File>
@@ -234,6 +238,10 @@
 			</File>
 			<File
 				RelativePath="..\include\driver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\nvidia.h"
 				>
 			</File>
 		</Filter>

@@ -55,27 +55,33 @@ ShowSpdData(BYTE *Spd)
     }
 }
 
-VOID
-HW_SPDInfo(VOID)
+BOOL CALLBACK
+EnumSmbusBaseAdrProc(WORD BaseAddress, DWORD ChipType)
 {
     BYTE SpdData[SPD_MAX_SIZE] = {0};
     int i;
-
-    DebugTrace(L"Start receiving SPD data");
-
-    IoAddIcon(IDI_HW);
-    IoAddIcon(IDI_TIME);
 
     for (i = 0; i < 255; i += 2)
     {
         if (IsCanceled) break;
 
-        if (ReadSpdData(i + 1, SpdData))
+        if (ReadSpdData(BaseAddress, ChipType, i + 1, SpdData))
         {
             DebugTrace(L"Show info in 0x%x slot", i + 1);
             ShowSpdData(SpdData);
         }
     }
+}
+
+VOID
+HW_SPDInfo(VOID)
+{
+    DebugTrace(L"Start receiving SPD data");
+
+    IoAddIcon(IDI_HW);
+    IoAddIcon(IDI_TIME);
+
+    EnumSmBusBaseAddress(EnumSmbusBaseAdrProc);
 
     DebugTrace(L"End receiving SPD data");
 }

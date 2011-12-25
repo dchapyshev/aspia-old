@@ -79,6 +79,8 @@ IDI_VOLTAGE       ICON DISCARDABLE "res/voltage.ico"
 IDI_TEMPERATURE   ICON DISCARDABLE "res/temperature.ico"
 IDI_FAN           ICON DISCARDABLE "res/fan.ico"
 IDI_HWBENCH       ICON DISCARDABLE "res/hwbench.ico"
+IDI_NVIDIA        ICON DISCARDABLE "res/nvidia.ico"
+IDI_ATI           ICON DISCARDABLE "res/ati.ico"
 
 IDC_ACCELERATORS ACCELERATORS
 BEGIN
