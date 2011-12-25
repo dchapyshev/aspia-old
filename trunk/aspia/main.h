@@ -380,9 +380,6 @@ VOID ListViewAddHeader(UINT, INT);
 /* settings.c */
 typedef struct
 {
-    /* Save all windows position */
-    BOOL SaveWindowPos;
-
     /* Main Window Position */
     BOOL IsMaximized;
     INT Left;
@@ -413,12 +410,17 @@ typedef struct
     BOOL IEShowHttp;
     BOOL IEShowFtp;
 
+    /* View Settings */
+    BOOL SaveWindowPos;
+    BOOL StayOnTop;
+    BOOL ShowAltRows;
+    BOOL ShowWindowStyles;
+
     /* Startup Settings */
     BOOL Autorun;
     BOOL HideToTray;
     BOOL ShowProgIcon;
     BOOL ShowSensorIcons;
-    BOOL StayOnTop;
     BOOL AllowKmDriver;
 
     /* Sensor Colors */

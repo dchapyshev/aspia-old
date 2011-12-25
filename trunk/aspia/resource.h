@@ -163,6 +163,8 @@
 #define IDC_ALLOW_KM_DRIVER     143
 #define IDC_FILEPATH_TITLE      144
 #define IDC_FILETYPE_TITLE      145
+#define IDC_ALT_ROWS            146
+#define IDC_STYLES_WNDS         147
 
 /* Strings */
 #define IDS_APPTITLE                100

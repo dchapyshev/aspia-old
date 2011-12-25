@@ -352,7 +352,7 @@ IntSetWindowTheme(HWND hwnd)
         pSetWindowTheme = (PSWT)GetProcAddress(hUxThemeDLL, "SetWindowTheme");
         if (pSetWindowTheme)
         {
-            pSetWindowTheme(hwnd, L"Explorer", 0);
+            pSetWindowTheme(hwnd, SettingsInfo.ShowWindowStyles ? L"Explorer" : NULL, 0);
         }
         FreeLibrary(hUxThemeDLL);
     }

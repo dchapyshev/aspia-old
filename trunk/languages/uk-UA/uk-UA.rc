@@ -127,10 +127,12 @@ BEGIN
     LTEXT "Відкриті категорії при запуску:", -1, 13, 48, 190, 10
     COMBOBOX IDC_STARTUP_CAT_COMBO, 13, 58, 192, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
     AUTOCHECKBOX "Запускати разом з Windows", IDC_START_WITH_WINDOWS, 20, 79, 110, 8
-    AUTOCHECKBOX "Зберігати положення вікон", IDC_SAVE_WINDOW_POS, 20, 93, 109, 8
-    AUTOCHECKBOX "Зверху всіх вікон", IDC_STAY_ON_TOP, 20, 107, 109, 8
-    AUTOCHECKBOX "Дозволити драйвер режиму ядра", IDC_ALLOW_KM_DRIVER, 20, 122, 109, 8
-    AUTOCHECKBOX "Пропонувати відіслати звіт про невідомі пристрої", IDC_DEV_REPORT_SEND, 20, 135, 187, 15, BS_MULTILINE
+    AUTOCHECKBOX "Зберігати положення вікон", IDC_SAVE_WINDOW_POS, 20, 94, 109, 8
+    AUTOCHECKBOX "Зверху всіх вікон", IDC_STAY_ON_TOP, 20, 110, 109, 8
+    AUTOCHECKBOX "Use styles for information windows", IDC_STYLES_WNDS, 20, 126, 163, 8
+    AUTOCHECKBOX "Show alternating rows in the information window", IDC_ALT_ROWS, 20, 142, 187, 8
+    AUTOCHECKBOX "Дозволити драйвер режиму ядра", IDC_ALLOW_KM_DRIVER, 20, 158, 140, 8
+    AUTOCHECKBOX "Пропонувати відіслати звіт про невідомі пристрої", IDC_DEV_REPORT_SEND, 20, 171, 187, 15, BS_MULTILINE
 END
 
 IDD_SETTINGS_FILTER DIALOGEX DISCARDABLE 103, 0, 273, 200

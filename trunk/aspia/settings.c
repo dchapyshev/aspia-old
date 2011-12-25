@@ -558,6 +558,10 @@ GeneralPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                            SettingsInfo.SendDevReport ? BST_UNCHECKED : BST_CHECKED);
             CheckDlgButton(hDlg, IDC_STAY_ON_TOP,
                            SettingsInfo.StayOnTop ? BST_CHECKED : BST_UNCHECKED);
+            CheckDlgButton(hDlg, IDC_STYLES_WNDS,
+                           SettingsInfo.ShowWindowStyles ? BST_CHECKED : BST_UNCHECKED);
+            CheckDlgButton(hDlg, IDC_ALT_ROWS,
+                           SettingsInfo.ShowAltRows ? BST_CHECKED : BST_UNCHECKED);
             CheckDlgButton(hDlg, IDC_ALLOW_KM_DRIVER,
                            SettingsInfo.AllowKmDriver ? BST_CHECKED : BST_UNCHECKED);
 
@@ -821,6 +825,7 @@ SaveSettingsFromDialog(HWND hDlg)
     WCHAR *IconFile, *LangFile, szText[MAX_STR_LEN];
     INT Selected;
     BOOL KmDriverNew, ReInitCtrls = FALSE;
+    BOOL State;
 
     SettingsInfo.CpuBackground = CpuBackground;
     SettingsInfo.CpuFontColor = CpuFontColor;
@@ -840,6 +845,26 @@ SaveSettingsFromDialog(HWND hDlg)
         (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_DEV_REPORT_SEND) == BST_CHECKED) ? FALSE : TRUE;
     SettingsInfo.StayOnTop =
         (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_STAY_ON_TOP) == BST_CHECKED) ? TRUE : FALSE;
+
+    State = (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_STYLES_WNDS) == BST_CHECKED) ? TRUE : FALSE;
+    if (SettingsInfo.ShowWindowStyles != State)
+    {
+        SettingsInfo.ShowWindowStyles = State;
+
+        IntSetWindowTheme(hTreeView);
+        IntSetWindowTheme(hListView);
+    }
+
+    State = (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_ALT_ROWS) == BST_CHECKED) ? TRUE : FALSE;
+    if (SettingsInfo.ShowAltRows != State)
+    {
+        SettingsInfo.ShowAltRows = State;
+
+        /* Update ListView */
+        ShowWindow(hListView, SW_HIDE);
+        ShowWindow(hListView, SW_SHOW);
+        UpdateWindow(hListView);
+    }
 
     SetWindowPos(hMainWnd,
                  SettingsInfo.StayOnTop ? HWND_TOPMOST : HWND_NOTOPMOST,
