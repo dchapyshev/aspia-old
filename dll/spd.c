@@ -215,12 +215,20 @@ EnumSmBusBaseAddress(SMBUS_BASEADR_ENUMPROC lpEnumProc)
                     case 0x24138086: /* I801AA */
                     case 0x24238086: /* I801AB */
                     case 0x24438086: /* I801BA */
+                    case 0x24538086: /* I801CA/CAM ICH3-S/ICH3-M */
                     case 0x24838086: /* I801CA */
                     case 0x24C38086: /* I801DB */
                     case 0x24D38086: /* I801EB */
+                    case 0x25A48086: /* 6300ESB */
                     case 0x266A8086: /* IICH6 */
+                    case 0x269B8086: /* 631xESB/6321ESB/3100 */
                     case 0x283e8086: /* ICH8 */
                     case 0x27da8086: /* ICH7 */
+                    case 0x29308086: /* ICH9 */
+                    case 0x3A308086: /* ICH10 */
+                    case 0x3A608086: /* ICH10 */
+                    case 0x3B308086: /* 5 Series/3400 */
+                    case 0x50328086: /* EP80574 */
                         lpEnumProc(BaseAddress, ICHX_SMBUS);
                         break;
 
@@ -251,7 +259,6 @@ EnumSmBusBaseAddress(SMBUS_BASEADR_ENUMPROC lpEnumProc)
                     case 0x710110B9: /* ALI7101 */
                     case 0x153510B9: /* ALI1535 */
                     case 0x164710B9: /* ALI1647 */
-                    case 0x25A48086: /* I6300ESB */
                         DebugTrace(L"Unsupported chip type (0x%x) yet!", chip);
                         return;
 
