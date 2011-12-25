@@ -67,24 +67,33 @@ ShowMemoryTimings(BYTE *Spd, double Latency, int cl)
 VOID
 ShowSpdDataForDDR2(BYTE *Spd)
 {
-    WCHAR szText[MAX_STR_LEN];
+    WCHAR szText[MAX_STR_LEN], szType[MAX_STR_LEN],
+          szManuf[MAX_STR_LEN];
     INT ItemIndex, Rank;
     double CycleTime;
 
     DebugTrace(L"Show data for DDR2");
 
+    GetSpdModuleType(Spd, szType, sizeof(szType));
+    GetSpdManufacturer(Spd, szManuf, sizeof(szManuf));
+
     /* Model */
     StringCbPrintf(szText, sizeof(szText),
-                   L"%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
+                   L"%s %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", szManuf,
                    Spd[0x49], Spd[0x4A], Spd[0x4B], Spd[0x4C], Spd[0x4D],
                    Spd[0x4E], Spd[0x4F], Spd[0x50], Spd[0x51], Spd[0x52],
                    Spd[0x53], Spd[0x54], Spd[0x55], Spd[0x56], Spd[0x57],
                    Spd[0x58], Spd[0x59], Spd[0x5A]);
+    ChopSpaces(szText, sizeof(szText));
+    if (szText[0] == 0)
+    {
+        StringCbPrintf(szText, sizeof(szText),
+                       L"%s %s", szManuf, szType);
+    }
     IoAddHeaderString(0, (szText[0] == 0) ? L"Unknown" : szText, 0);
 
     ItemIndex = IoAddValueName(1, IDS_MANUFACTURER, 0);
-    GetSpdManufacturer(Spd, szText, sizeof(szText));
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, szManuf);
 
     ItemIndex = IoAddValueName(1, IDS_SERIAL_NUMBER, 0);
     if (Spd[0x5F] == 0xFF && Spd[0x60] == 0xFF &&
@@ -105,8 +114,7 @@ ShowSpdDataForDDR2(BYTE *Spd)
     IoSetItemText(ItemIndex, 1, szText);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_MEMORY_TYPE, 0);
-    GetSpdModuleType(Spd, szText, sizeof(szText));
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, szType);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_DIMM_TYPE, 0);
     if (Spd[0x14] & 0x01)

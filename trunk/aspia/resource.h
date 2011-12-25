@@ -85,6 +85,8 @@
 #define IDI_TEMPERATURE   176
 #define IDI_FAN           177
 #define IDI_HWBENCH       178
+#define IDI_NVIDIA        179
+#define IDI_ATI           180
 
 /* Dialogs */
 #define IDD_ABOUT_DIALOG         5000
@@ -844,6 +846,14 @@
 #define IDS_HWBENCH                      738
 #define IDS_SYSMON_BTN                   748
 #define IDS_BENCH_BTN                    749
+#define IDS_NVIDIA_BOARD_TEMP            750
+#define IDS_NVIDIA_CORE_TEMP             751
+#define IDS_NVIDIA_MEMORY_TEMP           752
+#define IDS_NVIDIA_POWER_SUPPLY_TEMP     753
+#define IDS_NVIDIA_VCD_BOARD_TEMP        754
+#define IDS_NVIDIA_VCD_INLET_TEMP        755
+#define IDS_NVIDIA_VCD_OUTLET_TEMP       756
+#define IDS_NVIDIA_FAN_SPEED             757
 
 #define IDS_CAT_SUMMARY           1000
 

@@ -894,6 +894,14 @@ BEGIN
     IDS_HWBENCH, "Тесты быстродействия"
     IDS_SYSMON_BTN, "Датчики"
     IDS_BENCH_BTN, "Тесты"
+    IDS_NVIDIA_BOARD_TEMP, "Температура платы"
+    IDS_NVIDIA_CORE_TEMP, "Температура процессора"
+    IDS_NVIDIA_MEMORY_TEMP, "Температура памяти"
+    IDS_NVIDIA_POWER_SUPPLY_TEMP, "Температура питания"
+    IDS_NVIDIA_VCD_BOARD_TEMP, "VCD Board Temperature"
+    IDS_NVIDIA_VCD_INLET_TEMP, "VCD Inlet Temperature"
+    IDS_NVIDIA_VCD_OUTLET_TEMP, "VCD Outlet Temperature"
+    IDS_NVIDIA_FAN_SPEED, "Скорость кулера"
 
     IDS_CAT_SUMMARY, "Общая информация"
 

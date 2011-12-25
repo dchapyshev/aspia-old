@@ -92,7 +92,10 @@ BOOL LoadDriver(VOID);
 BOOL UnloadDriver(VOID);
 
 PVOID GetSmbiosData(OUT DWORD* ReturnSize);
-BOOL ReadSpdData(BYTE Slot, BYTE *SpdData);
+
+typedef BOOL (CALLBACK *SMBUS_BASEADR_ENUMPROC)(WORD BaseAddress, DWORD ChipType);
+VOID EnumSmBusBaseAddress(SMBUS_BASEADR_ENUMPROC lpEnumProc);
+BOOL ReadSpdData(WORD BaseAddress, DWORD ChipType, BYTE Slot, BYTE *SpdData);
 
 BOOL ReadMsr(IN UINT32 Register, IN UINT32 CpuIndex, OUT UINT64* Data);
 
@@ -310,3 +313,75 @@ BOOL IsWindows2000(VOID);
 BOOL GetBinaryFromRegistry(HKEY hRootKey, LPWSTR lpszPath, LPWSTR lpszKeyName, LPBYTE lpdwValue, DWORD dwSize);
 BOOL GetStringFromRegistry(BOOL Is64KeyRequired, HKEY hRootKey, LPWSTR lpszPath, LPWSTR lpszKeyName, LPWSTR lpszValue, DWORD dwSize);
 INT AddIconToImageList(HINSTANCE hInst, HIMAGELIST hImageList, UINT IconIndex);
+
+/* NVIDIA GPU Information */
+typedef struct
+{
+    WCHAR szName[64];
+
+    struct
+    {
+        LONG CurrentTemp;
+        LONG DefaultMinTemp;
+        LONG DefaultMaxTemp;
+    }
+    GpuTemp;
+
+    struct
+    {
+        LONG CurrentTemp;
+        LONG DefaultMinTemp;
+        LONG DefaultMaxTemp;
+    }
+    MemoryTemp;
+
+    struct
+    {
+        LONG CurrentTemp;
+        LONG DefaultMinTemp;
+        LONG DefaultMaxTemp;
+    }
+    PowerSupplyTemp;
+
+    struct
+    {
+        LONG CurrentTemp;
+        LONG DefaultMinTemp;
+        LONG DefaultMaxTemp;
+    }
+    BoardTemp;
+
+    struct
+    {
+        LONG CurrentTemp;
+        LONG DefaultMinTemp;
+        LONG DefaultMaxTemp;
+    }
+    VcdBoardTemp;
+
+    struct
+    {
+        LONG CurrentTemp;
+        LONG DefaultMinTemp;
+        LONG DefaultMaxTemp;
+    }
+    VcdInletTemp;
+
+    struct
+    {
+        LONG CurrentTemp;
+        LONG DefaultMinTemp;
+        LONG DefaultMaxTemp;
+    }
+    VcdOutletTemp;
+
+    LONG FanSpeed;
+}
+NVIDIA_GPU_INFO, *PNVIDIA_GPU_INFO;
+
+typedef BOOL (CALLBACK *NVIDIA_GPU_ENUMPROC)(PNVIDIA_GPU_INFO GpuInfo);
+
+BOOL InitNvidiaApi(VOID);
+VOID FreeNvidiaApi(VOID);
+BOOL IsNvidiaApiInitialized(VOID);
+BOOL EnumNvidiaGPUs(NVIDIA_GPU_ENUMPROC lpEnumProc);
