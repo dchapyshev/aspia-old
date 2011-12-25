@@ -207,6 +207,8 @@ EnumSmBusBaseAddress(SMBUS_BASEADR_ENUMPROC lpEnumProc)
                         lpEnumProc(BaseAddress, NVCK804_SMBUS);
                         break;
 
+                    case 0x30501106: /* VIA 596 */
+                    case 0x30511106: /* VIA596B */
                     case 0x71138086: /* PIIX4 */
                     case 0x719B8086: /* PII440MX */
                     case 0x02001166: /* SRVWSB4 */
@@ -253,8 +255,6 @@ EnumSmBusBaseAddress(SMBUS_BASEADR_ENUMPROC lpEnumProc)
 
                     case 0x43851002: /* ATI SB850 */
                     case 0x30401106: /* VIA 586 */
-                    case 0x30501106: /* VIA 596 */
-                    case 0x30511106: /* VIA596B */
                     case 0x30571106: /* VIA 686 */
                     case 0x710110B9: /* ALI7101 */
                     case 0x153510B9: /* ALI1535 */

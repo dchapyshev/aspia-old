@@ -157,10 +157,31 @@ IsRootCategory(UINT Category, CATEGORY_LIST *List)
 }
 
 VOID
+SaveColumnsSizes(VOID)
+{
+    WCHAR szName[15], szCol[3], szIniPath[MAX_PATH];
+    INT i, count = IoGetColumnsCount();
+
+    GetIniFilePath(szIniPath, MAX_PATH);
+    StringCbPrintf(szName, sizeof(szName), L"col-%d", CurrentCategory);
+
+    for (i = 0; i < count; i++)
+    {
+        LVCOLUMN lvcol = {0};
+
+        lvcol.mask = LVCF_WIDTH;
+
+        ListView_GetColumn(hListView, i, &lvcol);
+        StringCbPrintf(szCol, sizeof(szCol), L"%d", i);
+
+        WritePrivateProfileInt(szName, szCol, lvcol.cx, szIniPath);
+    }
+}
+
+VOID
 GUIInfoThread(LPVOID lpParameter)
 {
     UINT Category = (UINT)lpParameter;
-    INT i, count = IoGetColumnsCount();
 
     if (!IsLoadingDone) return;
 
@@ -170,22 +191,7 @@ GUIInfoThread(LPVOID lpParameter)
 
     if (CurrentCategory != Category)
     {
-        WCHAR szName[15], szCol[3], szIniPath[MAX_PATH];
-
-        GetIniFilePath(szIniPath, MAX_PATH);
-        StringCbPrintf(szName, sizeof(szName), L"col-%d", CurrentCategory);
-
-        for (i = 0; i < count; i++)
-        {
-            LVCOLUMN lvcol = {0};
-
-            lvcol.mask = LVCF_WIDTH;
-
-            ListView_GetColumn(hListView, i, &lvcol);
-            StringCbPrintf(szCol, sizeof(szCol), L"%d", i);
-
-            WritePrivateProfileInt(szName, szCol, lvcol.cx, szIniPath);
-        }
+        SaveColumnsSizes();
 
         CurrentCategory = Category;
     }
@@ -316,7 +322,7 @@ ListViewCopySelectedStrings(VOID)
 
                 pText = (WCHAR*)ReAlloc(pText, Size);
                 if (HeapSize(hProcessHeap, 0, pText) != OldSize)
-                    StringCbCat(pText, Size, L" ");
+                    StringCbCat(pText, Size, L"\t");
             }
 
             OldSize = HeapSize(hProcessHeap, 0, pText);
@@ -463,7 +469,8 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
                 {
                     NMLVCUSTOMDRAW *nmlvcd = (NMLVCUSTOMDRAW*)lParam;
 
-                    if (data->hwndFrom != hListView) break;
+                    if (data->hwndFrom != hListView ||
+                        !SettingsInfo.ShowAltRows) break;
 
                     if (nmlvcd->nmcd.dwDrawStage == CDDS_PREPAINT)
                     {
@@ -621,6 +628,7 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
         case WM_DESTROY:
         {
+            SaveColumnsSizes();
             SaveSettings();
 
             DeleteTraySensors();
@@ -874,8 +882,11 @@ wWinMain(HINSTANCE hInst,
 
         SettingsInfo.StartupCategory = IDS_CAT_SUMMARY;
 
-        /* Windows Position */
+        /* View Settings */
         SettingsInfo.SaveWindowPos = TRUE;
+        SettingsInfo.StayOnTop = FALSE;
+        SettingsInfo.ShowAltRows = TRUE;
+        SettingsInfo.ShowWindowStyles = TRUE;
 
         SettingsInfo.Bottom = 660;
         SettingsInfo.Left = 20;
@@ -898,7 +909,6 @@ wWinMain(HINSTANCE hInst,
         SettingsInfo.ShowSensorIcons = FALSE;
 
         SettingsInfo.AllowKmDriver = TRUE;
-        SettingsInfo.StayOnTop = FALSE;
 
         /* Report: Content Filtering */
         SettingsInfo.ELogShowError = TRUE;
