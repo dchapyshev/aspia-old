@@ -68,7 +68,7 @@ VOID
 ShowSpdDataForDDR2(BYTE *Spd)
 {
     WCHAR szText[MAX_STR_LEN], szType[MAX_STR_LEN],
-          szManuf[MAX_STR_LEN];
+          szManuf[MAX_STR_LEN], szPart[MAX_STR_LEN];
     INT ItemIndex, Rank;
     double CycleTime;
 
@@ -78,18 +78,18 @@ ShowSpdDataForDDR2(BYTE *Spd)
     GetSpdManufacturer(Spd, szManuf, sizeof(szManuf));
 
     /* Model */
-    StringCbPrintf(szText, sizeof(szText),
-                   L"%s %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", szManuf,
+    StringCbPrintf(szPart, sizeof(szPart),
+                   L"%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
                    Spd[0x49], Spd[0x4A], Spd[0x4B], Spd[0x4C], Spd[0x4D],
                    Spd[0x4E], Spd[0x4F], Spd[0x50], Spd[0x51], Spd[0x52],
                    Spd[0x53], Spd[0x54], Spd[0x55], Spd[0x56], Spd[0x57],
                    Spd[0x58], Spd[0x59], Spd[0x5A]);
-    ChopSpaces(szText, sizeof(szText));
-    if (szText[0] == 0)
-    {
-        StringCbPrintf(szText, sizeof(szText),
-                       L"%s %s", szManuf, szType);
-    }
+    ChopSpaces(szPart, sizeof(szPart));
+
+    StringCbPrintf(szText, sizeof(szText),
+                   L"%s %s", szManuf,
+                   (szPart[0] == 0) ? szType : szPart);
+
     IoAddHeaderString(0, (szText[0] == 0) ? L"Unknown" : szText, 0);
 
     ItemIndex = IoAddValueName(1, IDS_MANUFACTURER, 0);

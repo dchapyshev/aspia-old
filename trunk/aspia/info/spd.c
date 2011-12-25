@@ -55,7 +55,7 @@ ShowSpdData(BYTE *Spd)
     }
 }
 
-BOOL CALLBACK
+VOID CALLBACK
 EnumSmbusBaseAdrProc(WORD BaseAddress, DWORD ChipType)
 {
     BYTE SpdData[SPD_MAX_SIZE] = {0};

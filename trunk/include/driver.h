@@ -93,7 +93,7 @@ BOOL UnloadDriver(VOID);
 
 PVOID GetSmbiosData(OUT DWORD* ReturnSize);
 
-typedef BOOL (CALLBACK *SMBUS_BASEADR_ENUMPROC)(WORD BaseAddress, DWORD ChipType);
+typedef VOID (CALLBACK *SMBUS_BASEADR_ENUMPROC)(WORD BaseAddress, DWORD ChipType);
 VOID EnumSmBusBaseAddress(SMBUS_BASEADR_ENUMPROC lpEnumProc);
 BOOL ReadSpdData(WORD BaseAddress, DWORD ChipType, BYTE Slot, BYTE *SpdData);
 

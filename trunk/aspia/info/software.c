@@ -392,6 +392,65 @@ GetVMWareLicenses(VOID)
     RegCloseKey(hKey);
 }
 
+VOID
+GetAheadNeroLicensies(VOID)
+{
+    WCHAR szKeyName[MAX_PATH], szValueName[MAX_PATH],
+          szValue[MAX_PATH];
+    DWORD dwSize = MAX_PATH, dwValueSize;
+    INT Index, KeyIndex = 0, ValIndex;
+    HKEY hKey, hSubKey;
+
+    if (RegOpenKey(HKEY_LOCAL_MACHINE,
+                   L"Software\\Nero\\Shared",
+                   &hKey) != ERROR_SUCCESS)
+    {
+        return;
+    }
+
+    while (RegEnumKeyEx(hKey, KeyIndex, szKeyName, &dwSize,
+           NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+    {
+        if (wcsncmp(szKeyName, L"NL", 2) == 0)
+        {
+            if (RegOpenKey(hKey, szKeyName, &hSubKey) != ERROR_SUCCESS)
+            {
+                continue;
+            }
+
+            dwValueSize = MAX_PATH;
+            dwSize = MAX_PATH;
+            ValIndex = 0;
+
+            while (RegEnumValue(hSubKey,
+                                ValIndex,
+                                szValueName,
+                                &dwSize,
+                                0, NULL,
+                                (LPBYTE)szValue,
+                                &dwValueSize) == ERROR_SUCCESS)
+            {
+                if (wcsncmp(szValueName, L"Serial", 6) == 0)
+                {
+                    Index = IoAddItem(0, 0, L"Ahead Nero");
+                    IoSetItemText(Index, 1, szValue);
+                }
+
+                dwValueSize = MAX_PATH;
+                dwSize = MAX_PATH;
+                ++ValIndex;
+            }
+
+            RegCloseKey(hSubKey);
+        }
+
+        dwSize = MAX_PATH;
+        ++KeyIndex;
+    }
+
+    RegCloseKey(hKey);
+}
+
 typedef struct
 {
     LPWSTR lpProductName;
@@ -490,6 +549,8 @@ SOFTWARE_LicensesInfo(VOID)
     }
 
     GetVMWareLicenses();
+
+    GetAheadNeroLicensies();
 
     DebugEndReceiving();
 }
