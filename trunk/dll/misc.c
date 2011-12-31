@@ -695,3 +695,27 @@ AddIconToImageList(HINSTANCE hInst, HIMAGELIST hImageList, UINT IconIndex)
     DestroyIcon(hIcon);
     return Index;
 }
+
+BOOL
+KillProcess(DWORD pid, BOOL KillTree)
+{
+    HANDLE hProcess;
+
+    hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pid);
+    if (hProcess)
+    {
+        if (!TerminateProcess(hProcess, KillTree ? 0 : 1))
+        {
+            DebugTrace(L"TerminateProcess() failed. Error code = %d",
+                       GetLastError());
+            CloseHandle(hProcess);
+
+            return FALSE;
+        }
+        CloseHandle(hProcess);
+
+        return TRUE;
+    }
+
+    return FALSE;
+}

@@ -67,6 +67,7 @@ extern HINSTANCE hIconsInst;
 extern HINSTANCE hLangInst;
 extern HWND hMainWnd;
 extern UINT CurrentCategory;
+extern UINT CurrentMenu;
 extern HIMAGELIST hListViewImageList;
 extern HANDLE hProcessHeap;
 extern CRITICAL_SECTION CriticalSection;
@@ -137,6 +138,7 @@ VOID InitColumnsList(COLUMN_LIST*);
 VOID ListViewDelAllColumns(VOID);
 VOID ListViewClear(VOID);
 PVOID ListViewGetlParam(HWND, INT);
+VOID ListViewSetItemParam(INT Index, LPARAM lParam);
 
 /* categories.c */
 typedef VOID (*PINFOFUNC)(VOID);
@@ -145,6 +147,7 @@ typedef struct _CATEGORY_LIST
 {
     UINT StringID;
     UINT IconID;
+    UINT MenuID;
     BOOL Expanded;
     BOOL Checked;
     HTREEITEM hTreeItem;

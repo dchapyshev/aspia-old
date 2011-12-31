@@ -12,13 +12,26 @@ ListViewAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
 {
     LV_ITEM Item = {0};
 
-    Item.mask = LVIF_TEXT | LVIF_STATE | LVIF_IMAGE | LVIF_INDENT;
+    Item.mask = LVIF_TEXT | LVIF_STATE | LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM;
     Item.pszText = lpText;
     Item.iItem = ListView_GetItemCount(hListView);
     Item.iImage = IconIndex;
     Item.iIndent = Indent;
+    Item.lParam = NULL;
 
     return ListView_InsertItem(hListView, &Item);
+}
+
+VOID
+ListViewSetItemParam(INT Index, LPARAM lParam)
+{
+    LV_ITEM Item = {0};
+
+    Item.mask = LVIF_PARAM;
+    Item.iItem = Index;
+    Item.lParam = lParam;
+
+    ListView_SetItem(hListView, &Item);
 }
 
 VOID

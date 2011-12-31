@@ -15,6 +15,7 @@ HINSTANCE hLangInst = NULL;
 HWND hMainWnd = NULL;
 HIMAGELIST hListViewImageList = NULL;
 UINT CurrentCategory = IDS_CAT_SUMMARY;
+UINT CurrentMenu = IDR_POPUP;
 BOOL bAscendingSort = TRUE;
 HANDLE hFillThread = NULL;
 HANDLE hProcessHeap = NULL;
@@ -442,6 +443,96 @@ OnCommand(UINT Command)
                       hMainWnd,
                       SettingsDlgProc);
             break;
+
+        /* Task Manager Cases */
+
+        case ID_KILL_PROCESS_TREE:
+        case ID_KILL_PROCESS:
+        {
+            INT ItemIndex = ListView_GetNextItem(hListView, -1, LVNI_FOCUSED);
+
+            if (KillProcess((DWORD)ListViewGetlParam(hListView, ItemIndex),
+                            (Command == ID_KILL_PROCESS) ? FALSE : TRUE))
+            {
+                ListView_DeleteItem(hListView, ItemIndex);
+            }
+        }
+        break;
+
+        case ID_HIGH_PRIORITY:
+        case ID_ABOVE_NORMAL_PRIORITY:
+        case ID_NORMAL_PRIORITY:
+        case ID_BELOW_NORMAL_PRIORITY:
+        case ID_LOW_PRIORITY:
+        case ID_REALTIME_PRIORITY:
+        {
+            INT ItemIndex = ListView_GetNextItem(hListView, -1, LVNI_FOCUSED);
+            DWORD pid = (DWORD)ListViewGetlParam(hListView, ItemIndex);
+            HANDLE hProcess;
+
+            hProcess = OpenProcess(PROCESS_SET_INFORMATION, FALSE, pid);
+            if (hProcess)
+            {
+                DWORD dwClass;
+
+                switch (Command)
+                {
+                    case ID_HIGH_PRIORITY:
+                        dwClass = HIGH_PRIORITY_CLASS;
+                        break;
+                    case ID_ABOVE_NORMAL_PRIORITY:
+                        dwClass = ABOVE_NORMAL_PRIORITY_CLASS;
+                        break;
+                    case ID_NORMAL_PRIORITY:
+                        dwClass = NORMAL_PRIORITY_CLASS;
+                        break;
+                    case ID_BELOW_NORMAL_PRIORITY:
+                        dwClass = BELOW_NORMAL_PRIORITY_CLASS;
+                        break;
+                    case ID_LOW_PRIORITY:
+                        dwClass = IDLE_PRIORITY_CLASS;
+                        break;
+                    case ID_REALTIME_PRIORITY:
+                        dwClass = REALTIME_PRIORITY_CLASS;
+                        break;
+                    default:
+                        dwClass = NORMAL_PRIORITY_CLASS;
+                        break;
+                }
+                SetPriorityClass(hProcess, dwClass);
+                CloseHandle(hProcess);
+            }
+        }
+        break;
+
+        case ID_PROCESS_OPEN_FOLDER:
+        {
+            INT ItemIndex = ListView_GetNextItem(hListView, -1, LVNI_FOCUSED);
+            WCHAR szPath[MAX_PATH];
+
+            ListView_GetItemText(hListView, ItemIndex, 1, szPath, MAX_PATH);
+            if (szPath[0] != 0 && szPath[0] != L'-')
+            {
+                WCHAR szCmd[MAX_PATH];
+
+                StringCbPrintf(szCmd, sizeof(szCmd), L"/select, %s", szPath);
+                ShellExecute(NULL, NULL, L"explorer.exe", szCmd, NULL, SW_SHOWNORMAL);
+            }
+        }
+        break;
+
+        case ID_PROCESS_PROPERTIES:
+        {
+            INT ItemIndex = ListView_GetNextItem(hListView, -1, LVNI_FOCUSED);
+            WCHAR szPath[MAX_PATH];
+
+            ListView_GetItemText(hListView, ItemIndex, 1, szPath, MAX_PATH);
+            if (szPath[0] != 0 && szPath[0] != L'-')
+            {
+                SHObjectProperties(hMainWnd, SHOP_FILEPATH, szPath, NULL);
+            }
+        }
+        break;
     }
 }
 
@@ -501,7 +592,10 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
                             if (IsMultiItemsSelected())
                                 ShowPopupMenu(IDR_COPY_ALL_POPUP);
                             else
-                                ShowPopupMenu(IDR_POPUP);
+                            {
+                                if (CurrentMenu)
+                                    ShowPopupMenu(CurrentMenu);
+                            }
                         }
                     }
                 }

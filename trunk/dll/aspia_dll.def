@@ -61,3 +61,4 @@ InitNvidiaApi @58
 FreeNvidiaApi @59
 IsNvidiaApiInitialized @60
 EnumNvidiaGPUs @61
+KillProcess @62
