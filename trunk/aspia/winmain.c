@@ -12,16 +12,24 @@
 HINSTANCE hInstance = NULL;
 HINSTANCE hIconsInst = NULL;
 HINSTANCE hLangInst = NULL;
+
 HWND hMainWnd = NULL;
 HIMAGELIST hListViewImageList = NULL;
+
 UINT CurrentCategory = IDS_CAT_SUMMARY;
 UINT CurrentMenu = IDR_POPUP;
-BOOL bAscendingSort = TRUE;
+BOOL IsSortingAllowed = FALSE;
+PFREEFUNC InfoFreeFunction = NULL;
+
 HANDLE hFillThread = NULL;
 HANDLE hProcessHeap = NULL;
+
 CRITICAL_SECTION CriticalSection;
+
 BOOL IsLoadingDone = TRUE;
 BOOL IsCanceled = FALSE;
+BOOL bSortAscending = TRUE;
+
 PARAMS_STRUCT ParamsInfo = {0};
 
 
@@ -30,16 +38,14 @@ SetMainWindowTitle(UINT uiCategory)
 {
     WCHAR szText[MAX_STR_LEN], szTitle[MAX_STR_LEN];
 
-    LoadMUIString(IDS_APPTITLE, szTitle, MAX_STR_LEN);
-
     if (!LoadMUIString(uiCategory, szText, MAX_STR_LEN))
     {
-        SetWindowText(hMainWnd, szTitle);
+        SetWindowText(hMainWnd, L"Aspia");
     }
     else
     {
         StringCbPrintf(szTitle, sizeof(szTitle),
-                       L"%s - %s", szTitle, szText);
+                       L"Aspia - %s", szText);
         SetWindowText(hMainWnd, szTitle);
     }
 }
@@ -212,6 +218,8 @@ GUIInfoThread(LPVOID lpParameter)
 
     /* Delete all items and columns */
     ListViewClear();
+
+    bSortAscending = TRUE;
 
     IoRunInfoFunc(Category, RootCategoryList);
 
@@ -536,6 +544,32 @@ OnCommand(UINT Command)
     }
 }
 
+static INT CALLBACK
+SortingCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+    WCHAR Item1[MAX_STR_LEN], Item2[MAX_STR_LEN];
+    LVFINDINFO IndexInfo = {0};
+    INT Index;
+
+    IndexInfo.flags = LVFI_PARAM;
+
+    IndexInfo.lParam = lParam1;
+    Index = ListView_FindItem(hListView, -1, &IndexInfo);
+    ListView_GetItemText(hListView, Index, (INT)lParamSort, Item1, MAX_STR_LEN);
+
+    IndexInfo.lParam = lParam2;
+    Index = ListView_FindItem(hListView, -1, &IndexInfo);
+    ListView_GetItemText(hListView, Index, (INT)lParamSort, Item2, MAX_STR_LEN);
+
+    _wcsupr(Item1);
+    _wcsupr(Item2);
+
+    if (bSortAscending)
+        return wcscmp(Item2, Item1);
+    else
+        return wcscmp(Item1, Item2);
+}
+
 LRESULT CALLBACK
 MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
@@ -636,6 +670,20 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
                         if (CurrentCategory == Category) break;
                         _beginthread(GUIInfoThread, 0, (LPVOID)Category);
+                    }
+                }
+                break;
+
+                case LVN_COLUMNCLICK:
+                {
+                    LPNMLISTVIEW pnmv = (LPNMLISTVIEW)lParam;
+
+                    if (IsSortingAllowed)
+                    {
+                        ListView_SortItems(hListView,
+                                           SortingCompareFunc,
+                                           pnmv->iSubItem);
+                        bSortAscending = !bSortAscending;
                     }
                 }
                 break;
@@ -938,7 +986,6 @@ wWinMain(HINSTANCE hInst,
 {
     WNDCLASSEX WndClass = {0};
     WCHAR szWindowClass[] = L"ASPIAIS";
-    WCHAR szWindowName[MAX_STR_LEN];
     HANDLE hMutex;
     HACCEL hAccel;
     MSG Msg;
@@ -1077,12 +1124,10 @@ wWinMain(HINSTANCE hInst,
 
     if (RegisterClassEx(&WndClass) == (ATOM)0) goto Exit;
 
-    LoadMUIString(IDS_APPTITLE, szWindowName, MAX_STR_LEN);
-
     /* Создаем главное окно программы */
     hMainWnd = CreateWindowEx(WS_EX_WINDOWEDGE,
                               szWindowClass,
-                              szWindowName,
+                              L"Aspia",
                               WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
                               20, 20, 850, 640,
                               NULL, NULL, hInstance, NULL);

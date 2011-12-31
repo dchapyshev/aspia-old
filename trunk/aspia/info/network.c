@@ -296,7 +296,7 @@ NETWORK_CardsInfo(VOID)
 
         if (pPerInfo->DnsServerList.IpAddress.String[0] != '\0')
         {
-            Index = IoAddValueName(1, IDS_DNS1, 0);
+            Index = IoAddItem(1, 0, L"DNS 1");
 
             StringCbPrintf(szText, sizeof(szText), L"%S",
                            pPerInfo->DnsServerList.IpAddress.String);
@@ -304,7 +304,7 @@ NETWORK_CardsInfo(VOID)
 
             if (pPerInfo->DnsServerList.Next)
             {
-                Index = IoAddValueName(1, IDS_DNS2, 0);
+                Index = IoAddItem(1, 0, L"DNS 2");
                 StringCbPrintf(szText, sizeof(szText), L"%S",
                                pPerInfo->DnsServerList.Next->IpAddress.String);
                 IoSetItemText(Index, 1, szText);
@@ -349,14 +349,14 @@ NETWORK_CardsInfo(VOID)
             LoadMUIString(IDS_YES, szText, MAX_STR_LEN);
             IoSetItemText(Index, 1, szText);
 
-            Index = IoAddValueName(1, IDS_WINS1, 0);
+            Index = IoAddItem(1, 0, L"WINS 1");
             StringCbPrintf(szText, sizeof(szText), L"%S",
                            pAdapter->PrimaryWinsServer.IpAddress.String);
             IoSetItemText(Index, 1, szText);
 
             if (pAdapter->SecondaryWinsServer.IpAddress.String[0] != 0)
             {
-                Index = IoAddValueName(1, IDS_WINS2, 0);
+                Index = IoAddItem(1, 0, L"WINS 2");
                 StringCbPrintf(szText, sizeof(szText), L"%S",
                                pAdapter->SecondaryWinsServer.IpAddress.String);
                 IoSetItemText(Index, 1, szText);
@@ -705,6 +705,13 @@ NETWORK_IEHistoryInfo(VOID)
 
     DebugStartReceiving();
 
+    if (!SettingsInfo.IEShowFile &&
+        !SettingsInfo.IEShowFtp &&
+        !SettingsInfo.IEShowHttp)
+    {
+        return;
+    }
+
     IoAddIcon(IDI_IE);
 
     CoInitialize(NULL);
@@ -1043,7 +1050,7 @@ NETWORK_RasInfo(VOID)
         IoSetItemText(Index, 1, szText);
 
         /* DNS */
-        Index = IoAddValueName(1, IDS_DNS1, 0);
+        Index = IoAddItem(1, 0, L"DNS 1");
         if (RasEntry.ipaddrDns.a == 0 && RasEntry.ipaddrDns.b == 0 &&
             RasEntry.ipaddrDns.c == 0 && RasEntry.ipaddrDns.d == 0)
         {
@@ -1060,7 +1067,7 @@ NETWORK_RasInfo(VOID)
             IoSetItemText(Index, 1, szText);
 
             /* DNS Alt */
-            Index = IoAddValueName(1, IDS_DNS2, 0);
+            Index = IoAddItem(1, 0, L"DNS 2");
             StringCbPrintf(szText, sizeof(szText),
                            L"%d.%d.%d.%d",
                            RasEntry.ipaddrDnsAlt.a,
@@ -1071,7 +1078,7 @@ NETWORK_RasInfo(VOID)
         IoSetItemText(Index, 1, szText);
 
         /* WINS */
-        Index = IoAddValueName(1, IDS_WINS1, 0);
+        Index = IoAddItem(1, 0, L"WINS 1");
         if (RasEntry.ipaddrWins.a == 0 && RasEntry.ipaddrWins.b == 0 &&
             RasEntry.ipaddrWins.c == 0 && RasEntry.ipaddrWins.d == 0)
         {
@@ -1088,7 +1095,7 @@ NETWORK_RasInfo(VOID)
             IoSetItemText(Index, 1, szText);
 
             /* WINS Alt */
-            Index = IoAddValueName(1, IDS_WINS2, 0);
+            Index = IoAddItem(1, 0, L"WINS 2");
             StringCbPrintf(szText, sizeof(szText),
                            L"%d.%d.%d.%d",
                            RasEntry.ipaddrWinsAlt.a,

@@ -555,6 +555,13 @@ EventViewInfo(LPWSTR lpLogName)
     WCHAR szText[MAX_STR_LEN];
     DWORD dwSize;
 
+    if (!SettingsInfo.ELogShowError &&
+        !SettingsInfo.ELogShowWarning &&
+        !SettingsInfo.ELogShowInfo)
+    {
+        return;
+    }
+
     IoAddIcon(IDI_INFOICO);
     IoAddIcon(IDI_BANG);
     IoAddIcon(IDI_ERRORICO);

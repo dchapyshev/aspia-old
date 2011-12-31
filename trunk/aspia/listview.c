@@ -10,14 +10,15 @@
 INT
 ListViewAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
 {
+    INT ItemIndex = ListView_GetItemCount(hListView);
     LV_ITEM Item = {0};
 
     Item.mask = LVIF_TEXT | LVIF_STATE | LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM;
     Item.pszText = lpText;
-    Item.iItem = ListView_GetItemCount(hListView);
+    Item.iItem = ItemIndex;
     Item.iImage = IconIndex;
     Item.iIndent = Indent;
-    Item.lParam = NULL;
+    Item.lParam = ItemIndex;
 
     return ListView_InsertItem(hListView, &Item);
 }
