@@ -726,7 +726,9 @@ IoRunInfoFunc(UINT Category, CATEGORY_LIST *List)
 
             if (IoTarget == IO_TARGET_LISTVIEW)
             {
-                CurrentMenu = List[Index].MenuID;
+                CurrentMenu      = List[Index].MenuID;
+                IsSortingAllowed = List[Index].Sorting;
+                InfoFreeFunction = List[Index].FreeFunc;
 
                 GetIniFilePath(szIniPath, MAX_PATH);
                 StringCbPrintf(szName, sizeof(szName), L"col-%d", Category);

@@ -178,7 +178,6 @@
 #define IDC_STYLES_WNDS         147
 
 /* Strings */
-#define IDS_APPTITLE                100
 #define IDS_SAVE                    101
 #define IDS_RELOAD                  102
 #define IDS_ABOUT                   103
@@ -200,10 +199,6 @@
 #define IDS_DESC                    119
 #define IDS_STATUS                  120
 #define IDS_PROP                    121
-#define IDS_DNS1                    122
-#define IDS_DNS2                    123
-#define IDS_WINS1                   124
-#define IDS_WINS2                   125
 #define IDS_PRODUCT                 126
 #define IDS_VERSION                 127
 #define IDS_NEVER                   128
@@ -264,48 +259,6 @@
 
 #define IDS_FOLDER_NAME             177
 #define IDS_FOLDER_PATH             178
-
-#define IDS_DIR_ADMIN_TOOLS         179
-#define IDS_DIR_APPDATA             180
-#define IDS_DIR_CACHE               181
-#define IDS_DIR_CD_BURNING          182
-#define IDS_DIR_COMMON_ADMIN_TOOLS  183
-#define IDS_DIR_COMMON_APPDATA      184
-#define IDS_DIR_COMMON_DESKTOP      185
-#define IDS_DIR_COMMON_DOCUMENTS    186
-#define IDS_DIR_COMMON_FAVORITES    187
-#define IDS_DIR_COMMON_FILES        188
-#define IDS_DIR_COMMON_MUSIC        189
-#define IDS_DIR_COMMON_PICTURES     190
-#define IDS_DIR_COMMON_PROGRAMS     191
-#define IDS_DIR_COMMON_STARTMENU    192
-#define IDS_DIR_COMMON_STARTUP      193
-#define IDS_DIR_COMMON_TEMPLATES    194
-#define IDS_DIR_COMMON_VIDEO        195
-#define IDS_DIR_COOKIES             196
-#define IDS_DIR_DESKTOP             197
-#define IDS_DIR_FAVORITES           198
-#define IDS_DIR_FONTS               199
-#define IDS_DIR_HISTORY             200
-#define IDS_DIR_LOCAL_APPDATA       201
-#define IDS_DIR_MY_DOCS             202
-#define IDS_DIR_MY_MUSIC            203
-#define IDS_DIR_MY_PICTURES         204
-#define IDS_DIR_MY_VIDEO            205
-#define IDS_DIR_NETHOOD             206
-#define IDS_DIR_PRINTHOOD           207
-#define IDS_DIR_PROFILE             208
-#define IDS_DIR_PROGRAMFILES        209
-#define IDS_DIR_PROGRAMS            210
-#define IDS_DIR_RECENT              211
-#define IDS_DIR_RESOURCES           212
-#define IDS_DIR_SENDTO              213
-#define IDS_DIR_STARTMENU           214
-#define IDS_DIR_STARTUP             215
-#define IDS_DIR_SYSTEM              216
-#define IDS_DIR_TEMP                217
-#define IDS_DIR_TEMPLATES           218
-#define IDS_DIR_WINDOWS             219
 
 #define IDS_COMPUTER_NAME           220
 #define IDS_CURRENT_USERNAME        221
@@ -732,19 +685,6 @@
 #define IDS_SPD_FET_SWITCH_EXT          611
 #define IDS_SPD_WEAK_DRIVER             612
 #define IDS_SPD_BURST_LENGTHS           613
-#define IDS_SPD_TIMING_RCD              614
-#define IDS_SPD_TIMING_RP               615
-#define IDS_SPD_TIMING_RAS              616
-#define IDS_SPD_TIMING_RTP              617
-#define IDS_SPD_TIMING_WTR              618
-#define IDS_SPD_TIMING_WR               619
-#define IDS_SPD_TIMING_RRD              620
-#define IDS_SPD_TIMING_RFC              621
-#define IDS_SPD_TIMING_RC               622
-#define IDS_SPD_TIMING_IS               623
-#define IDS_SPD_TIMING_IH               624
-#define IDS_SPD_TIMING_DS               625
-#define IDS_SPD_TIMING_DH               626
 #define IDS_SPD_TIMING_FORMAT           627
 #define IDS_PREV_TOOLS                  628
 #define IDS_PREV_TASKMGR                629

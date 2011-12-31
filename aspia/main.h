@@ -62,12 +62,35 @@ typedef struct
     WCHAR szCurrentPath[MAX_PATH];
 } PARAMS_STRUCT, *PPARAMS_STRUCT;
 
+/* categories.c */
+typedef VOID (*PINFOFUNC)(VOID);
+typedef VOID (*PFREEFUNC)(VOID);
+
+typedef struct _CATEGORY_LIST
+{
+    UINT StringID;
+    UINT IconID;
+    UINT MenuID;
+    BOOL Expanded;
+    BOOL Checked;
+    BOOL Sorting;
+    HTREEITEM hTreeItem;
+    PINFOFUNC InfoFunc;
+    PFREEFUNC FreeFunc;
+    struct _COLUMN_LIST *ColumnList;
+    struct _CATEGORY_LIST *Child;
+} CATEGORY_LIST;
+
+extern CATEGORY_LIST RootCategoryList[];
+
 extern HINSTANCE hInstance;
 extern HINSTANCE hIconsInst;
 extern HINSTANCE hLangInst;
 extern HWND hMainWnd;
 extern UINT CurrentCategory;
 extern UINT CurrentMenu;
+extern BOOL IsSortingAllowed;
+extern PFREEFUNC InfoFreeFunction;
 extern HIMAGELIST hListViewImageList;
 extern HANDLE hProcessHeap;
 extern CRITICAL_SECTION CriticalSection;
@@ -139,24 +162,6 @@ VOID ListViewDelAllColumns(VOID);
 VOID ListViewClear(VOID);
 PVOID ListViewGetlParam(HWND, INT);
 VOID ListViewSetItemParam(INT Index, LPARAM lParam);
-
-/* categories.c */
-typedef VOID (*PINFOFUNC)(VOID);
-
-typedef struct _CATEGORY_LIST
-{
-    UINT StringID;
-    UINT IconID;
-    UINT MenuID;
-    BOOL Expanded;
-    BOOL Checked;
-    HTREEITEM hTreeItem;
-    PINFOFUNC InfoFunc;
-    struct _COLUMN_LIST *ColumnList;
-    struct _CATEGORY_LIST *Child;
-} CATEGORY_LIST;
-
-extern CATEGORY_LIST RootCategoryList[];
 
 /* battery.c */
 BOOL GetBatteryInformation(VOID);

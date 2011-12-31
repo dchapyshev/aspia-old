@@ -831,57 +831,57 @@ OS_AutorunInfo(VOID)
 
 typedef struct
 {
-    UINT NameIndex;
+    LPWSTR lpName;
     INT FolderIndex;
 } SHELL_FOLDERS;
 
 SHELL_FOLDERS ShellFolders[] =
 {
-    { IDS_DIR_ADMIN_TOOLS,        CSIDL_ADMINTOOLS },
-    { IDS_DIR_APPDATA,            CSIDL_APPDATA },
-    { IDS_DIR_CACHE,              CSIDL_INTERNET_CACHE },
-    { IDS_DIR_CD_BURNING,         CSIDL_CDBURN_AREA },
-    { IDS_DIR_COMMON_ADMIN_TOOLS, CSIDL_COMMON_ADMINTOOLS },
-    { IDS_DIR_COMMON_APPDATA,     CSIDL_COMMON_APPDATA },
-    { IDS_DIR_COMMON_DESKTOP,     CSIDL_COMMON_DESKTOPDIRECTORY },
-    { IDS_DIR_COMMON_DOCUMENTS,   CSIDL_COMMON_DOCUMENTS },
-    { IDS_DIR_COMMON_FAVORITES,   CSIDL_COMMON_FAVORITES },
-    { IDS_DIR_COMMON_FILES,       CSIDL_PROGRAM_FILES_COMMON },
-    { IDS_DIR_COMMON_MUSIC,       CSIDL_COMMON_MUSIC },
-    { IDS_DIR_COMMON_PICTURES,    CSIDL_COMMON_PICTURES },
-    { IDS_DIR_COMMON_PROGRAMS,    CSIDL_COMMON_PROGRAMS },
-    { IDS_DIR_COMMON_STARTMENU,   CSIDL_COMMON_STARTMENU },
-    { IDS_DIR_COMMON_STARTUP,     CSIDL_COMMON_STARTUP },
-    { IDS_DIR_COMMON_TEMPLATES,   CSIDL_COMMON_TEMPLATES },
-    { IDS_DIR_COMMON_VIDEO,       CSIDL_COMMON_VIDEO },
-    { IDS_DIR_COOKIES,            CSIDL_COOKIES },
-    { IDS_DIR_DESKTOP,            CSIDL_DESKTOP },
-    { IDS_DIR_FAVORITES,          CSIDL_FAVORITES },
-    { IDS_DIR_FONTS,              CSIDL_FONTS },
-    { IDS_DIR_HISTORY,            CSIDL_HISTORY },
-    { IDS_DIR_LOCAL_APPDATA,      CSIDL_LOCAL_APPDATA },
-    { IDS_DIR_MY_DOCS,            CSIDL_MYDOCUMENTS },
-    { IDS_DIR_MY_MUSIC,           CSIDL_MYMUSIC },
-    { IDS_DIR_MY_PICTURES,        CSIDL_MYPICTURES },
-    { IDS_DIR_MY_VIDEO,           CSIDL_MYVIDEO },
-    { IDS_DIR_NETHOOD,            CSIDL_NETHOOD },
-    { IDS_DIR_PRINTHOOD,          CSIDL_PRINTHOOD },
-    { IDS_DIR_PROFILE,            CSIDL_PROFILE },
-    { IDS_DIR_PROGRAMFILES,       CSIDL_PROGRAM_FILES },
-    { IDS_DIR_PROGRAMS,           CSIDL_PROGRAMS },
-    { IDS_DIR_RECENT,             CSIDL_RECENT },
-    { IDS_DIR_RESOURCES,          CSIDL_RESOURCES },
-    { IDS_DIR_SENDTO,             CSIDL_SENDTO },
-    { IDS_DIR_STARTMENU,          CSIDL_STARTMENU },
-    { IDS_DIR_STARTUP,            CSIDL_ALTSTARTUP },
-    { IDS_DIR_SYSTEM,             CSIDL_SYSTEM },
-    { IDS_DIR_TEMPLATES,          CSIDL_TEMPLATES },
-    { IDS_DIR_WINDOWS,            CSIDL_WINDOWS },
+    { L"Administrative Tools",        CSIDL_ADMINTOOLS },
+    { L"AppData",                     CSIDL_APPDATA },
+    { L"Cache",                       CSIDL_INTERNET_CACHE },
+    { L"CD Burning",                  CSIDL_CDBURN_AREA },
+    { L"Common Administrative Tools", CSIDL_COMMON_ADMINTOOLS },
+    { L"Common AppData",              CSIDL_COMMON_APPDATA },
+    { L"Common Desktop",              CSIDL_COMMON_DESKTOPDIRECTORY },
+    { L"Common Documents",            CSIDL_COMMON_DOCUMENTS },
+    { L"Common Favorites",            CSIDL_COMMON_FAVORITES },
+    { L"Common Files",                CSIDL_PROGRAM_FILES_COMMON },
+    { L"Common Music",                CSIDL_COMMON_MUSIC },
+    { L"Common Pictures",             CSIDL_COMMON_PICTURES },
+    { L"Common Programs",             CSIDL_COMMON_PROGRAMS },
+    { L"Common Start Menu",           CSIDL_COMMON_STARTMENU },
+    { L"Common Startup",              CSIDL_COMMON_STARTUP },
+    { L"Common Templates",            CSIDL_COMMON_TEMPLATES },
+    { L"Common Video",                CSIDL_COMMON_VIDEO },
+    { L"Cookies",                     CSIDL_COOKIES },
+    { L"Desktop",                     CSIDL_DESKTOP },
+    { L"Favorites",                   CSIDL_FAVORITES },
+    { L"Fonts",                       CSIDL_FONTS },
+    { L"History",                     CSIDL_HISTORY },
+    { L"Local AppData",               CSIDL_LOCAL_APPDATA },
+    { L"My Documents",                CSIDL_MYDOCUMENTS },
+    { L"My Music",                    CSIDL_MYMUSIC },
+    { L"My Pictures",                 CSIDL_MYPICTURES },
+    { L"My Video",                    CSIDL_MYVIDEO },
+    { L"NetHood",                     CSIDL_NETHOOD },
+    { L"PrintHood",                   CSIDL_PRINTHOOD },
+    { L"Profile",                     CSIDL_PROFILE },
+    { L"Program Files",               CSIDL_PROGRAM_FILES },
+    { L"Programs",                    CSIDL_PROGRAMS },
+    { L"Recent",                      CSIDL_RECENT },
+    { L"Resources",                   CSIDL_RESOURCES },
+    { L"SendTo",                      CSIDL_SENDTO },
+    { L"Start Menu",                  CSIDL_STARTMENU },
+    { L"Startup",                     CSIDL_ALTSTARTUP },
+    { L"System",                      CSIDL_SYSTEM },
+    { L"Templates",                   CSIDL_TEMPLATES },
+    { L"Windows",                     CSIDL_WINDOWS },
     { 0 }
 };
 
 static VOID
-AddFolderInfoToListView(UINT uiNameID, INT nFolder)
+AddFolderInfoToListView(LPWSTR lpName, INT nFolder)
 {
     WCHAR szPath[MAX_PATH];
     INT Index, IconIndex = -1;
@@ -896,7 +896,7 @@ AddFolderInfoToListView(UINT uiNameID, INT nFolder)
                                           hIcon);
         }
 
-        Index = IoAddValueName(0, uiNameID, IconIndex);
+        Index = IoAddItem(0, IconIndex, lpName);
         IoSetItemText(Index, 1, szPath);
 
         if (IoGetTarget() == IO_TARGET_LISTVIEW)
@@ -917,14 +917,14 @@ OS_SysFoldersInfo(VOID)
 
     do
     {
-        AddFolderInfoToListView(ShellFolders[Index].NameIndex,
+        AddFolderInfoToListView(ShellFolders[Index].lpName,
                                 ShellFolders[Index].FolderIndex);
 
         if (IsCanceled) break;
     }
-    while (ShellFolders[++Index].NameIndex != 0);
+    while (ShellFolders[++Index].lpName != NULL);
 
-    ItemIndex = IoAddValueName(0, IDS_DIR_TEMP, 0);
+    ItemIndex = IoAddItem(0, 0, L"Temp");
     ExpandEnvironmentStrings(L"%TEMP%", szText, MAX_STR_LEN);
     IoSetItemText(ItemIndex, 1, szText);
 
