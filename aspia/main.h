@@ -255,6 +255,7 @@ VOID HW_HDDATAInfo(VOID);
 VOID HW_HDDSMARTInfo(VOID);
 VOID HW_MonitorInfo(VOID);
 VOID HW_WinVideoInfo(VOID);
+VOID HW_OpenGlInfo(VOID);
 VOID HW_PowerInfo(VOID);
 VOID HW_PrintersInfo(VOID);
 VOID HW_SPDInfo(VOID);
@@ -430,8 +431,6 @@ typedef struct
     COLORREF CpuFontColor;
 
     UINT SensorsRefreshRate;
-
-    BOOL SendDevReport;
 } SETTINGS_STRUCT, *PSETTINGS_STRUCT;
 
 typedef struct
@@ -456,9 +455,6 @@ BOOL LoadSettings(VOID);
 BOOL SaveSettings(VOID);
 INT_PTR CALLBACK SettingsDlgProc(HWND, UINT, WPARAM, LPARAM);
 BOOL GetIniFilePath(OUT LPWSTR lpszPath, IN SIZE_T PathLen);
-
-/* dev_report.c */
-VOID DetectUnknownDevices(VOID);
 
 /* systray.c */
 extern BOOL IsMainWindowHiden;

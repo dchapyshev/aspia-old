@@ -132,7 +132,6 @@ BEGIN
     AUTOCHECKBOX "Use styles for information windows", IDC_STYLES_WNDS, 20, 126, 163, 8
     AUTOCHECKBOX "Show alternating rows in the information window", IDC_ALT_ROWS, 20, 142, 187, 8
     AUTOCHECKBOX "Дозволити драйвер режиму ядра", IDC_ALLOW_KM_DRIVER, 20, 158, 140, 8
-    AUTOCHECKBOX "Пропонувати відіслати звіт про невідомі пристрої", IDC_DEV_REPORT_SEND, 20, 171, 187, 15, BS_MULTILINE
 END
 
 IDD_SETTINGS_FILTER DIALOGEX DISCARDABLE 103, 0, 273, 200
@@ -881,13 +880,9 @@ BEGIN
     IDS_SYSMON_MAX, "Максимальне"
     IDS_REPORTWND_TITLE, "Збереження звіту"
     IDS_ADD_CONTENT_TABLE, "Додавати зміст у звіт"
-    IDS_CLOSE_BTN, "Закрити"
+    IDS_CLOSE_BTN, "Close"
     IDS_SAVE_BTN, "Зберегти"
     IDS_FILE_TYPE_TEXT, "Тип файлу:"
-    IDS_DEV_REPORT_TEXT, "Aspia виявила, що у вас є пристрої, яких немає в нашій базі даних. Відправивши нам звіт, ви допоможете зробити Aspia краще.\nДо звіту будуть включені дані про наступні пристрої:"
-    IDS_NEVER_SEND_REPORT, "Пропонувати відіслати звіт"
-    IDS_SEND_BTN, "Відіслати"
-    IDS_DEV_REPORT_TITLE, "Відсилання звіту"
     IDS_SPD_DEVICE_WIDTH, "Device Width"
     IDS_SPD_BUS_WIDTH, "Bus Width"
     IDS_SPD_MODULE_NORM_VOLTAGE, "Module Normal Voltage (VDD)"
@@ -905,6 +900,10 @@ BEGIN
     IDS_NVIDIA_VCD_INLET_TEMP, "VCD Inlet Temperature"
     IDS_NVIDIA_VCD_OUTLET_TEMP, "VCD Outlet Temperature"
     IDS_NVIDIA_FAN_SPEED, "Fan Speed"
+    IDS_OPENGL_PROP, "OpenGL Properties"
+    IDS_OPENGL_VENDOR, "Vendor"
+    IDS_OPENGL_VERSION, "Version"
+    IDS_OPENGL_EXTENSIONS, "OpenGL Extensions"
 
     IDS_CAT_SUMMARY, "Загальна інформація"
 
@@ -922,6 +921,7 @@ BEGIN
     IDS_CAT_HW_DISPLAY, "Display"
     IDS_CAT_HW_MONITOR, "Монітор"
     IDS_CAT_HW_WIN_VIDEO, "Windows Video"
+    IDS_CAT_HW_OPENGL, "OpenGL"
 
     IDS_CAT_HW_DATA, "Зберігання даних"
     IDS_CAT_HW_DATA_CD, "Optical Drives"

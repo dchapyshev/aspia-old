@@ -87,6 +87,7 @@
 #define IDI_HWBENCH       178
 #define IDI_NVIDIA        179
 #define IDI_ATI           180
+#define IDI_OPENGL        181
 
 /* Dialogs */
 #define IDD_ABOUT_DIALOG         5000
@@ -158,7 +159,6 @@
 #define IDC_FILTER_IE_HTTP      135
 #define IDC_FILTER_IE_FTP       136
 #define IDC_SETTINGS_TREE       137
-#define IDC_DEV_REPORT_SEND     140
 #define IDC_STAY_ON_TOP         142
 #define IDC_ALLOW_KM_DRIVER     143
 #define IDC_FILEPATH_TITLE      144
@@ -835,10 +835,6 @@
 #define IDS_CLOSE_BTN                    725
 #define IDS_SAVE_BTN                     726
 #define IDS_FILE_TYPE_TEXT               727
-#define IDS_DEV_REPORT_TEXT              728
-#define IDS_NEVER_SEND_REPORT            729
-#define IDS_SEND_BTN                     730
-#define IDS_DEV_REPORT_TITLE             731
 #define IDS_SPD_DEVICE_WIDTH             732
 #define IDS_SPD_BUS_WIDTH                733
 #define IDS_SPD_MODULE_NORM_VOLTAGE      734
@@ -856,6 +852,10 @@
 #define IDS_NVIDIA_VCD_INLET_TEMP        755
 #define IDS_NVIDIA_VCD_OUTLET_TEMP       756
 #define IDS_NVIDIA_FAN_SPEED             757
+#define IDS_OPENGL_PROP                  758
+#define IDS_OPENGL_VENDOR                759
+#define IDS_OPENGL_VERSION               760
+#define IDS_OPENGL_EXTENSIONS            761
 
 #define IDS_CAT_SUMMARY           1000
 
@@ -873,6 +873,7 @@
 #define IDS_CAT_HW_DISPLAY        2040
 #define IDS_CAT_HW_MONITOR        2041
 #define IDS_CAT_HW_WIN_VIDEO      2042
+#define IDS_CAT_HW_OPENGL         2043
 
 #define IDS_CAT_HW_DMI            2050
 #define IDS_CAT_HW_DMI_BIOS       2051

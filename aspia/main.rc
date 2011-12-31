@@ -81,6 +81,7 @@ IDI_FAN           ICON DISCARDABLE "res/fan.ico"
 IDI_HWBENCH       ICON DISCARDABLE "res/hwbench.ico"
 IDI_NVIDIA        ICON DISCARDABLE "res/nvidia.ico"
 IDI_ATI           ICON DISCARDABLE "res/ati.ico"
+IDI_OPENGL        ICON DISCARDABLE "res/opengl.ico"
 
 IDC_ACCELERATORS ACCELERATORS
 BEGIN

@@ -554,8 +554,6 @@ GeneralPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                            SettingsInfo.SaveWindowPos ? BST_CHECKED : BST_UNCHECKED);
             CheckDlgButton(hDlg, IDC_START_WITH_WINDOWS,
                            SettingsInfo.Autorun ? BST_CHECKED : BST_UNCHECKED);
-            CheckDlgButton(hDlg, IDC_DEV_REPORT_SEND,
-                           SettingsInfo.SendDevReport ? BST_UNCHECKED : BST_CHECKED);
             CheckDlgButton(hDlg, IDC_STAY_ON_TOP,
                            SettingsInfo.StayOnTop ? BST_CHECKED : BST_UNCHECKED);
             CheckDlgButton(hDlg, IDC_STYLES_WNDS,
@@ -841,8 +839,6 @@ SaveSettingsFromDialog(HWND hDlg)
         (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_SAVE_WINDOW_POS) == BST_CHECKED) ? TRUE : FALSE;
     SettingsInfo.Autorun =
         (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_START_WITH_WINDOWS) == BST_CHECKED) ? TRUE : FALSE;
-    SettingsInfo.SendDevReport =
-        (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_DEV_REPORT_SEND) == BST_CHECKED) ? FALSE : TRUE;
     SettingsInfo.StayOnTop =
         (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_STAY_ON_TOP) == BST_CHECKED) ? TRUE : FALSE;
 
