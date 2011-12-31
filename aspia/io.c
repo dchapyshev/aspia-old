@@ -726,6 +726,8 @@ IoRunInfoFunc(UINT Category, CATEGORY_LIST *List)
 
             if (IoTarget == IO_TARGET_LISTVIEW)
             {
+                CurrentMenu = List[Index].MenuID;
+
                 GetIniFilePath(szIniPath, MAX_PATH);
                 StringCbPrintf(szName, sizeof(szName), L"col-%d", Category);
             }

@@ -286,6 +286,8 @@ SOFTWARE_TaskMgr(VOID)
 
         Index = IoAddItem(0, IconIndex, pe32.szExeFile);
 
+        ListViewSetItemParam(Index, pe32.th32ProcessID);
+
         IoSetItemText(Index, 1,
                       (szFilePath[0] != 0) ? szFilePath : L"-");
 

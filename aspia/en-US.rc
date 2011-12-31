@@ -22,6 +22,32 @@ BEGIN
     END
 END
 
+IDR_TASKMGR MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "Kill Process", ID_KILL_PROCESS
+        MENUITEM "Kill Process Tree", ID_KILL_PROCESS_TREE
+        POPUP "Priority"
+        BEGIN
+            MENUITEM "Real Time", ID_REALTIME_PRIORITY
+            MENUITEM "High", ID_HIGH_PRIORITY
+            MENUITEM "Above Normal", ID_ABOVE_NORMAL_PRIORITY
+            MENUITEM "Normal", ID_NORMAL_PRIORITY
+            MENUITEM "Below Normal", ID_BELOW_NORMAL_PRIORITY
+            MENUITEM "Low", ID_LOW_PRIORITY
+        END
+        MENUITEM "Open Folder...", ID_PROCESS_OPEN_FOLDER
+        MENUITEM "Properties", ID_PROCESS_PROPERTIES
+        MENUITEM SEPARATOR
+        MENUITEM "Copy String\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Copy Value", ID_COPY_VALUE
+        MENUITEM "Copy Name", ID_COPY_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Refresh\tF5", ID_RELOAD
+    END
+END
+
 IDR_COPY_ALL_POPUP MENU
 BEGIN
     POPUP "popup"

@@ -25,6 +25,32 @@ BEGIN
     END
 END
 
+IDR_TASKMGR MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "Завершить процесс", ID_KILL_PROCESS
+        MENUITEM "Завершить дерево процессов", ID_KILL_PROCESS_TREE
+        POPUP "Приоритет"
+        BEGIN
+            MENUITEM "Реального времени", ID_REALTIME_PRIORITY
+            MENUITEM "Высокий", ID_HIGH_PRIORITY
+            MENUITEM "Выше среднего", ID_ABOVE_NORMAL_PRIORITY
+            MENUITEM "Средний", ID_NORMAL_PRIORITY
+            MENUITEM "Ниже среднего", ID_BELOW_NORMAL_PRIORITY
+            MENUITEM "Низкий", ID_LOW_PRIORITY
+        END
+        MENUITEM "Открыть папку...", ID_PROCESS_OPEN_FOLDER
+        MENUITEM "Свойства", ID_PROCESS_PROPERTIES
+        MENUITEM SEPARATOR
+        MENUITEM "Копировать строку\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Копировать значения", ID_COPY_VALUE
+        MENUITEM "Копировать название", ID_COPY_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Обновить\tF5", ID_RELOAD
+    END
+END
+
 IDR_COPY_ALL_POPUP MENU
 BEGIN
     POPUP "popup"
