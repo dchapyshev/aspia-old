@@ -5,9 +5,9 @@
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include <intrin.h>
-
 #include "../main.h"
+#include <intrin.h>
+#include <gl/gl.h>
 #include "driver.h"
 #include "edid.h"
 
@@ -987,6 +987,808 @@ HW_PrintersInfo(VOID)
 
     EnumPrintersInfo(PRINTER_ENUM_FAVORITE | PRINTER_ENUM_LOCAL |
                      PRINTER_ENUM_NETWORK);
+
+    DebugEndReceiving();
+}
+
+#define GL_MAX_CUBE_MAP_TEXTURE_SIZE_ARB  0x851C
+#define GL_MAX_3D_TEXTURE_SIZE_EXT        0x8073
+#define GL_MAX_TEXTURE_LOD_BIAS_EXT       0x84FD
+#define GL_MAX_RECTANGLE_TEXTURE_SIZE_ARB 0x84F8
+#define GL_MAX_DRAW_BUFFERS_ATI           0x8824
+#define GL_MAX_TEXTURE_UNITS              0x84E2
+
+typedef struct
+{
+    LPWSTR lpExtName;
+    BOOL IsSupported;
+}
+OPENGL_EXTENSIONS;
+
+OPENGL_EXTENSIONS OpenglExtensions[] =
+{
+    { L"GL_3DFX_multisample", FALSE },
+    { L"GL_3DFX_tbuffer", FALSE },
+    { L"GL_3DFX_texture_compression_FXT1", FALSE },
+    { L"GL_3DL_direct_texture_access2", FALSE },
+    { L"GL_3Dlabs_multisample_transparency_id", FALSE },
+    { L"GL_3Dlabs_multisample_transparency_range", FALSE },
+    { L"GL_AMD_performance_monitor", FALSE },
+    { L"GL_AMD_texture_texture4", FALSE },
+    { L"GL_AMDX_vertex_shader_tessellator", FALSE },
+    { L"GL_APPLE_aux_depth_stencil", FALSE },
+    { L"GL_APPLE_client_storage", FALSE },
+    { L"GL_APPLE_element_array", FALSE },
+    { L"GL_APPLE_fence", FALSE },
+    { L"GL_APPLE_float_pixels", FALSE },
+    { L"GL_APPLE_flush_buffer_range", FALSE },
+    { L"GL_APPLE_flush_render", FALSE },
+    { L"GL_APPLE_packed_pixel", FALSE },
+    { L"GL_APPLE_packed_pixels", FALSE },
+    { L"GL_APPLE_pixel_buffer", FALSE },
+    { L"GL_APPLE_specular_vector", FALSE },
+    { L"GL_APPLE_texture_range", FALSE },
+    { L"GL_APPLE_transform_hint", FALSE },
+    { L"GL_APPLE_vertex_array_object", FALSE },
+    { L"GL_APPLE_vertex_array_range", FALSE },
+    { L"GL_APPLE_vertex_program_evaluators", FALSE },
+    { L"GL_APPLE_ycbcr_422", FALSE },
+    { L"GL_ARB_color_buffer_float", FALSE },
+    { L"GL_ARB_depth_buffer_float", FALSE },
+    { L"GL_ARB_depth_texture", FALSE },
+    { L"GL_ARB_draw_buffers", FALSE },
+    { L"GL_ARB_draw_instanced", FALSE },
+    { L"GL_ARB_fragment_program", FALSE },
+    { L"GL_ARB_fragment_program_shadow", FALSE },
+    { L"GL_ARB_fragment_shader", FALSE },
+    { L"GL_ARB_framebuffer_object", FALSE },
+    { L"GL_ARB_framebuffer_sRGB", FALSE },
+    { L"GL_ARB_geometry_shader4", FALSE },
+    { L"GL_ARB_half_float_pixel", FALSE },
+    { L"GL_ARB_half_float_vertex", FALSE },
+    { L"GL_ARB_imaging", FALSE },
+    { L"GL_ARB_instanced_arrays", FALSE },
+    { L"GL_ARB_map_buffer_range", FALSE },
+    { L"GL_ARB_matrix_palette", FALSE },
+    { L"GL_ARB_multisample", FALSE },
+    { L"GL_ARB_multitexture", FALSE },
+    { L"GL_ARB_occlusion_query", FALSE },
+    { L"GL_ARB_pixel_buffer_object", FALSE },
+    { L"GL_ARB_point_parameters", FALSE },
+    { L"GL_ARB_point_sprite", FALSE },
+    { L"GL_ARB_shader_objects", FALSE },
+    { L"GL_ARB_shader_texture_lod", FALSE },
+    { L"GL_ARB_shading_language_100", FALSE },
+    { L"GL_ARB_shadow", FALSE },
+    { L"GL_ARB_shadow_ambient", FALSE },
+    { L"GL_ARB_texture_border_clamp", FALSE },
+    { L"GL_ARB_texture_buffer_object", FALSE },
+    { L"GL_ARB_texture_compression", FALSE },
+    { L"GL_ARB_texture_compression_rgtc", FALSE },
+    { L"GL_ARB_texture_cube_map", FALSE },
+    { L"GL_ARB_texture_env_add", FALSE },
+    { L"GL_ARB_texture_env_combine", FALSE },
+    { L"GL_ARB_texture_env_crossbar", FALSE },
+    { L"GL_ARB_texture_env_dot3", FALSE },
+    { L"GL_ARB_texture_float", FALSE },
+    { L"GL_ARB_texture_mirrored_repeat", FALSE },
+    { L"GL_ARB_texture_non_power_of_two", FALSE },
+    { L"GL_ARB_texture_rectangle", FALSE },
+    { L"GL_ARB_texture_rg", FALSE },
+    { L"GL_ARB_transpose_matrix", FALSE },
+    { L"GL_ARB_vertex_array_object", FALSE },
+    { L"GL_ARB_vertex_blend", FALSE },
+    { L"GL_ARB_vertex_buffer_object", FALSE },
+    { L"GL_ARB_vertex_program", FALSE },
+    { L"GL_ARB_vertex_shader", FALSE },
+    { L"GL_ARB_window_pos", FALSE },
+    { L"GL_ATI_array_rev_comps_in_4_bytes", FALSE },
+    { L"GL_ATI_blend_equation_separate", FALSE },
+    { L"GL_ATI_blend_weighted_minmax", FALSE },
+    { L"GL_ATI_draw_buffers", FALSE },
+    { L"GL_ATI_element_array", FALSE },
+    { L"GL_ATI_envmap_bumpmap", FALSE },
+    { L"GL_ATI_fragment_shader", FALSE },
+    { L"GL_ATI_lock_texture", FALSE },
+    { L"GL_ATI_map_object_buffer", FALSE },
+    { L"GL_ATI_meminfo", FALSE },
+    { L"GL_ATI_pixel_format_float", FALSE },
+    { L"GL_ATI_pn_triangles", FALSE },
+    { L"GL_ATI_point_cull_mode", FALSE },
+    { L"GL_ATI_separate_stencil", FALSE },
+    { L"GL_ATI_shader_texture_lod", FALSE },
+    { L"GL_ATI_text_fragment_shader", FALSE },
+    { L"GL_ATI_texture_compression_3dc", FALSE },
+    { L"GL_ATI_texture_env_combine3", FALSE },
+    { L"GL_ATI_texture_float", FALSE },
+    { L"GL_ATI_texture_mirror_once", FALSE },
+    { L"GL_ATI_vertex_array_object", FALSE },
+    { L"GL_ATI_vertex_attrib_array_object", FALSE },
+    { L"GL_ATI_vertex_blend", FALSE },
+    { L"GL_ATI_vertex_shader", FALSE },
+    { L"GL_ATI_vertex_streams", FALSE },
+    { L"GL_ATIX_pn_triangles", FALSE },
+    { L"GL_ATIX_texture_env_combine3", FALSE },
+    { L"GL_ATIX_texture_env_route", FALSE },
+    { L"GL_ATIX_vertex_shader_output_point_size", FALSE },
+    { L"GL_Autodesk_facet_normal", FALSE },
+    { L"GL_Autodesk_valid_back_buffer_hint", FALSE },
+    { L"GL_DIMD_YUV", FALSE },
+    { L"GL_EXT_422_pixels", FALSE },
+    { L"GL_EXT_abgr", FALSE },
+    { L"GL_EXT_bgra", FALSE },
+    { L"GL_EXT_bindable_uniform", FALSE },
+    { L"GL_EXT_blend_color", FALSE },
+    { L"GL_EXT_blend_equation_separate", FALSE },
+    { L"GL_EXT_blend_func_separate", FALSE },
+    { L"GL_EXT_blend_logic_op", FALSE },
+    { L"GL_EXT_blend_minmax", FALSE },
+    { L"GL_EXT_blend_subtract", FALSE },
+    { L"GL_EXT_Cg_shader", FALSE },
+    { L"GL_EXT_clip_volume_hint", FALSE },
+    { L"GL_EXT_cmyka", FALSE },
+    { L"GL_EXT_color_matrix", FALSE },
+    { L"GL_EXT_color_subtable", FALSE },
+    { L"GL_EXT_color_table", FALSE },
+    { L"GL_EXT_compiled_vertex_array", FALSE },
+    { L"GL_EXT_convolution", FALSE },
+    { L"GL_EXT_convolution_border_modes", FALSE },
+    { L"GL_EXT_coordinate_frame", FALSE },
+    { L"GL_EXT_copy_texture", FALSE },
+    { L"GL_EXT_cull_vertex", FALSE },
+    { L"GL_EXT_depth_bounds_test", FALSE },
+    { L"GL_EXT_depth_buffer_float", FALSE },
+    { L"GL_EXT_direct_state_access", FALSE },
+    { L"GL_EXT_draw_buffers2", FALSE },
+    { L"GL_EXT_draw_instanced", FALSE },
+    { L"GL_EXT_draw_range_elements", FALSE },
+    { L"GL_EXT_fog_coord", FALSE },
+    { L"GL_EXT_fog_function", FALSE },
+    { L"GL_EXT_fog_offset", FALSE },
+    { L"GL_EXT_fragment_lighting", FALSE },
+    { L"GL_EXT_framebuffer_blit", FALSE },
+    { L"GL_EXT_framebuffer_multisample", FALSE },
+    { L"GL_EXT_framebuffer_object", FALSE },
+    { L"GL_EXT_framebuffer_sRGB", FALSE },
+    { L"GL_EXT_generate_mipmap", FALSE },
+    { L"GL_EXT_geometry_shader4", FALSE },
+    { L"GL_EXT_gpu_program_parameters", FALSE },
+    { L"GL_EXT_gpu_shader4", FALSE },
+    { L"GL_EXT_histogram", FALSE },
+    { L"GL_EXT_index_array_formats", FALSE },
+    { L"GL_EXT_index_func", FALSE },
+    { L"GL_EXT_index_material", FALSE },
+    { L"GL_EXT_index_texture", FALSE },
+    { L"GL_EXT_interlace", FALSE },
+    { L"GL_EXT_light_texture", FALSE },
+    { L"GL_EXT_misc_attribute", FALSE },
+    { L"GL_EXT_multi_draw_arrays", FALSE },
+    { L"GL_EXT_multisample", FALSE },
+    { L"GL_EXT_packed_depth_stencil", FALSE },
+    { L"GL_EXT_packed_float", FALSE },
+    { L"GL_EXT_packed_pixels", FALSE },
+    { L"GL_EXT_packed_pixels_12", FALSE },
+    { L"GL_EXT_paletted_texture", FALSE },
+    { L"GL_EXT_pixel_buffer_object", FALSE },
+    { L"GL_EXT_pixel_format", FALSE },
+    { L"GL_EXT_pixel_texture", FALSE },
+    { L"GL_EXT_pixel_transform", FALSE },
+    { L"GL_EXT_pixel_transform_color_table", FALSE },
+    { L"GL_EXT_point_parameters", FALSE },
+    { L"GL_EXT_polygon_offset", FALSE },
+    { L"GL_EXT_rescale_normal", FALSE },
+    { L"GL_EXT_scene_marker", FALSE },
+    { L"GL_EXT_secondary_color", FALSE },
+    { L"GL_EXT_separate_specular_color", FALSE },
+    { L"GL_EXT_shadow_funcs", FALSE },
+    { L"GL_EXT_shared_texture_palette", FALSE },
+    { L"GL_EXT_stencil_clear_tag", FALSE },
+    { L"GL_EXT_stencil_two_side", FALSE },
+    { L"GL_EXT_stencil_wrap", FALSE },
+    { L"GL_EXT_subtexture", FALSE },
+    { L"GL_EXT_swap_control", FALSE },
+    { L"GL_EXT_texgen_reflection", FALSE },
+    { L"GL_EXT_texture", FALSE },
+    { L"GL_EXT_texture_array", FALSE },
+    { L"GL_EXT_texture_border_clamp", FALSE },
+    { L"GL_EXT_texture_buffer_object", FALSE },
+    { L"GL_EXT_texture_color_table", FALSE },
+    { L"GL_EXT_texture_compression_dxt1", FALSE },
+    { L"GL_EXT_texture_compression_latc", FALSE },
+    { L"GL_EXT_texture_compression_rgtc", FALSE },
+    { L"GL_EXT_texture_compression_s3tc", FALSE },
+    { L"GL_EXT_texture_cube_map", FALSE },
+    { L"GL_EXT_texture_edge_clamp", FALSE },
+    { L"GL_EXT_texture_env", FALSE },
+    { L"GL_EXT_texture_env_add", FALSE },
+    { L"GL_EXT_texture_env_combine", FALSE },
+    { L"GL_EXT_texture_env_dot3", FALSE },
+    { L"GL_EXT_texture_filter_anisotropic", FALSE },
+    { L"GL_EXT_texture_integer", FALSE },
+    { L"GL_EXT_texture_lod", FALSE },
+    { L"GL_EXT_texture_lod_bias", FALSE },
+    { L"GL_EXT_texture_mirror_clamp", FALSE },
+    { L"GL_EXT_texture_object", FALSE },
+    { L"GL_EXT_texture_perturb_normal", FALSE },
+    { L"GL_EXT_texture_rectangle", FALSE },
+    { L"GL_EXT_texture_shared_exponent", FALSE },
+    { L"GL_EXT_texture_sRGB", FALSE },
+    { L"GL_EXT_texture_swizzle", FALSE },
+    { L"GL_EXT_texture3D", FALSE },
+    { L"GL_EXT_texture4D", FALSE },
+    { L"GL_EXT_timer_query", FALSE },
+    { L"GL_EXT_transform_feedback", FALSE },
+    { L"GL_EXT_vertex_array", FALSE },
+    { L"GL_EXT_vertex_array_bgra", FALSE },
+    { L"GL_EXT_vertex_shader", FALSE },
+    { L"GL_EXT_vertex_weighting", FALSE },
+    { L"GL_EXTX_framebuffer_mixed_formats", FALSE },
+    { L"GL_EXTX_packed_depth_stencil", FALSE },
+    { L"GL_FGL_lock_texture", FALSE },
+    { L"GL_GL2_geometry_shader", FALSE },
+    { L"GL_GREMEDY_frame_terminator", FALSE },
+    { L"GL_GREMEDY_string_marker", FALSE },
+    { L"GL_HP_convolution_border_modes", FALSE },
+    { L"GL_HP_image_transform", FALSE },
+    { L"GL_HP_occlusion_test", FALSE },
+    { L"GL_HP_texture_lighting", FALSE },
+    { L"GL_I3D_argb", FALSE },
+    { L"GL_I3D_color_clamp", FALSE },
+    { L"GL_I3D_interlace_read", FALSE },
+    { L"GL_IBM_clip_check", FALSE },
+    { L"GL_IBM_cull_vertex", FALSE },
+    { L"GL_IBM_load_named_matrix", FALSE },
+    { L"GL_IBM_multi_draw_arrays", FALSE },
+    { L"GL_IBM_multimode_draw_arrays", FALSE },
+    { L"GL_IBM_occlusion_cull", FALSE },
+    { L"GL_IBM_pixel_filter_hint", FALSE },
+    { L"GL_IBM_rasterpos_clip", FALSE },
+    { L"GL_IBM_rescale_normal", FALSE },
+    { L"GL_IBM_static_data", FALSE },
+    { L"GL_IBM_texture_clamp_nodraw", FALSE },
+    { L"GL_IBM_texture_mirrored_repeat", FALSE },
+    { L"GL_IBM_vertex_array_lists", FALSE },
+    { L"GL_IBM_YCbCr", FALSE },
+    { L"GL_INGR_blend_func_separate", FALSE },
+    { L"GL_INGR_color_clamp", FALSE },
+    { L"GL_INGR_interlace_read", FALSE },
+    { L"GL_INGR_multiple_palette", FALSE },
+    { L"GL_INTEL_parallel_arrays", FALSE },
+    { L"GL_INTEL_texture_scissor", FALSE },
+    { L"GL_KTX_buffer_region", FALSE },
+    { L"GL_MESA_pack_invert", FALSE },
+    { L"GL_MESA_resize_buffers", FALSE },
+    { L"GL_MESA_window_pos", FALSE },
+    { L"GL_MESA_ycbcr_texture", FALSE },
+    { L"GL_MESAX_texture_stack", FALSE },
+    { L"GL_MTX_fragment_shader", FALSE },
+    { L"GL_MTX_precision_dpi", FALSE },
+    { L"GL_NV_blend_square", FALSE },
+    { L"GL_NV_centroid_sample", FALSE },
+    { L"GL_NV_conditional_render", FALSE },
+    { L"GL_NV_copy_depth_to_color", FALSE },
+    { L"GL_NV_depth_buffer_float", FALSE },
+    { L"GL_NV_depth_clamp", FALSE },
+    { L"GL_NV_depth_range_unclamped", FALSE },
+    { L"GL_NV_evaluators", FALSE },
+    { L"GL_NV_explicit_multisample", FALSE },
+    { L"GL_NV_fence", FALSE },
+    { L"GL_NV_float_buffer", FALSE },
+    { L"GL_NV_fog_distance", FALSE },
+    { L"GL_NV_fragment_program", FALSE },
+    { L"GL_NV_fragment_program_option", FALSE },
+    { L"GL_NV_fragment_program2", FALSE },
+    { L"GL_NV_fragment_program4", FALSE },
+    { L"GL_NV_framebuffer_multisample_coverage", FALSE },
+    { L"GL_NV_framebuffer_multisample_ex", FALSE },
+    { L"GL_NV_geometry_program4", FALSE },
+    { L"GL_NV_geometry_shader4", FALSE },
+    { L"GL_NV_gpu_program4", FALSE },
+    { L"GL_NV_half_float", FALSE },
+    { L"GL_NV_light_max_exponent", FALSE },
+    { L"GL_NV_multisample_coverage", FALSE },
+    { L"GL_NV_multisample_filter_hint", FALSE },
+    { L"GL_NV_occlusion_query", FALSE },
+    { L"GL_NV_packed_depth_stencil", FALSE },
+    { L"GL_NV_parameter_buffer_object", FALSE },
+    { L"GL_NV_pixel_buffer_object", FALSE },
+    { L"GL_NV_pixel_data_range", FALSE },
+    { L"GL_NV_point_sprite", FALSE },
+    { L"GL_NV_present_video", FALSE },
+    { L"GL_NV_primitive_restart", FALSE },
+    { L"GL_NV_register_combiners", FALSE },
+    { L"GL_NV_register_combiners2", FALSE },
+    { L"GL_NV_texgen_emboss", FALSE },
+    { L"GL_NV_texgen_reflection", FALSE },
+    { L"GL_NV_texture_compression_latc", FALSE },
+    { L"GL_NV_texture_compression_vtc", FALSE },
+    { L"GL_NV_texture_env_combine4", FALSE },
+    { L"GL_NV_texture_expand_normal", FALSE },
+    { L"GL_NV_texture_rectangle", FALSE },
+    { L"GL_NV_texture_shader", FALSE },
+    { L"GL_NV_texture_shader2", FALSE },
+    { L"GL_NV_texture_shader3", FALSE },
+    { L"GL_NV_timer_query", FALSE },
+    { L"GL_NV_transform_feedback", FALSE },
+    { L"GL_NV_transform_feedback2", FALSE },
+    { L"GL_NV_vertex_array_range", FALSE },
+    { L"GL_NV_vertex_array_range2", FALSE },
+    { L"GL_NV_vertex_program", FALSE },
+    { L"GL_NV_vertex_program1_1", FALSE },
+    { L"GL_NV_vertex_program2", FALSE },
+    { L"GL_NV_vertex_program2_option", FALSE },
+    { L"GL_NV_vertex_program3", FALSE },
+    { L"GL_NV_vertex_program4", FALSE },
+    { L"GL_NVX_conditional_render", FALSE },
+    { L"GL_NVX_flush_hold", FALSE },
+    { L"GL_NVX_ycrcb", FALSE },
+    { L"GL_OES_byte_coordinates", FALSE },
+    { L"GL_OES_compressed_paletted_texture", FALSE },
+    { L"GL_OES_fixed_point", FALSE },
+    { L"GL_OES_query_matrix", FALSE },
+    { L"GL_OES_read_format", FALSE },
+    { L"GL_OES_single_precision", FALSE },
+    { L"GL_OML_interlace", FALSE },
+    { L"GL_OML_resample", FALSE },
+    { L"GL_OML_subsample", FALSE },
+    { L"GL_PGI_misc_hints", FALSE },
+    { L"GL_PGI_vertex_hints", FALSE },
+    { L"GL_REND_screen_coordinates", FALSE },
+    { L"GL_S3_performance_analyzer", FALSE },
+    { L"GL_S3_s3tc", FALSE },
+    { L"GL_SGI_color_matrix", FALSE },
+    { L"GL_SGI_color_table", FALSE },
+    { L"GL_SGI_compiled_vertex_array", FALSE },
+    { L"GL_SGI_cull_vertex", FALSE },
+    { L"GL_SGI_index_array_formats", FALSE },
+    { L"GL_SGI_index_func", FALSE },
+    { L"GL_SGI_index_material", FALSE },
+    { L"GL_SGI_index_texture", FALSE },
+    { L"GL_SGI_make_current_read", FALSE },
+    { L"GL_SGI_texture_add_env", FALSE },
+    { L"GL_SGI_texture_color_table", FALSE },
+    { L"GL_SGI_texture_edge_clamp", FALSE },
+    { L"GL_SGI_texture_lod", FALSE },
+    { L"GL_SGIS_color_range", FALSE },
+    { L"GL_SGIS_detail_texture", FALSE },
+    { L"GL_SGIS_fog_function", FALSE },
+    { L"GL_SGIS_generate_mipmap", FALSE },
+    { L"GL_SGIS_multisample", FALSE },
+    { L"GL_SGIS_multitexture", FALSE },
+    { L"GL_SGIS_pixel_texture", FALSE },
+    { L"GL_SGIS_point_line_texgen", FALSE },
+    { L"GL_SGIS_sharpen_texture", FALSE },
+    { L"GL_SGIS_texture_border_clamp", FALSE },
+    { L"GL_SGIS_texture_color_mask", FALSE },
+    { L"GL_SGIS_texture_edge_clamp", FALSE },
+    { L"GL_SGIS_texture_filter4", FALSE },
+    { L"GL_SGIS_texture_lod", FALSE },
+    { L"GL_SGIS_texture_select", FALSE },
+    { L"GL_SGIS_texture4D", FALSE },
+    { L"GL_SGIX_async", FALSE },
+    { L"GL_SGIX_async_histogram", FALSE },
+    { L"GL_SGIX_async_pixel", FALSE },
+    { L"GL_SGIX_blend_alpha_minmax", FALSE },
+    { L"GL_SGIX_clipmap", FALSE },
+    { L"GL_SGIX_convolution_accuracy", FALSE },
+    { L"GL_SGIX_depth_pass_instrument", FALSE },
+    { L"GL_SGIX_depth_texture", FALSE },
+    { L"GL_SGIX_flush_raster", FALSE },
+    { L"GL_SGIX_fog_offset", FALSE },
+    { L"GL_SGIX_framezoom", FALSE },
+    { L"GL_SGIX_instruments", FALSE },
+    { L"GL_SGIX_interlace", FALSE },
+    { L"GL_SGIX_ir_instrument1", FALSE },
+    { L"GL_SGIX_list_priority", FALSE },
+    { L"GL_SGIX_pbuffer", FALSE },
+    { L"GL_SGIX_pixel_texture", FALSE },
+    { L"GL_SGIX_pixel_texture_bits", FALSE },
+    { L"GL_SGIX_reference_plane", FALSE },
+    { L"GL_SGIX_resample", FALSE },
+    { L"GL_SGIX_shadow", FALSE },
+    { L"GL_SGIX_shadow_ambient", FALSE },
+    { L"GL_SGIX_sprite", FALSE },
+    { L"GL_SGIX_subsample", FALSE },
+    { L"GL_SGIX_tag_sample_buffer", FALSE },
+    { L"GL_SGIX_texture_add_env", FALSE },
+    { L"GL_SGIX_texture_coordinate_clamp", FALSE },
+    { L"GL_SGIX_texture_lod_bias", FALSE },
+    { L"GL_SGIX_texture_multi_buffer", FALSE },
+    { L"GL_SGIX_texture_range", FALSE },
+    { L"GL_SGIX_texture_scale_bias", FALSE },
+    { L"GL_SGIX_vertex_preclip", FALSE },
+    { L"GL_SGIX_vertex_preclip_hint", FALSE },
+    { L"GL_SGIX_ycrcb", FALSE },
+    { L"GL_SGIX_ycrcb_subsample", FALSE },
+    { L"GL_SUN_convolution_border_modes", FALSE },
+    { L"GL_SUN_global_alpha", FALSE },
+    { L"GL_SUN_mesh_array", FALSE },
+    { L"GL_SUN_multi_draw_arrays", FALSE },
+    { L"GL_SUN_slice_accum", FALSE },
+    { L"GL_SUN_triangle_list", FALSE },
+    { L"GL_SUN_vertex", FALSE },
+    { L"GL_SUNX_constant_data", FALSE },
+    { L"GL_WGL_ARB_extensions_string", FALSE },
+    { L"GL_WGL_EXT_extensions_string", FALSE },
+    { L"GL_WGL_EXT_swap_control", FALSE },
+    { L"GL_WIN_phong_shading", FALSE },
+    { L"GL_WIN_specular_fog", FALSE },
+    { L"GL_WIN_swap_hint", FALSE },
+    { L"GLU_EXT_nurbs_tessellator", FALSE },
+    { L"GLU_EXT_object_space_tess", FALSE },
+    { L"GLU_SGI_filter4_parameters", FALSE },
+    { L"GLX_ARB_create_context", FALSE },
+    { L"GLX_ARB_fbconfig_float", FALSE },
+    { L"GLX_ARB_framebuffer_sRGB", FALSE },
+    { L"GLX_ARB_get_proc_address", FALSE },
+    { L"GLX_ARB_multisample", FALSE },
+    { L"GLX_EXT_fbconfig_packed_float", FALSE },
+    { L"GLX_EXT_framebuffer_sRGB", FALSE },
+    { L"GLX_EXT_import_context", FALSE },
+    { L"GLX_EXT_scene_marker", FALSE },
+    { L"GLX_EXT_texture_from_pixmap", FALSE },
+    { L"GLX_EXT_visual_info", FALSE },
+    { L"GLX_EXT_visual_rating", FALSE },
+    { L"GLX_MESA_agp_offset", FALSE },
+    { L"GLX_MESA_copy_sub_buffer", FALSE },
+    { L"GLX_MESA_pixmap_colormap", FALSE },
+    { L"GLX_MESA_release_buffers", FALSE },
+    { L"GLX_MESA_set_3dfx_mode", FALSE },
+    { L"GLX_NV_present_video", FALSE },
+    { L"GLX_NV_swap_group", FALSE },
+    { L"GLX_NV_video_output", FALSE },
+    { L"GLX_OML_swap_method", FALSE },
+    { L"GLX_OML_sync_control", FALSE },
+    { L"GLX_SGI_cushion", FALSE },
+    { L"GLX_SGI_make_current_read", FALSE },
+    { L"GLX_SGI_swap_control", FALSE },
+    { L"GLX_SGI_video_sync", FALSE },
+    { L"GLX_SGIS_blended_overlay", FALSE },
+    { L"GLX_SGIS_color_range", FALSE },
+    { L"GLX_SGIS_multisample", FALSE },
+    { L"GLX_SGIX_dm_buffer", FALSE },
+    { L"GLX_SGIX_fbconfig", FALSE },
+    { L"GLX_SGIX_hyperpipe", FALSE },
+    { L"GLX_SGIX_pbuffer", FALSE },
+    { L"GLX_SGIX_swap_barrier", FALSE },
+    { L"GLX_SGIX_swap_group", FALSE },
+    { L"GLX_SGIX_video_resize", FALSE },
+    { L"GLX_SGIX_video_source", FALSE },
+    { L"GLX_SGIX_visual_select_group", FALSE },
+    { L"GLX_SUN_get_transparent_index", FALSE },
+    { L"GLX_SUN_video_resize", FALSE },
+    { L"WGL_3DFX_gamma_control", FALSE },
+    { L"WGL_3DFX_multisample", FALSE },
+    { L"WGL_3DL_stereo_control", FALSE },
+    { L"WGL_ARB_buffer_region", FALSE },
+    { L"WGL_ARB_create_context", FALSE },
+    { L"WGL_ARB_extensions_string", FALSE },
+    { L"WGL_ARB_framebuffer_sRGB", FALSE },
+    { L"WGL_ARB_make_current_read", FALSE },
+    { L"WGL_ARB_multisample", FALSE },
+    { L"WGL_ARB_pbuffer", FALSE },
+    { L"WGL_ARB_pixel_format", FALSE },
+    { L"WGL_ARB_pixel_format_float", FALSE },
+    { L"WGL_ARB_render_texture", FALSE },
+    { L"WGL_ATI_pbuffer_memory_hint", FALSE },
+    { L"WGL_ATI_pixel_format_float", FALSE },
+    { L"WGL_ATI_render_texture_rectangle", FALSE },
+    { L"WGL_EXT_buffer_region", FALSE },
+    { L"WGL_EXT_depth_float", FALSE },
+    { L"WGL_EXT_display_color_table", FALSE },
+    { L"WGL_EXT_extensions_string", FALSE },
+    { L"WGL_EXT_framebuffer_sRGB", FALSE },
+    { L"WGL_EXT_framebuffer_sRGBWGL_ARB_create_context", FALSE },
+    { L"WGL_EXT_gamma_control", FALSE },
+    { L"WGL_EXT_make_current_read", FALSE },
+    { L"WGL_EXT_multisample", FALSE },
+    { L"WGL_EXT_pbuffer", FALSE },
+    { L"WGL_EXT_pixel_format", FALSE },
+    { L"WGL_EXT_pixel_format_packed_float", FALSE },
+    { L"WGL_EXT_render_texture", FALSE },
+    { L"WGL_EXT_swap_control", FALSE },
+    { L"WGL_EXT_swap_interval", FALSE },
+    { L"WGL_I3D_digital_video_control", FALSE },
+    { L"WGL_I3D_gamma", FALSE },
+    { L"WGL_I3D_genlock", FALSE },
+    { L"WGL_I3D_image_buffer", FALSE },
+    { L"WGL_I3D_swap_frame_lock", FALSE },
+    { L"WGL_I3D_swap_frame_usage", FALSE },
+    { L"WGL_MTX_video_preview", FALSE },
+    { L"WGL_NV_float_buffer", FALSE },
+    { L"WGL_NV_gpu_affinity", FALSE },
+    { L"WGL_NV_multisample_coverage", FALSE },
+    { L"WGL_NV_present_video", FALSE },
+    { L"WGL_NV_render_depth_texture", FALSE },
+    { L"WGL_NV_render_texture_rectangle", FALSE },
+    { L"WGL_NV_swap_group", FALSE },
+    { L"WGL_NV_video_output", FALSE },
+    { L"WGL_OML_sync_control", FALSE },
+    {0}
+};
+
+VOID
+HW_OpenGlInfo(VOID)
+{
+    PIXELFORMATDESCRIPTOR PixelFormatDesc = {0};
+    WCHAR szText[MAX_STR_LEN], szSupported[MAX_STR_LEN],
+          szUnsupported[MAX_STR_LEN];
+    INT Index, iPixelFormat, i_data;
+    HGLRC hRC;
+    HDC hDC = GetDC(hMainWnd);
+    char *data;
+
+    DebugStartReceiving();
+
+    IoAddIcon(IDI_OPENGL);
+    IoAddIcon(IDI_CHECKED);
+    IoAddIcon(IDI_UNCHECKED);
+
+    LoadMUIString(IDS_CPUID_SUPPORTED, szSupported, MAX_STR_LEN);
+    LoadMUIString(IDS_CPUID_UNSUPPORTED, szUnsupported, MAX_STR_LEN);
+
+    /* OpenGL Initializing */
+    PixelFormatDesc.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+    PixelFormatDesc.nVersion = 1;
+    PixelFormatDesc.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+    PixelFormatDesc.iPixelType = PFD_TYPE_RGBA;
+    PixelFormatDesc.iLayerType = PFD_MAIN_PLANE;
+    PixelFormatDesc.cDepthBits = 16;
+    iPixelFormat = ChoosePixelFormat(hDC, &PixelFormatDesc);
+    SetPixelFormat(hDC, iPixelFormat, &PixelFormatDesc);
+    hRC = wglCreateContext(hDC);
+    wglMakeCurrent(hDC, hRC);
+
+    IoAddHeader(0, IDS_OPENGL_PROP, 0);
+
+    data = (char *)glGetString(GL_VENDOR);
+    if (data)
+    {
+        Index = IoAddValueName(1, IDS_OPENGL_VENDOR, 0);
+        StringCbPrintf(szText, sizeof(szText), L"%S", data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    data = (char *)glGetString(GL_RENDERER);
+    if (data)
+    {
+        Index = IoAddItem(1, 0, L"Renderer");
+        StringCbPrintf(szText, sizeof(szText), L"%S", data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    data = (char *)glGetString(GL_VERSION);
+    if (data)
+    {
+        Index = IoAddValueName(1, IDS_OPENGL_VERSION, 0);
+        StringCbPrintf(szText, sizeof(szText), L"%S", data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_TEXTURE_UNITS, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Multitexture Texture Units");
+        StringCbPrintf(szText, sizeof(szText), L"%d", i_data, i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_SUBPIXEL_BITS, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Sub-Pixel Precision");
+        StringCbPrintf(szText, sizeof(szText), L"%d-bit", i_data, i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_VIEWPORT_DIMS, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Viewport Size");
+        StringCbPrintf(szText, sizeof(szText), L"%d x %d", i_data, i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE_ARB, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Cube Map Texture Size");
+        StringCbPrintf(szText, sizeof(szText), L"%d x %d", i_data, i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE_ARB, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Rectangle Texture Size");
+        StringCbPrintf(szText, sizeof(szText), L"%d x %d", i_data, i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE_EXT, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max 3D Texture Size");
+        StringCbPrintf(szText, sizeof(szText), L"%d x %d x %d",
+                       i_data, i_data, i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_CLIP_PLANES, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Clipping Planes");
+        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_LIST_NESTING, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Display-List Nesting Level");
+        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_DRAW_BUFFERS_ATI, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Draw Buffers");
+        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_EVAL_ORDER, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Evaluator Order");
+        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_LIGHTS, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Light Sources");
+        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Pixel Map Table Size");
+        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Texture LOD Bias");
+        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    IoAddFooter();
+    IoAddHeaderString(0, L"Max Stack Depth", 0);
+
+    glGetIntegerv(GL_MAX_ATTRIB_STACK_DEPTH, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Attribute Stack");
+        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_CLIENT_ATTRIB_STACK_DEPTH, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Client Attribute Stack");
+        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Modelview Matrix Stack");
+        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_NAME_STACK_DEPTH, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Name Stack");
+        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Projection Matrix Stack");
+        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Texture Matrix Stack");
+        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    IoAddFooter();
+    IoAddHeaderString(0, L"Draw Range Elements", 0);
+
+    glGetIntegerv(GL_MAX_ELEMENTS_INDICES_WIN, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Index Count");
+        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    glGetIntegerv(GL_MAX_ELEMENTS_VERTICES_WIN, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Vertex Count");
+        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
+        IoSetItemText(Index, 1, szText);
+    }
+
+    IoAddFooter();
+    IoAddHeader(0, IDS_OPENGL_EXTENSIONS, 0);
+
+    data = (char *)glGetString(GL_EXTENSIONS);
+    if (data)
+    {
+        WCHAR szExts[MAX_STR_LEN * 5];
+        SIZE_T i, j, k;
+
+        StringCbPrintf(szExts, sizeof(szExts), L"%S", data);
+
+        for (i = 0, j = 0; i < wcslen(szExts); i++, j++)
+        {
+            if (szExts[i] == L' ')
+            {
+                WCHAR *p = szText;
+
+                szText[j] = 0;
+                j = 0, k = 0;
+                if (i > 0) ++p;
+
+                do
+                {
+                    if (wcscmp(OpenglExtensions[k].lpExtName, p) == 0)
+                    {
+                        OpenglExtensions[k].IsSupported = TRUE;
+                        break;
+                    }
+                }
+                while (OpenglExtensions[++k].lpExtName != NULL);
+            }
+
+            szText[j] = szExts[i];
+        }
+
+        k = 0;
+        do
+        {
+            Index = IoAddItem(1, OpenglExtensions[k].IsSupported ? 1 : 2,
+                              OpenglExtensions[k].lpExtName);
+            IoSetItemText(Index, 1, OpenglExtensions[k].IsSupported ? szSupported : szUnsupported);
+        }
+        while (OpenglExtensions[++k].lpExtName != NULL);
+    }
+
+    /* Cleanup */
+    wglMakeCurrent(NULL, NULL);
+    wglDeleteContext(hRC);
+    ReleaseDC(hMainWnd, hDC);
 
     DebugEndReceiving();
 }

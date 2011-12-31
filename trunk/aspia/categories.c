@@ -17,7 +17,7 @@ COLUMN_LIST StdColumnList[] =
 
 COLUMN_LIST SMARTColumnList[] =
 {
-    { IDS_SMART_ATTR_ID, 38 },
+    { IDS_SMART_ATTR_ID, 42 },
     { IDS_SMART_ATTR_NAME, 190 },
     { IDS_SMART_THRESHOLD, 70 },
     { IDS_SMART_ATTR_VALUE, 70 },
@@ -300,7 +300,8 @@ CATEGORY_LIST DevicesCategoryList[] =
 CATEGORY_LIST DisplayCategoryList[] =
 {
     { IDS_CAT_HW_WIN_VIDEO, IDI_MONITOR, FALSE, TRUE, NULL, HW_WinVideoInfo, StdColumnList, NULL },
-    { IDS_CAT_HW_MONITOR,   IDI_MONITOR, FALSE, TRUE, NULL, HW_MonitorInfo, StdColumnList, NULL },
+    { IDS_CAT_HW_MONITOR,   IDI_MONITOR, FALSE, TRUE, NULL, HW_MonitorInfo,  StdColumnList, NULL },
+    { IDS_CAT_HW_OPENGL,    IDI_OPENGL,  FALSE, TRUE, NULL, HW_OpenGlInfo,   StdColumnList, NULL },
     { 0 }
 };
 

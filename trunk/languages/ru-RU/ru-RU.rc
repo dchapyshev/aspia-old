@@ -126,12 +126,11 @@ BEGIN
     LTEXT "Категория открываемая при запуске:", -1, 13, 48, 190, 10
     COMBOBOX IDC_STARTUP_CAT_COMBO, 13, 58, 192, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
     AUTOCHECKBOX "Запускать вместе с Windows", IDC_START_WITH_WINDOWS, 20, 79, 110, 8
-    AUTOCHECKBOX "Сохранять положение окон", IDC_SAVE_WINDOW_POS, 20, 93, 109, 8
+    AUTOCHECKBOX "Сохранять положение окон", IDC_SAVE_WINDOW_POS, 20, 94, 109, 8
     AUTOCHECKBOX "Поверх всех окон", IDC_STAY_ON_TOP, 20, 110, 109, 8
     AUTOCHECKBOX "Использовать стили для информационных окон", IDC_STYLES_WNDS, 20, 126, 163, 8
     AUTOCHECKBOX "Чередующиеся строки в окне информации", IDC_ALT_ROWS, 20, 142, 187, 8
     AUTOCHECKBOX "Разрешить драйвер режима ядра", IDC_ALLOW_KM_DRIVER, 20, 158, 130, 8
-    AUTOCHECKBOX "Предлагать отправить отчет о неизвестных устройствах", IDC_DEV_REPORT_SEND, 20, 171, 187, 15, BS_MULTILINE
 END
 
 IDD_SETTINGS_FILTER DIALOGEX DISCARDABLE 103, 0, 273, 200
@@ -883,10 +882,6 @@ BEGIN
     IDS_CLOSE_BTN, "Закрыть"
     IDS_SAVE_BTN, "Сохранить"
     IDS_FILE_TYPE_TEXT, "Тип файла:"
-    IDS_DEV_REPORT_TEXT, "Aspia обнаружила, что у вас есть устройства, которых нет в нашей базе данных. Отправив нам отчет, вы поможете сделать Aspia лучше.\nВ отчет будут включены данные о следующих устройствах:"
-    IDS_NEVER_SEND_REPORT, "Предлагать отправить отчет"
-    IDS_SEND_BTN, "Отправить"
-    IDS_DEV_REPORT_TITLE, "Отправка отчета"
     IDS_SPD_DEVICE_WIDTH, "Device Width"
     IDS_SPD_BUS_WIDTH, "Bus Width"
     IDS_SPD_MODULE_NORM_VOLTAGE, "Module Normal Voltage (VDD)"
@@ -904,6 +899,10 @@ BEGIN
     IDS_NVIDIA_VCD_INLET_TEMP, "VCD Inlet Temperature"
     IDS_NVIDIA_VCD_OUTLET_TEMP, "VCD Outlet Temperature"
     IDS_NVIDIA_FAN_SPEED, "Скорость кулера"
+    IDS_OPENGL_PROP, "Свойства OpenGL"
+    IDS_OPENGL_VENDOR, "Производитель"
+    IDS_OPENGL_VERSION, "Версия"
+    IDS_OPENGL_EXTENSIONS, "Расширения OpenGL"
 
     IDS_CAT_SUMMARY, "Общая информация"
 
@@ -921,6 +920,7 @@ BEGIN
     IDS_CAT_HW_DISPLAY, "Отображение"
     IDS_CAT_HW_MONITOR, "Монитор"
     IDS_CAT_HW_WIN_VIDEO, "Видео Windows"
+    IDS_CAT_HW_OPENGL, "OpenGL"
 
     IDS_CAT_HW_DATA, "Хранение данных"
     IDS_CAT_HW_DATA_CD, "Оптические накопители"

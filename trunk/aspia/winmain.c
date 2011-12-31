@@ -966,8 +966,6 @@ wWinMain(HINSTANCE hInst,
 
     InitCommonControls();
 
-    DetectUnknownDevices();
-
     /* Загружаем ускорители для обработки горячих клавишь */
     hAccel = LoadAccelerators(hInstance,
                               MAKEINTRESOURCE(IDC_ACCELERATORS));

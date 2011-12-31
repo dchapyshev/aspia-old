@@ -128,7 +128,6 @@ BEGIN
     AUTOCHECKBOX "Use styles for information windows", IDC_STYLES_WNDS, 20, 126, 163, 8
     AUTOCHECKBOX "Show alternating rows in the information window", IDC_ALT_ROWS, 20, 142, 187, 8
     AUTOCHECKBOX "Allow kernel-mode driver", IDC_ALLOW_KM_DRIVER, 20, 158, 109, 8
-    AUTOCHECKBOX "Offer to send a report about unknown devices", IDC_DEV_REPORT_SEND, 20, 171, 187, 15, BS_MULTILINE
 END
 
 IDD_SETTINGS_FILTER DIALOGEX DISCARDABLE 103, 0, 273, 200
@@ -879,10 +878,6 @@ BEGIN
     IDS_CLOSE_BTN, "Close"
     IDS_SAVE_BTN, "Save"
     IDS_FILE_TYPE_TEXT, "File Type:"
-    IDS_DEV_REPORT_TEXT, "Aspia discovered that you have devices that do not exist in our database. By sending us a report, you'll help to make Aspia better.\nYour report will include data on the following devices:"
-    IDS_NEVER_SEND_REPORT, "Offer to send a report"
-    IDS_SEND_BTN, "Send"
-    IDS_DEV_REPORT_TITLE, "Report Sending"
     IDS_SPD_DEVICE_WIDTH, "Device Width"
     IDS_SPD_BUS_WIDTH, "Bus Width"
     IDS_SPD_MODULE_NORM_VOLTAGE, "Module Normal Voltage (VDD)"
@@ -900,6 +895,10 @@ BEGIN
     IDS_NVIDIA_VCD_INLET_TEMP, "VCD Inlet Temperature"
     IDS_NVIDIA_VCD_OUTLET_TEMP, "VCD Outlet Temperature"
     IDS_NVIDIA_FAN_SPEED, "Fan Speed"
+    IDS_OPENGL_PROP, "OpenGL Properties"
+    IDS_OPENGL_VENDOR, "Vendor"
+    IDS_OPENGL_VERSION, "Version"
+    IDS_OPENGL_EXTENSIONS, "OpenGL Extensions"
 
     IDS_CAT_SUMMARY, "Summary Information"
 
@@ -917,6 +916,7 @@ BEGIN
     IDS_CAT_HW_DISPLAY, "Display"
     IDS_CAT_HW_MONITOR, "Monitor"
     IDS_CAT_HW_WIN_VIDEO, "Windows Video"
+    IDS_CAT_HW_OPENGL, "OpenGL"
 
     IDS_CAT_HW_DATA, "Storage"
     IDS_CAT_HW_DATA_CD, "Optical Drives"
