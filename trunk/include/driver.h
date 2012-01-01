@@ -249,6 +249,19 @@ typedef struct
     BYTE bBuffer[1];
 } SMART_ATAOUTPARAM;
 
+typedef struct
+{
+    SENDCMDOUTPARAMS SendCmdOutParam;
+    BYTE Data[READ_ATTRIBUTE_BUFFER_SIZE - 1];
+} SMART_READ_DATA_OUTDATA, *PSMART_READ_DATA_OUTDATA;
+
+typedef struct
+{
+    BYTE Id;
+    BYTE Value;
+    BYTE Reserved[10];
+} SMART_THRESHOLD;
+
 /* SMART Functions */
 HANDLE OpenSmart(BYTE bDevNumber);
 BOOL CloseSmart(HANDLE hHandle);

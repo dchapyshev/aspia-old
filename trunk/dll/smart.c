@@ -197,51 +197,45 @@ ReadSmartAttributes(HANDLE hHandle, BYTE bDevNumber, SMART_DRIVE_INFO *Info)
 BOOL
 ReadSmartThresholds(HANDLE hHandle, BYTE bDriveNum, SMART_DRIVE_INFO *Info)
 {
-    BYTE szOut[sizeof(SMART_ATAOUTPARAM) + READ_ATTRIBUTE_BUFFER_SIZE - 1];
+    SMART_READ_DATA_OUTDATA CmdOut = {0};
+    SMART_THRESHOLD Threshold[30];
     SMART_INFO *pSmartValues;
-    SENDCMDINPARAMS CmdIn;
+    SENDCMDINPARAMS CmdIn = {0};
     DWORD cbBytesReturned;
-    PBYTE pByte1, pByte2;
     BYTE Count = 0;
-    PDWORD pDword;
     UCHAR uIndex;
     BOOL bResult;
 
-    CmdIn.cBufferSize = READ_THRESHOLD_BUFFER_SIZE;
-    CmdIn.irDriveRegs.bFeaturesReg = READ_THRESHOLDS;
-    CmdIn.irDriveRegs.bSectorCountReg = 1;
+    CmdIn.cBufferSize                  = READ_THRESHOLD_BUFFER_SIZE;
+    CmdIn.irDriveRegs.bFeaturesReg     = READ_THRESHOLDS;
+    CmdIn.irDriveRegs.bSectorCountReg  = 1;
     CmdIn.irDriveRegs.bSectorNumberReg = 1;
-    CmdIn.irDriveRegs.bCylLowReg = SMART_CYL_LOW;
-    CmdIn.irDriveRegs.bCylHighReg = SMART_CYL_HI;
-    CmdIn.irDriveRegs.bDriveHeadReg = DRIVE_HEAD_REG;
-    CmdIn.irDriveRegs.bCommandReg= SMART_CMD;
-    CmdIn.bDriveNumber = bDriveNum;
+    CmdIn.irDriveRegs.bCylLowReg       = SMART_CYL_LOW;
+    CmdIn.irDriveRegs.bCylHighReg      = SMART_CYL_HI;
+    CmdIn.irDriveRegs.bDriveHeadReg    = DRIVE_HEAD_REG;
+    CmdIn.irDriveRegs.bCommandReg      = SMART_CMD;
+    CmdIn.bDriveNumber                 = bDriveNum;
 
     bResult = DeviceIoControl(hHandle,
                               SMART_RCV_DRIVE_DATA,
                               &CmdIn,
                               sizeof(SENDCMDINPARAMS),
-                              szOut,
-                              sizeof(SMART_ATAOUTPARAM) + READ_ATTRIBUTE_BUFFER_SIZE - 1,
+                              &CmdOut, sizeof(SMART_READ_DATA_OUTDATA),
                               &cbBytesReturned,
                               NULL);
     if (!bResult || !Info) return FALSE;
 
-    pByte1 = (PBYTE)(((SMART_ATAOUTPARAM*)szOut)->bBuffer);
-
     for (uIndex = 0; uIndex < 30; ++uIndex)
     {
-        pDword = (PDWORD)&pByte1[(uIndex * 12) + 7];
-        pByte2 = &pByte1[(uIndex * 12) + 2];
+        memcpy(&(Threshold[uIndex]),
+               &(CmdOut.Data[uIndex * sizeof(SMART_THRESHOLD) + 1]),
+               sizeof(SMART_THRESHOLD));
 
-        pByte2[INDEX_ATTRIB_RAW + 2] = pByte2[INDEX_ATTRIB_RAW+3] =
-            pByte2[INDEX_ATTRIB_RAW+4] = pByte2[INDEX_ATTRIB_RAW+5] =
-            pByte2[INDEX_ATTRIB_RAW+6] = 0;
-        if (pByte2[0])
+        if (Threshold[uIndex].Id)
         {
             pSmartValues = &Info->m_stSmartInfo[Count];
-            pSmartValues->m_dwThreshold = pDword[0];
-            pSmartValues->bAttribId = pByte2[0];
+            pSmartValues->m_dwThreshold = Threshold[uIndex].Value;
+            pSmartValues->bAttribId = Threshold[uIndex].Id;
             ++Count;
         }
     }
