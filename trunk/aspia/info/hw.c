@@ -30,7 +30,22 @@ EnumSmartDataProc(SMART_RESULT *Result)
     /* Attribute ID */
     StringCbPrintf(szText, sizeof(szText),
                    L"%02X", Result->dwAttrID);
-    Index = IoAddItem(0, -1, szText);
+    if (Result->IsCritical)
+    {
+        INT IconIndex;
+
+        if (Result->dwWarrantyThreshold > 0 && Result->dwAttrValue < Result->dwWarrantyThreshold &&
+            Result->dwAttrValue > 0)
+            IconIndex = 2;
+        else
+            IconIndex = 1;
+
+        Index = IoAddItem(0, IconIndex, szText);
+    }
+    else
+    {
+        Index = IoAddItem(0, 1, szText);
+    }
 
     /* Name */
     IoSetItemText(Index, 1, Result->szName);
@@ -262,11 +277,13 @@ HW_HDDSMARTInfo(VOID)
     DebugStartReceiving();
 
     IoAddIcon(IDI_HDD);
+    IoAddIcon(IDI_INFOICO);
+    IoAddIcon(IDI_BANG);
 
     for (bIndex = 0; bIndex <= 32; ++bIndex)
     {
         hHandle = OpenSmart(bIndex);
-        if (!hHandle) continue;
+        if (hHandle == INVALID_HANDLE_VALUE) continue;
 
         if (ReadSmartInfo(hHandle, bIndex, &DriveInfo))
         {

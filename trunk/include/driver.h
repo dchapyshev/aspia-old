@@ -232,6 +232,7 @@ typedef struct
     DWORD dwWorstValue;
     WCHAR szName[256];
     BYTE bValue;
+    BOOL IsCritical;
 } SMART_RESULT;
 
 typedef struct

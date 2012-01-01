@@ -250,13 +250,13 @@ typedef struct
     LPWSTR lpszName;
 } INFO_STRUCT;
 
-const INFO_STRUCT SmartAttribList[] =
+INFO_STRUCT SmartAttribList[] =
 {
-    { 0x01, TRUE, L"Raw Read Error Rate" },
+    { 0x01, TRUE,  L"Raw Read Error Rate" },
     { 0x02, FALSE, L"Throughput Performance" },
     { 0x03, FALSE, L"Spin Up Time" },
     { 0x04, FALSE, L"Start/Stop Count" },
-    { 0x05, TRUE, L"Reallocated Sectors Count" },
+    { 0x05, TRUE,  L"Reallocated Sectors Count" },
     { 0x06, FALSE, L"Read Channel Margin" },
     { 0x07, FALSE, L"Seek Error Rate" },
     { 0x08, FALSE, L"Seek Time Performance" },
@@ -265,11 +265,21 @@ const INFO_STRUCT SmartAttribList[] =
     { 0x0B, FALSE, L"Recalibration Retries" },
     { 0x0C, FALSE, L"Device Power Cycle Count" },
     { 0x0D, FALSE, L"Soft Read Error Rate" },
+    { 0xB7, FALSE, L"Sata Downshift Error Count" },
+    { 0xB8, FALSE, L"End To End Error" },
+    { 0xB9, FALSE, L"Head Stability" },
+    { 0xBA, FALSE, L"Induced Op Vibration Detection" },
+    { 0xBB, FALSE, L"Reported Uncorrectable Errors" },
+    { 0xBC, FALSE, L"Command Timeout" },
+    { 0xBD, FALSE, L"High Fly Writes" },
+    { 0xBE, FALSE, L"Temperature Difference From 100" },
+    { 0xBF, FALSE, L"GSense Error Rate" },
+    { 0xC0, FALSE, L"Emergency Retract Cycle Count" },
     { 0xC1, FALSE, L"Load/Unload Cycle Count" },
     { 0xC2, FALSE, L"Temperature" },
-    { 0xC4, TRUE, L"Reallocation Event Count" },
-    { 0xC5, TRUE, L"Current Pending Sector Count" },
-    { 0xC6, TRUE, L"Uncorrectable Sector Count" },
+    { 0xC4, TRUE,  L"Reallocation Event Count" },
+    { 0xC5, TRUE,  L"Current Pending Sector Count" },
+    { 0xC6, TRUE,  L"Uncorrectable Sector Count" },
     { 0xC7, FALSE, L"UltraDMA CRC Error Count" },
     { 0xC8, FALSE, L"Write Error Rate" },
     { 0xC9, FALSE, L"Soft read error rate" },
@@ -281,47 +291,137 @@ const INFO_STRUCT SmartAttribList[] =
     { 0xCF, FALSE, L"Spin high current" },
     { 0xD0, FALSE, L"Spin buzz" },
     { 0xD1, FALSE, L"Offline seek performance" },
-    { 0xDC, TRUE, L"Disk Shift" },
+    { 0xD3, FALSE, L"Vibration During Write" },
+    { 0xD4, FALSE, L"Shock During Write" },
+    { 0xDC, TRUE,  L"Disk Shift" },
     { 0xDD, FALSE, L"G-Sense Error Rate" },
     { 0xDE, FALSE, L"Loaded Hours" },
     { 0xDF, FALSE, L"Load/Unload Retry Count" },
     { 0xE0, FALSE, L"Load Friction" },
+    { 0xE1, FALSE, L"Load Unload Cycle Count" },
     { 0xE2, FALSE, L"Load-in Time" },
     { 0xE3, FALSE, L"Torque Amplification Count" },
     { 0xE4, FALSE, L"Power-Off Retract Count" },
     { 0xE6, FALSE, L"GMR Head Amplitude" },
     { 0xE7, FALSE, L"Temperature" },
+    { 0xE8, FALSE, L"Endurance Remaining" },
+    { 0xE9, FALSE, L"Power On Hours" },
     { 0xF0, FALSE, L"Head flying hours" },
+    { 0xF1, FALSE, L"Total Lbas Written" },
+    { 0xF2, FALSE, L"Total Lbas Read" },
     { 0xFA, FALSE, L"Read error retry rate" },
     { 0xFE, FALSE, L"Free Fall Event Count" },
     { 0 }
 };
 
-VOID
-SMART_IDToText(DWORD dwIndex, LPWSTR lpszText, SIZE_T Size)
+INFO_STRUCT IntelSSDSmartAttribList[] =
+{
+    { 0x01, FALSE, L"Read Error Rate" },
+    { 0x03, FALSE, L"Spin UpTime" },
+    { 0x04, FALSE, L"Start/Stop Count" },
+    { 0x05, FALSE, L"Reallocated Sectors Count" },
+    { 0x09, FALSE, L"Power On Hours" },
+    { 0x0C, FALSE, L"Power Cycle Count" },
+    { 0xAA, FALSE, L"Available Reserved Space" },
+    { 0xAB, FALSE, L"Program Fail Count" },
+    { 0xAC, FALSE, L"Erase Fail Count" },
+    { 0xB8, FALSE, L"End To End Error" },
+    { 0xC0, FALSE, L"Unsafe Shutdown Count" },
+    { 0xE1, FALSE, L"Host Writes" },
+    { 0xE8, FALSE, L"Remaining Life" },
+    { 0xE9, FALSE, L"Media Wear Out Indicator" },
+    { 0xF1, FALSE, L"Host Writes" },
+    { 0xF2, FALSE, L"Host Reads" },
+    { 0 }
+};
+
+INFO_STRUCT PlextorSSDSmartAttribList[] =
+{
+    { 0x09, FALSE, L"Power On Hours" },
+    { 0x0C, FALSE, L"Power Cycle Count" },
+    { 0 }
+};
+
+INFO_STRUCT SandforceSSDSmartAttribList[] =
+{
+    { 0x05, FALSE, L"Retired Block Count" },
+    { 0x09, FALSE, L"Power On Hours" },
+    { 0x0C, FALSE, L"Power Cycle Count" },
+    { 0xAB, FALSE, L"Program Fail Count" },
+    { 0xAC, FALSE, L"Erase Fail Count" },
+    { 0xAE, FALSE, L"Unexpected Power Loss Count" },
+    { 0xB1, FALSE, L"Wear Range Delta" },
+    { 0xB5, FALSE, L"Alternative Program Fail Count" },
+    { 0xB6, FALSE, L"Alternative Erase Fail Count" },
+    { 0xC3, FALSE, L"Unrecoverable Ecc" },
+    { 0xC4, FALSE, L"Reallocation Event Count" },
+    { 0xE7, FALSE, L"Remaining Life" },
+    { 0xF1, FALSE, L"Host Writes" },
+    { 0xF2, FALSE, L"Host Reads" },
+    { 0 }
+};
+
+INFO_STRUCT IndilinxSSDSmartAttribList[] =
+{
+    { 0xB8, FALSE, L"Initial Bad Block Count" },
+    { 0xC3, FALSE, L"Program Failure" },
+    { 0xC4, FALSE, L"Erase Failure" },
+    { 0xC5, FALSE, L"Read Failure" },
+    { 0xC6, FALSE, L"Sectors Read" },
+    { 0xC7, FALSE, L"Sectors Written" },
+    { 0xC8, FALSE, L"Read Commands" },
+    { 0xC9, FALSE, L"Write Commands" },
+    { 0xCA, FALSE, L"Bit Errors" },
+    { 0xCB, FALSE, L"Corrected Errors" },
+    { 0xCC, FALSE, L"Bad Block Full Flag" },
+    { 0xCD, FALSE, L"Max Cell Cycles" },
+    { 0xCE, FALSE, L"Min Erase" },
+    { 0xCF, FALSE, L"Max Erase" },
+    { 0xD0, FALSE, L"Average Erase Count" },
+    { 0xD1, FALSE, L"Remaining Life" },
+    { 0xD2, FALSE, L"Unknown Unique" },
+    { 0xD3, FALSE, L"Sata Error Count Crc" },
+    { 0xD4, FALSE, L"Sata Error Count Handshake" },
+    { 0 }
+};
+
+BOOL
+SMART_IDToText(INFO_STRUCT *InfoStruct,
+               DWORD dwIndex,
+               LPWSTR lpszText,
+               SIZE_T Size)
 {
     ULONG Index = 0;
 
     do
     {
-        if (SmartAttribList[Index].dwID == dwIndex)
+        if (InfoStruct[Index].dwID == dwIndex)
         {
-            StringCbCopy(lpszText, Size, SmartAttribList[Index].lpszName);
-            return;
+            StringCbCopy(lpszText, Size, InfoStruct[Index].lpszName);
+            return InfoStruct[Index].bCritical;
         }
         ++Index;
     }
-    while (SmartAttribList[Index].dwID != 0x0);
+    while (InfoStruct[Index].dwID != 0);
+
+    StringCbCopy(lpszText, Size, L"Unknown attribute");
+
+    return FALSE;
 }
 
 BOOL
 EnumSmartData(HANDLE hSmartHandle, BYTE bDevNumber, SMART_ENUMDATAPROC lpEnumProc)
 {
+    INFO_STRUCT *InfoStruct;
     GETVERSIONINPARAMS Version;
     SMART_DRIVE_INFO m_stDrivesInfo;
     SMART_RESULT Result;
     HANDLE hHandle;
-    BYTE bIndex;
+    IDSECTOR IdInfo = {0};
+    BYTE bIndex, Count;
+    BOOL bE1 = FALSE, bE8 = FALSE,
+         bE9 = FALSE, bAB = FALSE,
+         bD1 = FALSE;
 
     if (!hSmartHandle)
     {
@@ -346,11 +446,69 @@ EnumSmartData(HANDLE hSmartHandle, BYTE bDevNumber, SMART_ENUMDATAPROC lpEnumPro
     if (!ReadSmartThresholds(hHandle, bDevNumber, &m_stDrivesInfo))
         goto Failed;
 
+    if (!ReadSmartInfo(hHandle, bDevNumber, &IdInfo))
+        goto Failed;
+
+    ChangeByteOrder((PCHAR)IdInfo.sModelNumber,
+                    sizeof(IdInfo.sModelNumber));
+    strupr(IdInfo.sModelNumber);
+
     for (bIndex = 0; bIndex < m_stDrivesInfo.m_ucSmartValues; ++bIndex)
     {
-        SMART_IDToText(m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId,
-                       Result.szName,
-                       sizeof(Result.szName));
+        if (m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId == 0xE1)
+            bE1 = TRUE;
+        if (m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId == 0xE8)
+            bE8 = TRUE;
+        if (m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId == 0xE9)
+            bE9 = TRUE;
+
+        if (m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId == 0xAB)
+            bAB = TRUE;
+
+        if (m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId == 0xD1)
+            bD1 = TRUE;
+    }
+
+    /* Intel SSD */
+    if (bE1 && bE8 && bE9 &&
+        (strncmp(IdInfo.sModelNumber, "INTEL SSD", 9) == 0 ||
+         strncmp(IdInfo.sModelNumber, " INTEL SSD", 10) == 0))
+    {
+        DebugTrace(L"Intel SSD detected!");
+        InfoStruct = IntelSSDSmartAttribList;
+    }
+    /* Plextor SSD */
+    else if (strncmp(IdInfo.sModelNumber, "PLEXTOR", 9) == 0)
+    {
+        DebugTrace(L"Plextor SSD detected!");
+        InfoStruct = PlextorSSDSmartAttribList;
+    }
+    /* Sandforce SSD */
+    else if (bAB)
+    {
+        DebugTrace(L"Sandforce SSD detected!");
+        InfoStruct = SandforceSSDSmartAttribList;
+    }
+    /* Indilinx SSD */
+    else if (bD1)
+    {
+        DebugTrace(L"Indilinx SSD detected!");
+        InfoStruct = IndilinxSSDSmartAttribList;
+    }
+    /* Generic Disk */
+    else
+    {
+        DebugTrace(L"Generic disk detected!");
+        InfoStruct = SmartAttribList;
+    }
+
+    for (bIndex = 0, Count = 0; bIndex < m_stDrivesInfo.m_ucSmartValues; ++bIndex)
+    {
+        Result.IsCritical =
+            SMART_IDToText(InfoStruct,
+                           m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId,
+                           Result.szName,
+                           sizeof(Result.szName));
 
         /* ID */
         Result.dwAttrID = m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId;
