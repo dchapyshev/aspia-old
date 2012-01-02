@@ -2206,6 +2206,126 @@ DMI_BatteryInfo(VOID)
     DebugEndReceiving();
 }
 
+const INFO_STRUCT PointingDeviceTypesList[] =
+{
+    { 0x01, L"Other" },
+    { 0x02, L"Unknown" },
+    { 0x03, L"Mouse" },
+    { 0x04, L"Track Ball" },
+    { 0x05, L"Track Point" },
+    { 0x06, L"Glide Point" },
+    { 0x07, L"Touch Pad" },
+    { 0x08, L"Touch Screen" },
+    { 0x09, L"Optical Sensor" },
+    { 0 }
+};
+
+VOID
+PointingDevicesTypeToText(BYTE Type, LPWSTR lpText, SIZE_T Size)
+{
+    SIZE_T Index = 0;
+
+    lpText[0] = 0;
+    do
+    {
+        if (PointingDeviceTypesList[Index].dwValue == Type)
+        {
+            StringCbCopy(lpText, Size, PointingDeviceTypesList[Index].lpszString);
+            return;
+        }
+    }
+    while (PointingDeviceTypesList[++Index].dwValue != 0);
+}
+
+const INFO_STRUCT PointingInterfaceList[] =
+{
+    { 0x01, L"Other" },
+    { 0x02, L"Unknown" },
+    { 0x03, L"Serial" },
+    { 0x04, L"PS/2" },
+    { 0x05, L"Infrared" },
+    { 0x06, L"HP-HIL" },
+    { 0x07, L"Bus mouse" },
+    { 0x08, L"ADB (Apple Desktop Bus)" },
+    { 0xA0, L"Bus mouse DB-9" },
+    { 0xA1, L"Bus mouse micro-DIN" },
+    { 0xA2, L"USB" },
+    { 0 }
+};
+
+VOID
+PointingInterfaceToText(BYTE Interface, LPWSTR lpText, SIZE_T Size)
+{
+    SIZE_T Index = 0;
+
+    lpText[0] = 0;
+    do
+    {
+        if (PointingInterfaceList[Index].dwValue == Interface)
+        {
+            StringCbCopy(lpText, Size, PointingInterfaceList[Index].lpszString);
+            return;
+        }
+    }
+    while (PointingInterfaceList[++Index].dwValue != 0);
+}
+
+VOID
+DMI_PointingInfo(VOID)
+{
+    WCHAR szText[MAX_STR_LEN];
+    INT Index;
+    BYTE Buf[MAX_DATA] = {0};
+    SIZE_T Count = 0;
+    BOOL IsFound;
+    SIZE_T Len;
+
+    DebugStartReceiving();
+
+    if (!IsSmBiosWorks()) return;
+    IoAddIcon(IDI_MOUSE);
+
+    do
+    {
+        Len = MAX_DATA;
+        IsFound = FALSE;
+
+        if (GetNextDataByType(BUILDIN_POINT_DEV_INF0, &Buf, &Len, (Count < 1) ? TRUE : FALSE))
+        {
+            IsFound = TRUE;
+            ++Count;
+        }
+
+        if (IsFound)
+        {
+            if (Count == 1) IoAddHeader(0, IDS_DMI_POINTING_DEVICE, 0);
+
+            PointingDevicesTypeToText(Buf[0x04], szText, sizeof(szText));
+            if (szText[0] != 0)
+            {
+                Index = IoAddValueName(1, IDS_DMI_POINTING_TYPE, 0);
+                IoSetItemText(Index, 1, szText);
+            }
+
+            PointingInterfaceToText(Buf[0x05], szText, sizeof(szText));
+            if (szText[0] != 0)
+            {
+                Index = IoAddValueName(1, IDS_DMI_POINTING_INTERFACE, 0);
+                IoSetItemText(Index, 1, szText);
+            }
+
+            Index = IoAddValueName(1, IDS_DMI_POINTING_BUTTONS, 0);
+            StringCbPrintf(szText, sizeof(szText), L"%d", Buf[0x06]);
+            IoSetItemText(Index, 1, szText);
+        }
+    }
+    while (IsFound);
+
+    if (Count) AddDMIFooter();
+
+    DebugEndReceiving();
+}
+
 BOOL
 SMBIOS_GetMainboardName(LPWSTR lpName, SIZE_T NameSize,
                         LPWSTR lpManuf, SIZE_T ManufSize)

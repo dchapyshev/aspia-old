@@ -277,6 +277,7 @@ CATEGORY_LIST DMICategoryList[] =
     { IDS_CAT_HW_DMI_SLOT,      IDI_PORT,     IDR_POPUP, FALSE, TRUE, FALSE, NULL, DMI_SlotInfo,      NULL, StdColumnList, NULL },
     { IDS_CAT_HW_DMI_PORTS,     IDI_PORT,     IDR_POPUP, FALSE, TRUE, FALSE, NULL, DMI_PortsInfo,     NULL, StdColumnList, NULL },
     { IDS_CAT_HW_DMI_ONBOARD,   IDI_HW,       IDR_POPUP, FALSE, TRUE, FALSE, NULL, DMI_OnboardInfo,   NULL, StdColumnList, NULL },
+    { IDS_CAT_HW_DMI_POINTING,  IDI_MOUSE,    IDR_POPUP, FALSE, TRUE, FALSE, NULL, DMI_PointingInfo,  NULL, StdColumnList, NULL },
     { IDS_CAT_HW_DMI_BATTERY,   IDI_BATTERY,  IDR_POPUP, FALSE, TRUE, FALSE, NULL, DMI_BatteryInfo,   NULL, StdColumnList, NULL },
     { 0 }
 };
@@ -305,6 +306,15 @@ CATEGORY_LIST DisplayCategoryList[] =
     { 0 }
 };
 
+CATEGORY_LIST MMediaCategoryList[] =
+{
+    { IDS_CAT_HW_MMEDIA_DEV,    IDI_AUDIO, IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_MediaDevicesInfo, NULL, StdColumnList, NULL },
+    { IDS_CAT_HW_MMEDIA_ACODEC, IDI_AUDIO, IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_MediaACodecsInfo, NULL, StdColumnList, NULL },
+    { IDS_CAT_HW_MMEDIA_VCODEC, IDI_AUDIO, IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_MediaVCodecsInfo, NULL, StdColumnList, NULL },
+    { IDS_CAT_HW_MMEDIA_MCI,    IDI_AUDIO, IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_MediaMCIInfo,     NULL, StdColumnList, NULL },
+    { 0 }
+};
+
 CATEGORY_LIST HWCategoryList[] =
 {
     { IDS_CAT_HW_DMI,      IDI_COMPUTER, 0,         FALSE, TRUE, FALSE, NULL, NULL,            NULL, NULL,               DMICategoryList },
@@ -312,6 +322,7 @@ CATEGORY_LIST HWCategoryList[] =
     { IDS_CAT_HW_CPU,      IDI_CPU,      IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_CPUInfo,      NULL, StdColumnList,      NULL },
     { IDS_CAT_HW_DATA,     IDI_HDD,      0,         FALSE, TRUE, FALSE, NULL, NULL,            NULL, NULL,               DataCategoryList },
     { IDS_CAT_HW_DISPLAY,  IDI_MONITOR,  0,         FALSE, TRUE, FALSE, NULL, NULL,            NULL, NULL,               DisplayCategoryList },
+    { IDS_CAT_HW_MMEDIA,   IDI_AUDIO,    0,         FALSE, TRUE, FALSE, NULL, NULL,            NULL, NULL,               MMediaCategoryList },
     { IDS_CAT_HW_POWER,    IDI_POWERICO, IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_PowerInfo,    NULL, StdColumnList,      NULL },
     { IDS_CAT_HW_PRINTERS, IDI_PRINTER,  IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_PrintersInfo, NULL, StdColumnList,      NULL },
     { IDS_CAT_HW_DEVICES,  IDI_HW,       0,         FALSE, TRUE, FALSE, NULL, NULL,            NULL, NULL,               DevicesCategoryList },

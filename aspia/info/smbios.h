@@ -32,6 +32,7 @@
 #define PHYS_MEM_ARRAY_INFO     0x10 /* Type 16 */
 #define MEMORY_DEVICES_INFO     0x11 /* Type 17 */
 #define MEM_ARRAY_MAP_ADDR_INFO 0x13 /* Type 19 */
+#define BUILDIN_POINT_DEV_INF0  0x15 /* Type 21 */
 #define BATTERY_INFO            0x16 /* Type 22 */
 #define VOLTAGE_INFO            0x1A /* Type 26 */
 #define COOLING_INFO            0x1B /* Type 27 */

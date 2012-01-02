@@ -870,6 +870,10 @@ BEGIN
     IDS_OPENGL_VENDOR, "Vendor"
     IDS_OPENGL_VERSION, "Version"
     IDS_OPENGL_EXTENSIONS, "OpenGL Extensions"
+    IDS_DMI_POINTING_DEVICE, "Build-in Pointing Device"
+    IDS_DMI_POINTING_TYPE, "Device Type"
+    IDS_DMI_POINTING_INTERFACE, "Device Interface"
+    IDS_DMI_POINTING_BUTTONS, "Buttons Count"
 
     IDS_CAT_SUMMARY, "Загальна інформація"
 
@@ -889,6 +893,12 @@ BEGIN
     IDS_CAT_HW_WIN_VIDEO, "Windows Video"
     IDS_CAT_HW_OPENGL, "OpenGL"
 
+    IDS_CAT_HW_MMEDIA, "Multimedia"
+    IDS_CAT_HW_MMEDIA_DEV, "Windows Audio"
+    IDS_CAT_HW_MMEDIA_MCI, "MCI"
+    IDS_CAT_HW_MMEDIA_ACODEC, "Audio Codecs"
+    IDS_CAT_HW_MMEDIA_VCODEC, "Video Codecs"
+
     IDS_CAT_HW_DATA, "Зберігання даних"
     IDS_CAT_HW_DATA_CD, "Optical Drives"
     IDS_CAT_HW_DATA_SCSI, "SCSI"
@@ -907,6 +917,7 @@ BEGIN
     IDS_CAT_HW_DMI_ENCLOSURE, "Шасі"
     IDS_CAT_HW_DMI_ONBOARD, "Вбудовані пристрої"
     IDS_CAT_HW_DMI_BATTERY, "Батареї"
+    IDS_CAT_HW_DMI_POINTING, "Build-in Pointing"
 
     IDS_CAT_SOFTWARE, "Програмне забезпечення"
     IDS_CAT_SOFTWARE_UPD_SFT, "Програми та оновлення"

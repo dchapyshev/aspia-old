@@ -245,12 +245,19 @@ VOID DMI_SlotInfo(VOID);
 VOID DMI_PortsInfo(VOID);
 VOID DMI_EnclosureInfo(VOID);
 VOID DMI_OnboardInfo(VOID);
+VOID DMI_PointingInfo(VOID);
 VOID DMI_BatteryInfo(VOID);
 
 /* eventlog.c */
 VOID OS_SecurityEventsInfo(VOID);
 VOID OS_SystemEventsInfo(VOID);
 VOID OS_AppEventsInfo(VOID);
+
+/* mmedia.c */
+VOID HW_MediaDevicesInfo(VOID);
+VOID HW_MediaACodecsInfo(VOID);
+VOID HW_MediaVCodecsInfo(VOID);
+VOID HW_MediaMCIInfo(VOID);
 
 /* hw.c */
 ULONG GetTjmaxTemperature(DWORD CpuIndex);

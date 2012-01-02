@@ -88,6 +88,8 @@
 #define IDI_NVIDIA        179
 #define IDI_ATI           180
 #define IDI_OPENGL        181
+#define IDI_AUDIO         182
+#define IDI_MICROPHONE    183
 
 /* Dialogs */
 #define IDD_ABOUT_DIALOG         5000
@@ -807,6 +809,10 @@
 #define IDS_OPENGL_VENDOR                759
 #define IDS_OPENGL_VERSION               760
 #define IDS_OPENGL_EXTENSIONS            761
+#define IDS_DMI_POINTING_DEVICE          762
+#define IDS_DMI_POINTING_TYPE            763
+#define IDS_DMI_POINTING_INTERFACE       764
+#define IDS_DMI_POINTING_BUTTONS         765
 
 #define IDS_CAT_SUMMARY           1000
 
@@ -826,6 +832,12 @@
 #define IDS_CAT_HW_WIN_VIDEO      2042
 #define IDS_CAT_HW_OPENGL         2043
 
+#define IDS_CAT_HW_MMEDIA         2020
+#define IDS_CAT_HW_MMEDIA_DEV     2021
+#define IDS_CAT_HW_MMEDIA_MCI     2022
+#define IDS_CAT_HW_MMEDIA_ACODEC  2023
+#define IDS_CAT_HW_MMEDIA_VCODEC  2024
+
 #define IDS_CAT_HW_DMI            2050
 #define IDS_CAT_HW_DMI_BIOS       2051
 #define IDS_CAT_HW_DMI_SYSTEM     2052
@@ -838,6 +850,7 @@
 #define IDS_CAT_HW_DMI_ENCLOSURE  2059
 #define IDS_CAT_HW_DMI_ONBOARD    2060
 #define IDS_CAT_HW_DMI_BATTERY    2061
+#define IDS_CAT_HW_DMI_POINTING   2062
 
 #define IDS_CAT_HW_DATA           2080
 #define IDS_CAT_HW_DATA_ATA       2081
