@@ -1,15 +1,16 @@
 /*
  * PROJECT:         Aspia
- * FILE:            aspia/main.rc
+ * FILE:            icons/xp/xp_icons.rc
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "main.h"
+#include <windows.h>
+#include "../../aspia/resource.h"
+
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
-IDI_MAINICON      ICON DISCARDABLE "res/main.ico"
 IDI_ASK           ICON DISCARDABLE "res/ask.ico"
 IDI_BANG          ICON DISCARDABLE "res/bang.ico"
 IDI_CALENDAR      ICON DISCARDABLE "res/calendar.ico"
@@ -85,12 +86,9 @@ IDI_OPENGL        ICON DISCARDABLE "res/opengl.ico"
 IDI_AUDIO         ICON DISCARDABLE "res/audio.ico"
 IDI_MICROPHONE    ICON DISCARDABLE "res/microphone.ico"
 
-IDC_ACCELERATORS ACCELERATORS
+STRINGTABLE DISCARDABLE
 BEGIN
-    VK_F1, ID_ABOUT, VIRTKEY /* F1 */
-    "^Q", ID_EXIT /* Ctrl + Q */
-    VK_F5, ID_RELOAD, VIRTKEY /* F5 */
-    "^S", ID_SAVE_CURRENT /* Ctrl + S */
-    "^C", ID_COPY_ALL /* Ctrl + C */
-    "^A", ID_SELECT_ALL /* Ctrl + A */
+    100, "Oxygen Icons"
 END
+
+/* EOF */

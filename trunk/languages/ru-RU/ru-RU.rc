@@ -869,6 +869,10 @@ BEGIN
     IDS_OPENGL_VENDOR, "Производитель"
     IDS_OPENGL_VERSION, "Версия"
     IDS_OPENGL_EXTENSIONS, "Расширения OpenGL"
+    IDS_DMI_POINTING_DEVICE, "Интегрированное указывающее устройство"
+    IDS_DMI_POINTING_TYPE, "Тип устройства"
+    IDS_DMI_POINTING_INTERFACE, "Интерфейс"
+    IDS_DMI_POINTING_BUTTONS, "Количество кнопок"
 
     IDS_CAT_SUMMARY, "Общая информация"
 
@@ -888,6 +892,12 @@ BEGIN
     IDS_CAT_HW_WIN_VIDEO, "Видео Windows"
     IDS_CAT_HW_OPENGL, "OpenGL"
 
+    IDS_CAT_HW_MMEDIA, "Мультимедиа"
+    IDS_CAT_HW_MMEDIA_DEV, "Звук Windows"
+    IDS_CAT_HW_MMEDIA_MCI, "MCI"
+    IDS_CAT_HW_MMEDIA_ACODEC, "Аудио кодеки"
+    IDS_CAT_HW_MMEDIA_VCODEC, "Видео кодеки"
+
     IDS_CAT_HW_DATA, "Хранение данных"
     IDS_CAT_HW_DATA_CD, "Оптические накопители"
     IDS_CAT_HW_DATA_SCSI, "SCSI"
@@ -906,6 +916,7 @@ BEGIN
     IDS_CAT_HW_DMI_ENCLOSURE, "Шасси"
     IDS_CAT_HW_DMI_ONBOARD, "Встроенные устройства"
     IDS_CAT_HW_DMI_BATTERY, "Батареи"
+    IDS_CAT_HW_DMI_POINTING, "Указывающее устройство"
 
     IDS_CAT_SOFTWARE, "Программное обеспечение"
     IDS_CAT_SOFTWARE_UPD_SFT, "Программы и обновления"
