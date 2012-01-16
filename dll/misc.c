@@ -298,7 +298,6 @@ CenterWindow(HWND hWnd, HWND hWndCenter)
     RECT rcArea;
     RECT rcCenter;
     HWND hWndParent;
-    BOOL bResult;
     MONITORINFO minfo;
     INT DlgWidth;
     INT DlgHeight;
@@ -336,7 +335,7 @@ CenterWindow(HWND hWnd, HWND hWndCenter)
         }
         
         minfo.cbSize = sizeof(MONITORINFO);
-        bResult = GetMonitorInfo(hMonitor, &minfo);
+        GetMonitorInfo(hMonitor, &minfo);
         
         rcArea = minfo.rcWork;
 

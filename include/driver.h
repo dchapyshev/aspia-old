@@ -400,3 +400,39 @@ BOOL InitNvidiaApi(VOID);
 VOID FreeNvidiaApi(VOID);
 BOOL IsNvidiaApiInitialized(VOID);
 BOOL EnumNvidiaGPUs(NVIDIA_GPU_ENUMPROC lpEnumProc);
+
+__inline INT
+GetClientWindowWidth(IN HWND hwnd)
+{
+    RECT Rect;
+
+    GetClientRect(hwnd, &Rect);
+    return (Rect.right - Rect.left);
+}
+
+__inline INT
+GetClientWindowHeight(IN HWND hwnd)
+{
+    RECT Rect;
+
+    GetClientRect(hwnd, &Rect);
+    return (Rect.bottom - Rect.top);
+}
+
+__inline INT
+GetWindowWidth(IN HWND hwnd)
+{
+    RECT Rect;
+
+    GetWindowRect(hwnd, &Rect);
+    return (Rect.right - Rect.left);
+}
+
+__inline INT
+GetWindowHeight(IN HWND hwnd)
+{
+    RECT Rect;
+
+    GetWindowRect(hwnd, &Rect);
+    return (Rect.bottom - Rect.top);
+}

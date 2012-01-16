@@ -22,6 +22,7 @@ static HWND hSaveBtn = NULL;
 static HWND hCloseBtn = NULL;
 static HWND hFileTypeTxt = NULL;
 static HWND hComboBox = NULL;
+static BOOL IsGUIReport = TRUE;
 
 
 static VOID
@@ -220,10 +221,10 @@ ReportThread(IN LPVOID lpParameter)
     IoSetColumnsCount(OldColumnsCount);
     IoSetTarget(IO_TARGET_LISTVIEW);
 
-    EndDialog(hStatusDlg, 0);
+    if (IsGUIReport) EndDialog(hStatusDlg, 0);
 
     LeaveCriticalSection(&CriticalSection);
-    _endthread();
+    if (IsGUIReport) _endthread();
 }
 
 INT_PTR CALLBACK
@@ -268,14 +269,20 @@ ReportStatusThread(IN LPVOID lpParameter)
 }
 
 VOID
-ReportCreateThread(IN BOOL IsGUI, IN BOOL IsSaveAll)
+ReportCreateThread(IN BOOL IsSaveAll)
 {
     if (TryEnterCriticalSection(&CriticalSection))
+    {
         LeaveCriticalSection(&CriticalSection);
+    }
     else
+    {
         return;
+    }
 
-    if (IsGUI)
+    DebugTrace(L"Current IO target = %d", IoGetTarget());
+
+    if (IsGUIReport)
     {
         _beginthread(ReportStatusThread, 0, (LPVOID)IsSaveAll);
     }
@@ -315,18 +322,46 @@ GetIoTargetByFileExt(LPWSTR lpPath)
     return IO_TARGET_HTML;
 }
 
-VOID
-ReportSaveAll(IN BOOL IsGUI, IN LPWSTR lpszPath, IN BOOL bWithMenu)
+UINT
+GetIdByIoTarget(UINT id)
 {
+    switch (id)
+    {
+        case IO_TARGET_HTML:
+            return IDS_TYPE_HTML;
+        case IO_TARGET_TXT:
+            return IDS_TYPE_TEXT;
+        case IO_TARGET_CSV:
+            return IDS_TYPE_CSV;
+        //case IO_TARGET_JSON:
+            //return IDS_TYPE_JSON;
+        case IO_TARGET_INI:
+            return IDS_TYPE_INI;
+        case IO_TARGET_RTF:
+            return IDS_TYPE_RTF;
+        default:
+            return 0;
+    }
+}
+
+VOID
+ReportSave(IN BOOL IsGUI, IN BOOL IsSaveAll, IN LPWSTR lpszPath, IN BOOL bWithMenu)
+{
+    DebugTrace(L"ReportSave(%d, %d, %s, %d) called.",
+               IsGUI, IsSaveAll, lpszPath, bWithMenu);
+
     StringCbCopy(SettingsInfo.szReportPath,
                  sizeof(SettingsInfo.szReportPath),
                  lpszPath);
 
     SettingsInfo.IsAddContent = bWithMenu;
 
-    IoSetTarget(GetIoTargetByFileExt(lpszPath));
+    SettingsInfo.ReportFileType =
+        GetIdByIoTarget(GetIoTargetByFileExt(lpszPath));
 
-    ReportCreateThread(IsGUI, TRUE);
+    IsGUIReport = IsGUI;
+
+    ReportCreateThread(IsSaveAll);
 }
 
 VOID
@@ -342,13 +377,13 @@ ReportCategoryInfo(IN UINT Category,
         {
             if (Category == List[Index].StringID)
             {
-                IoAddColumnsList(List[Index].ColumnList, 0, 0);
                 LoadMUIString(List[Index].StringID, szText, MAX_STR_LEN);
 
                 IoWriteTableTitle(szText,
                                   List[Index].StringID,
                                   FALSE);
                 IoWriteBeginTable();
+                IoAddColumnsList(List[Index].ColumnList, 0, 0);
                 List[Index].InfoFunc();
                 IoWriteEndTable();
                 return;
@@ -367,13 +402,16 @@ ReportSavePage(IN LPWSTR lpszPath,
                IN UINT PageIndex)
 {
     INT OldColumnsCount;
+    INT IoTarget;
 
     if (!TryEnterCriticalSection(&CriticalSection))
         return;
 
     OldColumnsCount = IoGetColumnsCount();
 
-    IoSetTarget(GetIoTargetByFileExt(lpszPath));
+    IoTarget = GetIoTargetByFileExt(lpszPath);
+    SettingsInfo.ReportFileType = GetIdByIoTarget(IoTarget);
+    IoSetTarget(IoTarget);
 
     StringCbCopy(SettingsInfo.szReportPath,
                  sizeof(SettingsInfo.szReportPath),
@@ -976,7 +1014,8 @@ ReportWindowOnCommand(HWND hwnd, WPARAM wParam, LPARAM lParam)
 
             KillTimer(hMainWnd, IDT_UPDATE_TIMER);
 
-            ReportCreateThread(TRUE, FALSE);
+            IsGUIReport = TRUE;
+            ReportCreateThread(FALSE);
 
             PostMessage(hwnd, WM_CLOSE, 0, 0);
         }

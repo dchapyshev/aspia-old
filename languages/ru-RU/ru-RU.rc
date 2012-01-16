@@ -51,6 +51,46 @@ BEGIN
     END
 END
 
+IDR_INSTALLED_SOFTWARE MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "Удалить", ID_APP_REMOVE
+        MENUITEM "Изменить", ID_APP_MODIFY
+        MENUITEM "Удалить из реестра", ID_APP_REMOVE_REG
+        MENUITEM SEPARATOR
+        MENUITEM "Копировать строку\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Копировать значения", ID_COPY_VALUE
+        MENUITEM "Копировать название", ID_COPY_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Обновить\tF5", ID_RELOAD
+    END
+END
+
+IDR_SERVICES MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "Запустить", ID_SERVICE_RUN
+        MENUITEM "Остановить", ID_SERVICE_STOP
+        MENUITEM "Приостановить", ID_SERVICE_PAUSE
+        MENUITEM "Возобновить", ID_SERVICE_RESUME
+        MENUITEM "Перезапустить", ID_SERVICE_RESTART
+        POPUP "Тип запуска"
+        BEGIN
+            MENUITEM "Автоматически", ID_SERVICE_AUTO
+            MENUITEM "Вручную", ID_SERVICE_MANUAL
+            MENUITEM "Отключено", ID_SERVICE_DISABLED
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Копировать строку\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Копировать значения", ID_COPY_VALUE
+        MENUITEM "Копировать имя", ID_COPY_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Обновить\tF5", ID_RELOAD
+    END
+END
+
 IDR_COPY_ALL_POPUP MENU
 BEGIN
     POPUP "popup"
@@ -873,6 +913,11 @@ BEGIN
     IDS_DMI_POINTING_TYPE, "Тип устройства"
     IDS_DMI_POINTING_INTERFACE, "Интерфейс"
     IDS_DMI_POINTING_BUTTONS, "Количество кнопок"
+    IDS_MMDEV_NAME, "Имя"
+    IDS_MMDEV_ID, "Идентификатор"
+    IDS_MMDEV_FORMATS, "Форматы"
+    IDS_MMDEV_CHANNELS, "Каналы"
+    IDS_MMDEV_SUPPORTS, "Поддержка"
 
     IDS_CAT_SUMMARY, "Общая информация"
 

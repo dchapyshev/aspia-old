@@ -10,9 +10,6 @@
 #include <tlhelp32.h>
 
 
-typedef BOOL (CALLBACK *APPENUMPROC)(LPWSTR lpName, HKEY hAppKey);
-
-
 static BOOL
 EnumInstalledApplications(BOOL IsUpdates, BOOL IsUserKey, APPENUMPROC lpEnumProc)
 {
@@ -20,13 +17,13 @@ EnumInstalledApplications(BOOL IsUpdates, BOOL IsUserKey, APPENUMPROC lpEnumProc
     BOOL bIsSystemComponent, bIsUpdate;
     WCHAR szParentKeyName[MAX_PATH];
     WCHAR szDisplayName[MAX_PATH];
-    WCHAR szKeyName[MAX_PATH];
-    HKEY hKey, hRootKey, hAppKey;
+    HKEY hKey;
+    INST_APP_INFO Info = {0};
     LONG ItemIndex = 0;
 
-    hRootKey = IsUserKey ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
+    Info.hRootKey = IsUserKey ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
 
-    if (RegOpenKey(hRootKey,
+    if (RegOpenKey(Info.hRootKey,
                    L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
                    &hKey) != ERROR_SUCCESS)
     {
@@ -35,16 +32,16 @@ EnumInstalledApplications(BOOL IsUpdates, BOOL IsUserKey, APPENUMPROC lpEnumProc
 
     while (RegEnumKeyEx(hKey,
                         ItemIndex,
-                        szKeyName,
+                        Info.szKeyName,
                         &dwSize,
                         NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
     {
-        if (RegOpenKey(hKey, szKeyName, &hAppKey) == ERROR_SUCCESS)
+        if (RegOpenKey(hKey, Info.szKeyName, &Info.hAppKey) == ERROR_SUCCESS)
         {
             dwType = REG_DWORD;
             dwSize = sizeof(DWORD);
 
-            if (RegQueryValueEx(hAppKey,
+            if (RegQueryValueEx(Info.hAppKey,
                                 L"SystemComponent",
                                 NULL,
                                 &dwType,
@@ -60,7 +57,7 @@ EnumInstalledApplications(BOOL IsUpdates, BOOL IsUserKey, APPENUMPROC lpEnumProc
 
             dwType = REG_SZ;
             dwSize = MAX_PATH;
-            bIsUpdate = (RegQueryValueEx(hAppKey,
+            bIsUpdate = (RegQueryValueEx(Info.hAppKey,
                                          L"ParentKeyName",
                                          NULL,
                                          &dwType,
@@ -68,7 +65,7 @@ EnumInstalledApplications(BOOL IsUpdates, BOOL IsUserKey, APPENUMPROC lpEnumProc
                                          &dwSize) == ERROR_SUCCESS);
 
             dwSize = MAX_PATH;
-            if (RegQueryValueEx(hAppKey,
+            if (RegQueryValueEx(Info.hAppKey,
                                 L"DisplayName",
                                 NULL,
                                 &dwType,
@@ -80,12 +77,10 @@ EnumInstalledApplications(BOOL IsUpdates, BOOL IsUserKey, APPENUMPROC lpEnumProc
                     if ((IsUpdates == FALSE && !bIsUpdate) || /* Applications only */
                         (IsUpdates == TRUE && bIsUpdate)) /* Updates only */
                     {
-                        if (!lpEnumProc(szDisplayName, hAppKey))
-                            break;
+                        lpEnumProc(szDisplayName, Info);
                     }
                 }
             }
-            RegCloseKey(hAppKey);
         }
 
         if (IsCanceled) break;
@@ -121,90 +116,138 @@ GetApplicationString(HKEY hKey, LPWSTR lpKeyName, LPWSTR lpString, SIZE_T Size)
     return FALSE;
 }
 
-static BOOL CALLBACK
-EnumInstalledAppProc(LPWSTR lpName, HKEY hAppKey)
+static VOID CALLBACK
+EnumInstalledAppProc(LPWSTR lpName, INST_APP_INFO Info)
 {
     WCHAR szText[MAX_PATH];
     SIZE_T TextSize = sizeof(szText);
+    INST_APP_INFO *pInfo;
     INT Index;
+
+    pInfo = Alloc(sizeof(INST_APP_INFO));
+    if (!pInfo) return;
+
+    *pInfo = Info;
 
     Index = IoAddItem(0, 0, lpName);
 
+    if (IoGetTarget() == IO_TARGET_LISTVIEW)
+    {
+        ListViewSetItemParam(Index, (LPARAM)pInfo);
+    }
+
     /* Get version info */
-    GetApplicationString(hAppKey,
+    GetApplicationString(pInfo->hAppKey,
                          L"DisplayVersion",
                          szText, TextSize);
     IoSetItemText(Index, 1, szText);
     /* Get publisher */
-    GetApplicationString(hAppKey,
+    GetApplicationString(pInfo->hAppKey,
                          L"Publisher",
                          szText, TextSize);
     IoSetItemText(Index, 2, szText);
     /* Get help link */
-    GetApplicationString(hAppKey,
+    GetApplicationString(pInfo->hAppKey,
                          L"HelpLink",
                          szText, TextSize);
     IoSetItemText(Index, 3, szText);
     /* Get help telephone */
-    GetApplicationString(hAppKey,
+    GetApplicationString(pInfo->hAppKey,
                          L"HelpTelephone",
                          szText, TextSize);
     IoSetItemText(Index, 4, szText);
     /* Get URL update info */
-    GetApplicationString(hAppKey,
+    GetApplicationString(pInfo->hAppKey,
                          L"URLUpdateInfo",
                          szText, TextSize);
     IoSetItemText(Index, 5, szText);
     /* Get URL update info */
-    GetApplicationString(hAppKey,
+    GetApplicationString(pInfo->hAppKey,
                          L"URLInfoAbout",
                          szText, TextSize);
     IoSetItemText(Index, 6, szText);
     /* Get URL update info */
-    GetApplicationString(hAppKey,
+    GetApplicationString(pInfo->hAppKey,
                          L"InstallDate",
                          szText, TextSize);
     IoSetItemText(Index, 7, szText);
     /* Get URL update info */
-    GetApplicationString(hAppKey,
+    GetApplicationString(pInfo->hAppKey,
                          L"InstallLocation",
                          szText, TextSize);
     IoSetItemText(Index, 8, szText);
     /* Get URL update info */
-    GetApplicationString(hAppKey,
+    GetApplicationString(pInfo->hAppKey,
                          L"UninstallString",
                          szText, TextSize);
     IoSetItemText(Index, 9, szText);
     /* Get URL update info */
-    GetApplicationString(hAppKey,
+    GetApplicationString(pInfo->hAppKey,
                          L"ModifyPath",
                          szText, TextSize);
     IoSetItemText(Index, 10, szText);
 
-    return TRUE;
+    if (IoGetTarget() != IO_TARGET_LISTVIEW)
+    {
+        RegCloseKey(pInfo->hAppKey);
+        Free(pInfo);
+    }
 }
 
-static BOOL CALLBACK
-EnumInstalledUpdProc(LPWSTR lpName, HKEY hAppKey)
+static VOID CALLBACK
+EnumInstalledUpdProc(LPWSTR lpName, INST_APP_INFO Info)
 {
     WCHAR szText[MAX_PATH];
     SIZE_T TextSize = sizeof(szText);
+    INST_APP_INFO *pInfo;
     INT Index;
+
+    pInfo = Alloc(sizeof(INST_APP_INFO));
+    if (!pInfo) return;
+
+    *pInfo = Info;
 
     Index = IoAddItem(0, 0, lpName);
 
+    if (IoGetTarget() == IO_TARGET_LISTVIEW)
+    {
+        ListViewSetItemParam(Index, (LPARAM)pInfo);
+    }
+
     /* Get URL update info */
-    GetApplicationString(hAppKey,
+    GetApplicationString(pInfo->hAppKey,
                          L"URLInfoAbout",
                          szText, TextSize);
     IoSetItemText(Index, 1, szText);
     /* Get URL update info */
-    GetApplicationString(hAppKey,
+    GetApplicationString(pInfo->hAppKey,
                          L"UninstallString",
                          szText, TextSize);
     IoSetItemText(Index, 2, szText);
 
-    return TRUE;
+    if (IoGetTarget() != IO_TARGET_LISTVIEW)
+    {
+        RegCloseKey(pInfo->hAppKey);
+        Free(pInfo);
+    }
+}
+
+VOID
+SOFTWARE_InstalledAppsFree(VOID)
+{
+    INT Count = ListView_GetItemCount(hListView) - 1;
+    INST_APP_INFO *pInfo;
+
+    while (Count >= 0)
+    {
+        pInfo = ListViewGetlParam(hListView, Count);
+        if (pInfo > 0)
+        {
+            RegCloseKey(pInfo->hAppKey);
+            Free(pInfo);
+        }
+        --Count;
+    }
 }
 
 VOID

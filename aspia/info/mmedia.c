@@ -12,10 +12,30 @@
 VOID
 HW_MediaDevicesInfo(VOID)
 {
+    WAVEOUTCAPS waveOutputPaps;
+    UINT DevsNum, i;
+    INT Index;
+
     DebugStartReceiving();
 
     IoAddIcon(IDI_AUDIO);
     IoAddIcon(IDI_MICROPHONE);
+
+    DevsNum = waveOutGetNumDevs();
+    if (DevsNum > 0)
+    {
+        for (i = 0; i < DevsNum; i++)
+        {
+            if (waveOutGetDevCaps(i,
+                                  &waveOutputPaps,
+                                  sizeof(waveOutputPaps)) != MMSYSERR_NOERROR)
+            {
+                continue;
+            }
+
+            Index = IoAddItem(0, 0, waveOutputPaps.szPname);
+        }
+    }
 
     DebugEndReceiving();
 }

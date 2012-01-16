@@ -203,6 +203,12 @@ GUIInfoThread(LPVOID lpParameter)
         CurrentCategory = Category;
     }
 
+    if (InfoFreeFunction)
+    {
+        InfoFreeFunction();
+        InfoFreeFunction = NULL;
+    }
+
     /* Enable ListView control */
     EnableWindow(hListView, TRUE);
 
@@ -349,6 +355,55 @@ ListViewCopySelectedStrings(VOID)
     pText = NULL;
 }
 
+BOOL
+StartRemoveProcess(LPWSTR lpPath, BOOL Wait)
+{
+    PROCESS_INFORMATION pi;
+    STARTUPINFOW si = {0};
+    DWORD dwRet;
+    MSG msg;
+
+    si.cb = sizeof(si);
+    si.wShowWindow = SW_SHOW;
+
+    if (!CreateProcess(NULL, lpPath, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
+    {
+        return FALSE;
+    }
+
+    CloseHandle(pi.hThread);
+    if (Wait) EnableWindow(hMainWnd, FALSE);
+
+    while (Wait)
+    {
+        dwRet = MsgWaitForMultipleObjects(1, &pi.hProcess, FALSE, INFINITE, QS_ALLEVENTS);
+        if (dwRet == WAIT_OBJECT_0 + 1)
+        {
+            while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+            {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
+        }
+        else
+        {
+            if (dwRet == WAIT_OBJECT_0 || dwRet == WAIT_FAILED)
+                break;
+        }
+    }
+
+    CloseHandle(pi.hProcess);
+
+    if (Wait)
+    {
+        EnableWindow(hMainWnd, TRUE);
+        SetForegroundWindow(hMainWnd);
+        SetFocus(hMainWnd);
+    }
+
+    return TRUE;
+}
+
 static VOID
 OnCommand(UINT Command)
 {
@@ -363,7 +418,7 @@ OnCommand(UINT Command)
             WCHAR szPath[MAX_PATH];
 
             if (ReportSaveFileDialog(hMainWnd, szPath, sizeof(szPath)))
-                ReportSaveAll(TRUE, szPath, TRUE);
+                ReportSave(TRUE, TRUE, szPath, TRUE);
         }
         break;
 
@@ -541,6 +596,51 @@ OnCommand(UINT Command)
             }
         }
         break;
+
+        /* Installed Applications & Updates */
+
+        case ID_APP_MODIFY:
+        case ID_APP_REMOVE:
+        {
+            INST_APP_INFO *pInfo = ListViewGetlParam(hListView, -1);
+            DWORD dwType, dwSize;
+            WCHAR szPath[MAX_PATH];
+
+            if (!pInfo || (int)pInfo == -1) break;
+
+            dwType = REG_SZ;
+            dwSize = MAX_PATH;
+
+            if (RegQueryValueEx(pInfo->hAppKey,
+                                (Command == ID_APP_MODIFY) ? L"ModifyPath" : L"UninstallString",
+                                NULL,
+                                &dwType,
+                                (LPBYTE)szPath,
+                                &dwSize) == ERROR_SUCCESS)
+            {
+                if (StartRemoveProcess(szPath, TRUE))
+                {
+                    OnCommand(ID_RELOAD);
+                }
+            }
+        }
+        break;
+
+        case ID_APP_REMOVE_REG:
+        {
+            WCHAR szFullName[MAX_PATH] = L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\";
+            INST_APP_INFO *pInfo = ListViewGetlParam(hListView, -1);
+
+            if (!pInfo || (int)pInfo == -1) return;
+
+            StringCbCat(szFullName, sizeof(szFullName), pInfo->szKeyName);
+
+            if (RegDeleteKey(pInfo->hRootKey, szFullName) == ERROR_SUCCESS)
+            {
+                OnCommand(ID_RELOAD);
+            }
+        }
+        break;
     }
 }
 
@@ -651,7 +751,10 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
                             _beginthread(GUIInfoThread, 0,
                                          (LPVOID)ListViewGetlParam(hListView, -1));
                         else
-                            ShowPopupMenu(IDR_POPUP);
+                        {
+                            if (CurrentMenu)
+                                ShowPopupMenu(CurrentMenu);
+                        }
                     }
                 }
                 break;
@@ -770,6 +873,8 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
         case WM_DESTROY:
         {
+            if (InfoFreeFunction) InfoFreeFunction();
+
             SaveColumnsSizes();
             SaveSettings();
 
@@ -843,9 +948,12 @@ HandleCommandLine(VOID)
     if (ParamsInfo.DebugMode && NumArgs == 2)
         return FALSE;
 
+    if (ParamsInfo.DebugMode)
+        ParamsInfo.DebugMode = InitDebugLog(L"aspia.log", VER_FILEVERSION_STR);
+
     LoadDriver();
 
-    ReportSaveAll(FALSE, szPath, bNavMenu);
+    ReportSave(FALSE, FALSE, szPath, bNavMenu);
 
     return TRUE;
 }
@@ -1089,25 +1197,29 @@ wWinMain(HINSTANCE hInst,
        для синхронизации потоков получнеия информации */
     InitializeCriticalSection(&CriticalSection);
 
-    /* Пытаемся обработать аргументы командной строки */
-    if (HandleCommandLine())
-        goto Exit;
-
     /* если у нас дебаг билд, то всегда включаем DebugMode */
-#ifdef _DEBUG
+//#ifdef _DEBUG
     ParamsInfo.DebugMode = TRUE;
-#endif
-    if (ParamsInfo.DebugMode)
-        ParamsInfo.DebugMode = InitDebugLog(L"aspia.log", VER_FILEVERSION_STR);
+//#endif
 
     DebugTrace(L"Start with debug mode");
+
+    /* Пытаемся обработать аргументы командной строки */
+    if (HandleCommandLine())
+    {
+        DebugTrace(L"HandleCommandLine() success!");
+        goto Exit;
+    }
+
+    if (ParamsInfo.DebugMode)
+        ParamsInfo.DebugMode = InitDebugLog(L"aspia.log", VER_FILEVERSION_STR);
 
     /* Загружаем драйвер режима ядра */
     LoadDriver();
 
     InitCommonControls();
 
-    /* Загружаем ускорители для обработки горячих клавишь */
+    /* Загружаем ускорители для обработки горячих клавиш */
     hAccel = LoadAccelerators(hInstance,
                               MAKEINTRESOURCE(IDC_ACCELERATORS));
 
@@ -1182,11 +1294,11 @@ wWinMain(HINSTANCE hInst,
         }
     }
 
+Exit:
     UnloadDriver();
 
     DeleteCriticalSection(&CriticalSection);
 
-Exit:
     if (hMutex) CloseHandle(hMutex);
 
     CloseDebugLog();

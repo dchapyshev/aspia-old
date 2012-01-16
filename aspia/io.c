@@ -97,7 +97,7 @@ BOOL
 AppendStringToFileA(LPWSTR lpszString)
 {
     DWORD dwLen = SafeStrLen(lpszString);
-    INT buf_len, len;
+    INT buf_len;
     char *result;
 
     if (!hReport) return FALSE;
@@ -108,9 +108,9 @@ AppendStringToFileA(LPWSTR lpszString)
     result = Alloc(buf_len);
     if (result)
     {
-        len = WideCharToMultiByte(CP_ACP, 0,
-                                  lpszString, dwLen,
-                                  result, buf_len, 0, 0);
+        WideCharToMultiByte(CP_ACP, 0,
+                            lpszString, dwLen,
+                            result, buf_len, 0, 0);
 
         fwrite(result, sizeof(char), dwLen, hReport);
 
@@ -733,6 +733,7 @@ IoRunInfoFunc(UINT Category, CATEGORY_LIST *List)
                 GetIniFilePath(szIniPath, MAX_PATH);
                 StringCbPrintf(szName, sizeof(szName), L"col-%d", Category);
             }
+
             IoAddColumnsList(List[Index].ColumnList, szName, szIniPath);
 
             List[Index].InfoFunc();
