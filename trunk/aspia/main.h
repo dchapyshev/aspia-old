@@ -226,7 +226,7 @@ VOID ReportEndValues(VOID);
 VOID WriteReportItemString(LPWSTR, BOOL);
 VOID WriteReportValueString(LPWSTR);
 VOID WriteReportColumnString(LPWSTR);
-VOID ReportSaveAll(BOOL, LPWSTR, BOOL);
+VOID ReportSave(BOOL, BOOL, LPWSTR, BOOL);
 VOID ReportSavePage(LPWSTR, UINT);
 BOOL ReportSaveFileDialog(HWND, LPWSTR, SIZE_T);
 
@@ -279,8 +279,18 @@ VOID HW_SPDInfo(VOID);
 VOID NETWORK_NetStatInfo(VOID);
 
 /* software.c */
+typedef struct
+{
+    HKEY hRootKey;
+    HKEY hAppKey;
+    WCHAR szKeyName[MAX_PATH];
+} INST_APP_INFO;
+
+typedef VOID (CALLBACK *APPENUMPROC)(LPWSTR lpName, INST_APP_INFO Info);
+
 VOID SOFTWARE_InstalledUpdInfo(VOID);
 VOID SOFTWARE_InstalledAppInfo(VOID);
+VOID SOFTWARE_InstalledAppsFree(VOID);
 VOID SOFTWARE_TaskMgr(VOID);
 VOID SOFTWARE_LicensesInfo(VOID);
 VOID SOFTWARE_FileTypesInfo(VOID);
@@ -318,43 +328,6 @@ BOOL GetMSProductKey(BOOL, LPSTR, LPWSTR, INT);
 INT LoadMUIString(UINT, LPWSTR, INT);
 VOID IntSetWindowTheme(HWND hwnd);
 double Round(double Argument, int Precision);
-
-
-__inline INT
-GetClientWindowWidth(IN HWND hwnd)
-{
-    RECT Rect;
-
-    GetClientRect(hwnd, &Rect);
-    return (Rect.right - Rect.left);
-}
-
-__inline INT
-GetClientWindowHeight(IN HWND hwnd)
-{
-    RECT Rect;
-
-    GetClientRect(hwnd, &Rect);
-    return (Rect.bottom - Rect.top);
-}
-
-__inline INT
-GetWindowWidth(IN HWND hwnd)
-{
-    RECT Rect;
-
-    GetWindowRect(hwnd, &Rect);
-    return (Rect.right - Rect.left);
-}
-
-__inline INT
-GetWindowHeight(IN HWND hwnd)
-{
-    RECT Rect;
-
-    GetWindowRect(hwnd, &Rect);
-    return (Rect.bottom - Rect.top);
-}
 
 /* io.c */
 

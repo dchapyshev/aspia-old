@@ -711,8 +711,6 @@ ReadAMD8SmBus(BYTE *Spd, WORD BaseAddress, BYTE Slot)
         Spd[Index] = ReadIoPortByte(BaseAddress + 0x04);
     }
     return TRUE;
-
-    quaere(Spd);
 }
 
 BOOL

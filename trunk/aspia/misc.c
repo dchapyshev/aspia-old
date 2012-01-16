@@ -179,7 +179,6 @@ GetMSProductKey(BOOL is64, LPSTR lpszKeyPath, LPWSTR lpszKey, INT iSize)
     BYTE ProductKeyExtract[15];
     INT ByteCounter, k, nCur;
     HKEY hKey;
-    BOOL bOk;
 
     DebugTrace(L"is64 = %d, lpszKeyPath = %S, lpszKey = %s, iSize = %d",
                is64, lpszKeyPath, lpszKey, iSize);
@@ -202,7 +201,6 @@ GetMSProductKey(BOOL is64, LPSTR lpszKeyPath, LPWSTR lpszKey, INT iSize)
                               "3","4","6","7","8","9",NULL};*/
 
     DigitalProductID = 0;
-    bOk = FALSE;
 
     if (is64)
     {
@@ -243,7 +241,6 @@ GetMSProductKey(BOOL is64, LPSTR lpszKeyPath, LPWSTR lpszKey, INT iSize)
                              &DataLength) == ERROR_SUCCESS)
         {
             CopyMemory(ProductKeyExtract, DigitalProductID + 52, 15);
-            bOk = TRUE;
         }
 
         if (DigitalProductID) Free(DigitalProductID);

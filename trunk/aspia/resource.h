@@ -100,12 +100,13 @@
 #define IDD_SETTINGS_SYSTRAY     5005
 
 /* Menu */
-#define IDR_POPUP           500
-#define IDR_SAVE_POPUP      501
-#define IDR_COPY_ALL_POPUP  502
-#define IDR_SHOW_TRAY_POPUP 503
-#define IDR_HIDE_TRAY_POPUP 504
-#define IDR_TASKMGR         505
+#define IDR_POPUP                500
+#define IDR_SAVE_POPUP           501
+#define IDR_COPY_ALL_POPUP       502
+#define IDR_SHOW_TRAY_POPUP      503
+#define IDR_HIDE_TRAY_POPUP      504
+#define IDR_TASKMGR              505
+#define IDR_INSTALLED_SOFTWARE   506
 
 /* Menu Items */
 #define ID_ABOUT                 1000
@@ -137,6 +138,9 @@
 #define ID_LOW_PRIORITY          1032
 #define ID_PROCESS_PROPERTIES    1033
 #define ID_PROCESS_OPEN_FOLDER   1034
+#define ID_APP_REMOVE            1035
+#define ID_APP_MODIFY            1036
+#define ID_APP_REMOVE_REG        1037
 
 /* Controls */
 #define IDC_SET_PATH_BTN        102
@@ -813,6 +817,11 @@
 #define IDS_DMI_POINTING_TYPE            763
 #define IDS_DMI_POINTING_INTERFACE       764
 #define IDS_DMI_POINTING_BUTTONS         765
+#define IDS_MMDEV_NAME                   766
+#define IDS_MMDEV_ID                     767
+#define IDS_MMDEV_FORMATS                768
+#define IDS_MMDEV_CHANNELS               769
+#define IDS_MMDEV_SUPPORTS               770
 
 #define IDS_CAT_SUMMARY           1000
 

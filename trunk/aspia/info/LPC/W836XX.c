@@ -53,7 +53,7 @@ W836XX_WriteByte(WORD address, BYTE bank, BYTE reg, BYTE value)
 DWORD
 W836XX_SetBit(DWORD target, WORD bit, WORD value)
 {
-    if (((value & 1) == value) && bit >= 0 && bit <= 63)
+    if (((value & 1) == value) && bit <= 63)
     {
         DWORD mask = (((DWORD)1) << bit);
         return value > 0 ? target | mask : target & ~mask;

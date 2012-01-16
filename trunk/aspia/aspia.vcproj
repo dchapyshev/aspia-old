@@ -47,8 +47,9 @@
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)/include/&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
+				BufferSecurityCheck="false"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 			/>
@@ -63,8 +64,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msvcrt_win2000.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib winmm.lib aspia.lib opengl32.lib"
+				AdditionalDependencies="setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib winmm.lib aspia.lib opengl32.lib"
 				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\i386\&quot;;&quot;$(OutDir)\&quot;;&quot;$(DDK)\lib\wlh\i386\&quot;"
+				GenerateManifest="true"
 				EnableUAC="true"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -75,7 +77,6 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="manifest.xml"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -220,6 +221,7 @@
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames=""
 				AddModuleNamesToAssembly=""
+				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"

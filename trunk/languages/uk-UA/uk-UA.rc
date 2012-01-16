@@ -52,6 +52,46 @@ BEGIN
     END
 END
 
+IDR_INSTALLED_SOFTWARE MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "Remove", ID_APP_REMOVE
+        MENUITEM "Modify", ID_APP_MODIFY
+        MENUITEM "Remove from registry", ID_APP_REMOVE_REG
+        MENUITEM SEPARATOR
+        MENUITEM "Copy String\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Copy Value", ID_COPY_VALUE
+        MENUITEM "Copy Name", ID_COPY_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Refresh\tF5", ID_RELOAD
+    END
+END
+
+IDR_SERVICES MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "Run", ID_SERVICE_RUN
+        MENUITEM "Stop", ID_SERVICE_STOP
+        MENUITEM "Pause", ID_SERVICE_PAUSE
+        MENUITEM "Resume", ID_SERVICE_RESUME
+        MENUITEM "Restart", ID_SERVICE_RESTART
+        POPUP "Startup Type"
+        BEGIN
+            MENUITEM "Auto", ID_SERVICE_AUTO
+            MENUITEM "Manual", ID_SERVICE_MANUAL
+            MENUITEM "Disabled", ID_SERVICE_DISABLED
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Copy String\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Copy Value", ID_COPY_VALUE
+        MENUITEM "Copy Name", ID_COPY_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Refresh\tF5", ID_RELOAD
+    END
+END
+
 IDR_COPY_ALL_POPUP MENU
 BEGIN
     POPUP "popup"
@@ -874,6 +914,11 @@ BEGIN
     IDS_DMI_POINTING_TYPE, "Device Type"
     IDS_DMI_POINTING_INTERFACE, "Device Interface"
     IDS_DMI_POINTING_BUTTONS, "Buttons Count"
+    IDS_MMDEV_NAME, "Name"
+    IDS_MMDEV_ID, "Identifier"
+    IDS_MMDEV_FORMATS, "Formats"
+    IDS_MMDEV_CHANNELS, "Channels"
+    IDS_MMDEV_SUPPORTS, "Supports"
 
     IDS_CAT_SUMMARY, "Загальна інформація"
 
