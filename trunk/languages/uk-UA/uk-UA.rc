@@ -68,30 +68,6 @@ BEGIN
     END
 END
 
-IDR_SERVICES MENU
-BEGIN
-    POPUP "popup"
-    BEGIN
-        MENUITEM "Run", ID_SERVICE_RUN
-        MENUITEM "Stop", ID_SERVICE_STOP
-        MENUITEM "Pause", ID_SERVICE_PAUSE
-        MENUITEM "Resume", ID_SERVICE_RESUME
-        MENUITEM "Restart", ID_SERVICE_RESTART
-        POPUP "Startup Type"
-        BEGIN
-            MENUITEM "Auto", ID_SERVICE_AUTO
-            MENUITEM "Manual", ID_SERVICE_MANUAL
-            MENUITEM "Disabled", ID_SERVICE_DISABLED
-        END
-        MENUITEM SEPARATOR
-        MENUITEM "Copy String\tCtrl+C", ID_COPY_ALL
-        MENUITEM "Copy Value", ID_COPY_VALUE
-        MENUITEM "Copy Name", ID_COPY_NAME
-        MENUITEM SEPARATOR
-        MENUITEM "Refresh\tF5", ID_RELOAD
-    END
-END
-
 IDR_COPY_ALL_POPUP MENU
 BEGIN
     POPUP "popup"
