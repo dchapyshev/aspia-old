@@ -398,6 +398,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\info\licenses.c"
+					>
+				</File>
+				<File
 					RelativePath=".\info\mmedia.c"
 					>
 				</File>

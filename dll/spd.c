@@ -189,6 +189,8 @@ EnumSmBusBaseAddress(SMBUS_BASEADR_ENUMPROC lpEnumProc)
                     BaseAddress = (addr & 0xFFF0);
                 }
 
+                DebugTrace(L"Try offset = %x", offsets[i]);
+
                 switch (chip)
                 {
                     case 0x30741106: /* VIA8233 */
@@ -249,7 +251,6 @@ EnumSmBusBaseAddress(SMBUS_BASEADR_ENUMPROC lpEnumProc)
                     case 0x07D810DE: /* nForce MCP73 */
                     case 0x075210DE: /* nForce MCP78S */
                     case 0x0AA210DE: /* nForce MCP79 */
-                        DebugTrace(L"i = %x", i);
                         lpEnumProc(BaseAddress, AMD8111_SMBUS);
                         break;
 
