@@ -122,7 +122,7 @@ ReadPciConfigByte(IN DWORD PciAddress, IN BYTE RegAddress)
     if (ReadPciConfig(PciAddress, RegAddress, (PBYTE)&Value, sizeof(BYTE)))
         return Value;
     else
-        return 0xFF;
+        return (BYTE)-1;
 }
 
 __inline WORD
@@ -132,7 +132,7 @@ ReadPciConfigWord(IN DWORD PciAddress, IN BYTE RegAddress)
     if (ReadPciConfig(PciAddress, RegAddress, (PBYTE)&Value, sizeof(WORD)))
         return Value;
     else
-        return 0xFFFF;
+        return (WORD)-1;
 }
 
 __inline DWORD
@@ -142,7 +142,7 @@ ReadPciConfigDword(IN DWORD PciAddress, IN BYTE RegAddress)
     if (ReadPciConfig(PciAddress, RegAddress, (PBYTE)&Value, sizeof(DWORD)))
         return Value;
     else
-        return 0xFFFFFFFF;
+        return (DWORD)-1;
 }
 
 __inline VOID

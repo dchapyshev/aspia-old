@@ -82,7 +82,7 @@ GetEventUserName(EVENTLOGRECORD *pelr,
 static VOID
 GetEventType(IN WORD dwEventType,
              OUT LPWSTR eventTypeText,
-             IN SIZE_T EventTypeLen)
+             IN INT EventTypeLen)
 {
     UINT uID;
 
@@ -111,7 +111,7 @@ GetEventType(IN WORD dwEventType,
             break;
     }
 
-    LoadMUIString( uID, eventTypeText, EventTypeLen);
+    LoadMUIString(uID, eventTypeText, EventTypeLen);
 }
 
 static VOID

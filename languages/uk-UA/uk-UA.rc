@@ -895,6 +895,8 @@ BEGIN
     IDS_MMDEV_FORMATS, "Formats"
     IDS_MMDEV_CHANNELS, "Channels"
     IDS_MMDEV_SUPPORTS, "Supports"
+    IDS_CPL_NAME, "Name"
+    IDS_CPL_DESC, "Description"
 
     IDS_CAT_SUMMARY, "Загальна інформація"
 
@@ -984,6 +986,7 @@ BEGIN
     IDS_CAT_OS_AUTORUN, "Автозавантаження"
     IDS_CAT_OS_ENVIRON, "Змінні середовища"
     IDS_CAT_OS_SYSFOLDERS, "Системні теки"
+    IDS_CAT_OS_CPL_APPLETS, "Control Panel"
 
     IDS_ABOUT_STRING, "Aspia - вільне програмне забезпечення, що розповсюджується за ліцензією GNU LGPL.\r\n\
                        Ви можете отримати копію ліцензії GNU LGPL за адресою:\r\n\

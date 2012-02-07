@@ -89,17 +89,17 @@ ShowDDR3MemoryTimings(BYTE *Spd, double Latency, int cl)
     StringCbPrintf(szText, sizeof(szText), szFormat, 1000.0 / Latency);
     ItemIndex = IoAddItem(1, 1, szText);
     StringCbPrintf(szText, sizeof(szText),
-                   L"%ld-%ld-%ld-%ld (CL-RCD-RP-RAS)/%ld-%ld-%ld-%ld-%ld-%ld (RC-RFC-RRD-WR-WTR-RTP)",
+                   L"%i-%i-%i-%i (CL-RCD-RP-RAS)/%i-%i-%i-%i-%i-%i (RC-RFC-RRD-WR-WTR-RTP)",
                    cl,
-                   (DWORD)Round((Spd[0x12] * 0.125)/Latency, 0),
-                   (DWORD)Round((Spd[0x14] * 0.125)/Latency, 0),
-                   (DWORD)Round(((Spd[0x16] | (Spd[0x15] & 0x0F) << 8) * 0.125)/Latency, 0),
-                   (DWORD)Round(((Spd[0x17] | ((Spd[0x15] >> 4) << 8)) * 0.125)/Latency, 0),
-                   (DWORD)Round(((Spd[0x18] | (Spd[0x19] << 8)) * 0.125)/Latency, 0),
-                   (DWORD)Round((Spd[0x13] * 0.125)/Latency, 0),
-                   (DWORD)Round((Spd[0x11] * 0.125)/Latency, 0),
-                   (DWORD)Round((Spd[0x1A] * 0.125)/Latency, 0),
-                   (DWORD)Round((Spd[0x1B] * 0.125)/Latency, 0));
+                   (int)Round((Spd[0x12] * 0.125)/Latency, 0),
+                   (int)Round((Spd[0x14] * 0.125)/Latency, 0),
+                   (int)Round(((Spd[0x16] | (Spd[0x15] & 0x0F) << 8) * 0.125)/Latency, 0),
+                   (int)Round(((Spd[0x17] | ((Spd[0x15] >> 4) << 8)) * 0.125)/Latency, 0),
+                   (int)Round(((Spd[0x18] | (Spd[0x19] << 8)) * 0.125)/Latency, 0),
+                   (int)Round((Spd[0x13] * 0.125)/Latency, 0),
+                   (int)Round((Spd[0x11] * 0.125)/Latency, 0),
+                   (int)Round((Spd[0x1A] * 0.125)/Latency, 0),
+                   (int)Round((Spd[0x1B] * 0.125)/Latency, 0));
     IoSetItemText(ItemIndex, 1, szText);
 }
 
