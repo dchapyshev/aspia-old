@@ -960,7 +960,7 @@ BEGIN
     IDS_CAT_NETWORK_IE_COOKIE, "Cookie"
     IDS_CAT_NETWORK_IE_PARAMS, "Settings"
 
-    IDS_CAT_OS, "Operationg System"
+    IDS_CAT_OS, "Operating System"
     IDS_CAT_OS_REGDATA, "Registration Information"
     IDS_CAT_OS_DESKTOP, "Desktop"
     IDS_CAT_OS_USERS_GROUPS, "Users And Groups"
