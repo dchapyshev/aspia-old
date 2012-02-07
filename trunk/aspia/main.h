@@ -126,7 +126,7 @@ VOID InitControls(HWND);
 VOID ReInitControls(VOID);
 
 __inline VOID
-AddColumn(HWND hList, SIZE_T Index, INT Width, LPWSTR lpszText)
+AddColumn(HWND hList, INT Index, INT Width, LPWSTR lpszText)
 {
     LV_COLUMN Column = {0};
 
@@ -201,6 +201,7 @@ VOID OS_UsersInfo(VOID);
 VOID OS_UsersGroupsInfo(VOID);
 VOID OS_ActiveUsersInfo(VOID);
 VOID OS_FontsInfo(VOID);
+VOID OS_CPLAppletsInfo(VOID);
 VOID OS_AutorunInfo(VOID);
 VOID OS_SysFoldersInfo(VOID);
 VOID OS_DesktopInfo(VOID);

@@ -822,6 +822,8 @@
 #define IDS_MMDEV_FORMATS                768
 #define IDS_MMDEV_CHANNELS               769
 #define IDS_MMDEV_SUPPORTS               770
+#define IDS_CPL_NAME                     771
+#define IDS_CPL_DESC                     772
 
 #define IDS_CAT_SUMMARY           1000
 
@@ -906,6 +908,7 @@
 #define IDS_CAT_OS_ACTIVEUSERS  2311
 #define IDS_CAT_OS_PREVENTS     2312
 #define IDS_CAT_OS_SYSFILES     2313
+#define IDS_CAT_OS_CPL_APPLETS  2314
 
 #define IDS_CAT_OS_USERS        2350
 #define IDS_CAT_OS_USERGROUP    2351

@@ -126,7 +126,7 @@ GetSpdModuleWidth(BYTE *Spd, LPWSTR lpszString, SIZE_T Size)
     else
         Width = (Spd[0x07] * 100) + Spd[0x06];
 
-    StringCbPrintf(lpszString, Size, L"%ld bit", Width);
+    StringCbPrintf(lpszString, Size, L"%u bit", Width);
 }
 
 VOID

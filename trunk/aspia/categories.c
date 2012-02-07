@@ -275,6 +275,13 @@ COLUMN_LIST MMDevsColumnList[] =
     { 0 }
 };
 
+COLUMN_LIST CPLAppletsColumnList[] =
+{
+    { IDS_CPL_NAME, 270 },
+    { IDS_CPL_DESC, 250 },
+    { 0 }
+};
+
 CATEGORY_LIST DMICategoryList[] =
 {
     { IDS_CAT_HW_DMI_BIOS,      IDI_CPU,      IDR_POPUP, FALSE, TRUE, FALSE, NULL, DMI_BIOSInfo,      NULL, StdColumnList, NULL },
@@ -397,28 +404,29 @@ CATEGORY_LIST EventsCategoryList[] =
 
 CATEGORY_LIST SysFilesCategoryList[] =
 {
-    { IDS_CAT_SYSFILES_KNOWN, IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesKnownInfo, NULL, StdColumnList,      NULL },
-    { IDS_CAT_SYSFILES_DLL,   IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesDLLInfo,   NULL, SysFilesColumnList, NULL },
-    { IDS_CAT_SYSFILES_AX,    IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesAXInfo,    NULL, SysFilesColumnList, NULL },
-    { IDS_CAT_SYSFILES_EXE,   IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesEXEInfo,   NULL, SysFilesColumnList, NULL },
-    { IDS_CAT_SYSFILES_SYS,   IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesSYSInfo,   NULL, SysFilesColumnList, NULL },
-    { IDS_CAT_OS_FONTS,       IDI_FONTS,IDR_POPUP, FALSE, TRUE,  TRUE, NULL, OS_FontsInfo,         NULL, FontsColumnList,    NULL },
+    { IDS_CAT_SYSFILES_KNOWN, IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesKnownInfo, NULL, StdColumnList,        NULL },
+    { IDS_CAT_SYSFILES_DLL,   IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesDLLInfo,   NULL, SysFilesColumnList,   NULL },
+    { IDS_CAT_SYSFILES_AX,    IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesAXInfo,    NULL, SysFilesColumnList,   NULL },
+    { IDS_CAT_SYSFILES_EXE,   IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesEXEInfo,   NULL, SysFilesColumnList,   NULL },
+    { IDS_CAT_SYSFILES_SYS,   IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesSYSInfo,   NULL, SysFilesColumnList,   NULL },
+    { IDS_CAT_OS_FONTS,       IDI_FONTS,IDR_POPUP, FALSE, TRUE,  TRUE, NULL, OS_FontsInfo,         NULL, FontsColumnList,      NULL },
     { 0 }
 };
 
 CATEGORY_LIST OSCategoryList[] =
 {
-    { IDS_CAT_OS_REGDATA,      IDI_COMPUTER,   IDR_POPUP, FALSE, TRUE,  FALSE, NULL, OS_RegInformation,    NULL, StdColumnList,      NULL },
-    { IDS_CAT_OS_DESKTOP,      IDI_DESKTOP,    IDR_POPUP, FALSE, TRUE,  FALSE, NULL, OS_DesktopInfo,       NULL, StdColumnList,      NULL },
-    { IDS_CAT_OS_TASKSCHED,    IDI_TIME,       IDR_POPUP, FALSE, TRUE,  FALSE, NULL, OS_TaskSchedulerInfo, NULL, StdColumnList,      NULL },
-    { IDS_CAT_OS_USERS_GROUPS, IDI_USERS,      0,         FALSE, TRUE,  FALSE, NULL, NULL,                 NULL, NULL,               UsersCategoryList },
-    { IDS_CAT_OS_REGPARAM,     IDI_LOCALES,    IDR_POPUP, FALSE, TRUE,  FALSE, NULL, OS_RegionalParamInfo, NULL, StdColumnList,      NULL },
-    { IDS_CAT_OS_ENVIRON,      IDI_APPS,       IDR_POPUP, FALSE, TRUE,  TRUE,  NULL, OS_EnvironInfo,       NULL, EnvironColumnList,  NULL },
-    { IDS_CAT_OS_SYSFOLDERS,   IDI_SYSFOLDERS, IDR_POPUP, FALSE, TRUE,  TRUE,  NULL, OS_SysFoldersInfo,    NULL, EnvironColumnList,  NULL },
-    { IDS_CAT_OS_EVENTVIEW,    IDI_EVENTVWR,   0,         FALSE, FALSE, FALSE, NULL, NULL,                NULL, NULL,               EventsCategoryList },
-    { IDS_CAT_OS_SYSFILES,     IDI_WINDOWS,    0,         FALSE, FALSE, FALSE, NULL, NULL,                NULL, NULL,               SysFilesCategoryList },
-    { IDS_CAT_OS_AUTORUN,      IDI_SOFTWARE,   IDR_POPUP, FALSE, TRUE,  FALSE, NULL, OS_AutorunInfo,       NULL, StdColumnList,      NULL },
-    { IDS_CAT_OS_PREVENTS,     IDI_PREVENT,    IDR_POPUP, FALSE, TRUE,  FALSE, NULL, OS_PreventsInfo,      NULL, StdColumnList,      NULL },
+    { IDS_CAT_OS_REGDATA,      IDI_COMPUTER,   IDR_POPUP, FALSE, TRUE,  FALSE, NULL, OS_RegInformation,    NULL, StdColumnList,        NULL },
+    { IDS_CAT_OS_DESKTOP,      IDI_DESKTOP,    IDR_POPUP, FALSE, TRUE,  FALSE, NULL, OS_DesktopInfo,       NULL, StdColumnList,        NULL },
+    { IDS_CAT_OS_TASKSCHED,    IDI_TIME,       IDR_POPUP, FALSE, TRUE,  FALSE, NULL, OS_TaskSchedulerInfo, NULL, StdColumnList,        NULL },
+    { IDS_CAT_OS_USERS_GROUPS, IDI_USERS,      0,         FALSE, TRUE,  FALSE, NULL, NULL,                 NULL, NULL,                 UsersCategoryList },
+    { IDS_CAT_OS_REGPARAM,     IDI_LOCALES,    IDR_POPUP, FALSE, TRUE,  FALSE, NULL, OS_RegionalParamInfo, NULL, StdColumnList,        NULL },
+    { IDS_CAT_OS_ENVIRON,      IDI_APPS,       IDR_POPUP, FALSE, TRUE,  TRUE,  NULL, OS_EnvironInfo,       NULL, EnvironColumnList,    NULL },
+    { IDS_CAT_OS_SYSFOLDERS,   IDI_SYSFOLDERS, IDR_POPUP, FALSE, TRUE,  TRUE,  NULL, OS_SysFoldersInfo,    NULL, EnvironColumnList,    NULL },
+    { IDS_CAT_OS_EVENTVIEW,    IDI_EVENTVWR,   0,         FALSE, FALSE, FALSE, NULL, NULL,                 NULL, NULL,                 EventsCategoryList },
+    { IDS_CAT_OS_SYSFILES,     IDI_WINDOWS,    0,         FALSE, FALSE, FALSE, NULL, NULL,                 NULL, NULL,                 SysFilesCategoryList },
+    { IDS_CAT_OS_CPL_APPLETS,  IDI_SETTINGS,   IDR_POPUP, FALSE, TRUE,  TRUE,  NULL, OS_CPLAppletsInfo,    NULL, CPLAppletsColumnList, NULL },
+    { IDS_CAT_OS_AUTORUN,      IDI_SOFTWARE,   IDR_POPUP, FALSE, TRUE,  FALSE, NULL, OS_AutorunInfo,       NULL, StdColumnList,        NULL },
+    { IDS_CAT_OS_PREVENTS,     IDI_PREVENT,    IDR_POPUP, FALSE, TRUE,  FALSE, NULL, OS_PreventsInfo,      NULL, StdColumnList,        NULL },
     { 0 }
 };
 

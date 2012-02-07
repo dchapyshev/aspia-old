@@ -12,6 +12,7 @@
 #include <mstask.h>
 #include <ntsecapi.h>
 #include <wtsapi32.h>
+#include <cpl.h>
 
 /* Definition for the GetFontResourceInfo function */
 typedef BOOL (WINAPI *PGFRI)(LPCTSTR, DWORD *, LPVOID, DWORD);
@@ -425,6 +426,138 @@ OS_FontsInfo(VOID)
 
     FindClose(hFind);
     FreeLibrary(hDLL);
+
+    DebugEndReceiving();
+}
+
+VOID
+OS_CPLAppletsInfo(VOID)
+{
+    HANDLE hFind = INVALID_HANDLE_VALUE;
+    WIN32_FIND_DATA FindFileData;
+    WCHAR szPath[MAX_PATH];
+    NEWCPLINFO NewInfo;
+    HMODULE hModule;
+    APPLET_PROC Proc;
+    INT ItemIndex, IconIndex, Count, i;
+    CPLINFO Info;
+
+    DebugStartReceiving();
+
+    GetSystemDirectory(szPath, MAX_PATH);
+
+    StringCbCat(szPath, sizeof(szPath), L"\\*.cpl");
+
+    DebugTrace(L"szPath = %s", szPath);
+
+    hFind = FindFirstFile(szPath, &FindFileData);
+    if (hFind == INVALID_HANDLE_VALUE)
+    {
+        return;
+    }
+
+    do
+    {
+        DebugTrace(L"Loading library '%s'", FindFileData.cFileName);
+
+        hModule = LoadLibrary(FindFileData.cFileName);
+        if (hModule == NULL)
+        {
+            DebugTrace(L"Loading failed!");
+            continue;
+        }
+
+        Proc = (APPLET_PROC)GetProcAddress(hModule, "CPlApplet");
+        if (Proc == NULL)
+        {
+            DebugTrace(L"Entry point 'CPlApplet' not found!");
+            continue;
+        }
+
+        if (Proc(hMainWnd, CPL_INIT, 0, 0) == 0)
+        {
+            DebugTrace(L"CPl initialization failed!");
+            continue;
+        }
+
+        Count = Proc(hMainWnd, CPL_GETCOUNT, 0, 0);
+        DebugTrace(L"CPls count = ", Count);
+        if (Count == 0)
+        {
+            continue;
+        }
+
+        for (i = 0; i < Count; i++)
+        {
+            ZeroMemory(&NewInfo, sizeof(NewInfo));
+            NewInfo.dwSize = sizeof(NEWCPLINFO);
+
+            Proc(hMainWnd, CPL_NEWINQUIRE, i, (LPARAM)&NewInfo);
+
+            if (NewInfo.hIcon == 0)
+            {
+                Proc(hMainWnd, CPL_INQUIRE, i, (LPARAM)&Info);
+                if (Info.idIcon != 0 && Info.idName != 0)
+                {
+                    WCHAR szName[MAX_STR_LEN] = {0}, szDesc[MAX_STR_LEN] = {0};
+
+                    LoadString(hModule, Info.idName, szName, MAX_STR_LEN);
+                    LoadString(hModule, Info.idInfo, szDesc, MAX_STR_LEN);
+
+                    IconIndex = 0;
+
+                    if (IoGetTarget() == IO_TARGET_LISTVIEW)
+                    {
+                        HICON hIcon;
+
+                        hIcon = (HICON)LoadImage(hModule,
+                                                 MAKEINTRESOURCE(Info.idIcon),
+                                                 IMAGE_ICON,
+                                                 ParamsInfo.SxSmIcon,
+                                                 ParamsInfo.SySmIcon,
+                                                 LR_CREATEDIBSECTION);
+
+                        if (hIcon == NULL)
+                        {
+                            IconIndex = AddIconToImageList(hIconsInst,
+                                                           hListViewImageList,
+                                                           IDI_APPS);
+                        }
+                        else
+                        {
+                            IconIndex = ImageList_AddIcon(hListViewImageList,
+                                                          hIcon);
+                        }
+
+                        DestroyIcon(hIcon);
+                    }
+
+                    if (szName[0] != 0 && szDesc[0] != 0)
+                    {
+                        ItemIndex = IoAddItem(0, IconIndex, szName);
+                        IoSetItemText(ItemIndex, 1, szDesc);
+                    }
+                }
+            }
+            else
+            {
+                IconIndex = 0;
+
+                if (IoGetTarget() == IO_TARGET_LISTVIEW)
+                {
+                    IconIndex = ImageList_AddIcon(hListViewImageList,
+                                                  NewInfo.hIcon);
+                }
+
+                ItemIndex = IoAddItem(0, IconIndex, NewInfo.szName);
+                IoSetItemText(ItemIndex, 1, NewInfo.szInfo);
+            }
+        }
+    }
+    while (FindNextFile(hFind, &FindFileData) != 0);
+
+    FindClose(hFind);
+    FreeLibrary(hModule);
 
     DebugEndReceiving();
 }
