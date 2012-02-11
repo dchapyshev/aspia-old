@@ -198,7 +198,10 @@ ReportThread(IN LPVOID lpParameter)
     IoSetTarget(GetIoTargetById(SettingsInfo.ReportFileType));
     OldColumnsCount = IoGetColumnsCount();
 
-    IoCreateReport(SettingsInfo.szReportPath);
+    if (!IoCreateReport(SettingsInfo.szReportPath))
+    {
+        goto Cleanup;
+    }
 
     if (SettingsInfo.IsAddContent)
     {
@@ -218,6 +221,7 @@ ReportThread(IN LPVOID lpParameter)
         IoCloseReport();
     }
 
+Cleanup:
     IoSetColumnsCount(OldColumnsCount);
     IoSetTarget(IO_TARGET_LISTVIEW);
 
@@ -416,10 +420,16 @@ ReportSavePage(IN LPWSTR lpszPath,
     StringCbCopy(SettingsInfo.szReportPath,
                  sizeof(SettingsInfo.szReportPath),
                  lpszPath);
-    IoCreateReport(SettingsInfo.szReportPath);
+
+    if (!IoCreateReport(SettingsInfo.szReportPath))
+    {
+        goto Cleanup;
+    }
+
     ReportCategoryInfo(PageIndex, RootCategoryList);
     IoCloseReport();
 
+Cleanup:
     IoSetColumnsCount(OldColumnsCount);
     IoSetTarget(IO_TARGET_LISTVIEW);
 

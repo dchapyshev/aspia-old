@@ -199,7 +199,7 @@ __inline VOID
 WriteRTFRowHeader(VOID)
 {
     WCHAR szText[MAX_STR_LEN];
-    INT i, width = 10000 / (ColumnsCount + 1);
+    INT i, width = 11000 / (ColumnsCount + 1);
 
     AppendStringToFileA(L"\\trowd\\trgaph50\r\n");
 
@@ -224,7 +224,7 @@ TextToRTFText(WCHAR *text)
 
     if (len == 0)
     {
-        WCHAR temp[] = L"\'2d"; /* "-" */
+        WCHAR temp[] = L"\\'2d"; /* "-" */
         buffer = (WCHAR*)Alloc(sizeof(temp));
         wcscpy(buffer, temp);
 
@@ -461,10 +461,8 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
             {
                 StringCbPrintf(szText, sizeof(szText),
                                (IoGetColumnsCount() == iSubItem + 1) ? L"%s\\cell\r\n\\row\r\n" : L"%s\\cell\r\n", text);
-                DebugTrace(L"szText = %s", szText);
 
-                if (!AppendStringToFileA(szText))
-                    DebugTrace(L"AppendStringToFileA() failed!");
+                AppendStringToFileA(szText);
 
                 Free(text);
             }
@@ -601,7 +599,7 @@ IoAddColumnsList(COLUMN_LIST *List, LPWSTR lpCategoryName, LPWSTR lpIniPath)
         }
         while (List[++Index].StringID != 0);
 
-        width = 10000 / (Index + 1);
+        width = 11000 / (Index + 1);
 
         Index = 0;
 
@@ -685,7 +683,7 @@ IoAddIcon(UINT IconID)
 BOOL
 IoCreateReport(LPWSTR lpszFile)
 {
-    DWORD dwBytesWritten;
+    DWORD dwBytesWritten, dwRes;
 
     hReport = CreateFile(lpszFile,
                          GENERIC_WRITE,
@@ -694,8 +692,29 @@ IoCreateReport(LPWSTR lpszFile)
                          CREATE_ALWAYS,
                          FILE_ATTRIBUTE_NORMAL,
                          NULL);
+    dwRes = GetLastError();
+
     if (hReport == INVALID_HANDLE_VALUE)
+    {
+        WCHAR szText[MAX_STR_LEN];
+        UINT id;
+
+        switch (dwRes)
+        {
+            case ERROR_SHARING_VIOLATION:
+                id = IDS_REPORT_SAVE_ERROR1;
+                break;
+            default:
+                id = IDS_REPORT_SAVE_ERROR2;
+                break;
+        }
+
+        LoadMUIString(id, szText, MAX_STR_LEN);
+        MessageBox(0, szText, NULL, MB_OK | MB_ICONERROR);
+
+        DebugTrace(L"CreateFile() failed. Error code = %d", dwRes);
         return FALSE;
+    }
 
     if (IoTarget != IO_TARGET_RTF)
     {
