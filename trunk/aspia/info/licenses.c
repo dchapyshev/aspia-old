@@ -1048,8 +1048,9 @@ VOID
 InsertKeySep(LPWSTR szIn, LPWSTR szOut)
 {
     SIZE_T i = 0, j, c = 0;
+    INT len;
 
-    for (j = 0; i < (SIZE_T)SafeStrLen(szIn); j++)
+    for (j = 0, len = SafeStrLen(szIn); i < (SIZE_T)len; j++)
     {
         if (c == 5)
         {

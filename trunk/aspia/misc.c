@@ -126,8 +126,9 @@ ChopSpaces(LPWSTR s, SIZE_T size)
 {
     WCHAR szNew[MAX_STR_LEN] = {0};
     SIZE_T i, j;
+    INT len;
 
-    for (i = 0, j = 0; i < (SIZE_T)SafeStrLen(s); ++i)
+    for (i = 0, j = 0, len = SafeStrLen(s); i < (SIZE_T)len; ++i)
     {
         if (s[i] == L' ' && s[i + 1] == L' ')
         {

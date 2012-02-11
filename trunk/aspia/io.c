@@ -284,7 +284,16 @@ TextToRTFText(WCHAR *text)
 INT
 IoAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex)
 {
-    WCHAR szText[MAX_STR_LEN * 5];
+    WCHAR *ptr = NULL;
+    SIZE_T size = 0;
+
+    if (IoTarget != IO_TARGET_LISTVIEW &&
+        IoTarget != IO_TARGET_RTF)
+    {
+        size = SafeStrLen(lpszText) * 2 * sizeof(WCHAR);
+        ptr = (WCHAR*)Alloc(size);
+        if (!ptr) return -1;
+    }
 
     switch (IoTarget)
     {
@@ -293,22 +302,22 @@ IoAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex)
 
         case IO_TARGET_HTML:
         {
-            StringCbPrintf(szText, sizeof(szText),
+            StringCbPrintf(ptr, size,
                            L"\t<tr><td class='h'>%s</td><td>&nbsp;</td></tr>\r\n",
                            lpszText);
         }
         break;
 
         case IO_TARGET_CSV:
-            StringCbPrintf(szText, sizeof(szText), L"\r\n\r\n%s", lpszText);
+            StringCbPrintf(ptr, size, L"\r\n\r\n%s", lpszText);
             break;
 
         case IO_TARGET_TXT:
-            StringCbPrintf(szText, sizeof(szText), L"\r\n\r\n%s", lpszText);
+            StringCbPrintf(ptr, size, L"\r\n\r\n%s", lpszText);
             break;
 
         case IO_TARGET_INI:
-            StringCbPrintf(szText, sizeof(szText), L"\r\n\r\n%s=", lpszText);
+            StringCbPrintf(ptr, size, L"\r\n\r\n%s=", lpszText);
             break;
 
         case IO_TARGET_RTF:
@@ -317,23 +326,30 @@ IoAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex)
 
             if (text != NULL)
             {
+                size = wcslen(text) * 5 * sizeof(WCHAR);
+                ptr = (WCHAR*)Alloc(size);
+                if (!ptr) return -1;
+
                 WriteRTFRowHeader();
-                StringCbPrintf(szText, sizeof(szText), L"{\\b %s}\\cell \t\\cell\r\n\\row\r\n", text);
-                AppendStringToFileA(szText);
+                StringCbPrintf(ptr, size, L"{\\b %s}\\cell \t\\cell\r\n\\row\r\n", text);
+                AppendStringToFileA(ptr);
 
                 Free(text);
+                Free(ptr);
             }
             return -1;
         }
 
         case IO_TARGET_JSON:
-            break;
+            return -1;
 
         default:
             return -1;
     }
 
-    AppendStringToFile(szText);
+    AppendStringToFile(ptr);
+
+    if (ptr) Free(ptr);
 
     return -1;
 }
@@ -350,7 +366,16 @@ IoAddHeader(INT Indent, UINT StringID, INT IconIndex)
 INT
 IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
 {
-    WCHAR szText[MAX_STR_LEN * 5];
+    SIZE_T size = 0;
+    WCHAR *ptr = NULL;
+
+    if (IoTarget != IO_TARGET_LISTVIEW &&
+        IoTarget != IO_TARGET_RTF)
+    {
+        size = SafeStrLen(lpText) * 2 * sizeof(WCHAR);
+        ptr = (WCHAR*)Alloc(size);
+        if (!ptr) return -1;
+    }
 
     switch (IoTarget)
     {
@@ -359,22 +384,22 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
 
         case IO_TARGET_HTML:
         {
-            StringCbPrintf(szText, sizeof(szText),
+            StringCbPrintf(ptr, size,
                            L"\r\n\t<tr><td>%s</td>",
                            lpText);
         }
         break;
 
         case IO_TARGET_CSV:
-            StringCbPrintf(szText, sizeof(szText), L"\r\n%s;", lpText);
+            StringCbPrintf(ptr, size, L"\r\n%s;", lpText);
             break;
 
         case IO_TARGET_TXT:
-            StringCbPrintf(szText, sizeof(szText), L"\r\n%s ", lpText);
+            StringCbPrintf(ptr, size, L"\r\n%s ", lpText);
             break;
 
         case IO_TARGET_INI:
-            StringCbPrintf(szText, sizeof(szText), L"\r\n%s=", lpText);
+            StringCbPrintf(ptr, size, L"\r\n%s=", lpText);
             break;
 
         case IO_TARGET_RTF:
@@ -383,24 +408,31 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
 
             if (text != NULL)
             {
+                size = wcslen(text) * 5 * sizeof(WCHAR);
+                ptr = (WCHAR*)Alloc(size);
+                if (!ptr) return -1;
+
                 WriteRTFRowHeader();
-                StringCbPrintf(szText, sizeof(szText), L"%s\\cell\r\n", text);
-                AppendStringToFileA(szText);
+                StringCbPrintf(ptr, size, L"%s\\cell\r\n", text);
+                AppendStringToFileA(ptr);
 
                 Free(text);
+                Free(ptr);
             }
             return -1;
         }
 
         case IO_TARGET_JSON:
-            StringCbPrintf(szText, sizeof(szText), L"\n    \"%s\": ", lpText);
+            StringCbPrintf(ptr, size, L"\n    \"%s\": ", lpText);
             break;
 
         default:
             return -1;
     }
 
-    AppendStringToFile(szText);
+    AppendStringToFile(ptr);
+
+    if (ptr) Free(ptr);
 
     return -1;
 }
@@ -417,7 +449,8 @@ IoAddValueName(INT Indent, UINT ValueID, INT IconIndex)
 VOID
 IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
 {
-    WCHAR szText[MAX_STR_LEN * 30];
+    WCHAR *ptr = NULL;
+    SIZE_T size;
 
     switch (IoTarget)
     {
@@ -427,31 +460,55 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
 
         case IO_TARGET_HTML:
         {
-            StringCbPrintf(szText, sizeof(szText),
-                           L"<td>%s</td>",
+            size = SafeStrLen(pszText) * 2 * sizeof(WCHAR);
+            ptr = (WCHAR*)Alloc(size);
+            if (!ptr) return;
+
+            StringCbPrintf(ptr, size, L"<td>%s</td>",
                            (SafeStrLen(pszText) == 0) ? L"&nbsp;" : pszText);
 
-            AppendStringToFile(szText);
+            AppendStringToFile(ptr);
 
             if (IoGetColumnsCount() == iSubItem + 1)
                 AppendStringToFile(L"</tr>");
+
+            Free(ptr);
+
             return;
         }
 
         case IO_TARGET_CSV:
-            StringCbPrintf(szText, sizeof(szText),
+        {
+            size = SafeStrLen(pszText) * 2 * sizeof(WCHAR);
+            ptr = (WCHAR*)Alloc(size);
+            if (!ptr) return;
+
+            StringCbPrintf(ptr, size,
                            (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s;", pszText);
-            break;
+        }
+        break;
 
         case IO_TARGET_TXT:
-            StringCbPrintf(szText, sizeof(szText),
+        {
+            size = SafeStrLen(pszText) * 2 * sizeof(WCHAR);
+            ptr = (WCHAR*)Alloc(size);
+            if (!ptr) return;
+
+            StringCbPrintf(ptr, size,
                            (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s ", pszText);
-            break;
+        }
+        break;
 
         case IO_TARGET_INI:
-            StringCbPrintf(szText, sizeof(szText),
+        {
+            size = SafeStrLen(pszText) * 2 * sizeof(WCHAR);
+            ptr = (WCHAR*)Alloc(size);
+            if (!ptr) return;
+
+            StringCbPrintf(ptr, size,
                            (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s,", pszText);
-            break;
+        }
+        break;
 
         case IO_TARGET_RTF:
         {
@@ -459,26 +516,38 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
 
             if (text != NULL)
             {
-                StringCbPrintf(szText, sizeof(szText),
+                size = wcslen(text) * 5 * sizeof(WCHAR);
+                ptr = (WCHAR*)Alloc(size);
+                if (!ptr) return;
+
+                StringCbPrintf(ptr, size,
                                (IoGetColumnsCount() == iSubItem + 1) ? L"%s\\cell\r\n\\row\r\n" : L"%s\\cell\r\n", text);
 
-                AppendStringToFileA(szText);
+                AppendStringToFileA(ptr);
 
                 Free(text);
+                Free(ptr);
             }
         }
         return;
 
         case IO_TARGET_JSON:
-            StringCbPrintf(szText, sizeof(szText),
+        {
+            size = SafeStrLen(pszText) * 2 * sizeof(WCHAR);
+            ptr = (WCHAR*)Alloc(size);
+            if (!ptr) return;
+
+            StringCbPrintf(ptr, size,
                            (IoGetColumnsCount() == iSubItem + 1) ? L"\"%s\"," : L"\"%s\"", pszText);
-            break;
+        }
+        break;
 
         default:
-            break;
+            return;
     }
 
-    AppendStringToFile(szText);
+    AppendStringToFile(ptr);
+    if (ptr) Free(ptr);
 }
 
 VOID

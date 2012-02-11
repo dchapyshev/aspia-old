@@ -600,11 +600,11 @@ AutorunShowRegPath(HKEY hRootKey, LPWSTR lpszPath, LPWSTR lpszName)
         {
             HICON hIcon = NULL;
             WCHAR szNewPath[MAX_PATH];
-            UINT i;
+            UINT i, len;
 
             if (szPath[0] == L'"')
             {
-                for (i = 1; i < wcslen(szPath); i++)
+                for (i = 1, len = wcslen(szPath); i < len; i++)
                 {
                     if (szPath[i] == L'"')
                     {

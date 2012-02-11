@@ -359,6 +359,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\print.c"
+				>
+			</File>
+			<File
 				RelativePath=".\report.c"
 				>
 			</File>

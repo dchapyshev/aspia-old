@@ -462,3 +462,6 @@ VOID GetLPCSensorsInfo(VOID);
 
 /* sysmon.c */
 VOID CreateSysMonWindow(VOID);
+
+/* print.c */
+VOID CreatePrintWindow(LPWSTR lpFile);

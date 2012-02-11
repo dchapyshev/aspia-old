@@ -31,12 +31,16 @@ HICON hHddIcon = NULL;
 BOOL
 GetIniFilePath(OUT LPWSTR lpszPath, IN SIZE_T PathLen)
 {
+    INT len;
+
     if (!GetModuleFileName(hInstance, lpszPath, PathLen))
         return FALSE;
 
-    lpszPath[SafeStrLen(lpszPath) - 1] = L'i';
-    lpszPath[SafeStrLen(lpszPath) - 2] = L'n';
-    lpszPath[SafeStrLen(lpszPath) - 3] = L'i';
+    len = SafeStrLen(lpszPath);
+
+    lpszPath[len - 1] = L'i';
+    lpszPath[len - 2] = L'n';
+    lpszPath[len - 3] = L'i';
 
     return TRUE;
 }

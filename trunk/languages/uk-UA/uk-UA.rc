@@ -899,6 +899,10 @@ BEGIN
     IDS_CPL_DESC, "Description"
     IDS_REPORT_SAVE_ERROR1, "Error while trying to save the report. File a report with the specified name already exists and is open in another program."
     IDS_REPORT_SAVE_ERROR2, "Error while trying to save the report. For more information, run the program in debug mode."
+    IDS_PRINT, "Print"
+    IDS_PRINTWND_TITLE, "Print"
+    IDS_PRINT_START, "Print"
+    IDS_PRINT_CLOSE, "Close"
 
     IDS_CAT_SUMMARY, "Загальна інформація"
 
