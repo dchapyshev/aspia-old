@@ -892,6 +892,8 @@ BEGIN
     IDS_MMDEV_SUPPORTS, "Supports"
     IDS_CPL_NAME, "Name"
     IDS_CPL_DESC, "Description"
+    IDS_REPORT_SAVE_ERROR1, "Error while trying to save the report. File a report with the specified name already exists and is open in another program."
+    IDS_REPORT_SAVE_ERROR2, "Error while trying to save the report. For more information, run the program in debug mode."
 
     IDS_CAT_SUMMARY, "Summary Information"
 

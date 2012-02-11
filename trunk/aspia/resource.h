@@ -824,6 +824,8 @@
 #define IDS_MMDEV_SUPPORTS               770
 #define IDS_CPL_NAME                     771
 #define IDS_CPL_DESC                     772
+#define IDS_REPORT_SAVE_ERROR1           773
+#define IDS_REPORT_SAVE_ERROR2           774
 
 #define IDS_CAT_SUMMARY           1000
 
