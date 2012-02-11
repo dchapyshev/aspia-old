@@ -6,6 +6,7 @@
  */
 
 #include "main.h"
+#include "driver.h"
 
 
 INT ListViewAddItem(INT Indent, INT IconIndex, LPWSTR lpText);
@@ -194,6 +195,92 @@ IoGetTarget(VOID)
     return IoTarget;
 }
 
+__inline VOID
+WriteRTFRowHeader(VOID)
+{
+    WCHAR szText[MAX_STR_LEN];
+    INT i, width = 10000 / (ColumnsCount + 1);
+
+    AppendStringToFileA(L"\\trowd\\trgaph50\r\n");
+
+    for (i = 0; i < ColumnsCount; i++)
+    {
+        StringCbPrintf(szText, sizeof(szText),
+                       L"\\clbrdrt\\brdrs\\clbrdrl\\brdrs\\clbrdrb\\brdrs\\clbrdrr\\brdrs\\cellx%d\r\n",
+                       (i + 1) * width);
+        AppendStringToFileA(szText);
+    }
+
+    AppendStringToFileA(L"\\pard\\intbl\r\n");
+}
+
+WCHAR*
+TextToRTFText(WCHAR *text)
+{
+    WCHAR *buffer;
+    LONG len = SafeStrLen(text);
+    SIZE_T size;
+    INT i = 0;
+
+    if (len == 0)
+    {
+        WCHAR temp[] = L"\'2d"; /* "-" */
+        buffer = (WCHAR*)Alloc(sizeof(temp));
+        wcscpy(buffer, temp);
+
+        return buffer;
+    }
+
+    size = len * 5 * sizeof(WCHAR);
+    buffer = (WCHAR*)Alloc(size);
+    if (buffer == NULL)
+    {
+        return NULL;
+    }
+
+    ZeroMemory(buffer, size);
+
+    while (len)
+    {
+        BOOL unknown = FALSE;
+        WCHAR w_letter[2];
+        char a_letter[3];
+        WCHAR code[8];
+        INT count;
+
+        w_letter[0] = text[i];
+        w_letter[1] = 0;
+
+        count = WideCharToMultiByte(CP_ACP, 0,
+                                    w_letter, 1,
+                                    a_letter, 3,
+                                    NULL, &unknown);
+
+        if (unknown)
+        {
+            StringCbPrintf(code, sizeof(code), L"\\u%d?", (short)text[i]);
+            StringCbCat(buffer, size, code);
+        }
+        else
+        {
+            INT j;
+
+            for (j = 0; j < count; j++)
+            {
+                StringCbPrintf(code, sizeof(code), L"\\'%02x", (BYTE)a_letter[j]);
+                StringCbCat(buffer, size, code);
+            }
+        }
+
+        ++i;
+        --len;
+    }
+
+    //DebugTrace(L"p = %s, buffer = %s", p, buffer);
+
+    return buffer;
+}
+
 INT
 IoAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex)
 {
@@ -225,9 +312,19 @@ IoAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex)
             break;
 
         case IO_TARGET_RTF:
-            StringCbPrintf(szText, sizeof(szText), L"\\par\n{\\b %s}", lpszText);
-            AppendStringToFileA(szText);
+        {
+            WCHAR *text = TextToRTFText(lpszText);
+
+            if (text != NULL)
+            {
+                WriteRTFRowHeader();
+                StringCbPrintf(szText, sizeof(szText), L"{\\b %s}\\cell \t\\cell\r\n\\row\r\n", text);
+                AppendStringToFileA(szText);
+
+                Free(text);
+            }
             return -1;
+        }
 
         case IO_TARGET_JSON:
             break;
@@ -253,7 +350,7 @@ IoAddHeader(INT Indent, UINT StringID, INT IconIndex)
 INT
 IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
 {
-    WCHAR szText[MAX_STR_LEN];
+    WCHAR szText[MAX_STR_LEN * 5];
 
     switch (IoTarget)
     {
@@ -281,9 +378,19 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
             break;
 
         case IO_TARGET_RTF:
-            StringCbPrintf(szText, sizeof(szText), L"\\par\n%s ", lpText);
-            AppendStringToFileA(szText);
+        {
+            WCHAR *text = TextToRTFText(lpText);
+
+            if (text != NULL)
+            {
+                WriteRTFRowHeader();
+                StringCbPrintf(szText, sizeof(szText), L"%s\\cell\r\n", text);
+                AppendStringToFileA(szText);
+
+                Free(text);
+            }
             return -1;
+        }
 
         case IO_TARGET_JSON:
             StringCbPrintf(szText, sizeof(szText), L"\n    \"%s\": ", lpText);
@@ -310,7 +417,7 @@ IoAddValueName(INT Indent, UINT ValueID, INT IconIndex)
 VOID
 IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
 {
-    WCHAR szText[MAX_STR_LEN * 15];
+    WCHAR szText[MAX_STR_LEN * 30];
 
     switch (IoTarget)
     {
@@ -347,10 +454,22 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
             break;
 
         case IO_TARGET_RTF:
-            StringCbPrintf(szText, sizeof(szText),
-                           (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s ", pszText);
-            AppendStringToFileA(szText);
-            return;
+        {
+            WCHAR *text = TextToRTFText(pszText);
+
+            if (text != NULL)
+            {
+                StringCbPrintf(szText, sizeof(szText),
+                               (IoGetColumnsCount() == iSubItem + 1) ? L"%s\\cell\r\n\\row\r\n" : L"%s\\cell\r\n", text);
+                DebugTrace(L"szText = %s", szText);
+
+                if (!AppendStringToFileA(szText))
+                    DebugTrace(L"AppendStringToFileA() failed!");
+
+                Free(text);
+            }
+        }
+        return;
 
         case IO_TARGET_JSON:
             StringCbPrintf(szText, sizeof(szText),
@@ -388,7 +507,7 @@ IoAddFooter(VOID)
             break;
 
         case IO_TARGET_RTF:
-            AppendStringToFileA(L"\\par\n");
+            //AppendStringToFileA(L"\\par\n");
             return;
 
         default:
@@ -417,13 +536,17 @@ IoReportEndColumn(VOID)
         case IO_TARGET_HTML:
             AppendStringToFile(L"</tr>\r\n");
             break;
+
+        case IO_TARGET_RTF:
+            AppendStringToFileA(L"\r\n\\row\r\n");
+            break;
     }
 }
 
 VOID
 IoReportWriteColumnString(LPWSTR lpszString)
 {
-    WCHAR szText[MAX_STR_LEN * 3];
+    WCHAR szText[MAX_STR_LEN * 5];
 
     switch (IoTarget)
     {
@@ -444,9 +567,18 @@ IoReportWriteColumnString(LPWSTR lpszString)
             break;
 
         case IO_TARGET_RTF:
-            StringCbPrintf(szText, sizeof(szText), L"{\\b %s} ", lpszString);
-            AppendStringToFileA(szText);
+        {
+            WCHAR *text = TextToRTFText(lpszString);
+
+            if (text != NULL)
+            {
+                StringCbPrintf(szText, sizeof(szText), L"{\\b %s}\\cell", text);
+                AppendStringToFileA(szText);
+
+                Free(text);
+            }
             return;
+        }
 
         default:
             return;
@@ -460,6 +592,34 @@ IoAddColumnsList(COLUMN_LIST *List, LPWSTR lpCategoryName, LPWSTR lpIniPath)
 {
     WCHAR szText[MAX_STR_LEN];
     SIZE_T Index = 0;
+    INT width;
+
+    if (IoTarget == IO_TARGET_RTF)
+    {
+        do
+        {
+        }
+        while (List[++Index].StringID != 0);
+
+        width = 10000 / (Index + 1);
+
+        Index = 0;
+
+        AppendStringToFileA(L"\\trowd\\trgaph50\r\n");
+
+        do
+        {
+            StringCbPrintf(szText, sizeof(szText),
+                           L"\\clbrdrt\\brdrs\\clbrdrl\\brdrs\\clbrdrb\\brdrs\\clbrdrr\\brdrs\\cellx%d\r\n",
+                           (Index + 1) * width);
+            AppendStringToFileA(szText);
+        }
+        while (List[++Index].StringID != 0);
+
+        AppendStringToFileA(L"\\pard\\intbl\r\n");
+
+        Index = 0;
+    }
 
     IoReportBeginColumn();
 
@@ -548,7 +708,14 @@ IoCreateReport(LPWSTR lpszFile)
     }
     else if (IoTarget == IO_TARGET_RTF)
     {
-        AppendStringToFileA(L"{\\rtf1");
+        WCHAR szText[MAX_STR_LEN], szCodePage[MAX_STR_LEN];
+
+        GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_IDEFAULTANSICODEPAGE,
+                      szCodePage, MAX_STR_LEN);
+        StringCbPrintf(szText, sizeof(szText),
+                       L"{\\rtf1\\ansi\\ansicpg%s",
+                       szCodePage);
+        AppendStringToFileA(szText);
     }
     else if (IoTarget == IO_TARGET_JSON)
     {
@@ -569,7 +736,7 @@ IoCloseReport(VOID)
     }
     else if (IoTarget == IO_TARGET_RTF)
     {
-        AppendStringToFileA(L"\n}");
+        AppendStringToFileA(L"\r\n}");
     }
     else if (IoTarget == IO_TARGET_JSON)
     {
@@ -622,7 +789,7 @@ IoReportWriteItemString(LPWSTR lpszString, BOOL bIsHeader)
 VOID
 IoWriteTableTitle(LPWSTR lpszTitle, UINT StringID, BOOL WithContentTable)
 {
-    WCHAR szText[MAX_STR_LEN] = {0};
+    WCHAR szText[MAX_STR_LEN * 5] = {0};
 
     switch (IoTarget)
     {
@@ -666,9 +833,20 @@ IoWriteTableTitle(LPWSTR lpszTitle, UINT StringID, BOOL WithContentTable)
             break;
 
         case IO_TARGET_RTF:
-            StringCbPrintf(szText, sizeof(szText), L"\n\\par{\\b\\ul %s}\\par\n", lpszTitle);
-            AppendStringToFileA(szText);
+        {
+            WCHAR *text = TextToRTFText(lpszTitle);
+
+            if (text != NULL)
+            {
+                StringCbPrintf(szText, sizeof(szText),
+                               L"\r\n\\pard\\sa200\\sl276\\slmult1\\lang9\\f0\\fs22{\\b\\ul %s}\\par\n",
+                               text);
+                AppendStringToFileA(szText);
+
+                Free(text);
+            }
             return;
+        }
 
         case IO_TARGET_JSON:
             StringCbPrintf(szText, sizeof(szText), L"\n\"%s\": {\n", lpszTitle);
@@ -710,7 +888,7 @@ IoWriteEndTable(VOID)
 VOID
 IoWriteBeginContentTable(LPWSTR lpszTitle)
 {
-    WCHAR szText[MAX_STR_LEN];
+    WCHAR szText[MAX_STR_LEN * 5];
 
     switch (IoTarget)
     {
@@ -724,11 +902,20 @@ IoWriteBeginContentTable(LPWSTR lpszTitle)
         break;
 
         case IO_TARGET_RTF:
-            StringCbPrintf(szText, sizeof(szText),
-                L"{\\b %s}\\par",
-                           lpszTitle);
-            AppendStringToFileA(szText);
-            break;
+        {
+            WCHAR *text = TextToRTFText(lpszTitle);
+
+            if (text != NULL)
+            {
+                StringCbPrintf(szText, sizeof(szText),
+                               L"{\\b %s}\\par\r\n",
+                               text);
+                AppendStringToFileA(szText);
+
+                Free(text);
+            }
+        }
+        break;
     }
 }
 
@@ -740,13 +927,17 @@ IoWriteEndContentTable(VOID)
         case IO_TARGET_HTML:
             AppendStringToFile(L"</ul>");
             break;
+
+        case IO_TARGET_RTF:
+            AppendStringToFileA(L"\\par");
+            break;
     }
 }
 
 VOID
 IoWriteContentTableItem(UINT ID, LPWSTR lpszName, BOOL IsRootItem)
 {
-    WCHAR szText[MAX_STR_LEN];
+    WCHAR szText[MAX_STR_LEN * 5];
 
     switch (IoTarget)
     {
@@ -768,10 +959,19 @@ IoWriteContentTableItem(UINT ID, LPWSTR lpszName, BOOL IsRootItem)
         break;
 
         case IO_TARGET_RTF:
-            StringCbPrintf(szText, sizeof(szText),
-                           L"%s\\par", lpszName);
-            AppendStringToFileA(szText);
-            break;
+        {
+            WCHAR *text = TextToRTFText(lpszName);
+
+            if (text != NULL)
+            {
+                StringCbPrintf(szText, sizeof(szText),
+                               L"%s\\par", text);
+                AppendStringToFileA(szText);
+
+                Free(text);
+            }
+        }
+        break;
     }
 }
 

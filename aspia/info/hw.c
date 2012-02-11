@@ -287,17 +287,17 @@ HW_HDDSMARTInfo(VOID)
 
         if (ReadSmartInfo(hHandle, bIndex, &DriveInfo))
         {
-            Index = IoAddHeaderString(0, L"\0", 0);
+            Index = IoAddItem(0, 0, L"\t\0");
             ChangeByteOrder((PCHAR)DriveInfo.sModelNumber,
                             sizeof(DriveInfo.sModelNumber));
             StringCbPrintf(szText, sizeof(szText),
                            L"%S", DriveInfo.sModelNumber);
             ChopSpaces(szText, sizeof(szText));
             IoSetItemText(Index, 1, szText);
-            IoSetItemText(Index, 2, L"\0");
-            IoSetItemText(Index, 3, L"\0");
-            IoSetItemText(Index, 4, L"\0");
-            IoSetItemText(Index, 5, L"\0");
+            IoSetItemText(Index, 2, L"\t\0");
+            IoSetItemText(Index, 3, L"\t\0");
+            IoSetItemText(Index, 4, L"\t\0");
+            IoSetItemText(Index, 5, L"\t\0");
         }
 
         if (EnumSmartData(hHandle, bIndex, EnumSmartDataProc))

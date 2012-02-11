@@ -749,14 +749,14 @@ NETWORK_IEHistoryInfo(VOID)
 
             /* Time */
             if (GetTimeFormat(LOCALE_USER_DEFAULT,
-                          0, &SysTime, NULL, szText,
-                          MAX_STR_LEN))
+                              0, &SysTime, NULL, szText,
+                              MAX_STR_LEN))
             {
                 Index = IoAddItem(0, 0, szText);
             }
             else
             {
-                Index = IoAddItem(0, 0, L"\0");
+                Index = IoAddItem(0, 0, L"-");
             }
 
             /* Date */
@@ -768,14 +768,14 @@ NETWORK_IEHistoryInfo(VOID)
             }
             else
             {
-                IoSetItemText(Index, 1, L"\0");
+                IoSetItemText(Index, 1, L"-");
             }
 
             /* Title */
             IoSetItemText(Index, 2,
-                          (StatUrl.pwcsTitle) ? StatUrl.pwcsTitle : L"\0");
+                          (StatUrl.pwcsTitle) ? StatUrl.pwcsTitle : L"-");
             /* URL */
-            IoSetItemText(Index, 3, StatUrl.pwcsUrl);
+            IoSetItemText(Index, 3, (SafeStrLen(StatUrl.pwcsUrl) > 4) ? StatUrl.pwcsUrl : L"-");
         }
 
         if (IsCanceled) break;

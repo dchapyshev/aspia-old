@@ -357,7 +357,9 @@ SOFTWARE_TaskMgr(VOID)
         if (!GetFileDescription(szFilePath, szText, sizeof(szText)))
             IoSetItemText(Index, 4, L"-");
         else
-            IoSetItemText(Index, 4, szText);
+        {
+            IoSetItemText(Index, 4, (szText[0] != 0) ? szText : L"-");
+        }
 
         CloseHandle(hProcess);
 
