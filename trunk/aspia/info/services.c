@@ -192,7 +192,6 @@ ServiceStatusToText(DWORD dwStatus, LPWSTR lpszText, SIZE_T Size)
 {
     UINT uiID;
 
-    if (lpszText) lpszText[0] = 0;
     switch (dwStatus)
     {
         case SERVICE_CONTINUE_PENDING:
@@ -217,6 +216,7 @@ ServiceStatusToText(DWORD dwStatus, LPWSTR lpszText, SIZE_T Size)
             uiID = IDS_SERVICE_STOPPED;
             break;
         default:
+            StringCbCopy(lpszText, Size, L"Unknown");
             return;
     }
 
@@ -228,7 +228,6 @@ ServiceStartTypeToText(DWORD dwStartType, LPWSTR lpszText, SIZE_T Size)
 {
     UINT uiID;
 
-    if (lpszText) lpszText[0] = 0;
     switch (dwStartType)
     {
         case SERVICE_AUTO_START:
@@ -247,6 +246,7 @@ ServiceStartTypeToText(DWORD dwStartType, LPWSTR lpszText, SIZE_T Size)
             uiID = IDS_SERVICE_SYSTEM_START;
             break;
         default:
+            StringCbCopy(lpszText, Size, L"Unknown");
             return;
     }
 
@@ -306,9 +306,13 @@ SOFTWARE_ServicesInfo(VOID)
                                        szText, MAX_STR_LEN);
                 IoSetItemText(ItemIndex, 4, szText);
                 /* Start name */
-                IoSetItemText(ItemIndex, 5, lpServiceConfig->lpServiceStartName);
+                IoSetItemText(ItemIndex, 5,
+                    (SafeStrLen(lpServiceConfig->lpServiceStartName) > 3) ?
+                        lpServiceConfig->lpServiceStartName : L"-");
                 /* Binary path name */
-                IoSetItemText(ItemIndex, 6, lpServiceConfig->lpBinaryPathName);
+                IoSetItemText(ItemIndex, 6,
+                    (SafeStrLen(lpServiceConfig->lpBinaryPathName) > 3) ?
+                        lpServiceConfig->lpBinaryPathName : L"-");
 
                 Free(lpServiceConfig);
             }
