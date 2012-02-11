@@ -90,6 +90,7 @@
 #define IDI_OPENGL        181
 #define IDI_AUDIO         182
 #define IDI_MICROPHONE    183
+#define IDI_CLOSE         184
 
 /* Dialogs */
 #define IDD_ABOUT_DIALOG         5000
@@ -141,6 +142,9 @@
 #define ID_APP_REMOVE            1035
 #define ID_APP_MODIFY            1036
 #define ID_APP_REMOVE_REG        1037
+#define ID_PRINT                 1038
+#define ID_PRINT_START           1039
+#define ID_PRINT_CLOSE           1040
 
 /* Controls */
 #define IDC_SET_PATH_BTN        102
@@ -826,6 +830,10 @@
 #define IDS_CPL_DESC                     772
 #define IDS_REPORT_SAVE_ERROR1           773
 #define IDS_REPORT_SAVE_ERROR2           774
+#define IDS_PRINT                        775
+#define IDS_PRINTWND_TITLE               776
+#define IDS_PRINT_START                  777
+#define IDS_PRINT_CLOSE                  778
 
 #define IDS_CAT_SUMMARY           1000
 

@@ -84,13 +84,15 @@ IDI_ATI           ICON DISCARDABLE "res/ati.ico"
 IDI_OPENGL        ICON DISCARDABLE "res/opengl.ico"
 IDI_AUDIO         ICON DISCARDABLE "res/audio.ico"
 IDI_MICROPHONE    ICON DISCARDABLE "res/microphone.ico"
+IDI_CLOSE         ICON DISCARDABLE "res/close.ico"
 
 IDC_ACCELERATORS ACCELERATORS
 BEGIN
-    VK_F1, ID_ABOUT, VIRTKEY /* F1 */
-    "^Q", ID_EXIT /* Ctrl + Q */
+    VK_F1, ID_ABOUT, VIRTKEY  /* F1 */
+    "^Q",  ID_EXIT            /* Ctrl + Q */
     VK_F5, ID_RELOAD, VIRTKEY /* F5 */
-    "^S", ID_SAVE_CURRENT /* Ctrl + S */
-    "^C", ID_COPY_ALL /* Ctrl + C */
-    "^A", ID_SELECT_ALL /* Ctrl + A */
+    "^S",  ID_SAVE_CURRENT    /* Ctrl + S */
+    "^C",  ID_COPY_ALL        /* Ctrl + C */
+    "^A",  ID_SELECT_ALL      /* Ctrl + A */
+    "^P",  ID_PRINT           /* Ctrl + P */
 END

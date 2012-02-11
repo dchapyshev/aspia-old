@@ -1530,7 +1530,7 @@ HW_OpenGlInfo(VOID)
     PIXELFORMATDESCRIPTOR PixelFormatDesc = {0};
     WCHAR szText[MAX_STR_LEN], szSupported[MAX_STR_LEN],
           szUnsupported[MAX_STR_LEN];
-    INT Index, iPixelFormat, i_data;
+    INT Index, iPixelFormat, i_data, len;
     HGLRC hRC;
     HDC hDC = GetDC(hMainWnd);
     char *data;
@@ -1768,7 +1768,7 @@ HW_OpenGlInfo(VOID)
 
         StringCbPrintf(szExts, sizeof(szExts), L"%S", data);
 
-        for (i = 0, j = 0; i < wcslen(szExts); i++, j++)
+        for (i = 0, j = 0, len = wcslen(szExts); i < len; i++, j++)
         {
             if (szExts[i] == L' ')
             {

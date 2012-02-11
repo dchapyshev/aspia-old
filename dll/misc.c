@@ -550,6 +550,7 @@ StrToHex(LPWSTR lpszStr, SIZE_T StrLen)
     SIZE_T dwVal, dwRes = 0;
     SIZE_T Index = 0;
     SIZE_T Pos = SafeStrLen(lpszStr) - 1;
+    INT len;
 
     if (!lpszStr || Pos == 0)
         return 0;
@@ -562,7 +563,7 @@ StrToHex(LPWSTR lpszStr, SIZE_T StrLen)
         Pos -= 2;
     }
 
-    for (; Index < (SIZE_T)SafeStrLen(lpszStr); ++Index)
+    for (len = SafeStrLen(lpszStr); Index < (SIZE_T)len; ++Index)
     {
         switch (lpszStr[Index])
         {

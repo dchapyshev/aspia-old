@@ -27,12 +27,14 @@ static const TBBUTTON Buttons[] =
     { 0, ID_SAVE,     TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szSaveReportBtn},
     { 1, ID_RELOAD,   TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szReloadBtn},
     {-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
-    { 2, ID_SYSMON,   TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szSysMonBtn},
-    { 3, ID_BENCH,    TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szBenchBtn},
+    { 2, ID_PRINT,    TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0},
     {-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
-    { 4, ID_SETTINGS, TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0},
+    { 3, ID_SYSMON,   TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szSysMonBtn},
+    { 4, ID_BENCH,    TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szBenchBtn},
     {-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
-    { 5, ID_ABOUT,    TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0}
+    { 5, ID_SETTINGS, TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0},
+    {-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
+    { 6, ID_ABOUT,    TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0}
 };
 
 
@@ -215,6 +217,9 @@ ToolBarOnGetDispInfo(LPTOOLTIPTEXT lpttt)
         case ID_RELOAD:
             StringID = IDS_RELOAD;
             break;
+        case ID_PRINT:
+            StringID = IDS_PRINT;
+            break;
         case ID_ABOUT:
             StringID = IDS_ABOUT;
             break;
@@ -354,6 +359,7 @@ InitToolBar(HWND hwnd)
     /* Add images to ImageList */
     AddIconToImageList(hIconsInst, hImageList, IDI_SAVE);
     AddIconToImageList(hIconsInst, hImageList, IDI_RELOAD);
+    AddIconToImageList(hIconsInst, hImageList, IDI_PRINTER);
     AddIconToImageList(hIconsInst, hImageList, IDI_TASKMGR);
     AddIconToImageList(hIconsInst, hImageList, IDI_HWBENCH);
     AddIconToImageList(hIconsInst, hImageList, IDI_SETTINGS);

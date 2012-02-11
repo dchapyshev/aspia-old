@@ -439,6 +439,10 @@ OnCommand(UINT Command)
             _beginthread(GUIInfoThread, 0, (LPVOID)CurrentCategory);
             break;
 
+        case ID_PRINT:
+            CreatePrintWindow(L"");
+            break;
+
         case ID_SELECT_ALL:
             ListView_SetItemState(hListView, -1, 0xF, LVIF_STATE);
             break;
