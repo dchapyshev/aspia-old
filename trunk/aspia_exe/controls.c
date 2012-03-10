@@ -385,8 +385,6 @@ InitInfoDll(VOID)
 {
     ASPIA_DLL_PARAMS DllParams;
 
-    DllParams.DebugMode = ParamsInfo.DebugMode;
-
     DllParams.ELogShowError   = SettingsInfo.ELogShowError;
     DllParams.ELogShowInfo    = SettingsInfo.ELogShowInfo;
     DllParams.ELogShowWarning = SettingsInfo.ELogShowWarning;
@@ -553,6 +551,7 @@ AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                                      MAKEINTRESOURCE(IDI_MAINICON),
                                      IMAGE_ICON, 48, 48,
                                      LR_DEFAULTCOLOR);
+            DebugTrace(L"hIcon = %x, hInstance = %x, Error code = %d", hIcon, hInstance, GetLastError());
             SendMessage(GetDlgItem(hDlg, IDC_ABOUT_ICON), STM_SETICON, (WPARAM)hIcon, 0);
 
             SetFocus(GetDlgItem(hDlg, IDC_DONATE_BTN));

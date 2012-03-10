@@ -6,6 +6,7 @@
  */
 
 #include "../include/aspia.h"
+#include "resource.h"
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
