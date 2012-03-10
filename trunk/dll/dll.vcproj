@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="aspia_dll"
+	Name="helper_dll"
 	ProjectGUID="{B7D8AE56-5576-429E-B793-751AAF3CEE87}"
 	RootNamespace="dll"
 	Keyword="Win32Proj"
@@ -148,7 +148,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="msvcrt_win2000.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib winmm.lib"
-				OutputFile="$(OutDir)\aspia.dll"
+				OutputFile="$(OutDir)\helper.dll"
 				LinkIncremental="0"
 				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\i386\&quot;;&quot;$(OutDir)\&quot;;&quot;$(DDK)\lib\wlh\i386\&quot;"
 				GenerateManifest="false"
