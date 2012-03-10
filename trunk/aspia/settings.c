@@ -294,11 +294,6 @@ InitIconsCombo(IN HWND hCombo)
     HINSTANCE hDLL;
     INT ItemIndex;
 
-    ItemIndex = SendMessage(hCombo, CB_ADDSTRING, 0,
-                            (LPARAM)L"Tango Icons");
-    if (ThemesInfo.szIconsFile[0] == 0)
-        SendMessage(hCombo, CB_SETCURSEL, ItemIndex, 0);
-
     StringCbPrintf(szIconDir, sizeof(szIconDir),
                    L"%sicons\\",
                    ParamsInfo.szCurrentPath);

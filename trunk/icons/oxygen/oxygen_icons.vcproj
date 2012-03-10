@@ -212,7 +212,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\icons\$(ProjectName).dll"
+				OutputFile="$(OutDir)\icons\oxygen.dll"
 				GenerateManifest="false"
 				SubSystem="2"
 				OptimizeReferences="2"

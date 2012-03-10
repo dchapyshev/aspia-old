@@ -101,7 +101,7 @@ extern PARAMS_STRUCT ParamsInfo;
 VOID GUIInfoThread(LPVOID lpParameter);
 BOOL IsRootCategory(UINT Category, PVOID List);
 BOOL LoadLanguage(VOID);
-VOID LoadIcons(VOID);
+BOOL LoadIcons(VOID);
 
 /* controls.c */
 typedef struct _COLUMN_LIST
