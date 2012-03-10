@@ -47,24 +47,6 @@
 #define Alloc(a) HeapAlloc(GetProcessHeap(), 0, a)
 #define Free(a) HeapFree(GetProcessHeap(), 0, a)
 
-__inline INT
-GetClientWindowHeight(IN HWND hwnd)
-{
-    RECT Rect;
-
-    GetClientRect(hwnd, &Rect);
-    return (Rect.bottom - Rect.top);
-}
-
-__inline INT
-GetClientWindowWidth(IN HWND hwnd)
-{
-    RECT Rect;
-
-    GetClientRect(hwnd, &Rect);
-    return (Rect.right - Rect.left);
-}
-
 VOID DrawDiagram(HWND hwnd, double x, double y);
 VOID GraphOnPaint(HWND hwnd);
 VOID GraphSetCoordNames(WCHAR *x, WCHAR *y);

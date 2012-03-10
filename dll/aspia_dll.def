@@ -1,4 +1,4 @@
-LIBRARY ASPIA.DLL
+LIBRARY HELPER.DLL
 EXPORTS
 LoadDriver @1
 UnloadDriver @2
