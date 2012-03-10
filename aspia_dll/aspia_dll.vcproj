@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="helper_dll"
-	ProjectGUID="{B7D8AE56-5576-429E-B793-751AAF3CEE87}"
-	RootNamespace="helper"
+	Name="aspia_dll"
+	ProjectGUID="{EC6ABB07-436F-4970-80D0-ABFAA22126C3}"
+	RootNamespace="aspia_dll"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -64,12 +64,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="msvcrt_win2000.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib winmm.lib"
-				OutputFile="$(OutDir)\helper.dll"
+				OutputFile="$(OutDir)\io.dll"
 				LinkIncremental="0"
 				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\i386\&quot;;&quot;$(OutDir)\&quot;;&quot;$(DDK)\lib\wlh\i386\&quot;"
 				GenerateManifest="false"
 				IgnoreAllDefaultLibraries="false"
-				ModuleDefinitionFile="helper_dll.def"
+				ModuleDefinitionFile="aspia_dll.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -147,12 +147,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msvcrt_win2000.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib winmm.lib"
-				OutputFile="$(OutDir)\helper.dll"
+				AdditionalDependencies="msvcrt_win2000.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib winmm.lib helper.lib opengl32.lib"
+				OutputFile="$(OutDir)\aspia.dll"
 				LinkIncremental="0"
 				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\i386\&quot;;&quot;$(OutDir)\&quot;;&quot;$(DDK)\lib\wlh\i386\&quot;"
 				GenerateManifest="false"
-				ModuleDefinitionFile="helper_dll.def"
+				ModuleDefinitionFile="aspia_dll.def"
 				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -191,15 +191,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\battery.c"
-				>
-			</File>
-			<File
-				RelativePath=".\debug.c"
-				>
-			</File>
-			<File
-				RelativePath=".\helper_dll.c"
+				RelativePath=".\aspia_dll.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -214,29 +206,129 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\helper_dll.def"
+				RelativePath=".\aspia_dll.def"
 				>
 			</File>
 			<File
-				RelativePath=".\misc.c"
+				RelativePath=".\battery.c"
 				>
 			</File>
 			<File
-				RelativePath=".\nvidia.c"
+				RelativePath=".\cpuid.c"
 				>
 			</File>
 			<File
-				RelativePath=".\scsi.c"
+				RelativePath=".\devices.c"
 				>
 			</File>
 			<File
-				RelativePath=".\smart.c"
+				RelativePath=".\eventlog.c"
+				>
+			</File>
+			<File
+				RelativePath=".\hw.c"
+				>
+			</File>
+			<File
+				RelativePath=".\licenses.c"
+				>
+			</File>
+			<File
+				RelativePath=".\listview.c"
+				>
+			</File>
+			<File
+				RelativePath=".\mmedia.c"
+				>
+			</File>
+			<File
+				RelativePath=".\netstat.c"
+				>
+			</File>
+			<File
+				RelativePath=".\network.c"
+				>
+			</File>
+			<File
+				RelativePath=".\os.c"
+				>
+			</File>
+			<File
+				RelativePath=".\regional.c"
+				>
+			</File>
+			<File
+				RelativePath=".\sensors.c"
+				>
+			</File>
+			<File
+				RelativePath=".\services.c"
+				>
+			</File>
+			<File
+				RelativePath=".\smbios.c"
+				>
+			</File>
+			<File
+				RelativePath=".\software.c"
 				>
 			</File>
 			<File
 				RelativePath=".\spd.c"
 				>
 			</File>
+			<File
+				RelativePath=".\summary.c"
+				>
+			</File>
+			<Filter
+				Name="LPC"
+				>
+				<File
+					RelativePath=".\LPC\F718XX.c"
+					>
+				</File>
+				<File
+					RelativePath=".\LPC\IT87XX.c"
+					>
+				</File>
+				<File
+					RelativePath=".\LPC\lpc.c"
+					>
+				</File>
+				<File
+					RelativePath=".\LPC\mainboards.c"
+					>
+				</File>
+				<File
+					RelativePath=".\LPC\NCT677X.c"
+					>
+				</File>
+				<File
+					RelativePath=".\LPC\W836XX.c"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="spd"
+				>
+				<File
+					RelativePath=".\spd\ddr.c"
+					>
+				</File>
+				<File
+					RelativePath=".\spd\ddr2.c"
+					>
+				</File>
+				<File
+					RelativePath=".\spd\ddr3.c"
+					>
+				</File>
+				<File
+					RelativePath=".\spd\infolists.c"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Заголовочные файлы"
@@ -248,17 +340,41 @@
 				>
 			</File>
 			<File
+				RelativePath=".\aspia_dll.h"
+				>
+			</File>
+			<File
+				RelativePath=".\edid.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\helper.h"
 				>
 			</File>
 			<File
-				RelativePath=".\helper_dll.h"
+				RelativePath="..\include\icons.h"
 				>
 			</File>
 			<File
-				RelativePath=".\nvidia.h"
+				RelativePath="..\include\lang.h"
 				>
 			</File>
+			<File
+				RelativePath=".\smbios.h"
+				>
+			</File>
+			<File
+				RelativePath=".\spd.h"
+				>
+			</File>
+			<Filter
+				Name="LPC"
+				>
+				<File
+					RelativePath=".\LPC\lpc.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Файлы ресурсов"

@@ -6,7 +6,7 @@
  */
 
 #include "main.h"
-#include "driver.h"
+#include "aspia.h"
 
 
 HWND hToolBar = NULL;
@@ -26,8 +26,6 @@ static const TBBUTTON Buttons[] =
 {   /* iBitmap, idCommand, fsState, fsStyle, bReserved[2], dwData, iString */
     { 0, ID_SAVE,     TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szSaveReportBtn},
     { 1, ID_RELOAD,   TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szReloadBtn},
-    {-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
-    { 2, ID_PRINT,    TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0},
     {-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
     { 3, ID_SYSMON,   TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szSysMonBtn},
     { 4, ID_BENCH,    TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szBenchBtn},
@@ -52,31 +50,6 @@ ListViewClear(VOID)
     }
 
     IoSetColumnsCount(0);
-}
-
-PVOID
-ListViewGetlParam(HWND hList, INT Index)
-{
-    INT ItemIndex;
-    LVITEM Item = {0};
-
-    if (Index == -1)
-    {
-        ItemIndex = ListView_GetNextItem(hList, -1, LVNI_FOCUSED);
-        if (ItemIndex == -1)
-            return NULL;
-    }
-    else
-    {
-        ItemIndex = Index;
-    }
-
-    Item.mask = LVIF_PARAM;
-    Item.iItem = ItemIndex;
-    if (!ListView_GetItem(hList, &Item))
-        return NULL;
-
-    return (PVOID)Item.lParam;
 }
 
 /* Callback for vertical splitter bar */
@@ -217,9 +190,6 @@ ToolBarOnGetDispInfo(LPTOOLTIPTEXT lpttt)
         case ID_RELOAD:
             StringID = IDS_RELOAD;
             break;
-        case ID_PRINT:
-            StringID = IDS_PRINT;
-            break;
         case ID_ABOUT:
             StringID = IDS_ABOUT;
             break;
@@ -234,7 +204,7 @@ ToolBarOnGetDispInfo(LPTOOLTIPTEXT lpttt)
             break;
     }
 
-    LoadMUIString(StringID, lpttt->szText, 80);
+    LoadMUIStringF(hLangInst, StringID, lpttt->szText, 80);
 }
 
 HTREEITEM
@@ -259,7 +229,7 @@ AddCategory(HWND hTree,
     Index = ImageList_AddIcon(hImageList, hIcon);
     DestroyIcon(hIcon);
 
-    LoadMUIString(TextIndex, szText, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, TextIndex, szText, MAX_STR_LEN);
 
     Insert.item.mask = TVIF_TEXT | TVIF_PARAM | TVIF_IMAGE | TVIF_SELECTEDIMAGE;
     Insert.hInsertAfter = TVI_LAST;
@@ -324,10 +294,10 @@ InitToolBar(HWND hwnd)
     SIZE_T NumButtons = sizeof(Buttons) / sizeof(Buttons[0]);
     HIMAGELIST hImageList;
 
-    LoadMUIString(IDS_RELOAD, szReloadBtn, MAX_STR_LEN);
-    LoadMUIString(IDS_SAVE, szSaveReportBtn, MAX_STR_LEN);
-    LoadMUIString(IDS_SYSMON_BTN, szSysMonBtn, MAX_STR_LEN);
-    LoadMUIString(IDS_BENCH_BTN, szBenchBtn, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, IDS_RELOAD, szReloadBtn, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, IDS_SAVE, szSaveReportBtn, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, IDS_SYSMON_BTN, szSysMonBtn, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, IDS_BENCH_BTN, szBenchBtn, MAX_STR_LEN);
 
     /* Create toolbar */
     hToolBar = CreateWindowEx(0,
@@ -408,6 +378,49 @@ ReInitControls(VOID)
     IsLoadingDone = TRUE;
 
     _beginthread(GUIInfoThread, 0, (LPVOID)SettingsInfo.StartupCategory);
+}
+
+BOOL
+InitInfoDll(VOID)
+{
+    ASPIA_DLL_PARAMS DllParams;
+
+    DllParams.DebugMode = ParamsInfo.DebugMode;
+
+    DllParams.ELogShowError   = SettingsInfo.ELogShowError;
+    DllParams.ELogShowInfo    = SettingsInfo.ELogShowInfo;
+    DllParams.ELogShowWarning = SettingsInfo.ELogShowWarning;
+
+    DllParams.IEShowFile = SettingsInfo.IEShowFile;
+    DllParams.IEShowFtp  = SettingsInfo.IEShowFtp;
+    DllParams.IEShowHttp = SettingsInfo.IEShowHttp;
+
+    DllParams.hMainWnd  = hMainWnd;
+    DllParams.hListView = hListView;
+
+    DllParams.hLangInst  = hLangInst;
+    DllParams.hIconsInst = hIconsInst;
+
+    DllParams.hListImgList = hListViewImageList;
+
+    DllParams.IoAddFooter       = IoAddFooter;
+    DllParams.IoAddHeader       = IoAddHeader;
+    DllParams.IoAddHeaderString = IoAddHeaderString;
+    DllParams.IoAddIcon         = IoAddIcon;
+    DllParams.IoAddItem         = IoAddItem;
+    DllParams.IoAddValueName    = IoAddValueName;
+    DllParams.IoGetTarget       = IoGetTarget;
+    DllParams.IoSetItemText     = IoSetItemText;
+
+    StringCbCopy(DllParams.szCurrentPath,
+                 sizeof(DllParams.szCurrentPath),
+                 ParamsInfo.szCurrentPath);
+
+    DllParams.SxSmIcon      = ParamsInfo.SxSmIcon;
+    DllParams.SySmIcon      = ParamsInfo.SySmIcon;
+    DllParams.SysColorDepth = ParamsInfo.SysColorDepth;
+
+    return AspiaDllInitialize(&DllParams);
 }
 
 VOID
@@ -525,7 +538,7 @@ AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
         {
             WCHAR szFormat[MAX_STR_LEN], szInfo[MAX_STR_LEN * 5];
 
-            LoadMUIString(IDS_ABOUT_STRING, szInfo, sizeof(szInfo)/sizeof(WCHAR));
+            LoadMUIStringF(hLangInst, IDS_ABOUT_STRING, szInfo, sizeof(szInfo)/sizeof(WCHAR));
             SetWindowText(GetDlgItem(hDlg, IDC_ABOUT_EDIT), szInfo);
 
             if (GetWindowText(GetDlgItem(hDlg, IDC_VERSION_TEXT),
@@ -557,7 +570,7 @@ AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             {
                 case IDC_SITE_BTN:
                 {
-                    LoadMUIString(IDS_SITE_LINK, szText, MAX_STR_LEN);
+                    LoadMUIStringF(hLangInst, IDS_SITE_LINK, szText, MAX_STR_LEN);
                     ShellExecute(NULL, L"open", szText,
                                  NULL, NULL, SW_SHOWNORMAL);
                 }
@@ -565,7 +578,7 @@ AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 
                 case IDC_DONATE_BTN:
                 {
-                    LoadMUIString(IDS_SITE_DONATE_LINK, szText, MAX_STR_LEN);
+                    LoadMUIStringF(hLangInst, IDS_SITE_DONATE_LINK, szText, MAX_STR_LEN);
                     ShellExecute(NULL, L"open", szText,
                                  NULL, NULL, SW_SHOWNORMAL);
                 }

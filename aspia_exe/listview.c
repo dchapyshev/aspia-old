@@ -5,6 +5,7 @@
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
+#include "aspia.h"
 #include "main.h"
 
 INT
@@ -21,18 +22,6 @@ ListViewAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
     Item.lParam = ItemIndex;
 
     return ListView_InsertItem(hListView, &Item);
-}
-
-VOID
-ListViewSetItemParam(INT Index, LPARAM lParam)
-{
-    LV_ITEM Item = {0};
-
-    Item.mask = LVIF_PARAM;
-    Item.iItem = Index;
-    Item.lParam = lParam;
-
-    ListView_SetItem(hListView, &Item);
 }
 
 VOID
@@ -64,7 +53,7 @@ ListViewAddHeader(UINT StringID, INT IconIndex)
 {
     WCHAR szText[MAX_STR_LEN];
 
-    LoadMUIString(StringID, szText, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, StringID, szText, MAX_STR_LEN);
     ListViewAddHeaderString(0, szText, IconIndex);
 }
 

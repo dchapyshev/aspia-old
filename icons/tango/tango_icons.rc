@@ -5,9 +5,7 @@
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include <windows.h>
-#include "../../aspia/resource.h"
-
+#include "../../include/aspia.h"
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 

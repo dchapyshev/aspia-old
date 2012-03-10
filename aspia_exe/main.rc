@@ -5,7 +5,7 @@
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "main.h"
+#include "../include/aspia.h"
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
@@ -19,5 +19,4 @@ BEGIN
     "^S",  ID_SAVE_CURRENT    /* Ctrl + S */
     "^C",  ID_COPY_ALL        /* Ctrl + C */
     "^A",  ID_SELECT_ALL      /* Ctrl + A */
-    "^P",  ID_PRINT           /* Ctrl + P */
 END

@@ -6,7 +6,7 @@
  */
 
 #include "main.h"
-#include "driver.h"
+#include "aspia.h"
 
 
 static HIMAGELIST hReportImageList = NULL;
@@ -86,7 +86,7 @@ ReportAddNavigationMenu(BOOL IsSaveAll, CATEGORY_LIST *List)
     {
         if (List[Index].Checked || IsSaveAll)
         {
-            LoadMUIString(List[Index].StringID, szTemp, MAX_STR_LEN);
+            LoadMUIStringF(hLangInst, List[Index].StringID, szTemp, MAX_STR_LEN);
             IoWriteContentTableItem(List[Index].StringID,
                                     szTemp,
                                     List[Index].Child ? TRUE : FALSE);
@@ -116,7 +116,7 @@ ReportAction(LPWSTR lpszRootName, BOOL IsSaveAll, CATEGORY_LIST *List)
 
         if (List[Index].Checked || IsSaveAll)
         {
-            LoadMUIString(List[Index].StringID, szText, MAX_STR_LEN);
+            LoadMUIStringF(hLangInst, List[Index].StringID, szText, MAX_STR_LEN);
 
             IoWriteTableTitle(szText,
                               List[Index].StringID,
@@ -205,7 +205,7 @@ ReportThread(IN LPVOID lpParameter)
 
     if (SettingsInfo.IsAddContent)
     {
-        LoadMUIString(IDS_REPORT_TITLE, szTitle, MAX_STR_LEN);
+        LoadMUIStringF(hLangInst, IDS_REPORT_TITLE, szTitle, MAX_STR_LEN);
         IoWriteBeginContentTable(szTitle);
         ReportAddNavigationMenu(IsSaveAll, RootCategoryList);
         IoWriteEndContentTable();
@@ -381,7 +381,7 @@ ReportCategoryInfo(IN UINT Category,
         {
             if (Category == List[Index].StringID)
             {
-                LoadMUIString(List[Index].StringID, szText, MAX_STR_LEN);
+                LoadMUIStringF(hLangInst, List[Index].StringID, szText, MAX_STR_LEN);
 
                 IoWriteTableTitle(szText,
                                   List[Index].StringID,
@@ -586,7 +586,7 @@ AddFileTypeToComboBox(HWND hCombo, UINT StringID)
     WCHAR szText[MAX_STR_LEN];
     INT Index;
 
-    LoadMUIString(StringID, szText, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, StringID, szText, MAX_STR_LEN);
 
     Index = SendMessage(hCombo,
                         CB_ADDSTRING, 0,
@@ -887,7 +887,7 @@ ReportWindowInitControls(HWND hwnd)
 
     /* Set checkbox text and font */
     SendMessage(hContent, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
-    LoadMUIString(IDS_ADD_CONTENT_TABLE, szText, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, IDS_ADD_CONTENT_TABLE, szText, MAX_STR_LEN);
     SetWindowText(hContent, szText);
 
     /* Set checkbox state */
@@ -956,7 +956,7 @@ ReportWindowInitControls(HWND hwnd)
         DebugTrace(L"Unable to create window!");
         return;
     }
-    LoadMUIString(IDS_FILE_TYPE_TEXT, szText, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, IDS_FILE_TYPE_TEXT, szText, MAX_STR_LEN);
     SetWindowText(hFileTypeTxt, szText);
     SendMessage(hFileTypeTxt, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
 
@@ -989,7 +989,7 @@ ReportWindowInitControls(HWND hwnd)
         DebugTrace(L"Unable to create button!");
         return;
     }
-    LoadMUIString(IDS_SAVE_BTN, szText, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, IDS_SAVE_BTN, szText, MAX_STR_LEN);
     SetWindowText(hSaveBtn, szText);
     SendMessage(hSaveBtn, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
 
@@ -1003,7 +1003,7 @@ ReportWindowInitControls(HWND hwnd)
         DebugTrace(L"Unable to create button!");
         return;
     }
-    LoadMUIString(IDS_CLOSE_BTN, szText, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, IDS_CLOSE_BTN, szText, MAX_STR_LEN);
     SetWindowText(hCloseBtn, szText);
     SendMessage(hCloseBtn, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
 
@@ -1180,7 +1180,7 @@ CreateReportWindow(VOID)
     if (RegisterClassEx(&WndClass) == (ATOM)0)
         return;
 
-    LoadMUIString(IDS_REPORTWND_TITLE, szWindowName, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, IDS_REPORTWND_TITLE, szWindowName, MAX_STR_LEN);
 
     /* Создаем главное окно программы */
     hReportWnd = CreateWindowEx(WS_EX_WINDOWEDGE,
