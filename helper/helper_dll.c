@@ -8,7 +8,7 @@
 #include <windows.h>
 #include <stddef.h>
 #include <strsafe.h>
-#include "aspia_dll.h"
+#include "helper_dll.h"
 #include "driver.h"
 
 

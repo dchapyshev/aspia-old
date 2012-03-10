@@ -4,7 +4,7 @@
 	Version="9,00"
 	Name="helper_dll"
 	ProjectGUID="{B7D8AE56-5576-429E-B793-751AAF3CEE87}"
-	RootNamespace="dll"
+	RootNamespace="helper"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -64,12 +64,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="msvcrt_win2000.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib winmm.lib"
-				OutputFile="$(OutDir)\aspia.dll"
+				OutputFile="$(OutDir)\helper.dll"
 				LinkIncremental="0"
 				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\i386\&quot;;&quot;$(OutDir)\&quot;;&quot;$(DDK)\lib\wlh\i386\&quot;"
 				GenerateManifest="false"
 				IgnoreAllDefaultLibraries="false"
-				ModuleDefinitionFile="aspia_dll.def"
+				ModuleDefinitionFile="helper_dll.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -152,7 +152,7 @@
 				LinkIncremental="0"
 				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\i386\&quot;;&quot;$(OutDir)\&quot;;&quot;$(DDK)\lib\wlh\i386\&quot;"
 				GenerateManifest="false"
-				ModuleDefinitionFile="aspia_dll.def"
+				ModuleDefinitionFile="helper_dll.def"
 				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -191,7 +191,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\aspia_dll.c"
+				RelativePath=".\helper_dll.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -206,7 +206,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\aspia_dll.def"
+				RelativePath=".\helper_dll.def"
 				>
 			</File>
 			<File
@@ -244,7 +244,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\aspia_dll.h"
+				RelativePath=".\helper_dll.h"
 				>
 			</File>
 			<File
