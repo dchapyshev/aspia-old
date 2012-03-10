@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "oxygen_icons", "icons\oxyge
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ntobjects", "ntobjects\ntobjects.vcproj", "{7FCA324C-22FE-46CC-8640-AAFD51BE15FC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "en-US", "languages\en-US\en-US.vcproj", "{598675F1-45FF-4941-8336-BEA2D9DCBBBB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -94,6 +96,14 @@ Global
 		{7FCA324C-22FE-46CC-8640-AAFD51BE15FC}.Release|Win32.ActiveCfg = Release|Win32
 		{7FCA324C-22FE-46CC-8640-AAFD51BE15FC}.Release|Win32.Build.0 = Release|Win32
 		{7FCA324C-22FE-46CC-8640-AAFD51BE15FC}.Release|x64.ActiveCfg = Release|Win32
+		{598675F1-45FF-4941-8336-BEA2D9DCBBBB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{598675F1-45FF-4941-8336-BEA2D9DCBBBB}.Debug|Win32.Build.0 = Debug|Win32
+		{598675F1-45FF-4941-8336-BEA2D9DCBBBB}.Debug|x64.ActiveCfg = Debug|x64
+		{598675F1-45FF-4941-8336-BEA2D9DCBBBB}.Debug|x64.Build.0 = Debug|x64
+		{598675F1-45FF-4941-8336-BEA2D9DCBBBB}.Release|Win32.ActiveCfg = Release|Win32
+		{598675F1-45FF-4941-8336-BEA2D9DCBBBB}.Release|Win32.Build.0 = Release|Win32
+		{598675F1-45FF-4941-8336-BEA2D9DCBBBB}.Release|x64.ActiveCfg = Release|x64
+		{598675F1-45FF-4941-8336-BEA2D9DCBBBB}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -101,6 +111,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{752C64F4-0CDE-4D2F-99F4-E58E18FE8705} = {12485EE8-336A-4C0D-85C5-C67B8293EB8E}
 		{E4D72312-EA0D-4236-AEBE-472DE543669D} = {12485EE8-336A-4C0D-85C5-C67B8293EB8E}
+		{598675F1-45FF-4941-8336-BEA2D9DCBBBB} = {12485EE8-336A-4C0D-85C5-C67B8293EB8E}
 		{F7A406F1-FBEC-421A-9646-F0EB887CC02E} = {C0522561-A080-4D52-A327-8CD74BAF594D}
 	EndGlobalSection
 EndGlobal

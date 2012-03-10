@@ -100,7 +100,7 @@ extern PARAMS_STRUCT ParamsInfo;
 
 VOID GUIInfoThread(LPVOID lpParameter);
 BOOL IsRootCategory(UINT Category, PVOID List);
-VOID LoadLanguage(VOID);
+BOOL LoadLanguage(VOID);
 VOID LoadIcons(VOID);
 
 /* controls.c */

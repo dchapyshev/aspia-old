@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="aspia"
-	ProjectGUID="{6ED4C44D-8AEB-4F4D-9E70-C3F06203F321}"
-	RootNamespace="aspia"
+	Name="en-US"
+	ProjectGUID="{598675F1-45FF-4941-8336-BEA2D9DCBBBB}"
+	RootNamespace="ruRU"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -23,7 +23,7 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(OutDir)\obj\$(ProjectName)"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			CharacterSet="1"
 			>
 			<Tool
@@ -44,12 +44,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)/include/&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;RURU_EXPORTS"
 				MinimalRebuild="true"
-				BasicRuntimeChecks="0"
+				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				BufferSecurityCheck="false"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 			/>
@@ -64,12 +63,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib winmm.lib aspia.lib opengl32.lib"
-				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\i386\&quot;;&quot;$(OutDir)\&quot;;&quot;$(DDK)\lib\wlh\i386\&quot;"
-				GenerateManifest="true"
-				EnableUAC="true"
-				GenerateDebugInformation="true"
+				OutputFile="$(OutDir)\languages\$(ProjectName).dll"
+				GenerateManifest="false"
 				SubSystem="2"
+				ResourceOnlyDLL="true"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -98,7 +95,7 @@
 			Name="Debug|x64"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(OutDir)\obj\$(ProjectName)"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			CharacterSet="1"
 			>
 			<Tool
@@ -120,10 +117,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;RURU_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -138,12 +136,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib"
-				OutputFile="$(OutDir)\$(ProjectName)x64.exe"
-				LinkIncremental="2"
-				EnableUAC="false"
-				GenerateDebugInformation="true"
+				OutputFile="$(OutDir)\languages\$(ProjectName).dll"
+				GenerateManifest="false"
 				SubSystem="2"
+				ResourceOnlyDLL="true"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -151,7 +147,6 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="manifest.xml"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -173,7 +168,7 @@
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(OutDir)\obj\$(ProjectName)"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -194,16 +189,17 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
+				Optimization="1"
 				EnableIntrinsicFunctions="true"
-				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)/include/&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
-				StringPooling="true"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;RURU_EXPORTS"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="false"
-				WarningLevel="4"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
 				DebugInformationFormat="3"
+				CallingConvention="2"
+				CompileAs="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -216,15 +212,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msvcrt_win2000.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib winmm.lib aspia.lib opengl32.lib"
-				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\i386\&quot;;&quot;$(OutDir)\&quot;;&quot;$(DDK)\lib\wlh\i386\&quot;"
+				OutputFile="$(OutDir)\languages\$(ProjectName).dll"
 				GenerateManifest="false"
-				IgnoreDefaultLibraryNames=""
-				AddModuleNamesToAssembly=""
-				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				ResourceOnlyDLL="true"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -232,7 +225,6 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="manifest.xml"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -254,7 +246,7 @@
 			Name="Release|x64"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(OutDir)\obj\$(ProjectName)"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -276,15 +268,17 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
+				Optimization="1"
 				EnableIntrinsicFunctions="true"
-				FavorSizeOrSpeed="1"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
-				StringPooling="true"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;RURU_EXPORTS"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="false"
-				WarningLevel="4"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
 				DebugInformationFormat="3"
+				CallingConvention="2"
+				CompileAs="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -297,13 +291,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msvcrt_win2003.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib"
-				OutputFile="$(OutDir)\$(ProjectName)x64.exe"
-				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\amd64\&quot;;&quot;$(DDK)\lib\wlh\amd64\&quot;"
+				OutputFile="$(OutDir)\languages\$(ProjectName).dll"
 				GenerateManifest="false"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				ResourceOnlyDLL="true"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -311,7 +304,6 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="manifest.xml"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -338,224 +330,12 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath=".\categories.c"
-				>
-			</File>
-			<File
-				RelativePath=".\controls.c"
-				>
-			</File>
-			<File
-				RelativePath=".\io.c"
-				>
-			</File>
-			<File
-				RelativePath=".\listview.c"
-				>
-			</File>
-			<File
-				RelativePath=".\misc.c"
-				>
-			</File>
-			<File
-				RelativePath=".\print.c"
-				>
-			</File>
-			<File
-				RelativePath=".\report.c"
-				>
-			</File>
-			<File
-				RelativePath=".\settings.c"
-				>
-			</File>
-			<File
-				RelativePath=".\systray.c"
-				>
-			</File>
-			<File
-				RelativePath=".\winmain.c"
-				>
-			</File>
-			<Filter
-				Name="info"
-				>
-				<File
-					RelativePath=".\info\battery.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\cpuid.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\devices.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\eventlog.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\hw.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\licenses.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\mmedia.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\netstat.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\network.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\os.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\regional.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\sensors.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\services.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\smbios.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\software.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\spd.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\summary.c"
-					>
-				</File>
-				<Filter
-					Name="spd"
-					>
-					<File
-						RelativePath=".\info\spd\ddr.c"
-						>
-					</File>
-					<File
-						RelativePath=".\info\spd\ddr2.c"
-						>
-					</File>
-					<File
-						RelativePath=".\info\spd\ddr3.c"
-						>
-					</File>
-					<File
-						RelativePath=".\info\spd\infolists.c"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="LPC"
-					>
-					<File
-						RelativePath=".\info\LPC\F718XX.c"
-						>
-					</File>
-					<File
-						RelativePath=".\info\LPC\IT87XX.c"
-						>
-					</File>
-					<File
-						RelativePath=".\info\LPC\lpc.c"
-						>
-					</File>
-					<File
-						RelativePath=".\info\LPC\mainboards.c"
-						>
-					</File>
-					<File
-						RelativePath=".\info\LPC\NCT677X.c"
-						>
-					</File>
-					<File
-						RelativePath=".\info\LPC\W836XX.c"
-						>
-					</File>
-				</Filter>
-			</Filter>
-			<Filter
-				Name="sysmon"
-				>
-				<File
-					RelativePath=".\sysmon\sysmon.c"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Заголовочные файлы"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath="..\include\driver.h"
-				>
-			</File>
-			<File
-				RelativePath=".\main.h"
-				>
-			</File>
-			<File
-				RelativePath=".\resource.h"
-				>
-			</File>
-			<File
-				RelativePath=".\targetver.h"
-				>
-			</File>
-			<File
-				RelativePath=".\version.h"
-				>
-			</File>
-			<Filter
-				Name="info"
-				>
-				<File
-					RelativePath=".\info\edid.h"
-					>
-				</File>
-				<File
-					RelativePath=".\info\smbios.h"
-					>
-				</File>
-				<File
-					RelativePath=".\info\spd.h"
-					>
-				</File>
-				<Filter
-					Name="LPC"
-					>
-					<File
-						RelativePath=".\info\LPC\lpc.h"
-						>
-					</File>
-				</Filter>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Файлы ресурсов"
@@ -563,11 +343,7 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\main.rc"
-				>
-			</File>
-			<File
-				RelativePath=".\version.rc"
+				RelativePath=".\en-US.rc"
 				>
 			</File>
 		</Filter>

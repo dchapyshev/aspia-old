@@ -998,44 +998,46 @@ GetLangFileNameFromSystem(LPWSTR lpFileName, SIZE_T Size)
     return TRUE;
 }
 
-VOID
+BOOL
 LoadLanguage(VOID)
 {
-    if (hLangInst && hLangInst != hInstance)
+    WCHAR szPath[MAX_PATH];
+
+    if (hLangInst)
         FreeLibrary(hLangInst);
 
-    if (ThemesInfo.szLangFile[0] == 0 && IsIniFileExists())
+    if (!IsIniFileExists())
     {
-        hLangInst = hInstance;
+        if (!GetLangFileNameFromSystem(ThemesInfo.szLangFile,
+                                       sizeof(ThemesInfo.szLangFile)))
+        {
+            StringCbCopy(ThemesInfo.szLangFile,
+                         sizeof(ThemesInfo.szLangFile),
+                         L"en-US.dll");
+        }
     }
     else
     {
-        WCHAR szPath[MAX_PATH];
-
-        if (!IsIniFileExists())
+        if (ThemesInfo.szLangFile[0] == 0)
         {
-            if (!GetLangFileNameFromSystem(ThemesInfo.szLangFile,
-                                           sizeof(ThemesInfo.szLangFile)))
-            {
-                hLangInst = hInstance;
-                return;
-            }
+            StringCbCopy(ThemesInfo.szLangFile,
+                         sizeof(ThemesInfo.szLangFile),
+                         L"en-US.dll");
         }
-        else
-        {
-            hLangInst = hInstance;
-        }
-
-        StringCbCopy(szPath, sizeof(szPath), ParamsInfo.szCurrentPath);
-
-        StringCbCat(szPath, sizeof(szPath), L"languages\\");
-        StringCbCat(szPath, sizeof(szPath), ThemesInfo.szLangFile);
-
-        DebugTrace(L"Loading language file: %s", szPath);
-        
-        hLangInst = LoadLibraryEx(szPath, NULL, LOAD_LIBRARY_AS_DATAFILE);
-        if (!hLangInst) hLangInst = hInstance;
     }
+
+    StringCbCopy(szPath, sizeof(szPath), ParamsInfo.szCurrentPath);
+
+    StringCbCat(szPath, sizeof(szPath), L"languages\\");
+    StringCbCat(szPath, sizeof(szPath), ThemesInfo.szLangFile);
+
+    DebugTrace(L"Loading language file: %s", szPath);
+
+    hLangInst = LoadLibraryEx(szPath, NULL, LOAD_LIBRARY_AS_DATAFILE);
+
+    if (!hLangInst) return FALSE;
+
+    return TRUE;
 }
 
 VOID
@@ -1192,9 +1194,6 @@ wWinMain(HINSTANCE hInst,
 
     hInstance = hInst;
 
-    LoadLanguage();
-    LoadIcons();
-
     hProcessHeap = GetProcessHeap();
 
     /* Инициализируем критическую секцию. Она используется
@@ -1208,12 +1207,16 @@ wWinMain(HINSTANCE hInst,
 
     DebugTrace(L"Start with debug mode");
 
+    if (!LoadLanguage()) goto Exit;
+
     /* Пытаемся обработать аргументы командной строки */
     if (HandleCommandLine())
     {
         DebugTrace(L"HandleCommandLine() success!");
         goto Exit;
     }
+
+    LoadIcons();
 
     if (ParamsInfo.DebugMode)
         ParamsInfo.DebugMode = InitDebugLog(L"aspia.log", VER_FILEVERSION_STR);

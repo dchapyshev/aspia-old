@@ -376,11 +376,6 @@ InitLangCombo(IN HWND hCombo)
     HINSTANCE hDLL;
     INT ItemIndex;
 
-    ItemIndex = SendMessage(hCombo, CB_ADDSTRING, 0,
-                            (LPARAM)L"English");
-    if (ThemesInfo.szLangFile[0] == 0)
-        SendMessage(hCombo, CB_SETCURSEL, ItemIndex, 0);
-
     StringCbCopy(szLangDir, sizeof(szLangDir), ParamsInfo.szCurrentPath);
 
     StringCbCat(szLangDir, sizeof(szLangDir), L"languages\\");
