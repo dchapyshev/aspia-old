@@ -32,8 +32,6 @@ AspiaDllInitialize(ASPIA_DLL_PARAMS *Params)
 {
     if (!Params) return FALSE;
 
-    DllParams.DebugMode = Params->DebugMode;
-
     DllParams.ELogShowError   = Params->ELogShowError;
     DllParams.ELogShowInfo    = Params->ELogShowInfo;
     DllParams.ELogShowWarning = Params->ELogShowWarning;
