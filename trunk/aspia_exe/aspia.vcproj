@@ -216,7 +216,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msvcrt_win2000.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib winmm.lib helper.lib opengl32.lib"
+				AdditionalDependencies="msvcrt_win2000.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib winmm.lib helper.lib aspia.lib opengl32.lib"
 				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\i386\&quot;;&quot;$(OutDir)\&quot;;&quot;$(DDK)\lib\wlh\i386\&quot;"
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames=""
@@ -359,10 +359,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\print.c"
-				>
-			</File>
-			<File
 				RelativePath=".\report.c"
 				>
 			</File>
@@ -379,126 +375,6 @@
 				>
 			</File>
 			<Filter
-				Name="info"
-				>
-				<File
-					RelativePath=".\info\battery.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\cpuid.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\devices.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\eventlog.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\hw.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\licenses.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\mmedia.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\netstat.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\network.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\os.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\regional.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\sensors.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\services.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\smbios.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\software.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\spd.c"
-					>
-				</File>
-				<File
-					RelativePath=".\info\summary.c"
-					>
-				</File>
-				<Filter
-					Name="spd"
-					>
-					<File
-						RelativePath=".\info\spd\ddr.c"
-						>
-					</File>
-					<File
-						RelativePath=".\info\spd\ddr2.c"
-						>
-					</File>
-					<File
-						RelativePath=".\info\spd\ddr3.c"
-						>
-					</File>
-					<File
-						RelativePath=".\info\spd\infolists.c"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="LPC"
-					>
-					<File
-						RelativePath=".\info\LPC\F718XX.c"
-						>
-					</File>
-					<File
-						RelativePath=".\info\LPC\IT87XX.c"
-						>
-					</File>
-					<File
-						RelativePath=".\info\LPC\lpc.c"
-						>
-					</File>
-					<File
-						RelativePath=".\info\LPC\mainboards.c"
-						>
-					</File>
-					<File
-						RelativePath=".\info\LPC\NCT677X.c"
-						>
-					</File>
-					<File
-						RelativePath=".\info\LPC\W836XX.c"
-						>
-					</File>
-				</Filter>
-			</Filter>
-			<Filter
 				Name="sysmon"
 				>
 				<File
@@ -513,7 +389,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\include\driver.h"
+				RelativePath="..\include\icons.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\lang.h"
 				>
 			</File>
 			<File
@@ -528,34 +408,6 @@
 				RelativePath=".\targetver.h"
 				>
 			</File>
-			<File
-				RelativePath=".\version.h"
-				>
-			</File>
-			<Filter
-				Name="info"
-				>
-				<File
-					RelativePath=".\info\edid.h"
-					>
-				</File>
-				<File
-					RelativePath=".\info\smbios.h"
-					>
-				</File>
-				<File
-					RelativePath=".\info\spd.h"
-					>
-				</File>
-				<Filter
-					Name="LPC"
-					>
-					<File
-						RelativePath=".\info\LPC\lpc.h"
-						>
-					</File>
-				</Filter>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Файлы ресурсов"

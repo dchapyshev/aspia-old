@@ -27,6 +27,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tango_icons", "icons\tango\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "helper_dll", "helper_dll\helper.vcproj", "{B7D8AE56-5576-429E-B793-751AAF3CEE87}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aspia_dll", "aspia_dll\aspia_dll.vcproj", "{EC6ABB07-436F-4970-80D0-ABFAA22126C3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -114,6 +116,12 @@ Global
 		{B7D8AE56-5576-429E-B793-751AAF3CEE87}.Release|Win32.ActiveCfg = Release|Win32
 		{B7D8AE56-5576-429E-B793-751AAF3CEE87}.Release|Win32.Build.0 = Release|Win32
 		{B7D8AE56-5576-429E-B793-751AAF3CEE87}.Release|x64.ActiveCfg = Release|Win32
+		{EC6ABB07-436F-4970-80D0-ABFAA22126C3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EC6ABB07-436F-4970-80D0-ABFAA22126C3}.Debug|Win32.Build.0 = Debug|Win32
+		{EC6ABB07-436F-4970-80D0-ABFAA22126C3}.Debug|x64.ActiveCfg = Debug|Win32
+		{EC6ABB07-436F-4970-80D0-ABFAA22126C3}.Release|Win32.ActiveCfg = Release|Win32
+		{EC6ABB07-436F-4970-80D0-ABFAA22126C3}.Release|Win32.Build.0 = Release|Win32
+		{EC6ABB07-436F-4970-80D0-ABFAA22126C3}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,7 +6,7 @@
  */
 
 #include "main.h"
-#include "driver.h"
+#include "aspia.h"
 
 
 SETTINGS_STRUCT SettingsInfo = {0};
@@ -256,7 +256,7 @@ InitCategoriesCombo(IN HWND hCombo,
 
     do
     {
-        LoadMUIString(List[Index].StringID, szName, MAX_STR_LEN);
+        LoadMUIStringF(hLangInst, List[Index].StringID, szName, MAX_STR_LEN);
 
         if (!List[Index].Child)
         {
@@ -757,7 +757,7 @@ AddSettingsCategory(HWND hTree,
     Index = ImageList_AddIcon(hSettingsImageList, hIcon);
     DestroyIcon(hIcon);
 
-    LoadMUIString(TextIndex, szText, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, TextIndex, szText, MAX_STR_LEN);
 
     Insert.item.mask = TVIF_TEXT | TVIF_PARAM | TVIF_IMAGE | TVIF_SELECTEDIMAGE;
     Insert.hInsertAfter = TVI_LAST;
@@ -952,6 +952,8 @@ SaveSettingsFromDialog(HWND hDlg)
 
     /* Save settings to .ini file */
     SaveSettings();
+
+    InitInfoDll();
 
     UpdateTrayIcons();
 

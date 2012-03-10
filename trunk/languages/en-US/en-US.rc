@@ -7,9 +7,7 @@
 
 /* English resource file */
 
-#include <windows.h>
-#include <commctrl.h>
-#include "../../aspia/resource.h"
+#include "../../include/aspia.h"
 
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
@@ -898,10 +896,6 @@ BEGIN
     IDS_REPORT_SAVE_ERROR1, "Error while trying to save the report. File a report with the specified name already exists and is open in another program."
     IDS_REPORT_SAVE_ERROR2, "Error while trying to save the report. Invalid path or file name."
     IDS_REPORT_SAVE_ERROR3, "Error while trying to save the report. For more information, run the program in debug mode."
-    IDS_PRINT, "Print"
-    IDS_PRINTWND_TITLE, "Print"
-    IDS_PRINT_START, "Print"
-    IDS_PRINT_CLOSE, "Close"
 
     IDS_CAT_SUMMARY, "Summary Information"
 

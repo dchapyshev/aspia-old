@@ -7,9 +7,7 @@
 
 /* Russian resource file */
 
-#include <windows.h>
-#include <commctrl.h>
-#include "../../aspia/resource.h"
+#include "../../include/aspia.h"
 
 LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 
@@ -899,10 +897,6 @@ BEGIN
     IDS_REPORT_SAVE_ERROR1, "Ошибка при попытке сохранения отчета. Файл отчета с указанным именем уже существует и открыт в другой программе."
     IDS_REPORT_SAVE_ERROR2, "Ошибка при попытке сохранения отчета. Неверный путь к файлу или имя файла."
     IDS_REPORT_SAVE_ERROR3, "Ошибка при попытке сохранения отчета. Для получения подробных сведений запустите программу в отладочном режиме."
-    IDS_PRINT, "Печать"
-    IDS_PRINTWND_TITLE, "Печать"
-    IDS_PRINT_START, "Печать"
-    IDS_PRINT_CLOSE, "Закрыть"
 
     IDS_CAT_SUMMARY, "Общая информация"
 

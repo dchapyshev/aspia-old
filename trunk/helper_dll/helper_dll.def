@@ -62,3 +62,10 @@ FreeNvidiaApi @59
 IsNvidiaApiInitialized @60
 EnumNvidiaGPUs @61
 KillProcess @62
+LoadMUIStringF @63
+Round @64
+ChopSpaces @65
+ConvertSecondsToString @66
+TimeToString @67
+GetFileDescription @68
+GetFolderAssocIcon @69

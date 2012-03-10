@@ -6,7 +6,7 @@
  */
 
 #include "../main.h"
-#include "driver.h"
+#include "aspia.h"
 
 
 HWND hSysMonWnd = NULL;
@@ -33,7 +33,7 @@ SysMonAddColumn(SIZE_T Index, INT Width, UINT resIndex)
     WCHAR szText[MAX_STR_LEN];
     LV_COLUMN Column = {0};
 
-    LoadMUIString(resIndex, szText, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, resIndex, szText, MAX_STR_LEN);
 
     Column.mask = LVCF_FMT | LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
     Column.iSubItem = Index;
@@ -49,9 +49,9 @@ SysMonInitControls(HWND hwnd)
 {
     SIZE_T NumButtons = sizeof(SysMonButtons) / sizeof(SysMonButtons[0]);
 
-    LoadMUIString(IDS_SYSMON_START, szSysMonStart, MAX_STR_LEN);
-    LoadMUIString(IDS_SYSMON_STOP, szSysMonStop, MAX_STR_LEN);
-    LoadMUIString(IDS_SYSMON_TEST, szSysMonTest, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, IDS_SYSMON_START, szSysMonStart, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, IDS_SYSMON_STOP, szSysMonStop, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, IDS_SYSMON_TEST, szSysMonTest, MAX_STR_LEN);
 
     /* Create toolbar */
     hSysMonToolBar = CreateWindowEx(0,
@@ -168,7 +168,7 @@ SysMonToolBarOnGetDispInfo(LPTOOLTIPTEXT lpttt)
             return;
     }
 
-    LoadMUIString(StringID, lpttt->szText, 80);
+    LoadMUIStringF(hLangInst, StringID, lpttt->szText, 80);
 }
 
 LRESULT CALLBACK
@@ -261,7 +261,7 @@ CreateSysMonWindow(VOID)
     if (RegisterClassEx(&WndClass) == (ATOM)0)
         return;
 
-    LoadMUIString(IDS_ASPIA_SYSMON, szWindowName, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, IDS_ASPIA_SYSMON, szWindowName, MAX_STR_LEN);
 
     /* Создаем главное окно программы */
     hSysMonWnd = CreateWindowEx(WS_EX_WINDOWEDGE,

@@ -6,7 +6,7 @@
  */
 
 #include "main.h"
-#include "driver.h"
+#include "aspia.h"
 
 
 INT ListViewAddItem(INT Indent, INT IconIndex, LPWSTR lpText);
@@ -359,7 +359,7 @@ IoAddHeader(INT Indent, UINT StringID, INT IconIndex)
 {
     WCHAR szText[MAX_STR_LEN];
 
-    LoadMUIString(StringID, szText, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, StringID, szText, MAX_STR_LEN);
     IoAddHeaderString(Indent, szText, IconIndex);
 }
 
@@ -442,7 +442,7 @@ IoAddValueName(INT Indent, UINT ValueID, INT IconIndex)
 {
     WCHAR szText[MAX_STR_LEN];
 
-    LoadMUIString(ValueID, szText, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, ValueID, szText, MAX_STR_LEN);
     return IoAddItem(Indent, IconIndex, szText);
 }
 
@@ -692,7 +692,7 @@ IoAddColumnsList(COLUMN_LIST *List, LPWSTR lpCategoryName, LPWSTR lpIniPath)
 
     do
     {
-        LoadMUIString(List[Index].StringID, szText, MAX_STR_LEN);
+        LoadMUIStringF(hLangInst, List[Index].StringID, szText, MAX_STR_LEN);
 
         switch (IoTarget)
         {
@@ -781,7 +781,7 @@ IoCreateReport(LPWSTR lpszFile)
                 break;
         }
 
-        LoadMUIString(id, szText, MAX_STR_LEN);
+        LoadMUIStringF(hLangInst, id, szText, MAX_STR_LEN);
         MessageBox(0, szText, NULL, MB_OK | MB_ICONERROR);
 
         DebugTrace(L"CreateFile() failed. Error code = %d", dwRes);
@@ -897,7 +897,7 @@ IoWriteTableTitle(LPWSTR lpszTitle, UINT StringID, BOOL WithContentTable)
             {
                 if (WithContentTable)
                 {
-                    LoadMUIString(IDS_REPORT_TOP, szTemp, sizeof(szTemp)/sizeof(WCHAR));
+                    LoadMUIStringF(hLangInst, IDS_REPORT_TOP, szTemp, sizeof(szTemp)/sizeof(WCHAR));
                     StringCbPrintf(szText, sizeof(szText),
                                    L"  (<a href='#top'>%s</a>)</h2>",
                                    szTemp);

@@ -6,7 +6,7 @@
  */
 
 #include "main.h"
-#include "driver.h"
+#include "aspia.h"
 
 
 HINSTANCE hInstance = NULL;
@@ -38,7 +38,7 @@ SetMainWindowTitle(UINT uiCategory)
 {
     WCHAR szText[MAX_STR_LEN], szTitle[MAX_STR_LEN];
 
-    if (!LoadMUIString(uiCategory, szText, MAX_STR_LEN))
+    if (!LoadMUIStringF(hLangInst, uiCategory, szText, MAX_STR_LEN))
     {
         SetWindowText(hMainWnd, L"Aspia");
     }
@@ -56,7 +56,7 @@ ListViewAddCategoryItem(INT IconIndex, UINT Category)
     WCHAR szText[MAX_STR_LEN];
     LV_ITEM Item = {0};
 
-    LoadMUIString(Category, szText, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, Category, szText, MAX_STR_LEN);
 
     Item.mask = LVIF_TEXT | LVIF_STATE | LVIF_IMAGE | LVIF_PARAM;
     Item.pszText = szText;
@@ -439,10 +439,6 @@ OnCommand(UINT Command)
             _beginthread(GUIInfoThread, 0, (LPVOID)CurrentCategory);
             break;
 
-        case ID_PRINT:
-            CreatePrintWindow(L"");
-            break;
-
         case ID_SELECT_ALL:
             ListView_SetItemState(hListView, -1, 0xF, LVIF_STATE);
             break;
@@ -681,6 +677,11 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         case WM_CREATE:
             InitControls(hwnd);
+            if (!InitInfoDll())
+            {
+                PostQuitMessage(0);
+                break;
+            }
             _beginthread(GUIInfoThread, 0, (LPVOID)SettingsInfo.StartupCategory);
             break;
 
@@ -861,6 +862,7 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
                 ParamsInfo.SySmIcon = SySmIcon;
                 ParamsInfo.SysColorDepth = SysColorDepth;
 
+                InitInfoDll();
                 ReInitControls();
             }
         }
@@ -926,8 +928,8 @@ HandleCommandLine(VOID)
             {
                 WCHAR szText[MAX_STR_LEN * 2], szTitle[MAX_STR_LEN];
 
-                LoadMUIString(IDS_INFORMATION, szTitle, MAX_STR_LEN);
-                LoadMUIString(IDS_CMD_HELP, szText, MAX_STR_LEN);
+                LoadMUIStringF(hLangInst, IDS_INFORMATION, szTitle, MAX_STR_LEN);
+                LoadMUIStringF(hLangInst, IDS_CMD_HELP, szText, MAX_STR_LEN);
                 MessageBox(0, szText, szTitle, MB_OK | MB_ICONINFORMATION);
                 return TRUE;
             }

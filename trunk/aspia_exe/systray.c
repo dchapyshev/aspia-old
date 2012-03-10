@@ -6,7 +6,7 @@
  */
 
 #include "main.h"
-#include "driver.h"
+#include "aspia.h"
 
 #define IDT_SENSORS_UPDATE_TIMER 1326
 #define MAX_HDD_COUNT 32
