@@ -1006,6 +1006,8 @@ LoadLanguage(VOID)
     if (hLangInst)
         FreeLibrary(hLangInst);
 
+    hLangInst = NULL;
+
     if (!IsIniFileExists())
     {
         if (!GetLangFileNameFromSystem(ThemesInfo.szLangFile,
@@ -1040,30 +1042,35 @@ LoadLanguage(VOID)
     return TRUE;
 }
 
-VOID
+BOOL
 LoadIcons(VOID)
 {
-    if (hIconsInst && hIconsInst != hInstance)
+    WCHAR szPath[MAX_PATH];
+
+    if (hIconsInst)
         FreeLibrary(hIconsInst);
+
+    hIconsInst = NULL;
 
     if (ThemesInfo.szIconsFile[0] == 0)
     {
-        hIconsInst = hInstance;
+        StringCbCopy(ThemesInfo.szIconsFile,
+                     sizeof(ThemesInfo.szIconsFile),
+                     L"tango.dll");
     }
-    else
-    {
-        WCHAR szPath[MAX_PATH];
 
-        StringCbPrintf(szPath, sizeof(szPath),
-                       L"%sicons\\%s",
-                       ParamsInfo.szCurrentPath,
-                       ThemesInfo.szIconsFile);
+    StringCbPrintf(szPath, sizeof(szPath),
+                   L"%sicons\\%s",
+                   ParamsInfo.szCurrentPath,
+                   ThemesInfo.szIconsFile);
 
-        DebugTrace(L"Loading icon file: %s", szPath);
+    DebugTrace(L"Loading icon file: %s", szPath);
 
-        hIconsInst = LoadLibraryEx(szPath, NULL, LOAD_LIBRARY_AS_DATAFILE);
-        if (!hIconsInst) hIconsInst = hInstance;
-    }
+    hIconsInst = LoadLibraryEx(szPath, NULL, LOAD_LIBRARY_AS_DATAFILE);
+
+    if (!hIconsInst) return FALSE;
+
+    return TRUE;
 }
 
 /* Функция для установки привилегий для текущего процесса */
@@ -1216,7 +1223,7 @@ wWinMain(HINSTANCE hInst,
         goto Exit;
     }
 
-    LoadIcons();
+    if (!LoadIcons()) goto Exit;
 
     if (ParamsInfo.DebugMode)
         ParamsInfo.DebugMode = InitDebugLog(L"aspia.log", VER_FILEVERSION_STR);
