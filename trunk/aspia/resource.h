@@ -830,10 +830,11 @@
 #define IDS_CPL_DESC                     772
 #define IDS_REPORT_SAVE_ERROR1           773
 #define IDS_REPORT_SAVE_ERROR2           774
-#define IDS_PRINT                        775
-#define IDS_PRINTWND_TITLE               776
-#define IDS_PRINT_START                  777
-#define IDS_PRINT_CLOSE                  778
+#define IDS_REPORT_SAVE_ERROR3           775
+#define IDS_PRINT                        776
+#define IDS_PRINTWND_TITLE               777
+#define IDS_PRINT_START                  778
+#define IDS_PRINT_CLOSE                  779
 
 #define IDS_CAT_SUMMARY           1000
 

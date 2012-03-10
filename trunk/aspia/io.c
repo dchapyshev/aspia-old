@@ -773,8 +773,11 @@ IoCreateReport(LPWSTR lpszFile)
             case ERROR_SHARING_VIOLATION:
                 id = IDS_REPORT_SAVE_ERROR1;
                 break;
-            default:
+            case ERROR_INVALID_NAME:
                 id = IDS_REPORT_SAVE_ERROR2;
+                break;
+            default:
+                id = IDS_REPORT_SAVE_ERROR3;
                 break;
         }
 

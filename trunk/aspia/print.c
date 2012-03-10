@@ -86,7 +86,7 @@ PrintWindowInitControls(HWND hwnd)
                                L"RichEdit20W",
                                NULL,
                                WS_CHILD | WS_BORDER | WS_VISIBLE | ES_MULTILINE |
-                               ES_LEFT | ES_READONLY,
+                               ES_READONLY,
                                205, 28, 465, 100,
                                hwnd,
                                NULL,
@@ -146,6 +146,65 @@ PrintToolBarOnGetDispInfo(LPTOOLTIPTEXT lpttt)
     LoadMUIString(StringID, lpttt->szText, 80);
 }
 
+static DWORD CALLBACK
+stream_in(DWORD_PTR cookie, LPBYTE buffer, LONG cb, LONG *pcb)
+{
+    HANDLE hFile = (HANDLE)cookie;
+    DWORD read;
+
+    if(!ReadFile(hFile, buffer, cb, &read, 0))
+        return 1;
+
+    *pcb = read;
+
+    return 0;
+}
+
+static void
+clear_formatting(void)
+{
+    PARAFORMAT2 pf;
+
+    pf.cbSize = sizeof(pf);
+    pf.dwMask = PFM_ALIGNMENT;
+    pf.wAlignment = PFA_LEFT;
+    SendMessageW(hRichEdit, EM_SETPARAFORMAT, 0, (LPARAM)&pf);
+}
+
+BOOL
+PrintLoadRTFFile(VOID)
+{
+    HANDLE hFile;
+    EDITSTREAM es;
+
+    hFile = CreateFile(SettingsInfo.szReportPath,
+                       GENERIC_READ,
+                       FILE_SHARE_READ,
+                       NULL,
+                       OPEN_EXISTING,
+                       FILE_ATTRIBUTE_NORMAL,
+                       NULL);
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        DebugTrace(L"CreateFile() failed. Error code = %d",
+                   GetLastError());
+        return FALSE;
+    }
+
+    es.dwCookie = (DWORD_PTR)hFile;
+    es.pfnCallback = stream_in;
+
+    SendMessage(hRichEdit, EM_SETWORDWRAPMODE, WBF_WORDWRAP, 0);
+
+    clear_formatting();
+    SendMessage(hRichEdit, EM_STREAMIN, SF_RTF, (LPARAM)&es);
+    SendMessage(hRichEdit, EM_SETWORDWRAPMODE, WBF_WORDWRAP, 0);
+
+    SetFocus(hRichEdit);
+
+    CloseHandle(hFile);
+}
+
 LRESULT CALLBACK
 PrintWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
@@ -153,6 +212,7 @@ PrintWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         case WM_CREATE:
             PrintWindowInitControls(hwnd);
+            PrintLoadRTFFile();
             break;
 
         case WM_COMMAND:
@@ -200,6 +260,9 @@ CreatePrintWindow(LPWSTR lpFile)
     WNDCLASSEX WndClass = {0};
     WCHAR szWindowClass[] = L"ASPIAISPRINT";
     WCHAR szWindowName[MAX_STR_LEN];
+    WCHAR szOldPath[MAX_PATH], szTemp[MAX_PATH],
+          szFileName[MAX_PATH];
+    UINT OldFileType;
     HWND hPrintWnd;
     MSG Msg;
 
@@ -224,7 +287,7 @@ CreatePrintWindow(LPWSTR lpFile)
                                szWindowClass,
                                szWindowName,
                                WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-                               22, 16, 600, 480,
+                               22, 16, 700, 600,
                                NULL, NULL, hInstance, NULL);
 
     if (!hPrintWnd)
@@ -232,6 +295,21 @@ CreatePrintWindow(LPWSTR lpFile)
         UnregisterClass(szWindowClass, hInstance);
         return;
     }
+
+    OldFileType = SettingsInfo.ReportFileType;
+    StringCbCopy(szOldPath, sizeof(szOldPath),
+                 SettingsInfo.szReportPath);
+
+    GetTempPath(MAX_PATH, szTemp);
+    GetTempFileName(szTemp, L"aspia-", 0, szFileName);
+
+    StringCbPrintf(SettingsInfo.szReportPath,
+                   sizeof(SettingsInfo.szReportPath),
+                   L"%s.rtf", szFileName);
+
+    DebugTrace(L"szReportPath = %s", SettingsInfo.szReportPath);
+
+    ReportSavePage(SettingsInfo.szReportPath, CurrentCategory);
 
     /* Show it */
     ShowWindow(hPrintWnd, SW_SHOW);
@@ -243,6 +321,12 @@ CreatePrintWindow(LPWSTR lpFile)
         TranslateMessage(&Msg);
         DispatchMessage(&Msg);
     }
+
+    //DeleteFile(SettingsInfo.szReportPath);
+    SettingsInfo.ReportFileType = OldFileType;
+    StringCbCopy(SettingsInfo.szReportPath,
+                 sizeof(SettingsInfo.szReportPath),
+                 szOldPath);
 
     UnregisterClass(szWindowClass, hInstance);
 }
