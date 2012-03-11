@@ -93,35 +93,58 @@ AppendStringToFile(LPWSTR lpszString)
     char *result;
 
     if (hReport == INVALID_HANDLE_VALUE || dwLen == 0)
+    {
+        DebugTrace(L"AppendStringToFile() failed!");
         return FALSE;
+    }
 
     buf_len = WideCharToMultiByte(CP_UTF8, 0,
                                   lpszString, dwLen,
                                   NULL, 0, 0, 0);
+    if (buf_len == 0)
+    {
+        DebugTrace(L"WideCharToMultiByte() failed!");
+        return FALSE;
+    }
+
     result = Alloc(buf_len);
     if (result)
     {
-        WideCharToMultiByte(CP_UTF8, 0,
-                            lpszString, dwLen,
-                            result, buf_len, 0, 0);
+        if (WideCharToMultiByte(CP_UTF8, 0,
+                                lpszString, dwLen,
+                                result, buf_len, 0, 0) == 0)
+        {
+            Free(result);
+            DebugTrace(L"WideCharToMultiByte() failed! Error code = %d",
+                       GetLastError());
+            return FALSE;
+        }
 
         MoveTo.QuadPart = 0;
         if (!SetFilePointerEx(hReport, MoveTo, &NewPos, FILE_END))
         {
             Free(result);
+            DebugTrace(L"SetFilePointerEx() failed! Error code = %d",
+                       GetLastError());
             return FALSE;
         }
 
         if (!GetFileSizeEx(hReport, &FileSize))
         {
             Free(result);
+            DebugTrace(L"GetFileSizeEx() failed! Error code = %d",
+                       GetLastError());
             return FALSE;
         }
 
         LockFile(hReport, (DWORD_PTR)NewPos.QuadPart, 0, (DWORD_PTR)FileSize.QuadPart, 0);
 
-        WriteFile(hReport, result, buf_len,
-                  &dwBytesWritten, NULL);
+        if (!WriteFile(hReport, result, buf_len,
+                       &dwBytesWritten, NULL))
+        {
+            DebugTrace(L"WriteFile() failed! Error code = %d",
+                       GetLastError());
+        }
 
         UnlockFile(hReport, (DWORD_PTR)NewPos.QuadPart, 0, (DWORD_PTR)FileSize.QuadPart, 0);
 
@@ -143,35 +166,58 @@ AppendStringToFileA(LPWSTR lpszString)
     char *result;
 
     if (hReport == INVALID_HANDLE_VALUE || dwLen == 0)
+    {
+        DebugTrace(L"AppendStringToFileA() failed!");
         return FALSE;
+    }
 
     buf_len = WideCharToMultiByte(CP_ACP, 0,
                                   lpszString, dwLen,
                                   NULL, 0, 0, 0);
+    if (buf_len == 0)
+    {
+        DebugTrace(L"WideCharToMultiByte() failed!");
+        return FALSE;
+    }
+
     result = Alloc(buf_len);
     if (result)
     {
-        WideCharToMultiByte(CP_ACP, 0,
-                            lpszString, dwLen,
-                            result, buf_len, 0, 0);
+        if (WideCharToMultiByte(CP_ACP, 0,
+                                lpszString, dwLen,
+                                result, buf_len, 0, 0) == 0)
+        {
+            Free(result);
+            DebugTrace(L"WideCharToMultiByte() failed! Error code = %d",
+                       GetLastError());
+            return FALSE;
+        }
 
         MoveTo.QuadPart = 0;
         if (!SetFilePointerEx(hReport, MoveTo, &NewPos, FILE_END))
         {
             Free(result);
+            DebugTrace(L"SetFilePointerEx() failed! Error code = %d",
+                       GetLastError());
             return FALSE;
         }
 
         if (!GetFileSizeEx(hReport, &FileSize))
         {
             Free(result);
+            DebugTrace(L"GetFileSizeEx() failed! Error code = %d",
+                       GetLastError());
             return FALSE;
         }
 
         LockFile(hReport, (DWORD_PTR)NewPos.QuadPart, 0, (DWORD_PTR)FileSize.QuadPart, 0);
 
-        WriteFile(hReport, result, buf_len,
-                  &dwBytesWritten, NULL);
+        if (!WriteFile(hReport, result, buf_len,
+                       &dwBytesWritten, NULL))
+        {
+            DebugTrace(L"WriteFile() failed! Error code = %d",
+                       GetLastError());
+        }
 
         UnlockFile(hReport, (DWORD_PTR)NewPos.QuadPart, 0, (DWORD_PTR)FileSize.QuadPart, 0);
 
@@ -290,7 +336,7 @@ IoAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex)
     if (IoTarget != IO_TARGET_LISTVIEW &&
         IoTarget != IO_TARGET_RTF)
     {
-        size = SafeStrLen(lpszText) * 2 * sizeof(WCHAR);
+        size = SafeStrLen(lpszText) * 15 * sizeof(WCHAR);
         ptr = (WCHAR*)Alloc(size);
         if (!ptr) return -1;
     }
@@ -372,7 +418,7 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
     if (IoTarget != IO_TARGET_LISTVIEW &&
         IoTarget != IO_TARGET_RTF)
     {
-        size = SafeStrLen(lpText) * 2 * sizeof(WCHAR);
+        size = SafeStrLen(lpText) * 15 * sizeof(WCHAR);
         ptr = (WCHAR*)Alloc(size);
         if (!ptr) return -1;
     }
@@ -440,7 +486,7 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
 INT
 IoAddValueName(INT Indent, UINT ValueID, INT IconIndex)
 {
-    WCHAR szText[MAX_STR_LEN];
+    WCHAR szText[MAX_STR_LEN * 2];
 
     LoadMUIStringF(hLangInst, ValueID, szText, MAX_STR_LEN);
     return IoAddItem(Indent, IconIndex, szText);
@@ -460,7 +506,7 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
 
         case IO_TARGET_HTML:
         {
-            size = SafeStrLen(pszText) * 2 * sizeof(WCHAR);
+            size = SafeStrLen(pszText) * 15 * sizeof(WCHAR);
             ptr = (WCHAR*)Alloc(size);
             if (!ptr) return;
 
@@ -763,6 +809,9 @@ IoCreateReport(LPWSTR lpszFile)
                          NULL);
     dwRes = GetLastError();
 
+    DebugTrace(L"CreateFile() called. lpszFile = %s, Error code = %d",
+               lpszFile, GetLastError());
+
     if (hReport == INVALID_HANDLE_VALUE)
     {
         WCHAR szText[MAX_STR_LEN];
@@ -790,7 +839,11 @@ IoCreateReport(LPWSTR lpszFile)
 
     if (IoTarget != IO_TARGET_RTF)
     {
-        WriteFile(hReport, "\xEF\xBB\xBF", 3, &dwBytesWritten, NULL);
+        if (!WriteFile(hReport, "\xEF\xBB\xBF", 3, &dwBytesWritten, NULL))
+        {
+            DebugTrace(L"WriteFile() failed! Error code = %d",
+                       GetLastError());
+        }
     }
 
     if (IoTarget == IO_TARGET_HTML)

@@ -389,6 +389,14 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\include\aspia.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\helper.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\icons.h"
 				>
 			</File>

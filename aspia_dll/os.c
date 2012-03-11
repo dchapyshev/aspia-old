@@ -138,8 +138,11 @@ OS_UsersInfo(VOID)
                 Index = IoAddItem(0, (pBuffer[i].usri3_flags & UF_ACCOUNTDISABLE) ? 1 : 0,
                                   pBuffer[i].usri3_name);
 
-                IoSetItemText(Index, 1, pBuffer[i].usri3_full_name);
-                IoSetItemText(Index, 2, pBuffer[i].usri3_comment);
+                IoSetItemText(Index, 1,
+                    (pBuffer[i].usri3_full_name[0] != 0) ? pBuffer[i].usri3_full_name : L"N/A");
+
+                IoSetItemText(Index, 2,
+                    (pBuffer[i].usri3_comment[0] != 0) ? pBuffer[i].usri3_comment : L"N/A");
 
                 IoSetItemText(Index, 3, (pBuffer[i].usri3_flags & UF_ACCOUNTDISABLE) ? szYes : szNo);
                 IoSetItemText(Index, 4, (pBuffer[i].usri3_flags & UF_PASSWD_CANT_CHANGE) ? szYes : szNo);
@@ -344,7 +347,7 @@ OS_ActiveUsersInfo(VOID)
         }
         else
         {
-            IoSetItemText(ItemIndex, 4, 0);
+            IoSetItemText(ItemIndex, 4, L"N/A");
         }
 
         /* WinStationName */
@@ -1254,6 +1257,7 @@ OS_DesktopInfo(VOID)
     IoSetItemText(Index, 1, szText);
 
     /* Wallpaper */
+    szText[0] = 0;
     if (GetStringFromRegistry(TRUE,
                               HKEY_CURRENT_USER,
                               L"Control Panel\\Desktop",
@@ -1262,7 +1266,7 @@ OS_DesktopInfo(VOID)
                               MAX_STR_LEN))
     {
         Index = IoAddValueName(1, IDS_DESK_WALLPAPER, 0);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, (szText[0] != 0) ? szText : szNo);
     }
 
     /* Font smoothing */
@@ -1854,10 +1858,15 @@ FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
                        L"%s\\%s", lpDir, FindFileData.cFileName);
 
         dwSize = GetFileVersionInfoSize(szFilePath, &dwHandle);
-        if (!dwSize) continue;
 
         pData = Alloc(dwSize);
-        if (!pData) continue;
+        if (!pData)
+        {
+            IoSetItemText(Index, 2, L"-");
+            IoSetItemText(Index, 3, L"-");
+            IoSetItemText(Index, 4, L"-");
+            continue;
+        }
 
         if (GetFileVersionInfo(szFilePath, dwHandle, dwSize, pData))
         {
@@ -1876,7 +1885,11 @@ FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
                     if (VerQueryValue(pData, szText, (LPVOID*)&pResult, (PUINT)&dwSize))
                     {
                         /* File version */
-                        IoSetItemText(Index, 2, pResult);
+                        IoSetItemText(Index, 2, (SafeStrLen(pResult) > 0) ? pResult : L"-");
+                    }
+                    else
+                    {
+                        IoSetItemText(Index, 2, L"-");
                     }
 
                     StringCbPrintf(szText, sizeof(szText),
@@ -1886,8 +1899,12 @@ FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
 
                     if (VerQueryValue(pData, szText, (LPVOID*)&pResult, (PUINT)&dwSize))
                     {
-                        /* File version */
-                        IoSetItemText(Index, 3, pResult);
+                        /* Company Name */
+                        IoSetItemText(Index, 3, (SafeStrLen(pResult) > 0) ? pResult : L"-");
+                    }
+                    else
+                    {
+                        IoSetItemText(Index, 3, L"-");
                     }
 
                     StringCbPrintf(szText, sizeof(szText),
@@ -1898,11 +1915,22 @@ FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
                     if (VerQueryValue(pData, szText, (LPVOID*)&pResult, (PUINT)&dwSize))
                     {
                         /* File description */
-                        IoSetItemText(Index, 4, pResult);
+                        IoSetItemText(Index, 4, (SafeStrLen(pResult) > 0) ? pResult : L"-");
+                    }
+                    else
+                    {
+                        IoSetItemText(Index, 4, L"-");
                     }
                 }
             }
         }
+        else
+        {
+            IoSetItemText(Index, 2, L"-");
+            IoSetItemText(Index, 3, L"-");
+            IoSetItemText(Index, 4, L"-");
+        }
+
         Free(pData);
 
         if (IsCanceled) break;
