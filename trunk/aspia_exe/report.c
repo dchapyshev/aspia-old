@@ -191,6 +191,8 @@ ReportThread(IN LPVOID lpParameter)
     BOOL IsSaveAll = (BOOL)lpParameter;
     INT OldColumnsCount;
 
+    DebugTrace(L"ReportThread(%d) called", IsSaveAll);
+
     EnterCriticalSection(&CriticalSection);
 
     IsCanceled = FALSE;
@@ -198,10 +200,14 @@ ReportThread(IN LPVOID lpParameter)
     IoSetTarget(GetIoTargetById(SettingsInfo.ReportFileType));
     OldColumnsCount = IoGetColumnsCount();
 
+    DebugTrace(L"IO Target = %d", IoGetTarget());
+
     if (!IoCreateReport(SettingsInfo.szReportPath))
     {
         goto Cleanup;
     }
+
+    DebugTrace(L"Report file is created!");
 
     if (SettingsInfo.IsAddContent)
     {
@@ -275,6 +281,8 @@ ReportStatusThread(IN LPVOID lpParameter)
 VOID
 ReportCreateThread(IN BOOL IsSaveAll)
 {
+    DebugTrace(L"ReportCreateThread(%d) called", IsSaveAll);
+
     if (TryEnterCriticalSection(&CriticalSection))
     {
         LeaveCriticalSection(&CriticalSection);
@@ -283,8 +291,6 @@ ReportCreateThread(IN BOOL IsSaveAll)
     {
         return;
     }
-
-    DebugTrace(L"Current IO target = %d", IoGetTarget());
 
     if (IsGUIReport)
     {
@@ -349,7 +355,8 @@ GetIdByIoTarget(UINT id)
 }
 
 VOID
-ReportSave(IN BOOL IsGUI, IN BOOL IsSaveAll, IN LPWSTR lpszPath, IN BOOL bWithMenu)
+ReportSave(IN BOOL IsGUI, IN BOOL IsSaveAll,
+           IN LPWSTR lpszPath, IN BOOL bWithMenu)
 {
     DebugTrace(L"ReportSave(%d, %d, %s, %d) called.",
                IsGUI, IsSaveAll, lpszPath, bWithMenu);
@@ -480,12 +487,8 @@ SetCheckStateForChildItems(HWND hTree, HTREEITEM hItem, BOOL State)
     while (hChild)
     {
         TreeView_SetCheckState(hTree, hChild, State);
-        hChild = TreeView_GetNextItem(hTree, hChild, TVGN_NEXT);
 
         hSubChild = TreeView_GetChild(hTree, hChild);
-        if (!hSubChild) continue;
-
-        if (IsChildItemsSelected(hTree, hChild)) continue;
 
         while (hSubChild)
         {
@@ -503,6 +506,9 @@ SetCheckStateForChildItems(HWND hTree, HTREEITEM hItem, BOOL State)
                 hSubSubChild = TreeView_GetNextSibling(hTree, hSubSubChild);
             }
         }
+
+        hChild = TreeView_GetNextItem(hTree, hChild, TVGN_NEXT);
+        if (IsChildItemsSelected(hTree, hChild)) continue;
     }
 }
 
@@ -559,6 +565,72 @@ RebuildTreeChecks(HWND hTree)
     }
     else
     {
+        HTREEITEM hChild;
+        BOOL State = FALSE;
+
+        /* Получаем сначала родительский элемент, а потом первый дочерний */
+        hChild = TreeView_GetChild(hTree, TreeView_GetParent(hTree, hItem));
+
+        while (hChild)
+        {
+            /* Если хотя бы один дочерний элемент выделен, то выходим */
+            if (TreeView_GetCheckState(hTree, hChild) == 1)
+            {
+                State = TRUE;
+                break;
+            }
+
+            hChild = TreeView_GetNextItem(hTree, hChild, TVGN_NEXT);
+        }
+
+        /* Если ни один дочерний элемент не выделен ... */
+        if (!State)
+        {
+            hParent = TreeView_GetParent(hTree, hItem);
+
+            if (hParent)
+            {
+                State = FALSE;
+
+                hChild = TreeView_GetChild(hTree, hParent);
+
+                while (hChild)
+                {
+                    if (TreeView_GetCheckState(hTree, hItem) == 1)
+                    {
+                        State = TRUE;
+                        break;
+                    }
+                    hChild = TreeView_GetNextItem(hTree, hChild, TVGN_NEXT);
+                }
+
+                if (!State)
+                {
+                    TreeView_SetCheckState(hTree, hParent, FALSE);
+
+                    State = FALSE;
+
+                    hChild = TreeView_GetChild(hTree, TreeView_GetParent(hTree, hParent));
+                    while (hChild)
+                    {
+                        /* Если хотя бы один дочерний элемент выделен, то выходим */
+                        if (TreeView_GetCheckState(hTree, hChild) == 1)
+                        {
+                            State = TRUE;
+                            break;
+                        }
+
+                        hChild = TreeView_GetNextItem(hTree, hChild, TVGN_NEXT);
+                    }
+
+                    if (!State)
+                    {
+                        TreeView_SetCheckState(hTree, TreeView_GetParent(hTree, hParent), FALSE);
+                    }
+                }
+            }
+        }
+
         SetCheckStateForChildItems(hTree, hItem, FALSE);
     }
 }
@@ -1180,7 +1252,8 @@ CreateReportWindow(VOID)
     if (RegisterClassEx(&WndClass) == (ATOM)0)
         return;
 
-    LoadMUIStringF(hLangInst, IDS_REPORTWND_TITLE, szWindowName, MAX_STR_LEN);
+    LoadMUIStringF(hLangInst, IDS_REPORTWND_TITLE,
+                   szWindowName, MAX_STR_LEN);
 
     /* Создаем главное окно программы */
     hReportWnd = CreateWindowEx(WS_EX_WINDOWEDGE,

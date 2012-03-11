@@ -430,6 +430,7 @@ SOFTWARE_FileTypesInfo(VOID)
 
             if (RegOpenKey(HKEY_CLASSES_ROOT, szRoot, &hKey) == ERROR_SUCCESS)
             {
+                szDesc[0] = 0;
                 dwSize = MAX_PATH;
                 res = RegQueryValueEx(hKey, NULL, NULL, NULL,
                                       (LPBYTE)szDesc,
@@ -444,7 +445,10 @@ SOFTWARE_FileTypesInfo(VOID)
                 }
 
                 Index = IoAddItem(0, 0, szKeyName);
-                IoSetItemText(Index, 1, szDesc);
+                if (szDesc[0] != 0)
+                    IoSetItemText(Index, 1, szDesc);
+                else
+                    IoSetItemText(Index, 1, L"-");
                 IoSetItemText(Index, 2, szContentType);
             }
         }
