@@ -1,15 +1,14 @@
 /*
  * PROJECT:         Aspia (Driver Helper DLL)
- * FILE:            include/driver.h
+ * FILE:            include/helper.h
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
+
 #pragma once
 
-#include <windows.h>
 #include <batclass.h>
-#include <commctrl.h>
 
 /* PCI Ports */
 #define CONFIG_DATA    0xCFC
@@ -436,3 +435,14 @@ GetWindowHeight(IN HWND hwnd)
     GetWindowRect(hwnd, &Rect);
     return (Rect.bottom - Rect.top);
 }
+
+BOOL GetIniFilePath(OUT LPWSTR lpszPath, IN SIZE_T PathLen);
+double Round(double Argument, int Precision);
+VOID ChopSpaces(LPWSTR s, SIZE_T size);
+VOID ConvertSecondsToString(HINSTANCE hLangInst, LONGLONG Seconds, LPWSTR lpszString, SIZE_T Size);
+BOOL TimeToString(time_t Time, LPWSTR lpTimeStr, SIZE_T Size);
+BOOL GetFileDescription(LPWSTR lpszPath, LPWSTR lpszDesc, SIZE_T Size);
+HICON GetFolderAssocIcon(LPWSTR lpszFolder);
+INT LoadMUIStringF(HINSTANCE hLangInst, UINT ResID, LPWSTR Buffer, INT BufLen);
+
+#define LoadMUIString(a, b, c) LoadMUIStringF(DllParams.hLangInst, a, b, c)
