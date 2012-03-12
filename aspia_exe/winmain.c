@@ -27,7 +27,6 @@ HANDLE hProcessHeap = NULL;
 CRITICAL_SECTION CriticalSection;
 
 BOOL IsLoadingDone = TRUE;
-BOOL IsCanceled = FALSE;
 BOOL bSortAscending = TRUE;
 
 PARAMS_STRUCT ParamsInfo = {0};
@@ -774,7 +773,7 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
                     {
                         UINT Category = (UINT)((LPNMTREEVIEW)lParam)->itemNew.lParam;
 
-                        IsCanceled = TRUE;
+                        SetCanceledState(TRUE);
 
                         if (CurrentCategory == Category) break;
                         _beginthread(GUIInfoThread, 0, (LPVOID)Category);

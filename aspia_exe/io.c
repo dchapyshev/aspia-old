@@ -1135,7 +1135,7 @@ IoRunInfoFunc(UINT Category, CATEGORY_LIST *List)
 {
     SIZE_T Index = 0;
 
-    IsCanceled = FALSE;
+    SetCanceledState(FALSE);
 
     do
     {
@@ -1163,5 +1163,5 @@ IoRunInfoFunc(UINT Category, CATEGORY_LIST *List)
     }
     while (List[++Index].StringID != 0);
 
-    IsCanceled = FALSE;
+    SetCanceledState(FALSE);
 }

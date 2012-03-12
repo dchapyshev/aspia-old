@@ -501,9 +501,9 @@ ShowSummaryInfo(VOID)
     ShowMonitorsInfo();
 
     /* Printers */
-    IoAddHeader(0, IDS_CAT_HW_PRINTERS, 6);
-    ShowPrintersInfo();
-    IoAddFooter();
+    //IoAddHeader(0, IDS_CAT_HW_PRINTERS, 6);
+    //ShowPrintersInfo();
+    //IoAddFooter();
 
     /* Network Adapters */
     IoAddHeader(0, IDS_CAT_NETWORK_CARDS, 7);

@@ -67,9 +67,15 @@ AspiaDllInitialize(ASPIA_DLL_PARAMS *Params)
 }
 
 VOID
-CancelInfoGetting(VOID)
+SetCanceledState(BOOL State)
 {
-    IsCanceled = TRUE;
+    IsCanceled = State;
+}
+
+BOOL
+GetCanceledState(VOID)
+{
+    return IsCanceled;
 }
 
 BOOL APIENTRY

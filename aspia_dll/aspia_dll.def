@@ -73,6 +73,8 @@ OS_RegionalParamInfo
 HW_DevicesInfo
 HW_UnknownDevicesInfo
 
+SetCanceledState
+GetCanceledState
 GetCPUName
 GetCPUVendor
 GetTjmaxTemperature

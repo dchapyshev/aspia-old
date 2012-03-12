@@ -898,6 +898,7 @@ BEGIN
     IDS_REPORT_SAVE_ERROR1, "Error while trying to save the report. File a report with the specified name already exists and is open in another program."
     IDS_REPORT_SAVE_ERROR2, "Error while trying to save the report. Invalid path or file name."
     IDS_REPORT_SAVE_ERROR3, "Error while trying to save the report. For more information, run the program in debug mode."
+    IDS_SIGNED_FILE, "Signed"
 
     IDS_CAT_SUMMARY, "Загальна інформація"
 

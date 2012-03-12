@@ -736,6 +736,7 @@
 #define IDS_REPORT_SAVE_ERROR1           773
 #define IDS_REPORT_SAVE_ERROR2           774
 #define IDS_REPORT_SAVE_ERROR3           775
+#define IDS_SIGNED_FILE                  776
 
 #define IDS_CAT_SUMMARY           1000
 

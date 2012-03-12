@@ -12,6 +12,7 @@
 #include <mstask.h>
 #include <ntsecapi.h>
 #include <wtsapi32.h>
+#include <softpub.h>
 #include <cpl.h>
 
 /* Definition for the GetFontResourceInfo function */
@@ -1818,12 +1819,31 @@ OS_PreventsInfo(VOID)
     DebugEndReceiving();
 }
 
+BOOL
+IsSignedFile(LPWSTR lpFilePath)
+{
+    WINTRUST_FILE_INFO TrustFileInfo = { 0 };
+    WINTRUST_DATA TrustData          = { 0 };
+    GUID guid = WINTRUST_ACTION_GENERIC_VERIFY_V2;
+
+    TrustFileInfo.cbStruct       = sizeof(WINTRUST_FILE_INFO);
+    TrustFileInfo.pcwszFilePath  = lpFilePath;
+
+    TrustData.cbStruct            = sizeof(WINTRUST_DATA);
+    TrustData.dwUIChoice          = WTD_UI_NONE;
+    TrustData.dwUnionChoice       = WTD_CHOICE_FILE;
+    TrustData.pFile               = &TrustFileInfo;
+
+    return (WinVerifyTrust(NULL, &guid, &TrustData) == ERROR_SUCCESS) ? TRUE : FALSE;
+}
+
 VOID
 FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
 {
     HANDLE hFind = INVALID_HANDLE_VALUE;
     WCHAR szPath[MAX_PATH], szSize[MAX_STR_LEN],
-          szText[MAX_STR_LEN], szFilePath[MAX_PATH];
+          szText[MAX_STR_LEN], szFilePath[MAX_PATH],
+          szYes[MAX_STR_LEN], szNo[MAX_STR_LEN];
     WIN32_FIND_DATA FindFileData;
     DWORD dwSize, dwHandle;
     LPVOID pData, pResult;
@@ -1836,6 +1856,9 @@ FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
     } *lpTranslate;
 
     DebugStartReceiving();
+
+    LoadMUIString(IDS_YES, szYes, MAX_STR_LEN);
+    LoadMUIString(IDS_NO, szNo, MAX_STR_LEN);
 
     StringCbPrintf(szPath, sizeof(szPath), L"%s\\%s", lpDir, lpExt);
 
@@ -1857,14 +1880,16 @@ FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
         StringCbPrintf(szFilePath, sizeof(szFilePath),
                        L"%s\\%s", lpDir, FindFileData.cFileName);
 
+        IoSetItemText(Index, 2, (IsSignedFile(szFilePath) == TRUE) ? szYes : szNo);
+
         dwSize = GetFileVersionInfoSize(szFilePath, &dwHandle);
 
         pData = Alloc(dwSize);
         if (!pData)
         {
-            IoSetItemText(Index, 2, L"-");
             IoSetItemText(Index, 3, L"-");
             IoSetItemText(Index, 4, L"-");
+            IoSetItemText(Index, 5, L"-");
             continue;
         }
 
@@ -1885,11 +1910,11 @@ FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
                     if (VerQueryValue(pData, szText, (LPVOID*)&pResult, (PUINT)&dwSize))
                     {
                         /* File version */
-                        IoSetItemText(Index, 2, (SafeStrLen(pResult) > 0) ? pResult : L"-");
+                        IoSetItemText(Index, 3, (SafeStrLen(pResult) > 0) ? pResult : L"-");
                     }
                     else
                     {
-                        IoSetItemText(Index, 2, L"-");
+                        IoSetItemText(Index, 3, L"-");
                     }
 
                     StringCbPrintf(szText, sizeof(szText),
@@ -1900,11 +1925,11 @@ FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
                     if (VerQueryValue(pData, szText, (LPVOID*)&pResult, (PUINT)&dwSize))
                     {
                         /* Company Name */
-                        IoSetItemText(Index, 3, (SafeStrLen(pResult) > 0) ? pResult : L"-");
+                        IoSetItemText(Index, 4, (SafeStrLen(pResult) > 0) ? pResult : L"-");
                     }
                     else
                     {
-                        IoSetItemText(Index, 3, L"-");
+                        IoSetItemText(Index, 4, L"-");
                     }
 
                     StringCbPrintf(szText, sizeof(szText),
@@ -1915,20 +1940,20 @@ FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
                     if (VerQueryValue(pData, szText, (LPVOID*)&pResult, (PUINT)&dwSize))
                     {
                         /* File description */
-                        IoSetItemText(Index, 4, (SafeStrLen(pResult) > 0) ? pResult : L"-");
+                        IoSetItemText(Index, 5, (SafeStrLen(pResult) > 0) ? pResult : L"-");
                     }
                     else
                     {
-                        IoSetItemText(Index, 4, L"-");
+                        IoSetItemText(Index, 5, L"-");
                     }
                 }
             }
         }
         else
         {
-            IoSetItemText(Index, 2, L"-");
             IoSetItemText(Index, 3, L"-");
             IoSetItemText(Index, 4, L"-");
+            IoSetItemText(Index, 5, L"-");
         }
 
         Free(pData);
