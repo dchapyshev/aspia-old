@@ -6,9 +6,9 @@
  */
 
 #include "diskbench.h"
-#include "driver.h"
-#include "resource.h"
+#include "helper.h"
 #include "version.h"
+#include "resource.h"
 
 
 HWND hDiskToolBar = NULL;

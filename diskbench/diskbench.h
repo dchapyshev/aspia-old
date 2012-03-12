@@ -13,6 +13,8 @@
 #include <commctrl.h>
 #include <process.h>
 
+#pragma warning(disable : 4995)
+#pragma warning(disable : 4996)
 
 #define MAX_STR_LEN 256
 

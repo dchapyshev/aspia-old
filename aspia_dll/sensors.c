@@ -1,6 +1,6 @@
 /*
- * PROJECT:         Aspia
- * FILE:            aspia/info/sonsors.c
+ * PROJECT:         Aspia (Info Helper DLL)
+ * FILE:            aspia_dll/sensors.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */

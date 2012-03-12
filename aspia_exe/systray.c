@@ -1,12 +1,13 @@
 /*
  * PROJECT:         Aspia
- * FILE:            aspia\systray.c
+ * FILE:            aspia_exe/systray.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "main.h"
 #include "aspia.h"
+#include "aspia_exe.h"
+
 
 #define IDT_SENSORS_UPDATE_TIMER 1326
 #define MAX_HDD_COUNT 32

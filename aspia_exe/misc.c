@@ -1,12 +1,12 @@
 /*
  * PROJECT:         Aspia
- * FILE:            aspia/misc.c
+ * FILE:            aspia_exe/misc.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "main.h"
 #include "aspia.h"
+#include "aspia_exe.h"
 
 
 /* Definition for the SetWindowTheme function */

@@ -1,6 +1,6 @@
 /*
- * PROJECT:         Aspia
- * FILE:            aspia/info/eventlog.c
+ * PROJECT:         Aspia (Info Helper DLL)
+ * FILE:            aspia_dll/eventlog.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */

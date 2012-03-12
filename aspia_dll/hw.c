@@ -1,14 +1,12 @@
 /*
- * PROJECT:         Aspia
- * FILE:            aspia/info/hw.c
+ * PROJECT:         Aspia (Info Helper DLL)
+ * FILE:            aspia_dll/hw.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
 #include "aspia.h"
 #include "aspia_dll.h"
-#include <intrin.h>
-#include <gl/gl.h>
 #include "edid.h"
 
 const BYTE EdidV1DescriptorFlag[] = { 0x00, 0x00 };

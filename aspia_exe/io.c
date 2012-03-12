@@ -1,12 +1,12 @@
 /*
  * PROJECT:         Aspia
- * FILE:            aspia/io.c
+ * FILE:            aspia_exe/io.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "main.h"
 #include "aspia.h"
+#include "aspia_exe.h"
 
 
 INT ListViewAddItem(INT Indent, INT IconIndex, LPWSTR lpText);

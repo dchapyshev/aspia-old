@@ -1,4 +1,14 @@
+/*
+ * PROJECT:         Aspia
+ * FILE:            include/lang.h
+ * LICENSE:         LGPL (GNU Lesser General Public License)
+ * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
+ */
+
 #pragma once
+
+#include <windows.h>
+#include <commctrl.h>
 
 /* Dialogs */
 #define IDD_ABOUT_DIALOG         5000

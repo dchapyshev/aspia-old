@@ -9,7 +9,7 @@
 
 #include <ntifs.h>
 
-#include "version.h"
+#include "../include/version.h"
 #include "ioctl_funct.h"
 
 

@@ -1,12 +1,12 @@
 /*
  * PROJECT:         Aspia
- * FILE:            aspia/report.c
+ * FILE:            aspia_exe/report.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "main.h"
 #include "aspia.h"
+#include "aspia_exe.h"
 
 
 static HIMAGELIST hReportImageList = NULL;

@@ -1,6 +1,6 @@
 /*
  * PROJECT:         Aspia
- * FILE:            aspia/resource.h
+ * FILE:            aspia_exe/resource.h
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */

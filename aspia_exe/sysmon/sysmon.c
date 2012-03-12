@@ -5,7 +5,7 @@
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "../main.h"
+#include "../aspia_exe.h"
 #include "aspia.h"
 
 

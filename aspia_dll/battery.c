@@ -1,12 +1,13 @@
 /*
- * PROJECT:         Aspia
- * FILE:            aspia/info/battery.c
+ * PROJECT:         Aspia (Info Helper DLL)
+ * FILE:            aspia_dll/battery.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
 #include "aspia.h"
 #include "aspia_dll.h"
+
 
 typedef BOOL (CALLBACK *BATTERYENUMPROC)(LPWSTR lpszBattery);
 

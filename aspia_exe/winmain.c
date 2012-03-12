@@ -1,12 +1,12 @@
 /*
  * PROJECT:         Aspia
- * FILE:            aspia/winmain.c
+ * FILE:            aspia_exe/winmain.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "main.h"
 #include "aspia.h"
+#include "aspia_exe.h"
 
 
 HINSTANCE hInstance = NULL;

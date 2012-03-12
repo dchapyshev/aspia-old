@@ -1,5 +1,5 @@
 /*
- * PROJECT:         Aspia (Driver Helper DLL)
+ * PROJECT:         Aspia
  * FILE:            include/helper.h
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)

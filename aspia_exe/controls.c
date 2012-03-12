@@ -1,12 +1,12 @@
 /*
  * PROJECT:         Aspia
- * FILE:            aspia/controls.c
+ * FILE:            aspia_exe/controls.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "main.h"
 #include "aspia.h"
+#include "aspia_exe.h"
 
 
 HWND hToolBar = NULL;

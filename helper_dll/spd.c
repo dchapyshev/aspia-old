@@ -1,14 +1,11 @@
 /*
- * PROJECT:         Aspia (Driver Helper DLL)
- * FILE:            driver/dll/spd.c
+ * PROJECT:         Aspia (Helper DLL)
+ * FILE:            helper_dll/spd.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include <windows.h>
-#include <stddef.h>
-#include <strsafe.h>
-#include "driver.h"
+#include "aspia.h"
 
 
 #define PCI_MAX_DEV 32

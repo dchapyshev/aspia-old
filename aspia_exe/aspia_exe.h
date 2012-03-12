@@ -1,6 +1,6 @@
 /*
  * PROJECT:         Aspia
- * FILE:            aspia/main.h
+ * FILE:            aspia_exe/aspia_exe.h
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
@@ -155,15 +155,6 @@ VOID ListViewClear(VOID);
 PVOID ListViewGetlParam(HWND, INT);
 VOID ListViewSetItemParam(INT Index, LPARAM lParam);
 
-BOOL IsPCIDevice(LPWSTR lpszDevice);
-BOOL GetPCIVendorID(LPWSTR lpszDevice, LPWSTR lpszVendorID, SIZE_T Size);
-BOOL GetPCIDeviceID(LPWSTR lpszDevice, LPWSTR lpszDeviceID, SIZE_T Size);
-BOOL IsUSBDevice(LPWSTR lpszDevice);
-BOOL GetUSBVendorID(LPWSTR lpszDevice, LPWSTR lpszVendorID, SIZE_T Size);
-BOOL GetUSBDeviceID(LPWSTR lpszDevice, LPWSTR lpszDeviceID, SIZE_T Size);
-BOOL IsMonitorDevice(LPWSTR lpszDevice);
-BOOL GetMonitorID(LPWSTR lpszDevice, LPWSTR lpszID, SIZE_T Size);
-
 /* report.c */
 VOID CreateReportWindow(VOID);
 BOOL CreateReport(LPWSTR);
@@ -287,6 +278,7 @@ BOOL LoadSettings(VOID);
 BOOL SaveSettings(VOID);
 INT_PTR CALLBACK SettingsDlgProc(HWND, UINT, WPARAM, LPARAM);
 BOOL GetIniFilePath(OUT LPWSTR lpszPath, IN SIZE_T PathLen);
+BOOL WritePrivateProfileInt(IN LPCTSTR lpAppName, IN LPCTSTR lpKeyName, IN INT Value, IN LPCTSTR lpFileName);
 
 /* systray.c */
 extern BOOL IsMainWindowHiden;
@@ -300,11 +292,5 @@ VOID DeleteMainWindowFromTray(VOID);
 VOID AddMainWindowToTray(VOID);
 VOID UpdateTrayIcons(VOID);
 
-/* lpc.c */
-VOID GetLPCSensorsInfo(VOID);
-
 /* sysmon.c */
 VOID CreateSysMonWindow(VOID);
-
-/* print.c */
-VOID CreatePrintWindow(LPWSTR lpFile);

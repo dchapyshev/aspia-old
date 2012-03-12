@@ -1,12 +1,12 @@
 /*
  * PROJECT:         Aspia
- * FILE:            aspia/categories.c
+ * FILE:            aspia_exe/categories.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
 #include "aspia.h"
-#include "main.h"
+#include "aspia_exe.h"
 
 COLUMN_LIST StdColumnList[] =
 {
@@ -17,50 +17,50 @@ COLUMN_LIST StdColumnList[] =
 
 COLUMN_LIST SMARTColumnList[] =
 {
-    { IDS_SMART_ATTR_ID, 42 },
-    { IDS_SMART_ATTR_NAME, 190 },
-    { IDS_SMART_THRESHOLD, 70 },
-    { IDS_SMART_ATTR_VALUE, 70 },
-    { IDS_SMART_ATTR_WORST, 90 },
-    { IDS_SMART_DATA, 70 },
+    { IDS_SMART_ATTR_ID,    42  },
+    { IDS_SMART_ATTR_NAME,  190 },
+    { IDS_SMART_THRESHOLD,  70  },
+    { IDS_SMART_ATTR_VALUE, 70  },
+    { IDS_SMART_ATTR_WORST, 90  },
+    { IDS_SMART_DATA,       70  },
     { 0 }
 };
 
 COLUMN_LIST DevicesColumnList[] =
 {
-    { IDS_DEVICE_NAME, 250 },
-    { IDS_DEVICE_CLASS_NAME, 200 },
-    { IDS_DEVICE_VERSION, 100 },
-    { IDS_DEVICE_DRIVER_DATE, 90 },
-    { IDS_DEVICE_DRIVER_VENDOR, 100 },
-    { IDS_DEVICE_VENDOR_ID, 70 },
+    { IDS_DEVICE_NAME,             250 },
+    { IDS_DEVICE_CLASS_NAME,       200 },
+    { IDS_DEVICE_VERSION,          100 },
+    { IDS_DEVICE_DRIVER_DATE,      90  },
+    { IDS_DEVICE_DRIVER_VENDOR,    100 },
+    { IDS_DEVICE_VENDOR_ID,        70  },
     { IDS_DEVICE_ESTIMATED_VENDOR, 150 },
-    { IDS_DEVICE_ESTIMATED, 200 },
+    { IDS_DEVICE_ESTIMATED,        200 },
     { 0 }
 };
 
 COLUMN_LIST UnknownDevicesColumnList[] =
 {
-    { IDS_DEVICE_INSTANCE_ID, 250 },
-    { IDS_DEVICE_VENDOR_ID, 70 },
+    { IDS_DEVICE_INSTANCE_ID,      250 },
+    { IDS_DEVICE_VENDOR_ID,        70  },
     { IDS_DEVICE_ESTIMATED_VENDOR, 150 },
-    { IDS_DEVICE_ESTIMATED, 200 },
+    { IDS_DEVICE_ESTIMATED,        200 },
     { 0 }
 };
 
 COLUMN_LIST UsersColumnList[] =
 {
-    { IDS_USER_NAME, 140 },
-    { IDS_FULL_USER_NAME, 120 },
-    { IDS_USER_DESC, 200 },
-    { IDS_USER_ACCOUNT_DISABLED, 80 },
+    { IDS_USER_NAME,               140 },
+    { IDS_FULL_USER_NAME,          120 },
+    { IDS_USER_DESC,               200 },
+    { IDS_USER_ACCOUNT_DISABLED,   80  },
     { IDS_USER_PASSWD_CANT_CHANGE, 100 },
-    { IDS_USER_PASSWORD_EXPIRED, 100 },
+    { IDS_USER_PASSWORD_EXPIRED,   100 },
     { IDS_USER_DONT_EXPIRE_PASSWD, 100 },
-    { IDS_USER_LOCKOUT, 80 },
-    { IDS_USER_LAST_LOGON, 110 },
-    { IDS_USER_NUM_LOGONS, 100 },
-    { IDS_USER_BAD_PW_COUNT, 90 },
+    { IDS_USER_LOCKOUT,            80  },
+    { IDS_USER_LAST_LOGON,         110 },
+    { IDS_USER_NUM_LOGONS,         100 },
+    { IDS_USER_BAD_PW_COUNT,       90  },
     { 0 }
 };
 
@@ -73,10 +73,10 @@ COLUMN_LIST UsersGroupsColumnList[] =
 
 COLUMN_LIST ActiveUsersColumnList[] =
 {
-    { IDS_USER_NAME, 130 },
-    { IDS_ACTUSERS_DOMAIN, 100 },
-    { IDS_ACTUSERS_USERID, 30 },
-    { IDS_ACTUSERS_STATE, 90 },
+    { IDS_USER_NAME,           130 },
+    { IDS_ACTUSERS_DOMAIN,     100 },
+    { IDS_ACTUSERS_USERID,     30  },
+    { IDS_ACTUSERS_STATE,      90  },
     { IDS_ACTUSERS_CLIENTNAME, 120 },
     { IDS_ACTUSERS_LOGON_TYPE, 100 },
     { 0 }
@@ -91,45 +91,45 @@ COLUMN_LIST EnvironColumnList[] =
 
 COLUMN_LIST FontsColumnList[] =
 {
-    { IDS_FONT_NAME, 260 },
+    { IDS_FONT_NAME,     260 },
     { IDS_FONT_FILENAME, 150 },
-    { IDS_FONT_SIZE, 100 },
+    { IDS_FONT_SIZE,     100 },
     { 0 }
 };
 
 COLUMN_LIST EventViewColumnList[] =
 {
-    { IDS_TYPE, 90 },
-    { IDS_DATE, 70 },
-    { IDS_TIME, 70 },
-    { IDS_ELOG_SOURCE, 150 },
+    { IDS_TYPE,          90  },
+    { IDS_DATE,          70  },
+    { IDS_TIME,          70  },
+    { IDS_ELOG_SOURCE,   150 },
     { IDS_ELOG_CATEGORY, 100 },
-    { IDS_ELOG_EVENT, 60 },
-    { IDS_ELOG_USER, 120 },
+    { IDS_ELOG_EVENT,    60  },
+    { IDS_ELOG_USER,     120 },
     { IDS_ELOG_COMPUTER, 100 },
-    { IDS_DESC, 450 },
+    { IDS_DESC,          450 },
     { 0 }
 };
 
 COLUMN_LIST InstalledAppColumnList[] =
 {
-    { IDS_NAME, 250 },
-    { IDS_VERSION, 100 },
-    { IDS_APP_PUBLISHER, 100 },
-    { IDS_APP_HELPLINK, 100 },
-    { IDS_APP_HELPPHONE, 100 },
-    { IDS_APP_URL_UPDATEINFO, 100 },
-    { IDS_APP_URL_INFOABOUT, 100 },
-    { IDS_APP_INSTALLDATE, 70 },
+    { IDS_NAME,                250 },
+    { IDS_VERSION,             100 },
+    { IDS_APP_PUBLISHER,       100 },
+    { IDS_APP_HELPLINK,        100 },
+    { IDS_APP_HELPPHONE,       100 },
+    { IDS_APP_URL_UPDATEINFO,  100 },
+    { IDS_APP_URL_INFOABOUT,   100 },
+    { IDS_APP_INSTALLDATE,     70  },
     { IDS_APP_INSTALLLOCATION, 200 },
-    { IDS_APP_UNINSTALL_STR, 200 },
-    { IDS_APP_MODIFY_PATH, 200 },
+    { IDS_APP_UNINSTALL_STR,   200 },
+    { IDS_APP_MODIFY_PATH,     200 },
     { 0 }
 };
 
 COLUMN_LIST InstalledUpdColumnList[] =
 {
-    { IDS_NAME, 250 },
+    { IDS_NAME,              250 },
     { IDS_APP_URL_INFOABOUT, 250 },
     { IDS_APP_UNINSTALL_STR, 250 },
     { 0 }
@@ -137,130 +137,130 @@ COLUMN_LIST InstalledUpdColumnList[] =
 
 COLUMN_LIST ServicesColumnList[] =
 {
-    { IDS_SERVICE_DISP_NAME, 250 },
-    { IDS_NAME, 150 },
-    { IDS_DESC, 250 },
-    { IDS_STATUS, 150 },
+    { IDS_SERVICE_DISP_NAME,  250 },
+    { IDS_NAME,               150 },
+    { IDS_DESC,               250 },
+    { IDS_STATUS,             150 },
     { IDS_SERVICE_START_TYPE, 150 },
-    { IDS_SERVICE_USER_NAME, 150 },
-    { IDS_SERVICE_EX_FILE, 250 },
+    { IDS_SERVICE_USER_NAME,  150 },
+    { IDS_SERVICE_EX_FILE,    250 },
     { 0 }
 };
 
 COLUMN_LIST DriversColumnList[] =
 {
-    { IDS_SERVICE_DISP_NAME, 250 },
-    { IDS_NAME, 150 },
-    { IDS_DESC, 250 },
-    { IDS_STATUS, 150 },
+    { IDS_SERVICE_DISP_NAME,  250 },
+    { IDS_NAME,               150 },
+    { IDS_DESC,               250 },
+    { IDS_STATUS,             150 },
     { IDS_SERVICE_START_TYPE, 150 },
-    { IDS_SERVICE_EX_FILE, 250 },
+    { IDS_SERVICE_EX_FILE,    250 },
     { 0 }
 };
 
 COLUMN_LIST TaskMgrColumnList[] =
 {
-    { IDS_TASK_NAME, 120 },
-    { IDS_TASK_FILEPATH, 250 },
-    { IDS_TASK_USED_MEM, 70 },
-    { IDS_TASK_USED_PAGEFILE, 70 },
-    { IDS_TASK_DESC, 250 },
+    { IDS_TASK_NAME,          120 },
+    { IDS_TASK_FILEPATH,      250 },
+    { IDS_TASK_USED_MEM,      70  },
+    { IDS_TASK_USED_PAGEFILE, 70  },
+    { IDS_TASK_DESC,          250 },
     { 0 }
 };
 
 COLUMN_LIST LicensesColumnList[] =
 {
-    { IDS_LICENSE_APP_NAME, 270 },
+    { IDS_LICENSE_APP_NAME,    270 },
     { IDS_LICENSE_PRODUCT_KEY, 250 },
     { 0 }
 };
 
 COLUMN_LIST NetStatColumnList[] =
 {
-    { IDS_NETSTAT_PROC_NAME, 150 },
-    { IDS_NETSTAT_PROTOCOL, 60 },
-    { IDS_NETSTAT_LOCAL_ADDRESS, 160 },
+    { IDS_NETSTAT_PROC_NAME,      150 },
+    { IDS_NETSTAT_PROTOCOL,       60  },
+    { IDS_NETSTAT_LOCAL_ADDRESS,  160 },
     { IDS_NETSTAT_REMOTE_ADDRESS, 140 },
-    { IDS_NETSTAT_STATE, 130 },
+    { IDS_NETSTAT_STATE,          130 },
     { 0 }
 };
 
 COLUMN_LIST SharedColumnList[] =
 {
-    { IDS_NAME, 150 },
-    { IDS_TYPE, 130 },
-    { IDS_DESC, 230 },
-    { IDS_SHARE_PATH, 250 },
+    { IDS_NAME,               150 },
+    { IDS_TYPE,               130 },
+    { IDS_DESC,               230 },
+    { IDS_SHARE_PATH,         250 },
     { IDS_SHARE_CURRENT_USES, 100 },
-    { IDS_SHARE_MAX_USES, 150 },
+    { IDS_SHARE_MAX_USES,     150 },
     { 0 }
 };
 
 COLUMN_LIST RouteColumnList[] =
 {
-    { IDS_ROUTE_DEST_IP, 150 },
+    { IDS_ROUTE_DEST_IP,     150 },
     { IDS_ROUTE_SUBNET_MASK, 150 },
-    { IDS_ROUTE_GATEWAY, 150 },
-    { IDS_ROUTE_METRIC, 70 },
+    { IDS_ROUTE_GATEWAY,     150 },
+    { IDS_ROUTE_METRIC,      70  },
     { 0 }
 };
 
 COLUMN_LIST IEHistoryColumnList[] =
 {
-    { IDS_IE_HISTORY_TIME, 70 },
-    { IDS_IE_HISTORY_DATE, 70 },
+    { IDS_IE_HISTORY_TIME,  70  },
+    { IDS_IE_HISTORY_DATE,  70  },
     { IDS_IE_HISTORY_TITLE, 250 },
-    { IDS_IE_HISTORY_URL, 300 },
+    { IDS_IE_HISTORY_URL,   300 },
     { 0 }
 };
 
 COLUMN_LIST IECookiesColumnList[] =
 {
-    { IDS_IE_COOKIE_URL_NAME, 250 },
+    { IDS_IE_COOKIE_URL_NAME,    250 },
     { IDS_IE_COOKIE_LAST_ACCESS, 120 },
-    { IDS_IE_COOKIE_USE_COUNT, 50 },
+    { IDS_IE_COOKIE_USE_COUNT,   50  },
     { IDS_IE_COOKIE_LAST_MODIFY, 120 },
-    { IDS_IE_COOKIE_LAST_SYNC, 120 },
-    { IDS_IE_COOKIE_EXPIRE, 120 },
-    { IDS_IE_COOKIE_FILE_NAME, 500 },
+    { IDS_IE_COOKIE_LAST_SYNC,   120 },
+    { IDS_IE_COOKIE_EXPIRE,      120 },
+    { IDS_IE_COOKIE_FILE_NAME,   500 },
     { 0 }
 };
 
 COLUMN_LIST OpenFilesColumnList[] =
 {
-    { IDS_OPENFILE_ID, 90 },
-    { IDS_USER_NAME, 120 },
-    { IDS_OPENFILE_COUNT, 80 },
-    { IDS_OPENFILE_PATH, 250 },
+    { IDS_OPENFILE_ID,    90  },
+    { IDS_USER_NAME,      120 },
+    { IDS_OPENFILE_COUNT, 80  },
+    { IDS_OPENFILE_PATH,  250 },
     { 0 }
 };
 
 COLUMN_LIST FirewallColumnList[] =
 {
-    { IDS_FIREWALL_NAME, 90 },
-    { IDS_FIREWALL_APP, 250 },
-    { IDS_FIREWALL_STATE, 100 },
+    { IDS_FIREWALL_NAME,   90  },
+    { IDS_FIREWALL_APP,    250 },
+    { IDS_FIREWALL_STATE,  100 },
     { IDS_FIREWALL_ACTION, 100 },
-    { IDS_FIREWALL_DIR, 110 },
-    { IDS_FIREWALL_PROTO, 80 },
-    { IDS_FIREWALL_SCOPE, 80 },
+    { IDS_FIREWALL_DIR,    110 },
+    { IDS_FIREWALL_PROTO,  80  },
+    { IDS_FIREWALL_SCOPE,  80  },
     { 0 }
 };
 
 COLUMN_LIST SysFilesColumnList[] =
 {
-    { IDS_SYSFILES_NAME, 110 },
-    { IDS_SYSFILES_SIZE, 70 },
-    { IDS_SIGNED_FILE, 20 },
-    { IDS_SYSFILES_VERSION, 90 },
-    { IDS_SYSFILES_MANUF, 110 },
-    { IDS_SYSFILES_DESC, 230 },
+    { IDS_SYSFILES_NAME,    110 },
+    { IDS_SYSFILES_SIZE,    70  },
+    { IDS_SIGNED_FILE,      20  },
+    { IDS_SYSFILES_VERSION, 90  },
+    { IDS_SYSFILES_MANUF,   110 },
+    { IDS_SYSFILES_DESC,    230 },
     { 0 }
 };
 
 COLUMN_LIST FileTypesColumnList[] =
 {
-    { IDS_FILETYPES_EXT, 90 },
+    { IDS_FILETYPES_EXT,  90  },
     { IDS_FILETYPES_DESC, 220 },
     { IDS_FILETYPES_TYPE, 170 },
     { 0 }
@@ -268,9 +268,9 @@ COLUMN_LIST FileTypesColumnList[] =
 
 COLUMN_LIST MMDevsColumnList[] =
 {
-    { IDS_MMDEV_NAME, 90 },
-    { IDS_MMDEV_ID, 220 },
-    { IDS_MMDEV_FORMATS, 170 },
+    { IDS_MMDEV_NAME,     90  },
+    { IDS_MMDEV_ID,       220 },
+    { IDS_MMDEV_FORMATS,  170 },
     { IDS_MMDEV_CHANNELS, 170 },
     { IDS_MMDEV_SUPPORTS, 170 },
     { 0 }
@@ -311,8 +311,8 @@ CATEGORY_LIST DataCategoryList[] =
 
 CATEGORY_LIST DevicesCategoryList[] =
 {
-    { IDS_CAT_HW_ALL_DEVICES,      IDI_HW,          IDR_POPUP, FALSE, TRUE, TRUE, NULL, HW_DevicesInfo,        NULL, DevicesColumnList,        NULL },
-    { IDS_CAT_HW_UNKNOWN_DEVICES,  IDI_DISABLED_HW, IDR_POPUP, FALSE, TRUE, TRUE, NULL, HW_UnknownDevicesInfo, NULL, UnknownDevicesColumnList, NULL },
+    { IDS_CAT_HW_ALL_DEVICES,     IDI_HW,          IDR_POPUP, FALSE, TRUE, TRUE, NULL, HW_DevicesInfo,        NULL, DevicesColumnList,        NULL },
+    { IDS_CAT_HW_UNKNOWN_DEVICES, IDI_DISABLED_HW, IDR_POPUP, FALSE, TRUE, TRUE, NULL, HW_UnknownDevicesInfo, NULL, UnknownDevicesColumnList, NULL },
     { 0 }
 };
 
@@ -327,24 +327,24 @@ CATEGORY_LIST DisplayCategoryList[] =
 CATEGORY_LIST MMediaCategoryList[] =
 {
     { IDS_CAT_HW_MMEDIA_DEV,    IDI_AUDIO, IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_MediaDevicesInfo, NULL, MMDevsColumnList, NULL },
-    { IDS_CAT_HW_MMEDIA_ACODEC, IDI_AUDIO, IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_MediaACodecsInfo, NULL, StdColumnList, NULL },
-    { IDS_CAT_HW_MMEDIA_VCODEC, IDI_AUDIO, IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_MediaVCodecsInfo, NULL, StdColumnList, NULL },
-    { IDS_CAT_HW_MMEDIA_MCI,    IDI_AUDIO, IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_MediaMCIInfo,     NULL, StdColumnList, NULL },
+    { IDS_CAT_HW_MMEDIA_ACODEC, IDI_AUDIO, IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_MediaACodecsInfo, NULL, StdColumnList,    NULL },
+    { IDS_CAT_HW_MMEDIA_VCODEC, IDI_AUDIO, IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_MediaVCodecsInfo, NULL, StdColumnList,    NULL },
+    { IDS_CAT_HW_MMEDIA_MCI,    IDI_AUDIO, IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_MediaMCIInfo,     NULL, StdColumnList,    NULL },
     { 0 }
 };
 
 CATEGORY_LIST HWCategoryList[] =
 {
-    { IDS_CAT_HW_DMI,      IDI_COMPUTER, 0,         FALSE, TRUE, FALSE, NULL, NULL,            NULL, NULL,               DMICategoryList },
-    { IDS_CAT_HW_SPD,      IDI_HW,       IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_SPDInfo,      NULL, StdColumnList,      NULL },
-    { IDS_CAT_HW_CPU,      IDI_CPU,      IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_CPUInfo,      NULL, StdColumnList,      NULL },
-    { IDS_CAT_HW_DATA,     IDI_HDD,      0,         FALSE, TRUE, FALSE, NULL, NULL,            NULL, NULL,               DataCategoryList },
-    { IDS_CAT_HW_DISPLAY,  IDI_MONITOR,  0,         FALSE, TRUE, FALSE, NULL, NULL,            NULL, NULL,               DisplayCategoryList },
-    { IDS_CAT_HW_MMEDIA,   IDI_AUDIO,    0,         FALSE, TRUE, FALSE, NULL, NULL,            NULL, NULL,               MMediaCategoryList },
-    { IDS_CAT_HW_POWER,    IDI_POWERICO, IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_PowerInfo,    NULL, StdColumnList,      NULL },
-    { IDS_CAT_HW_PRINTERS, IDI_PRINTER,  IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_PrintersInfo, NULL, StdColumnList,      NULL },
-    { IDS_CAT_HW_DEVICES,  IDI_HW,       0,         FALSE, TRUE, FALSE, NULL, NULL,            NULL, NULL,               DevicesCategoryList },
-    { IDS_CAT_HW_SENSOR,   IDI_SENSOR,   IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_SensorInfo,   NULL, StdColumnList,      NULL },
+    { IDS_CAT_HW_DMI,      IDI_COMPUTER, 0,         FALSE, TRUE, FALSE, NULL, NULL,            NULL, NULL,          DMICategoryList     },
+    { IDS_CAT_HW_SPD,      IDI_HW,       IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_SPDInfo,      NULL, StdColumnList, NULL                },
+    { IDS_CAT_HW_CPU,      IDI_CPU,      IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_CPUInfo,      NULL, StdColumnList, NULL                },
+    { IDS_CAT_HW_DATA,     IDI_HDD,      0,         FALSE, TRUE, FALSE, NULL, NULL,            NULL, NULL,          DataCategoryList    },
+    { IDS_CAT_HW_DISPLAY,  IDI_MONITOR,  0,         FALSE, TRUE, FALSE, NULL, NULL,            NULL, NULL,          DisplayCategoryList },
+    { IDS_CAT_HW_MMEDIA,   IDI_AUDIO,    0,         FALSE, TRUE, FALSE, NULL, NULL,            NULL, NULL,          MMediaCategoryList  },
+    { IDS_CAT_HW_POWER,    IDI_POWERICO, IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_PowerInfo,    NULL, StdColumnList, NULL                },
+    { IDS_CAT_HW_PRINTERS, IDI_PRINTER,  IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_PrintersInfo, NULL, StdColumnList, NULL                },
+    { IDS_CAT_HW_DEVICES,  IDI_HW,       0,         FALSE, TRUE, FALSE, NULL, NULL,            NULL, NULL,          DevicesCategoryList },
+    { IDS_CAT_HW_SENSOR,   IDI_SENSOR,   IDR_POPUP, FALSE, TRUE, FALSE, NULL, HW_SensorInfo,   NULL, StdColumnList, NULL                },
     { 0 }
 };
 
@@ -405,12 +405,12 @@ CATEGORY_LIST EventsCategoryList[] =
 
 CATEGORY_LIST SysFilesCategoryList[] =
 {
-    { IDS_CAT_SYSFILES_KNOWN, IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesKnownInfo, NULL, StdColumnList,        NULL },
-    { IDS_CAT_SYSFILES_DLL,   IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesDLLInfo,   NULL, SysFilesColumnList,   NULL },
-    { IDS_CAT_SYSFILES_AX,    IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesAXInfo,    NULL, SysFilesColumnList,   NULL },
-    { IDS_CAT_SYSFILES_EXE,   IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesEXEInfo,   NULL, SysFilesColumnList,   NULL },
-    { IDS_CAT_SYSFILES_SYS,   IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesSYSInfo,   NULL, SysFilesColumnList,   NULL },
-    { IDS_CAT_OS_FONTS,       IDI_FONTS,IDR_POPUP, FALSE, TRUE,  TRUE, NULL, OS_FontsInfo,         NULL, FontsColumnList,      NULL },
+    { IDS_CAT_SYSFILES_KNOWN, IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesKnownInfo, NULL, StdColumnList,      NULL },
+    { IDS_CAT_SYSFILES_DLL,   IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesDLLInfo,   NULL, SysFilesColumnList, NULL },
+    { IDS_CAT_SYSFILES_AX,    IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesAXInfo,    NULL, SysFilesColumnList, NULL },
+    { IDS_CAT_SYSFILES_EXE,   IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesEXEInfo,   NULL, SysFilesColumnList, NULL },
+    { IDS_CAT_SYSFILES_SYS,   IDI_APPS, IDR_POPUP, FALSE, FALSE, TRUE, NULL, OS_SysFilesSYSInfo,   NULL, SysFilesColumnList, NULL },
+    { IDS_CAT_OS_FONTS,       IDI_FONTS,IDR_POPUP, FALSE, TRUE,  TRUE, NULL, OS_FontsInfo,         NULL, FontsColumnList,    NULL },
     { 0 }
 };
 
@@ -433,10 +433,10 @@ CATEGORY_LIST OSCategoryList[] =
 
 CATEGORY_LIST RootCategoryList[] =
 {
-    { IDS_CAT_SUMMARY,  IDI_COMPUTER, IDR_POPUP, TRUE, TRUE, FALSE, NULL, ShowSummaryInfo, NULL, StdColumnList,      NULL },
-    { IDS_CAT_HW,       IDI_HW,       0,         TRUE, TRUE, FALSE, NULL, NULL,            NULL, NULL,               HWCategoryList },
-    { IDS_CAT_SOFTWARE, IDI_SOFTWARE, 0,         TRUE, TRUE, FALSE, NULL, NULL,            NULL, NULL,               SoftwareCategoryList },
-    { IDS_CAT_NETWORK,  IDI_NETWORK,  0,         TRUE, TRUE, FALSE, NULL, NULL,            NULL, NULL,               NetworkCategoryList },
-    { IDS_CAT_OS,       IDI_WINDOWS,  0,         TRUE, TRUE, FALSE, NULL, NULL,            NULL, NULL,               OSCategoryList },
+    { IDS_CAT_SUMMARY,  IDI_COMPUTER, IDR_POPUP, TRUE, TRUE, FALSE, NULL, ShowSummaryInfo, NULL, StdColumnList, NULL                 },
+    { IDS_CAT_HW,       IDI_HW,       0,         TRUE, TRUE, FALSE, NULL, NULL,            NULL, NULL,          HWCategoryList       },
+    { IDS_CAT_SOFTWARE, IDI_SOFTWARE, 0,         TRUE, TRUE, FALSE, NULL, NULL,            NULL, NULL,          SoftwareCategoryList },
+    { IDS_CAT_NETWORK,  IDI_NETWORK,  0,         TRUE, TRUE, FALSE, NULL, NULL,            NULL, NULL,          NetworkCategoryList  },
+    { IDS_CAT_OS,       IDI_WINDOWS,  0,         TRUE, TRUE, FALSE, NULL, NULL,            NULL, NULL,          OSCategoryList       },
     { 0 }
 };

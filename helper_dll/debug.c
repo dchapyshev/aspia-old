@@ -1,13 +1,11 @@
 /*
- * PROJECT:         Aspia
- * FILE:            driver/dll/debug.c
+ * PROJECT:         Aspia (Helper DLL)
+ * FILE:            helper_dll/debug.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include <windows.h>
-#include <strsafe.h>
-#include "driver.h"
+#include "aspia.h"
 
 #define MAX_STR_LEN 256
 

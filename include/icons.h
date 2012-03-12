@@ -1,4 +1,13 @@
+/*
+ * PROJECT:         Aspia
+ * FILE:            include/icons.h
+ * LICENSE:         LGPL (GNU Lesser General Public License)
+ * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
+ */
+
 #pragma once
+
+#include <windows.h>
 
 #define IDI_ASK           101
 #define IDI_BANG          102

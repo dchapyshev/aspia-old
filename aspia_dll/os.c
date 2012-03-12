@@ -1,19 +1,14 @@
 /*
- * PROJECT:         Aspia
- * FILE:            aspia/info/os.c
+ * PROJECT:         Aspia (Info Helper DLL)
+ * FILE:            aspia_dll/os.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
 #include "aspia.h"
 #include "aspia_dll.h"
-
-#include <initguid.h>
-#include <mstask.h>
-#include <ntsecapi.h>
-#include <wtsapi32.h>
 #include <softpub.h>
-#include <cpl.h>
+
 
 /* Definition for the GetFontResourceInfo function */
 typedef BOOL (WINAPI *PGFRI)(LPCTSTR, DWORD *, LPVOID, DWORD);
