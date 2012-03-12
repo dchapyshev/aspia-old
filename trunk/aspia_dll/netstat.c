@@ -1,6 +1,6 @@
 /*
- * PROJECT:         Aspia
- * FILE:            aspia/info/netstat.c
+ * PROJECT:         Aspia (Info Helper DLL)
+ * FILE:            aspia_dll/netstat.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */

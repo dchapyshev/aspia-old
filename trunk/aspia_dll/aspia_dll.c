@@ -1,15 +1,12 @@
 /*
- * PROJECT:         Aspia (Io Helper DLL)
- * FILE:            io_dll/io_dll.c
+ * PROJECT:         Aspia (Info Helper DLL)
+ * FILE:            aspia_dll/aspia_dll.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include <windows.h>
-#include <stddef.h>
-#include <strsafe.h>
-#include "aspia_dll.h"
 #include "aspia.h"
+#include "aspia_dll.h"
 
 
 HINSTANCE hInst;

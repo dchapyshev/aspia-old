@@ -6,7 +6,7 @@
  */
 
 #include "diskbench.h"
-#include "driver.h"
+#include "helper.h"
 
 
 #define LEFT_INDENT   40 /* Отступ слева */

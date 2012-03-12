@@ -1,14 +1,11 @@
 /*
- * PROJECT:         Aspia
- * FILE:            aspia/smart/smart.c
+ * PROJECT:         Aspia (Helper DLL)
+ * FILE:            helper_dll/smart.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include <windows.h>
-#include <wchar.h>
-#include <strsafe.h>
-#include "driver.h"
+#include "aspia.h"
 
 
 #define SMART_GET_VERSION        CTL_CODE(IOCTL_DISK_BASE, 0x0020, METHOD_BUFFERED, FILE_READ_ACCESS)

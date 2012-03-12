@@ -1,6 +1,6 @@
 /*
- * PROJECT:         Aspia
- * FILE:            aspia/info/network.c
+ * PROJECT:         Aspia (Info Helper DLL)
+ * FILE:            aspia_dll/network.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
@@ -8,14 +8,6 @@
 #include "aspia.h"
 #include "aspia_dll.h"
 
-#include <urlhist.h>
-#include <iphlpapi.h>
-#include <wininet.h>
-#include <ras.h>
-#include <raserror.h>
-#include <netfw.h>
-#include <ntsecapi.h>
-#include <sddl.h>
 
 #define NT_SUCCESS(Status) (((NTSTATUS)(Status)) >= 0)
 

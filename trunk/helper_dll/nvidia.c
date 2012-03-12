@@ -1,6 +1,6 @@
 /*
  * PROJECT:         Aspia (Helper DLL)
- * FILE:            dll/nvidia.c
+ * FILE:            helper_dll/nvidia.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
@@ -8,9 +8,9 @@
 #include <windows.h>
 #include <wchar.h>
 
-#include "aspia_dll.h"
+#include "helper_dll.h"
 #include "nvidia.h"
-#include "driver.h"
+#include "aspia.h"
 
 typedef INT *(*nvapi_QueryInterface)(UINT Offset);
 

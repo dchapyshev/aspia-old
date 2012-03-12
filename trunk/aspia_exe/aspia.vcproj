@@ -393,6 +393,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\aspia_exe.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\helper.h"
 				>
 			</File>
@@ -405,15 +409,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\main.h"
-				>
-			</File>
-			<File
 				RelativePath=".\resource.h"
 				>
 			</File>
 			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\version.h"
 				>
 			</File>
 		</Filter>
@@ -423,7 +427,7 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\main.rc"
+				RelativePath=".\aspia_exe.rc"
 				>
 			</File>
 			<File

@@ -5,7 +5,7 @@
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "../../include/aspia.h"
+#include "../../include/icons.h"
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 

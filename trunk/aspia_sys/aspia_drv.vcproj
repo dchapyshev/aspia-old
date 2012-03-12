@@ -224,10 +224,6 @@
 				RelativePath=".\ioctl_funct.h"
 				>
 			</File>
-			<File
-				RelativePath=".\version.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Файлы ресурсов"

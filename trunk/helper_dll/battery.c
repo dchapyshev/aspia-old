@@ -1,11 +1,11 @@
 /*
- * PROJECT:         Aspia
- * FILE:            driver/dll/battery.c
+ * PROJECT:         Aspia (Helper DLL)
+ * FILE:            helper_dll/battery.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "driver.h"
+#include "aspia.h"
 
 
 HANDLE

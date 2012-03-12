@@ -1,15 +1,12 @@
 /*
  * PROJECT:         Aspia (Helper DLL)
- * FILE:            dll/aspia_dll.c
+ * FILE:            helper_dll/helper_dll.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include <windows.h>
-#include <stddef.h>
-#include <strsafe.h>
 #include "helper_dll.h"
-#include "driver.h"
+#include "aspia.h"
 
 
 HANDLE hDriverFile = INVALID_HANDLE_VALUE;
@@ -35,7 +32,7 @@ InstallDriver(IN SC_HANDLE scHandle,
                              lpDriverExec,
                              NULL, NULL, NULL,
                              NULL, NULL);
-    if (!hService) 
+    if (!hService)
     {
         DWORD dwErr = GetLastError();
 

@@ -1,14 +1,11 @@
 /*
- * PROJECT:         Aspia
- * FILE:            aspia/scsi/scsi.c
+ * PROJECT:         Aspia (Helper DLL)
+ * FILE:            helper_dll/scsi.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include <windows.h>
-#include <wchar.h>
-#include <strsafe.h>
-#include "driver.h"
+#include "aspia.h"
 
 #define SCSI_MINIPORT_BUFFER_SIZE 512
 #define MAX_ATTRIBUTE             30

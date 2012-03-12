@@ -1,15 +1,13 @@
 /*
- * PROJECT:         Aspia
- * FILE:            aspia/info/summary.c
+ * PROJECT:         Aspia (Info Helper DLL)
+ * FILE:            aspia_dll/summary.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
 #include "aspia.h"
-#include "edid.h"
 #include "aspia_dll.h"
-
-#include <iphlpapi.h>
+#include "edid.h"
 
 
 static VOID

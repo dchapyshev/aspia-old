@@ -200,10 +200,6 @@
 				RelativePath=".\resource.h"
 				>
 			</File>
-			<File
-				RelativePath=".\version.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Файлы ресурсов"

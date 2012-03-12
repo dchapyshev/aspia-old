@@ -1,12 +1,13 @@
 /*
- * PROJECT:         Aspia
- * FILE:            aspia/info/cpuid.c
+ * PROJECT:         Aspia (Info Helper DLL)
+ * FILE:            aspia_dll/cpuid.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
 #include "aspia.h"
 #include "aspia_dll.h"
+
 
 typedef struct
 {

@@ -1,6 +1,6 @@
 /*
  * PROJECT:         Aspia
- * FILE:            aspia/targetver.h
+ * FILE:            aspia_exe/targetver.h
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */

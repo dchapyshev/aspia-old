@@ -8,7 +8,8 @@
 
 /* Ukrainian resource file */
 
-#include "../../include/aspia.h"
+#include "../../include/lang.h"
+#include "../../include/icons.h"
 
 LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
 

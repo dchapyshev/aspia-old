@@ -1,7 +1,12 @@
-#include <windows.h>
-#include <commctrl.h>
-#include "helper_dll.h"
+/*
+ * PROJECT:         Aspia (Helper DLL)
+ * FILE:            helper_dll/misc.c
+ * LICENSE:         LGPL (GNU Lesser General Public License)
+ * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
+ */
+
 #include "aspia.h"
+#include "helper_dll.h"
 
 
 typedef NTSTATUS (NTAPI* PNQSI) (SYSTEM_INFORMATION_CLASS, PVOID, ULONG, PULONG);

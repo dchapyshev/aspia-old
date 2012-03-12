@@ -1,6 +1,6 @@
 /*
- * PROJECT:         Aspia
- * FILE:            aspia/info/regional.c
+ * PROJECT:         Aspia (Info Helper DLL)
+ * FILE:            aspia_dll/regional.c
  * LICENSE:         LGPL (GNU Lesser General Public License)
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
