@@ -87,7 +87,6 @@ extern HIMAGELIST hListViewImageList;
 extern HANDLE hProcessHeap;
 extern CRITICAL_SECTION CriticalSection;
 extern BOOL IsLoadingDone;
-extern BOOL IsCanceled;
 extern PARAMS_STRUCT ParamsInfo;
 
 VOID GUIInfoThread(LPVOID lpParameter);

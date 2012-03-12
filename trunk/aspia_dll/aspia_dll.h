@@ -31,6 +31,8 @@ VOID GetCPUVendor(LPWSTR lpszCpuVendor, SIZE_T Size);
 BOOL Is64BitCpu(VOID);
 BOOL SMBIOS_GetMainboardName(LPWSTR lpName, SIZE_T NameSize, LPWSTR lpManuf, SIZE_T ManufSize);
 BOOL GetMSProductKey(BOOL is64, LPSTR lpszKeyPath, LPWSTR lpszKey, INT iSize);
+BOOL GetBatteryInformation(VOID);
+VOID GetLPCSensorsInfo(VOID);
 
 VOID ListViewSetItemParam(HWND hList, INT Index, LPARAM lParam);
 PVOID ListViewGetlParam(HWND hList, INT Index);

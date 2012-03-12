@@ -15,6 +15,8 @@
 #include <tlhelp32.h>
 #include <shlobj.h>
 #include <shobjidl.h>
+#include <wintrust.h>
+#include <wincrypt.h>
 
 #include "version.h"
 #include "io.h"
@@ -116,4 +118,93 @@ VOID NETWORK_IEHistoryInfo(VOID);
 VOID NETWORK_IECookieInfo(VOID);
 VOID NETWORK_RasInfo(VOID);
 
+/* os.c */
+VOID OS_EnvironInfo(VOID);
+VOID OS_RegInformation(VOID);
+VOID OS_UsersInfo(VOID);
+VOID OS_UsersGroupsInfo(VOID);
+VOID OS_ActiveUsersInfo(VOID);
+VOID OS_FontsInfo(VOID);
+VOID OS_CPLAppletsInfo(VOID);
+VOID OS_AutorunInfo(VOID);
+VOID OS_SysFoldersInfo(VOID);
+VOID OS_DesktopInfo(VOID);
+VOID OS_TaskSchedulerInfo(VOID);
+VOID OS_PreventsInfo(VOID);
+VOID ShowInstallDate(VOID);
+VOID OS_SysFilesDLLInfo(VOID);
+VOID OS_SysFilesAXInfo(VOID);
+VOID OS_SysFilesEXEInfo(VOID);
+VOID OS_SysFilesSYSInfo(VOID);
+VOID OS_SysFilesKnownInfo(VOID);
+
+/* regional.c */
+VOID OS_RegionalParamInfo(VOID);
+
+/* dmi.c */
+VOID DMI_CPUInfo(VOID);
+VOID DMI_RAMInfo(VOID);
+VOID DMI_BIOSInfo(VOID);
+VOID DMI_SystemInfo(VOID);
+VOID DMI_BoardInfo(VOID);
+VOID DMI_CacheInfo(VOID);
+VOID DMI_SlotInfo(VOID);
+VOID DMI_PortsInfo(VOID);
+VOID DMI_EnclosureInfo(VOID);
+VOID DMI_OnboardInfo(VOID);
+VOID DMI_PointingInfo(VOID);
+VOID DMI_BatteryInfo(VOID);
+
+/* mmedia.c */
+VOID HW_MediaDevicesInfo(VOID);
+VOID HW_MediaACodecsInfo(VOID);
+VOID HW_MediaVCodecsInfo(VOID);
+VOID HW_MediaMCIInfo(VOID);
+
+/* hw.c */
 ULONG GetTjmaxTemperature(DWORD CpuIndex);
+ULONG GetPciAddress(BYTE bus, BYTE device, BYTE function);
+VOID HW_SensorInfo(VOID);
+VOID HW_CPUInfo(VOID);
+VOID HW_CDInfo(VOID);
+VOID HW_HDDSCSIInfo(VOID);
+VOID HW_HDDATAInfo(VOID);
+VOID HW_HDDSMARTInfo(VOID);
+VOID HW_MonitorInfo(VOID);
+VOID HW_WinVideoInfo(VOID);
+VOID HW_OpenGlInfo(VOID);
+VOID HW_PowerInfo(VOID);
+VOID HW_PrintersInfo(VOID);
+VOID HW_SPDInfo(VOID);
+
+/* devices.c */
+VOID HW_DevicesInfo(VOID);
+VOID HW_UnknownDevicesInfo(VOID);
+
+/* software.c */
+VOID SOFTWARE_InstalledUpdInfo(VOID);
+VOID SOFTWARE_InstalledAppInfo(VOID);
+VOID SOFTWARE_InstalledAppsFree(VOID);
+VOID SOFTWARE_TaskMgr(VOID);
+VOID SOFTWARE_LicensesInfo(VOID);
+VOID SOFTWARE_FileTypesInfo(VOID);
+
+/* summary.c */
+VOID ShowSummaryInfo(VOID);
+
+/* services.c */
+VOID SOFTWARE_ServicesInfo(VOID);
+VOID SOFTWARE_DriversInfo(VOID);
+
+/* netstat.c */
+VOID NETWORK_NetStatInfo(VOID);
+
+/* eventlog.c */
+VOID OS_SecurityEventsInfo(VOID);
+VOID OS_SystemEventsInfo(VOID);
+VOID OS_AppEventsInfo(VOID);
+
+ULONG GetTjmaxTemperature(DWORD CpuIndex);
+
+VOID SetCanceledState(BOOL State);
+BOOL GetCanceledState(VOID);

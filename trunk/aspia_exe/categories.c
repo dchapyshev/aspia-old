@@ -5,8 +5,8 @@
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
+#include "aspia.h"
 #include "main.h"
-
 
 COLUMN_LIST StdColumnList[] =
 {
@@ -251,6 +251,7 @@ COLUMN_LIST SysFilesColumnList[] =
 {
     { IDS_SYSFILES_NAME, 110 },
     { IDS_SYSFILES_SIZE, 70 },
+    { IDS_SIGNED_FILE, 20 },
     { IDS_SYSFILES_VERSION, 90 },
     { IDS_SYSFILES_MANUF, 110 },
     { IDS_SYSFILES_DESC, 230 },

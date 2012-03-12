@@ -112,7 +112,7 @@ ReportAction(LPWSTR lpszRootName, BOOL IsSaveAll, CATEGORY_LIST *List)
 
     do
     {
-        if (IsCanceled) return FALSE;
+        if (GetCanceledState()) return FALSE;
 
         if (List[Index].Checked || IsSaveAll)
         {
@@ -195,7 +195,7 @@ ReportThread(IN LPVOID lpParameter)
 
     EnterCriticalSection(&CriticalSection);
 
-    IsCanceled = FALSE;
+    SetCanceledState(FALSE);
 
     IoSetTarget(GetIoTargetById(SettingsInfo.ReportFileType));
     OldColumnsCount = IoGetColumnsCount();
@@ -249,7 +249,7 @@ ReportStatusDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             break;
 
         case WM_CLOSE:
-            IsCanceled = TRUE;
+            SetCanceledState(TRUE);
             break;
 
         case WM_COMMAND:
@@ -257,7 +257,7 @@ ReportStatusDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             switch (LOWORD(wParam))
             {
                 case IDCANCEL:
-                    IsCanceled = TRUE;
+                    SetCanceledState(TRUE);
                     break;
             }
         }
