@@ -29,18 +29,37 @@ HICON hHddIcon = NULL;
 
 
 BOOL
-GetIniFilePath(OUT LPWSTR lpszPath, IN SIZE_T PathLen)
+IsPortable(VOID)
 {
-    INT len;
+    WCHAR szPath[MAX_PATH];
 
-    if (!GetModuleFileName(hInstance, lpszPath, PathLen))
+    if (!GetCurrentPath(szPath, MAX_PATH))
         return FALSE;
 
-    len = SafeStrLen(lpszPath);
+    StringCbCat(szPath, sizeof(szPath), L"\\portable");
 
-    lpszPath[len - 1] = L'i';
-    lpszPath[len - 2] = L'n';
-    lpszPath[len - 3] = L'i';
+    if (GetFileAttributes(szPath) == INVALID_FILE_ATTRIBUTES)
+        return FALSE;
+
+    return TRUE;
+}
+
+BOOL
+GetIniFilePath(OUT LPWSTR lpszPath, IN SIZE_T PathLen)
+{
+    WCHAR szPath[MAX_PATH];
+
+    if (!IsPortable())
+    {
+        if (!SHGetSpecialFolderPath(hMainWnd, szPath, CSIDL_APPDATA, FALSE))
+            return FALSE;
+    }
+    else
+    {
+        if (!GetCurrentPath(szPath, MAX_PATH))
+            return FALSE;
+    }
+    StringCchPrintf(lpszPath, PathLen, L"%s\\aspia.ini", szPath);
 
     return TRUE;
 }
