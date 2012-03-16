@@ -1,0 +1,22 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=help_ru.chm
+Contents file=help_ru.hhc
+Default topic=index.html
+Display compile progress=No
+Language=0x419 Русский (Россия)
+Title=Возможности программы
+
+
+[FILES]
+cmd.html
+contacts.html
+donate.html
+faq.html
+index.html
+license.html
+report.html
+settings.html
+
+[INFOTYPES]
+
