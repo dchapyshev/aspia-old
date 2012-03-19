@@ -4,8 +4,9 @@ Compiled file=help_ru.chm
 Contents file=help_ru.hhc
 Default topic=index.html
 Display compile progress=No
+Full-text search=Yes
 Language=0x419 Русский (Россия)
-Title=Возможности программы
+Title=Справка Aspia
 
 
 [FILES]
@@ -17,6 +18,8 @@ index.html
 license.html
 report.html
 settings.html
+hotkeys.html
+systemreq.html
 
 [INFOTYPES]
 
