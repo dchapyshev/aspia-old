@@ -958,6 +958,9 @@ HandleCommandLine(VOID)
 
     LoadDriver();
 
+    if (!InitInfoDll())
+        return FALSE;
+
     ReportSave(FALSE, FALSE, szPath, bNavMenu);
 
     return TRUE;
