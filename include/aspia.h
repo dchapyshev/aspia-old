@@ -51,13 +51,14 @@
 
 #define MAX_STR_LEN        256
 
-#define IO_TARGET_LISTVIEW 0
-#define IO_TARGET_HTML     1
-#define IO_TARGET_CSV      2
-#define IO_TARGET_TXT      3
-#define IO_TARGET_JSON     4
-#define IO_TARGET_INI      5
-#define IO_TARGET_RTF      6
+#define IO_TARGET_UNKNOWN  0
+#define IO_TARGET_LISTVIEW 1
+#define IO_TARGET_HTML     2
+#define IO_TARGET_CSV      3
+#define IO_TARGET_TXT      4
+#define IO_TARGET_JSON     5
+#define IO_TARGET_INI      6
+#define IO_TARGET_RTF      7
 
 #define Alloc(a) HeapAlloc(GetProcessHeap(), 0, a)
 #define Free(a) HeapFree(GetProcessHeap(), 0, a)
@@ -205,6 +206,7 @@ VOID HW_SPDInfo(VOID);
 /* devices.c */
 VOID HW_DevicesInfo(VOID);
 VOID HW_UnknownDevicesInfo(VOID);
+VOID HW_DevicesFree(VOID);
 
 /* software.c */
 VOID SOFTWARE_InstalledUpdInfo(VOID);

@@ -403,6 +403,95 @@ StartRemoveProcess(LPWSTR lpPath, BOOL Wait)
     return TRUE;
 }
 
+typedef struct
+{
+    WCHAR MyChar;
+    WCHAR *Encode;
+} CHARS_TO_CONVERT;
+
+CHARS_TO_CONVERT CharsToConvert[] =
+{
+    { L'<',  L"%3C" },
+    { L'>',  L"%3E" },
+    { L'.',  L"%22" },
+    { L'#',  L"%23" },
+    { L'{',  L"%7B" },
+    { L'}',  L"%7D" },
+    { L'|',  L"%7C" },
+    { L'\\', L"%5C" },
+    { L'^',  L"%5E" },
+    { L'~',  L"%7E" },
+    { L'[',  L"%5B" },
+    { L']',  L"%5D" },
+    { L'`',  L"%60" },
+    { L'+',  L"%20" },
+    { L'/',  L"%2F" },
+    { L'?',  L"%3F" },
+    { L'&',  L"%26" },
+    { L' ',  L"%20" },
+    { 0 }
+};
+
+WCHAR*
+UrlEncode(LPWSTR lpInStr)
+{
+    INT chars_count = wcslen(lpInStr);
+    INT i, j;
+    INT enc_count = 0;
+    WCHAR *pOut;
+    SIZE_T size;
+
+    for (i = 0; i < chars_count; i++)
+    {
+        j = 0;
+        do
+        {
+            if (CharsToConvert[j].MyChar == lpInStr[i])
+                enc_count++;
+        }
+        while (CharsToConvert[++j].Encode != NULL);
+    }
+
+    DebugTrace(L"lpInStr = %s\nchars_count = %d, enc_count = %d", lpInStr, chars_count, enc_count);
+
+    size = ((chars_count - enc_count) + (enc_count * 3)) * sizeof(WCHAR);
+    pOut = (WCHAR*)Alloc(size);
+    if (pOut)
+    {
+        ZeroMemory(pOut, size);
+
+        for (i = 0; i < chars_count; i++)
+        {
+            WCHAR temp[4] = {0};
+
+            enc_count = 0;
+
+            j = 0;
+            do
+            {
+                if (CharsToConvert[j].MyChar == lpInStr[i])
+                {
+                    enc_count++;
+                    break;
+                }
+            }
+            while (CharsToConvert[++j].Encode != NULL);
+
+            if (enc_count)
+            {
+                StringCchPrintf(temp, 4, L"%s", CharsToConvert[j].Encode);
+            }
+            else
+            {
+                StringCchPrintf(temp, 4, L"%c", lpInStr[i]);
+            }
+            StringCbCat(pOut, size, temp);
+        }
+    }
+
+    return pOut;
+}
+
 static VOID
 OnCommand(UINT Command)
 {
@@ -505,6 +594,28 @@ OnCommand(UINT Command)
                       hMainWnd,
                       SettingsDlgProc);
             break;
+
+        /* Drivers Search */
+        case ID_DRIVERS_SEARCH:
+        {
+            WCHAR *lpId, szURL[MAX_PATH], szSearchUrl[MAX_STR_LEN];
+
+            lpId = (WCHAR*)ListViewGetlParam(hListView, -1);
+
+            if (SafeStrLen(lpId) > 5)
+            {
+                LoadMUIStringF(hLangInst, IDS_DRIVER_SEARCH_URL,
+                               szSearchUrl, MAX_STR_LEN);
+
+                StringCbPrintf(szURL, sizeof(szURL),
+                               szSearchUrl,
+                               UrlEncode(lpId));
+
+                ShellExecute(NULL, L"open", szURL,
+                             NULL, NULL, SW_SHOWNORMAL);
+            }
+        }
+        break;
 
         /* Task Manager Cases */
 

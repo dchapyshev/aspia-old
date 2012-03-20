@@ -26,6 +26,7 @@
 #define IDR_HIDE_TRAY_POPUP      504
 #define IDR_TASKMGR              505
 #define IDR_INSTALLED_SOFTWARE   506
+#define IDR_DEVICES              507
 
 /* Menu Items */
 #define ID_ABOUT                 1000
@@ -60,6 +61,7 @@
 #define ID_APP_REMOVE            1035
 #define ID_APP_MODIFY            1036
 #define ID_APP_REMOVE_REG        1037
+#define ID_DRIVERS_SEARCH        1038
 
 /* Controls */
 #define IDC_SET_PATH_BTN        102
@@ -747,6 +749,7 @@
 #define IDS_REPORT_SAVE_ERROR2           774
 #define IDS_REPORT_SAVE_ERROR3           775
 #define IDS_SIGNED_FILE                  776
+#define IDS_DRIVER_SEARCH_URL            777
 
 #define IDS_CAT_SUMMARY           1000
 

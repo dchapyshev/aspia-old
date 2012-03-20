@@ -17,7 +17,7 @@ INT ListViewAddValueName(LPWSTR lpszName, INT IconIndex);
 INT ListViewAddImageListIcon(UINT IconID);
 VOID ListViewAddColumn(SIZE_T Index, INT Width, LPWSTR lpszText);
 
-static UINT IoTarget = 0;
+static UINT IoTarget = IO_TARGET_LISTVIEW;
 static INT ColumnsCount = 0;
 static HANDLE hReport = INVALID_HANDLE_VALUE;
 
