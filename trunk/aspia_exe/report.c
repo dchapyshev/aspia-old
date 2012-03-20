@@ -305,18 +305,29 @@ ReportCreateThread(IN BOOL IsSaveAll)
 UINT
 GetIoTargetByFileExt(LPWSTR lpPath)
 {
-    WCHAR szExt[MAX_PATH];
+    WCHAR szExt[MAX_PATH] = {0};
     INT i, j = 0, len = wcslen(lpPath);
+    INT dot_pos = -1;
 
-    if (len < 3) return IO_TARGET_HTML;
+    if (len < 5) return IO_TARGET_UNKNOWN;
 
-    for (i = len - 3; i < len; i++, j++)
+    for (i = len; i > 0; i--)
+    {
+        if (lpPath[i] == L'.')
+        {
+            dot_pos = i + 1;
+            break;
+        }
+    }
+
+    if (dot_pos <= 0) return IO_TARGET_UNKNOWN;
+
+    for (i = dot_pos; i < len; i++, j++)
     {
         szExt[j] = lpPath[i];
     }
-    szExt[3] = 0;
 
-    if (wcscmp(szExt, L"htm") == 0)
+    if (wcscmp(szExt, L"htm") == 0 || wcscmp(szExt, L"html") == 0)
         return IO_TARGET_HTML;
     //else if (wcscmp(szExt, L"jsn") == 0)
         //return IO_TARGET_JSON;
@@ -329,7 +340,7 @@ GetIoTargetByFileExt(LPWSTR lpPath)
     else if (wcscmp(szExt, L"rtf") == 0)
         return IO_TARGET_RTF;
 
-    return IO_TARGET_HTML;
+    return IO_TARGET_UNKNOWN;
 }
 
 UINT
@@ -358,6 +369,8 @@ VOID
 ReportSave(IN BOOL IsGUI, IN BOOL IsSaveAll,
            IN LPWSTR lpszPath, IN BOOL bWithMenu)
 {
+    UINT IoTarget;
+
     DebugTrace(L"ReportSave(%d, %d, %s, %d) called.",
                IsGUI, IsSaveAll, lpszPath, bWithMenu);
 
@@ -367,8 +380,14 @@ ReportSave(IN BOOL IsGUI, IN BOOL IsSaveAll,
 
     SettingsInfo.IsAddContent = bWithMenu;
 
-    SettingsInfo.ReportFileType =
-        GetIdByIoTarget(GetIoTargetByFileExt(lpszPath));
+    IoTarget = GetIoTargetByFileExt(lpszPath);
+    if (IoTarget == IO_TARGET_UNKNOWN)
+    {
+        DebugTrace(L"Unkown IO target = %d", IoTarget);
+        return;
+    }
+
+    SettingsInfo.ReportFileType = GetIdByIoTarget(IoTarget);
 
     IsGUIReport = IsGUI;
 
@@ -421,6 +440,12 @@ ReportSavePage(IN LPWSTR lpszPath,
     OldColumnsCount = IoGetColumnsCount();
 
     IoTarget = GetIoTargetByFileExt(lpszPath);
+    if (IoTarget == IO_TARGET_UNKNOWN)
+    {
+        DebugTrace(L"Unkown IO target = %d", IoTarget);
+        goto Cleanup;
+    }
+
     SettingsInfo.ReportFileType = GetIdByIoTarget(IoTarget);
     IoSetTarget(IoTarget);
 

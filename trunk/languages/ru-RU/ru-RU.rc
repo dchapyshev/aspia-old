@@ -66,6 +66,20 @@ BEGIN
     END
 END
 
+IDR_DEVICES MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "Поиск драйверов...", ID_DRIVERS_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM "Копировать строку\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Копировать значения", ID_COPY_VALUE
+        MENUITEM "Копировать название", ID_COPY_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Обновить\tF5", ID_RELOAD
+    END
+END
+
 IDR_COPY_ALL_POPUP MENU
 BEGIN
     POPUP "popup"
@@ -899,6 +913,7 @@ BEGIN
     IDS_REPORT_SAVE_ERROR2, "Ошибка при попытке сохранения отчета. Неверный путь к файлу или имя файла."
     IDS_REPORT_SAVE_ERROR3, "Ошибка при попытке сохранения отчета. Для получения подробных сведений запустите программу в отладочном режиме."
     IDS_SIGNED_FILE, "Подписан"
+    IDS_DRIVER_SEARCH_URL, "http://devid.drp.su/?l=ru&dev=%s"
 
     IDS_CAT_SUMMARY, "Общая информация"
 

@@ -72,6 +72,7 @@ OS_SysFilesKnownInfo
 OS_RegionalParamInfo
 HW_DevicesInfo
 HW_UnknownDevicesInfo
+HW_DevicesFree
 
 SetCanceledState
 GetCanceledState

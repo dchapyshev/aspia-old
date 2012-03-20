@@ -125,7 +125,7 @@ HW_DevicesInfo(VOID)
     SP_DEVINFO_DATA DeviceInfoData = {0};
     WCHAR DeviceID[MAX_STR_LEN], ClassName[MAX_STR_LEN],
           DeviceName[MAX_STR_LEN], KeyPath[MAX_PATH],
-          DriverName[MAX_STR_LEN];
+          DriverName[MAX_STR_LEN], *lpId;
     WCHAR szDeviceID[MAX_STR_LEN], szVendorID[MAX_STR_LEN];
     WCHAR szVendorName[MAX_STR_LEN], szDeviceName[MAX_STR_LEN];
     WCHAR szPCIIniPath[MAX_PATH], szUSBIniPath[MAX_PATH];
@@ -285,6 +285,17 @@ HW_DevicesInfo(VOID)
                 IoSetItemText(ItemIndex, i, L"-");
         }
 
+        if (IoGetTarget() == IO_TARGET_LISTVIEW)
+        {
+            lpId = (WCHAR*)Alloc((wcslen(DeviceID) + 1) * sizeof(WCHAR));
+            if (lpId)
+            {
+                wcscpy(lpId, DeviceID);
+
+                ListViewSetItemParam(DllParams.hListView, ItemIndex, (LPARAM)lpId);
+            }
+        }
+
         _wcslwr_s(DeviceID, MAX_STR_LEN);
 
         if (IsPCIDevice(DeviceID))
@@ -346,7 +357,7 @@ HW_UnknownDevicesInfo(VOID)
     WCHAR szVendorName[MAX_STR_LEN], szDeviceName[MAX_STR_LEN];
     WCHAR szPCIIniPath[MAX_PATH], szUSBIniPath[MAX_PATH];
     SP_DEVINFO_DATA DeviceInfoData = {0};
-    WCHAR DeviceID[MAX_STR_LEN];
+    WCHAR *lpId, DeviceID[MAX_STR_LEN];
     HDEVINFO hDevInfo;
     INT DeviceIndex = 0;
     INT ItemIndex;
@@ -402,6 +413,17 @@ HW_UnknownDevicesInfo(VOID)
             ItemIndex = IoAddItem(0, 0, DeviceID);
         }
 
+        if (IoGetTarget() == IO_TARGET_LISTVIEW)
+        {
+            lpId = (WCHAR*)Alloc((wcslen(DeviceID) + 1) * sizeof(WCHAR));
+            if (lpId)
+            {
+                wcscpy(lpId, DeviceID);
+
+                ListViewSetItemParam(DllParams.hListView, ItemIndex, (LPARAM)lpId);
+            }
+        }
+
         _wcslwr_s(DeviceID, MAX_STR_LEN);
 
         if (IsPCIDevice(DeviceID))
@@ -449,4 +471,18 @@ HW_UnknownDevicesInfo(VOID)
     }
 
     DebugEndReceiving();
+}
+
+VOID
+HW_DevicesFree(VOID)
+{
+    INT Count = ListView_GetItemCount(DllParams.hListView) - 1;
+    WCHAR *pId;
+
+    while (Count >= 0)
+    {
+        pId = ListViewGetlParam(DllParams.hListView, Count);
+        if (SafeStrLen(pId) > 5) Free(pId);
+        --Count;
+    }
 }
