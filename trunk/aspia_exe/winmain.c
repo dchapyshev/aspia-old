@@ -604,15 +604,22 @@ OnCommand(UINT Command)
 
             if (SafeStrLen(lpId) > 5)
             {
-                LoadMUIStringF(hLangInst, IDS_DRIVER_SEARCH_URL,
-                               szSearchUrl, MAX_STR_LEN);
+                WCHAR *ptr = UrlEncode(lpId);
 
-                StringCbPrintf(szURL, sizeof(szURL),
-                               szSearchUrl,
-                               UrlEncode(lpId));
+                if (ptr)
+                {
+                    LoadMUIStringF(hLangInst, IDS_DRIVER_SEARCH_URL,
+                                   szSearchUrl, MAX_STR_LEN);
 
-                ShellExecute(NULL, L"open", szURL,
-                             NULL, NULL, SW_SHOWNORMAL);
+                    StringCbPrintf(szURL, sizeof(szURL),
+                                   szSearchUrl,
+                                   ptr);
+
+                    ShellExecute(NULL, L"open", szURL,
+                                 NULL, NULL, SW_SHOWNORMAL);
+
+                    Free(ptr);
+                }
             }
         }
         break;
