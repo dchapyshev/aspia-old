@@ -914,6 +914,7 @@ BEGIN
     IDS_REPORT_SAVE_ERROR3, "Ошибка при попытке сохранения отчета. Для получения подробных сведений запустите программу в отладочном режиме."
     IDS_SIGNED_FILE, "Подписан"
     IDS_DRIVER_SEARCH_URL, "http://devid.drp.su/?l=ru&dev=%s"
+    IDS_CPUID_PHYSICAL_COUNT, "Физических ядер"
 
     IDS_CAT_SUMMARY, "Общая информация"
 

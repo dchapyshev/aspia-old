@@ -204,10 +204,84 @@ GetCPUVendor(LPWSTR lpszCpuVendor, SIZE_T Size)
 INT
 GetLogicalProcessorsCount(VOID)
 {
+    INT max, physical_count, logical_count = 1;
+    BOOL IsOldCpu = TRUE;
+    INT CPUInfo_A[4] = {-1};
+    INT CPUInfo_B[4] = {-1};
     INT CPUInfo[4] = {-1};
 
-    __cpuid(CPUInfo, 1);
-    return ((CPUInfo[1] >> 16) & 0xff);
+    __cpuid(CPUInfo, 0);
+    max = CPUInfo[0];
+
+    __cpuid(CPUInfo_A, 1);
+
+    if (CPUInfo_A[3] & (1 << 28))
+    {
+        if (max >= 0xB)
+        {
+            __cpuidex(CPUInfo_B, 0xB, 0);
+            if (CPUInfo_B[1])
+                IsOldCpu = FALSE;
+        }
+
+        if (IsOldCpu)
+        {
+            logical_count = (CPUInfo_A[1] >> 16) & 0x7F;
+        }
+        else
+        {
+            logical_count = CPUInfo_B[1];
+
+            __cpuidex(CPUInfo_B, 0xB, 1);
+            physical_count = CPUInfo_B[1];
+
+            logical_count *= physical_count;
+        }
+    }
+
+    return logical_count;
+}
+
+INT
+GetPhysicalProcessorsCount(VOID)
+{
+    BOOL IsOldCpu = TRUE;
+    INT CPUInfo_A[4] = {-1};
+    INT CPUInfo_B[4] = {-1};
+    INT CPUInfo[4] = {-1};
+    INT max, physical_count;
+
+    __cpuid(CPUInfo, 0);
+    max = CPUInfo[0];
+
+    __cpuid(CPUInfo_A, 1);
+
+    if (CPUInfo_A[3] & (1 << 28))
+    {
+        if (max >= 0xB)
+        {
+            __cpuidex(CPUInfo_B, 0xB, 0);
+            if (CPUInfo_B[1])
+                IsOldCpu = FALSE;
+        }
+
+        if (IsOldCpu)
+        {
+            __cpuidex(CPUInfo, 4, 0);
+            physical_count = (CPUInfo[0] >> 26) + 1;
+        }
+        else
+        {
+            __cpuidex(CPUInfo_B, 0xB, 1);
+            physical_count = CPUInfo_B[1];
+        }
+    }
+    else
+    {
+        physical_count = 1;
+    }
+
+    return physical_count;
 }
 
 VOID
@@ -255,7 +329,7 @@ CPUIDInfo(VOID)
     DWORD dwECX, dwEDX;
     INT CPUInfo[4] = {-1};
     CPU_IDS CpuIds = {0};
-    INT Index;
+    INT Index, Count;
 
     IoAddIcon(IDI_CPU);
     IoAddIcon(IDI_CHECKED);
@@ -295,12 +369,21 @@ CPUIDInfo(VOID)
                    CpuIds.Family, CpuIds.Family);
     IoSetItemText(Index, 1, szText);
 
+    /* Physical processors count */
+    Count = GetPhysicalProcessorsCount();
+    if (Count > 0)
+    {
+        Index = IoAddValueName(1, IDS_CPUID_PHYSICAL_COUNT, 0);
+        StringCbPrintf(szText, sizeof(szText), L"%d", Count);
+        IoSetItemText(Index, 1, szText);
+    }
+
     /* Logical processors count */
-    if (GetLogicalProcessorsCount() > 0)
+    Count = GetLogicalProcessorsCount();
+    if (Count > 0)
     {
         Index = IoAddValueName(1, IDS_CPUID_LOGICAL_COUNT, 0);
-        StringCbPrintf(szText, sizeof(szText), L"%d",
-                       GetLogicalProcessorsCount());
+        StringCbPrintf(szText, sizeof(szText), L"%d", Count);
         IoSetItemText(Index, 1, szText);
     }
 

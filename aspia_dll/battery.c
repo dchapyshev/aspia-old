@@ -169,7 +169,7 @@ BatteryEnumProc(LPWSTR lpszBattery)
     BATTERY_STATUS BatteryStatus;
     WCHAR szText[MAX_STR_LEN];
     HANDLE hHandle;
-    INT Index;
+    INT Index, Wear;
 
     hHandle = OpenBattery(lpszBattery);
     if (hHandle == INVALID_HANDLE_VALUE)
@@ -275,10 +275,13 @@ BatteryEnumProc(LPWSTR lpszBattery)
 
         /* Depreciation */
         Index = IoAddValueName(1, IDS_BAT_DEPRECIATION, 1);
+
+        Wear = 100 - (BatteryInfo.FullChargedCapacity * 100) /
+                   BatteryInfo.DesignedCapacity;
+
         StringCbPrintf(szText, sizeof(szText),
                        L"%ld%%",
-                       100 - (BatteryInfo.FullChargedCapacity * 100) /
-                       BatteryInfo.DesignedCapacity);
+                       (Wear >= 0) ? Wear : 0);
         IoSetItemText(Index, 1, szText);
     }
 
