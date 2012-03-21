@@ -89,7 +89,7 @@ HW_HDDATAInfo(VOID)
             StringCbPrintf(szText, sizeof(szText),
                            L"%S", DriveInfo.sModelNumber);
             ChopSpaces(szText, sizeof(szText));
-            IoAddHeaderString(0, szText, 0);
+            IoAddHeaderString(0, 0, szText);
 
             Index = IoAddValueName(1, IDS_HDD_ID, 0);
             IoSetItemText(Index, 1, szText);
@@ -395,7 +395,7 @@ ParseAndShowEDID(LPWSTR lpDeviceName, BYTE *Edid)
         StringCbPrintf(szText, sizeof(szText), L"%s (NoDB)", lpDeviceName);
     }
 
-    IoAddHeaderString(0, szText, 0);
+    IoAddHeaderString(0, 0, szText);
 
     /* Monitor ID */
     ItemIndex = IoAddValueName(1, IDS_DISPLAY_ID, 0);
@@ -587,9 +587,9 @@ HW_WinVideoInfo(VOID)
         ZeroMemory(&DispDevice2, sizeof(DISPLAY_DEVICE));
         DispDevice2.cb = sizeof(DISPLAY_DEVICE);
         if (!EnumDisplayDevices(DispDevice.DeviceName, 0, &DispDevice2, 0))
-            IoAddHeaderString(0, L"Mirror Monitor", 0);
+            IoAddHeaderString(0, 0, L"Mirror Monitor");
         else
-            IoAddHeaderString(0, DispDevice2.DeviceString, 0);
+            IoAddHeaderString(0, 0, DispDevice2.DeviceString);
 
         /* Adapter name */
         if (SafeStrLen(DispDevice.DeviceString) > 0)
@@ -699,7 +699,7 @@ HW_PowerInfo(VOID)
     IoAddIcon(IDI_POWERICO);
     IoAddIcon(IDI_BATTERY);
 
-    IoAddHeader(0, IDS_POWER_MANAGMT_PROP, 0);
+    IoAddHeader(0, 0, IDS_POWER_MANAGMT_PROP);
 
     if (GetSystemPowerStatus(&PowerStatus))
     {
@@ -788,7 +788,7 @@ HW_PowerInfo(VOID)
     }
     IoAddFooter();
 
-    IoAddHeader(0, IDS_BAT_BATTERYS, 1);
+    IoAddHeader(0, 1, IDS_BAT_BATTERYS);
     GetBatteryInformation();
 
     DebugEndReceiving();
@@ -833,7 +833,7 @@ EnumPrintersInfo(DWORD dwFlag)
         pDevMode = pPrinterInfo[dwIndex].pDevMode;
 
         /* Printer name */
-        IoAddHeaderString(0, pPrinterInfo[dwIndex].pPrinterName, 0);
+        IoAddHeaderString(0, 0, pPrinterInfo[dwIndex].pPrinterName);
 
         /* Default? */
         Index = IoAddValueName(1, IDS_PRINTER_DEFAULT, 0);
@@ -1521,7 +1521,7 @@ HW_OpenGlInfo(VOID)
     hRC = wglCreateContext(hDC);
     wglMakeCurrent(hDC, hRC);
 
-    IoAddHeader(0, IDS_OPENGL_PROP, 0);
+    IoAddHeader(0, 0, IDS_OPENGL_PROP);
 
     data = (char *)glGetString(GL_VENDOR);
     if (data)
@@ -1637,7 +1637,7 @@ HW_OpenGlInfo(VOID)
     }
 
     IoAddFooter();
-    IoAddHeaderString(0, L"Max Stack Depth", 0);
+    IoAddHeaderString(0, 0, L"Max Stack Depth");
 
     glGetIntegerv(GL_MAX_ATTRIB_STACK_DEPTH, &i_data);
     if (i_data)
@@ -1682,7 +1682,7 @@ HW_OpenGlInfo(VOID)
     }
 
     IoAddFooter();
-    IoAddHeaderString(0, L"Draw Range Elements", 0);
+    IoAddHeaderString(0, 0, L"Draw Range Elements");
 
     glGetIntegerv(GL_MAX_ELEMENTS_INDICES_WIN, &i_data);
     if (i_data)
@@ -1699,7 +1699,7 @@ HW_OpenGlInfo(VOID)
     }
 
     IoAddFooter();
-    IoAddHeader(0, IDS_OPENGL_EXTENSIONS, 0);
+    IoAddHeader(0, 0, IDS_OPENGL_EXTENSIONS);
 
     data = (char *)glGetString(GL_EXTENSIONS);
     if (data)

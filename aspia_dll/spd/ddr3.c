@@ -117,7 +117,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
                    Spd[0x85], Spd[0x86], Spd[0x87], Spd[0x88], Spd[0x89],
                    Spd[0x8A], Spd[0x8B], Spd[0x8C], Spd[0x8D], Spd[0x8E],
                    Spd[0x8F], Spd[0x90], Spd[0x91]);
-    IoAddHeaderString(0, szText, 0);
+    IoAddHeaderString(0, 0, szText);
 
     ItemIndex = IoAddValueName(1, IDS_MANUFACTURER, 0);
     GetDDR3Manufacturer(Spd, szText, sizeof(szText));
@@ -253,12 +253,12 @@ ShowSpdDataForDDR3(BYTE *Spd)
     if (szText[0]) szText[wcslen(szText) - 2] = 0;
     IoSetItemText(ItemIndex, 1, szText);
 
-    IoAddHeader(1, IDS_SPD_MEMORY_TIMINGS, 1);
+    IoAddHeader(1, 1, IDS_SPD_MEMORY_TIMINGS);
 
-    ItemIndex = IoAddHeaderString(1, L"Minimum SDRAM Cycle Time (tCKmin)", 1);
+    ItemIndex = IoAddItem(1, 1, L"Minimum SDRAM Cycle Time (tCKmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x0c] * 0.125);
 
-    ItemIndex = IoAddHeaderString(1, L"CAS# Latencies Supported", 1);
+    ItemIndex = IoAddItem(1, 1, L"CAS# Latencies Supported");
     szText[0] = 0;
     if (Spd[0x0e] & 0x01)
         StringCbCat(szText, sizeof(szText), L"4, ");
@@ -293,40 +293,40 @@ ShowSpdDataForDDR3(BYTE *Spd)
     szText[wcslen(szText) - 2] = 0;
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddHeaderString(1, L"Minimum CAS# Latency Time (tAAmin)", 1);
+    ItemIndex = IoAddItem(1, 1, L"Minimum CAS# Latency Time (tAAmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x10] * 0.125f);
 
-    ItemIndex = IoAddHeaderString(1, L"Minimum RAS# to CAS# Delay (tRCDmin)", 1);
+    ItemIndex = IoAddItem(1, 1, L"Minimum RAS# to CAS# Delay (tRCDmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x12] * 0.125f);
 
-    ItemIndex = IoAddHeaderString(1, L"Minimum Row Procharge Time (tRPmin)", 1);
+    ItemIndex = IoAddItem(1, 1, L"Minimum Row Procharge Time (tRPmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x14] * 0.125f);
 
-    ItemIndex = IoAddHeaderString(1, L"Minimum Active to Precharge Time (tRASmin)", 1);
+    ItemIndex = IoAddItem(1, 1, L"Minimum Active to Precharge Time (tRASmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns",
                   (FLOAT)(Spd[0x16] | (Spd[0x15] & 0x0F) << 8) * 0.125f);
 
-    ItemIndex = IoAddHeaderString(1, L"Minimum Write Recovery Time (tWRmin)", 1);
+    ItemIndex = IoAddItem(1, 1, L"Minimum Write Recovery Time (tWRmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x11] * 0.125f);
 
-    ItemIndex = IoAddHeaderString(1, L"Minimum Row Active to Row Active Delay (tRRDmin)", 1);
+    ItemIndex = IoAddItem(1, 1, L"Minimum Row Active to Row Active Delay (tRRDmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x13] * 0.125f);
 
-    ItemIndex = IoAddHeaderString(1, L"Minimum Active to Active/Refresh Time (tRCmin)", 1);
+    ItemIndex = IoAddItem(1, 1, L"Minimum Active to Active/Refresh Time (tRCmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns",
                   (Spd[0x17] | ((Spd[0x15] >> 4) << 8)) * 0.125f);
 
-    ItemIndex = IoAddHeaderString(1, L"Minimum Refresh Recovery Time Delay (tRFCmin)", 1);
+    ItemIndex = IoAddItem(1, 1, L"Minimum Refresh Recovery Time Delay (tRFCmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns",
                   (Spd[0x18] | (Spd[0x19] << 8)) * 0.125f);
 
-    ItemIndex = IoAddHeaderString(1, L"Minimum Internal Write to Read Command Delay (tWTRmin)", 1);
+    ItemIndex = IoAddItem(1, 1, L"Minimum Internal Write to Read Command Delay (tWTRmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x1A] * 0.125f);
 
-    ItemIndex = IoAddHeaderString(1, L"Minimum Internal Read to Precharge Command Delay (tRTPmin)", 1);
+    ItemIndex = IoAddItem(1, 1, L"Minimum Internal Read to Precharge Command Delay (tRTPmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x1B] * 0.125f);
 
-    ItemIndex = IoAddHeaderString(1, L"Minimum Four Activate Window Delay Time (tFAWmin)", 1);
+    ItemIndex = IoAddItem(1, 1, L"Minimum Four Activate Window Delay Time (tFAWmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns",
                   (Spd[0x1D] | ((Spd[0x1C] & 0x0F) << 8)) * 0.125f);
 

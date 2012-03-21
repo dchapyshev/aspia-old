@@ -62,7 +62,7 @@ OS_RegionalParamInfo(VOID)
     dwRet = GetTimeZoneInformation(&TimeZone);
     if (dwRet != TIME_ZONE_ID_INVALID)
     {
-        IoAddHeader(0, IDS_REGION_TIME_ZONE, 1);
+        IoAddHeader(0, 1, IDS_REGION_TIME_ZONE);
         Index = IoAddValueName(1, IDS_REGION_CUR_TIMEZONE, 1);
         if (dwRet == TIME_ZONE_ID_DAYLIGHT)
             IoSetItemText(Index, 1, TimeZone.DaylightName);
@@ -91,20 +91,20 @@ OS_RegionalParamInfo(VOID)
         IoAddFooter();
     }
 
-    IoAddHeader(0, IDS_REGION_LANGUAGE, 0);
+    IoAddHeader(0, 0, IDS_REGION_LANGUAGE);
     AddLocaleInfoString1(0, IDS_REGION_LANG_NAME_NATIVE, LOCALE_SNATIVELANGNAME);
     AddLocaleInfoString1(0, IDS_REGION_LANG_NAME_ENGLISH, LOCALE_SENGLANGUAGE);
     AddLocaleInfoString1(0, IDS_REGION_LANG_NAME_ISO639, LOCALE_SISO639LANGNAME);
     IoAddFooter();
 
-    IoAddHeader(0, IDS_REGION_COUNTRY, 0);
+    IoAddHeader(0, 0, IDS_REGION_COUNTRY);
     AddLocaleInfoString1(0, IDS_REGION_COUNTRY_NAME_NATIVE, LOCALE_SNATIVECTRYNAME);
     AddLocaleInfoString1(0, IDS_REGION_COUNTRY_NAME_ENGLISH, LOCALE_SENGCOUNTRY);
     AddLocaleInfoString1(0, IDS_REGION_COUNTRY_NAME_ISO3166, LOCALE_SISO3166CTRYNAME);
     AddLocaleInfoString1(0, IDS_REGION_COUNTRY_CODE, LOCALE_ICOUNTRY);
     IoAddFooter();
 
-    IoAddHeader(0, IDS_REGION_CURRENCY, 0);
+    IoAddHeader(0, 0, IDS_REGION_CURRENCY);
     AddLocaleInfoString1(0, IDS_REGION_CUR_NAME_NATIVE, LOCALE_SNATIVECURRNAME);
     AddLocaleInfoString1(0, IDS_REGION_CUR_NAME_ENGLISH, LOCALE_SENGCURRNAME);
     AddLocaleInfoString1(0, IDS_REGION_CUR_SYMBOL_NATIVE, LOCALE_SCURRENCY);
@@ -125,7 +125,7 @@ OS_RegionalParamInfo(VOID)
     }
     IoAddFooter();
 
-    IoAddHeader(0, IDS_REGION_FORMATTING, 2);
+    IoAddHeader(0, 2, IDS_REGION_FORMATTING);
     AddLocaleInfoString1(2, IDS_REGION_FRMT_TIME_FORMAT, LOCALE_STIMEFORMAT);
     AddLocaleInfoString1(2, IDS_REGION_FRMT_SDATE_FORMAT, LOCALE_SSHORTDATE);
     AddLocaleInfoString1(2, IDS_REGION_FRMT_LDATE_FORMAT, LOCALE_SLONGDATE);
@@ -160,7 +160,7 @@ OS_RegionalParamInfo(VOID)
     }
     IoAddFooter();
 
-    IoAddHeader(0, IDS_REGION_DAYS_OF_WEEK, 1);
+    IoAddHeader(0, 1, IDS_REGION_DAYS_OF_WEEK);
 
     AddLocaleInfoString2(1, IDS_REGION_DOW_MONDAY, LOCALE_SDAYNAME1, LOCALE_SABBREVDAYNAME1);
     AddLocaleInfoString2(1, IDS_REGION_DOW_TUESDAY, LOCALE_SDAYNAME2, LOCALE_SABBREVDAYNAME2);
@@ -172,7 +172,7 @@ OS_RegionalParamInfo(VOID)
 
     IoAddFooter();
 
-    IoAddHeader(0, IDS_REGION_MONTHS, 1);
+    IoAddHeader(0, 1, IDS_REGION_MONTHS);
 
     AddLocaleInfoString2(1, IDS_REGION_MNS_JANUARY, LOCALE_SMONTHNAME1, LOCALE_SABBREVMONTHNAME1);
     AddLocaleInfoString2(1, IDS_REGION_MNS_FEBRUARY, LOCALE_SMONTHNAME2, LOCALE_SABBREVMONTHNAME2);
@@ -189,7 +189,7 @@ OS_RegionalParamInfo(VOID)
 
     IoAddFooter();
 
-    IoAddHeader(0, IDS_REGION_MISCELLANEOUS, 0);
+    IoAddHeader(0, 0, IDS_REGION_MISCELLANEOUS);
     if (GetLocaleInfo(UserLcid, LOCALE_ICALENDARTYPE,
                       szText, MAX_STR_LEN))
     {

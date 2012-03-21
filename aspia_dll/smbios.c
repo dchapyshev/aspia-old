@@ -900,7 +900,7 @@ DMI_RAMInfo(VOID)
         {
             /* Device Locator */
             GetStringResourceByID(Buf[0x10], pBuf, szText);
-            IoAddHeaderString(0, szText, 0);
+            IoAddHeaderString(0, 0, szText);
 
             /* Size */
             Index = IoAddValueName(1, IDS_MEM_SIZE, 0);
@@ -1026,7 +1026,7 @@ DMI_CacheInfo(VOID)
         if (IsFound)
         {
             GetStringResourceByID(Buf[0x04], pBuf, szText);
-            IoAddHeaderString(0, szText, 0);
+            IoAddHeaderString(0, 0, szText);
 
             /* Cache type */
             Index = IoAddValueName(1, IDS_TYPE, 0);
@@ -1243,7 +1243,7 @@ DMI_CPUInfo(VOID)
             /* Version */
             GetStringResourceByID(Buf[0x10], pBuf, szText);
             ChopSpaces(szText, sizeof(szText));
-            IoAddHeaderString(0, szText, 0);
+            IoAddHeaderString(0, 0, szText);
 
             /* Manufacturer */
             Index = IoAddValueName(1, IDS_MANUFACTURER, 0);
@@ -1352,7 +1352,7 @@ DMI_BIOSInfo(VOID)
 
     if (GetNextDataByType(BIOS_INFO, &Buf, &Len, TRUE))
     {
-        IoAddHeader(0, IDS_CAT_HW_DMI_BIOS, 0);
+        IoAddHeader(0, 0, IDS_CAT_HW_DMI_BIOS);
 
         /* Manufacturer */
         Index = IoAddValueName(1, IDS_MANUFACTURER, 0);
@@ -1489,7 +1489,7 @@ DMI_SystemInfo(VOID)
 
     if (GetNextDataByType(SYSTEM_INFO, &Buf, &Len, TRUE))
     {
-        IoAddHeader(0, IDS_CAT_HW_DMI_SYSTEM, 0);
+        IoAddHeader(0, 0, IDS_CAT_HW_DMI_SYSTEM);
 
         /* Vendor */
         GetStringResourceByID(Buf[0x04], pBuf, szText);
@@ -1638,7 +1638,7 @@ DMI_EnclosureInfo(VOID)
 
         if (IsFound)
         {
-            IoAddHeader(0, IDS_ENCL_ID, 0);
+            IoAddHeader(0, 0, IDS_ENCL_ID);
 
             /* Vendor */
             GetStringResourceByID(Buf[0x04], pBuf, szText);
@@ -1733,7 +1733,7 @@ DMI_BoardInfo(VOID)
 
     if (GetNextDataByType(BOARD_INFO, &Buf, &Len, TRUE))
     {
-        IoAddHeader(0, IDS_CAT_HW_DMI_BOARD, 0);
+        IoAddHeader(0, 0, IDS_CAT_HW_DMI_BOARD);
 
         /* Vendor */
         Index = IoAddValueName(1, IDS_MANUFACTURER, 0);
@@ -1850,7 +1850,7 @@ DMI_SlotInfo(VOID)
         if (IsFound)
         {
             GetStringResourceByID(Buf[0x04], pBuf, szText);
-            IoAddHeaderString(0, szText, 0);
+            IoAddHeaderString(0, 0, szText);
 
             /* Type */
             Index = IoAddValueName(1, IDS_TYPE, 0);
@@ -1945,9 +1945,9 @@ DMI_PortsInfo(VOID)
 
             ChopSpaces(szText2, sizeof(szText2));
             if (szText2[0] != 0)
-                IoAddHeaderString(0, szText2, 0);
+                IoAddHeaderString(0, 0, szText2);
             else
-                IoAddHeaderString(0, szText, 0);
+                IoAddHeaderString(0, 0, szText);
 
             /* Internal designation */
             Index = IoAddValueName(1, IDS_PORT_INT_DESIGNATION, 0);
@@ -2032,7 +2032,7 @@ DMI_OnboardInfo(VOID)
         {
             GetStringResourceByID(Buf[5 + 2 * (Count - 1)], pBuf, szText);
             ChopSpaces(szText, sizeof(szText));
-            IoAddHeaderString(0, szText, 0);
+            IoAddHeaderString(0, 0, szText);
 
             Type = Buf[4 + 2 * (Count - 1)];
 
@@ -2106,7 +2106,7 @@ DMI_BatteryInfo(VOID)
 
         if (IsFound)
         {
-            if (Count == 1) IoAddHeader(0, IDS_BAT_BATTERYS, 0);
+            if (Count == 1) IoAddHeader(0, 0, IDS_BAT_BATTERYS);
 
             /* Location */
             Index = IoAddValueName(1, IDS_DMI_BATTERY_LOCATION, 0);
@@ -2278,7 +2278,7 @@ DMI_PointingInfo(VOID)
 
         if (IsFound)
         {
-            if (Count == 1) IoAddHeader(0, IDS_DMI_POINTING_DEVICE, 0);
+            if (Count == 1) IoAddHeader(0, 0, IDS_DMI_POINTING_DEVICE);
 
             PointingDevicesTypeToText(Buf[0x04], szText, sizeof(szText));
             if (szText[0] != 0)

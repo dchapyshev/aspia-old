@@ -335,7 +335,7 @@ CPUIDInfo(VOID)
     IoAddIcon(IDI_CHECKED);
     IoAddIcon(IDI_UNCHECKED);
 
-    IoAddHeader(0, IDS_PROP, 0);
+    IoAddHeader(0, 0, IDS_PROP);
 
     /* Get CPU Name */
     if (GetCPUName(szText, sizeof(szText)))
@@ -383,7 +383,7 @@ CPUIDInfo(VOID)
     }
 
     IoAddFooter();
-    IoAddHeader(0, IDS_CPUID_FEATURES, 0);
+    IoAddHeader(0, 0, IDS_CPUID_FEATURES);
 
     /* Get ECX and EDX features (EAX = 0x1) */
     __cpuid(CPUInfo, 0);

@@ -328,7 +328,7 @@ TextToRTFText(WCHAR *text)
 }
 
 INT
-IoAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex)
+IoAddHeaderString(INT Indent, INT IconIndex, LPWSTR lpszText)
 {
     WCHAR *ptr = NULL;
     SIZE_T size = 0;
@@ -401,12 +401,12 @@ IoAddHeaderString(INT Indent, LPWSTR lpszText, INT IconIndex)
 }
 
 VOID
-IoAddHeader(INT Indent, UINT StringID, INT IconIndex)
+IoAddHeader(INT Indent, INT IconIndex, UINT StringID)
 {
     WCHAR szText[MAX_STR_LEN];
 
     LoadMUIStringF(hLangInst, StringID, szText, MAX_STR_LEN);
-    IoAddHeaderString(Indent, szText, IconIndex);
+    IoAddHeaderString(Indent, IconIndex, szText);
 }
 
 INT
