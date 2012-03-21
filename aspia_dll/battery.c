@@ -205,12 +205,10 @@ BatteryEnumProc(LPWSTR lpszBattery)
                          sizeof(BatteryDate)))
     {
         Index = IoAddValueName(1, IDS_BAT_MANUFACTUREDATE, 1);
-        StringCbPrintf(szText, sizeof(szText),
-                       L"%d//%d//%d",
-                       BatteryDate.Year,
-                       BatteryDate.Month,
-                       BatteryDate.Day);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d//%d//%d",
+                      BatteryDate.Year,
+                      BatteryDate.Month,
+                      BatteryDate.Day);
     }
 
     /* ID */
@@ -258,9 +256,8 @@ BatteryEnumProc(LPWSTR lpszBattery)
     {
         /* Capacity */
         Index = IoAddValueName(1, IDS_BAT_CAPACITY, 1);
-        StringCbPrintf(szText, sizeof(szText),
-                       L"%ld mWh", BatteryInfo.DesignedCapacity);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%ld mWh",
+                      BatteryInfo.DesignedCapacity);
 
         /* Type */
         Index = IoAddValueName(1, IDS_BAT_TYPE, 1);
@@ -269,9 +266,8 @@ BatteryEnumProc(LPWSTR lpszBattery)
 
         /* Full charged capacity */
         Index = IoAddValueName(1, IDS_BAT_FULL_CAPACITY, 1);
-        StringCbPrintf(szText, sizeof(szText),
-                       L"%ld mWh", BatteryInfo.FullChargedCapacity);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%ld mWh",
+                      BatteryInfo.FullChargedCapacity);
 
         /* Depreciation */
         Index = IoAddValueName(1, IDS_BAT_DEPRECIATION, 1);
@@ -279,10 +275,7 @@ BatteryEnumProc(LPWSTR lpszBattery)
         Wear = 100 - (BatteryInfo.FullChargedCapacity * 100) /
                    BatteryInfo.DesignedCapacity;
 
-        StringCbPrintf(szText, sizeof(szText),
-                       L"%ld%%",
-                       (Wear >= 0) ? Wear : 0);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%ld%%", (Wear >= 0) ? Wear : 0);
     }
 
     if (QueryBatteryStatus(hHandle,
@@ -291,17 +284,13 @@ BatteryEnumProc(LPWSTR lpszBattery)
     {
         /* Current capacity */
         Index = IoAddValueName(1, IDS_BAT_CURRENT_CAPACITY, 1);
-        StringCbPrintf(szText, sizeof(szText),
-                       L"%ld mWh (%ld%%)",
-                       BatteryStatus.Capacity,
-                       (BatteryStatus.Capacity * 100) / BatteryInfo.FullChargedCapacity);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%ld mWh (%ld%%)",
+                      BatteryStatus.Capacity,
+                      (BatteryStatus.Capacity * 100) / BatteryInfo.FullChargedCapacity);
 
         /* Voltage */
         Index = IoAddValueName(1, IDS_BAT_VOLTAGE, 1);
-        StringCbPrintf(szText, sizeof(szText),
-                       L"%ld mV", BatteryStatus.Voltage);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%ld mV", BatteryStatus.Voltage);
 
         /* Status */
         Index = IoAddValueName(1, IDS_STATUS, 1);

@@ -49,24 +49,16 @@ EnumSmartDataProc(SMART_RESULT *Result)
     IoSetItemText(Index, 1, Result->szName);
 
     /* Threshold */
-    StringCbPrintf(szText, sizeof(szText),
-                   L"%d", Result->dwWarrantyThreshold);
-    IoSetItemText(Index, 2, szText);
+    IoSetItemText(Index, 2, L"%d", Result->dwWarrantyThreshold);
 
     /* Value */
-    StringCbPrintf(szText, sizeof(szText),
-                   L"%d", Result->bValue);
-    IoSetItemText(Index, 3, szText);
+    IoSetItemText(Index, 3, L"%d", Result->bValue);
 
     /* Worst */
-    StringCbPrintf(szText, sizeof(szText),
-                   L"%d", Result->dwWorstValue);
-    IoSetItemText(Index, 4, szText);
+    IoSetItemText(Index, 4, L"%d", Result->dwWorstValue);
 
     /* Data */
-    StringCbPrintf(szText, sizeof(szText),
-                   L"%d", Result->dwAttrValue);
-    IoSetItemText(Index, 5, szText);
+    IoSetItemText(Index, 5, L"%d", Result->dwAttrValue);
 
     return TRUE;
 }
@@ -113,9 +105,7 @@ HW_HDDATAInfo(VOID)
             Index = IoAddValueName(1, IDS_VERSION, 0);
             ChangeByteOrder((PCHAR)DriveInfo.sFirmwareRev,
                             sizeof(DriveInfo.sFirmwareRev));
-            StringCbPrintf(szText, sizeof(szText),
-                           L"%S", DriveInfo.sFirmwareRev);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%S", DriveInfo.sFirmwareRev);
 
             if (GetSmartDiskGeometry(bIndex, &DiskGeometry))
             {
@@ -123,38 +113,31 @@ HW_HDDATAInfo(VOID)
 
                 Index = IoAddValueName(1, IDS_HDD_PARAMS, 0);
                 LoadMUIString(IDS_HDD_PARAMS_FORMAT, szFormat, MAX_STR_LEN);
-                StringCbPrintf(szText, sizeof(szText), szFormat,
-                               (ULONG)DiskGeometry.Cylinders.QuadPart * (ULONG)DriveInfo.wNumHeads,
-                               (ULONG)DriveInfo.wNumHeads,
-                               (ULONG)DiskGeometry.SectorsPerTrack,
-                               (ULONG)DiskGeometry.BytesPerSector);
-                IoSetItemText(Index, 1, szText);
+                IoSetItemText(Index, 1, szFormat,
+                              (ULONG)DiskGeometry.Cylinders.QuadPart * (ULONG)DriveInfo.wNumHeads,
+                              (ULONG)DriveInfo.wNumHeads,
+                              (ULONG)DiskGeometry.SectorsPerTrack,
+                              (ULONG)DiskGeometry.BytesPerSector);
 
                 DiskSize = DiskGeometry.Cylinders.QuadPart * (ULONG)DiskGeometry.TracksPerCylinder *
                            (ULONG)DiskGeometry.SectorsPerTrack * (ULONG)DiskGeometry.BytesPerSector;
 
                 Index = IoAddValueName(1, IDS_HDD_SIZE, 0);
-                StringCbPrintf(szText, sizeof(szText),
-                               L"%I64d MB (%I64d GB)",
-                               DiskSize / (1024 * 1024),
-                               DiskSize / (1024 * 1024 * 1024));
-                IoSetItemText(Index, 1, szText);
+                IoSetItemText(Index, 1, L"%I64d MB (%I64d GB)",
+                              DiskSize / (1024 * 1024),
+                              DiskSize / (1024 * 1024 * 1024));
             }
 
             Index = IoAddValueName(1, IDS_HDD_BUFFER_SIZE, 0);
-            StringCbPrintf(szText, sizeof(szText), L"%d MB",
-                           (DriveInfo.wBufferSize * 512)/(1024 * 1024));
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%d MB",
+                          (DriveInfo.wBufferSize * 512)/(1024 * 1024));
 
             Index = IoAddValueName(1, IDS_HDD_MULTISECTORS, 0);
-            StringCbPrintf(szText, sizeof(szText), L"%d",
-                           DriveInfo.wMultSectorStuff);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%d",
+                          DriveInfo.wMultSectorStuff);
 
             Index = IoAddValueName(1, IDS_HDD_ECC_BYTES, 0);
-            StringCbPrintf(szText, sizeof(szText), L"%d",
-                           DriveInfo.wECCSize);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%d", DriveInfo.wECCSize);
 
             Index = IoAddValueName(1, IDS_TYPE, 0);
             if (DriveInfo.wGenConfig & 0x80)
@@ -427,18 +410,15 @@ ParseAndShowEDID(LPWSTR lpDeviceName, BYTE *Edid)
 
     /* Manufacture Date */
     ItemIndex = IoAddValueName(1, IDS_DISPLAY_MANUFACTURE_DATE, 0);
-    StringCbPrintf(szText, sizeof(szText), L"%d Week / %d Year",
-                   (INT)Edid[MANUFACTURE_WEEK],
-                   (INT)Edid[MANUFACTURE_YEAR] + 1990);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%d Week / %d Year",
+                  (INT)Edid[MANUFACTURE_WEEK],
+                  (INT)Edid[MANUFACTURE_YEAR] + 1990);
 
     /* Max/ Visible Display Size */
     ItemIndex = IoAddValueName(1, IDS_DISPLAY_MAX_VISIBLE_SIZE, 0);
-
-    StringCbPrintf(szText, sizeof(szText), L"%d cm / %d cm (%.1f\")",
-                   (INT)Edid[0x15], (INT)Edid[0x16],
-                   GetDiagonalSize(Edid[0x15], Edid[0x16]));
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%d cm / %d cm (%.1f\")",
+                  (INT)Edid[0x15], (INT)Edid[0x16],
+                  GetDiagonalSize(Edid[0x15], Edid[0x16]));
 
     Block = Edid + DETAILED_TIMING_DESCRIPTIONS_START;
     for (Index = 0; Index < NO_DETAILED_TIMING_DESCRIPTIONS; Index++,
@@ -448,10 +428,8 @@ ParseAndShowEDID(LPWSTR lpDeviceName, BYTE *Edid)
         {
             /* Max. Resolution */
             ItemIndex = IoAddValueName(1, IDS_DISPLAY_MAX_RESOLUTION, 0);
-            StringCbPrintf(szText, sizeof(szText),
-                           L"%dx%d",
-                           H_ACTIVE, V_ACTIVE);
-            IoSetItemText(ItemIndex, 1, szText);
+            IoSetItemText(ItemIndex, 1, L"%dx%d",
+                          H_ACTIVE, V_ACTIVE);
         }
     }
 
@@ -462,24 +440,19 @@ ParseAndShowEDID(LPWSTR lpDeviceName, BYTE *Edid)
         if (EdidBlockType(Block) == MONITOR_LIMITS)
         {
             ItemIndex = IoAddValueName(1, IDS_DISPLAY_HORIZ_FREQ, 0);
-            StringCbPrintf(szText, sizeof(szText),
-                           L"%u - %u kHz",
-                           Block[7], Block[8]);
-            IoSetItemText(ItemIndex, 1, szText);
+            IoSetItemText(ItemIndex, 1, L"%u - %u kHz",
+                          Block[7], Block[8]);
 
             ItemIndex = IoAddValueName(1, IDS_DISPLAY_VERT_FREQ, 0);
-            StringCbPrintf(szText, sizeof(szText),
-                           L"%u - %u Hz",
-                           Block[5], Block[6]);
-            IoSetItemText(ItemIndex, 1, szText);
+            IoSetItemText(ItemIndex, 1, L"%u - %u Hz",
+                          Block[5], Block[6]);
         }
     }
 
     /* Gamma */
     ItemIndex = IoAddValueName(1, IDS_DISPLAY_GAMMA, 0);
-    StringCbPrintf(szText, sizeof(szText), L"%.1f",
-                   (double)(((double)Edid[23] / 100.0) + 1.0));
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%.1f",
+                  (double)(((double)Edid[23] / 100.0) + 1.0));
 
     /* DPMS Mode Support */
     szText[0] = 0;
@@ -498,10 +471,9 @@ ParseAndShowEDID(LPWSTR lpDeviceName, BYTE *Edid)
 
     /* EDID Version */
     ItemIndex = IoAddValueName(1, IDS_DISPLAY_EDID_VERSION, 0);
-    StringCbPrintf(szText, sizeof(szText), L"%d.%d",
-                   (INT)Edid[EDID_STRUCT_VERSION],
-                   (INT)Edid[EDID_STRUCT_REVISION]);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%d.%d",
+                  (INT)Edid[EDID_STRUCT_VERSION],
+                  (INT)Edid[EDID_STRUCT_REVISION]);
 }
 
 VOID
@@ -659,9 +631,8 @@ HW_WinVideoInfo(VOID)
             dwValue > 0)
         {
             Index = IoAddValueName(1, IDS_MONITOR_MEM_SIZE, 0);
-            StringCbPrintf(szText, sizeof(szText), L"%ld MB",
-                           dwValue / (1024 * 1024));
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%ld MB",
+                          dwValue / (1024 * 1024));
         }
 
         /* retrieve current display mode */
@@ -671,13 +642,11 @@ HW_WinVideoInfo(VOID)
                                 ENUM_CURRENT_SETTINGS,
                                 &DevMode))
         {
-            StringCbPrintf(szText, sizeof(szText),
-                           L"%Iu x %Iu (%Iu bit) (%Iu Hz)",
-                           DevMode.dmPelsWidth,
-                           DevMode.dmPelsHeight,
-                           DevMode.dmBitsPerPel,
-                           DevMode.dmDisplayFrequency);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%Iu x %Iu (%Iu bit) (%Iu Hz)",
+                          DevMode.dmPelsWidth,
+                          DevMode.dmPelsHeight,
+                          DevMode.dmBitsPerPel,
+                          DevMode.dmDisplayFrequency);
         }
 
         hDevInfo = SetupDiGetClassDevs(&GUID_DEVCLASS_DISPLAY,
@@ -721,7 +690,7 @@ VOID
 HW_PowerInfo(VOID)
 {
     SYSTEM_POWER_STATUS PowerStatus = {0};
-    WCHAR szText[MAX_STR_LEN], szResult[MAX_STR_LEN];
+    WCHAR szText[MAX_STR_LEN];
     UINT StringID;
     INT Index;
 
@@ -780,9 +749,8 @@ HW_PowerInfo(VOID)
         }
         else
         {
-            StringCbPrintf(szResult, sizeof(szResult), L"%ld%% (%s)",
-                           PowerStatus.BatteryLifePercent, szText);
-            IoSetItemText(Index, 1, szResult);
+            IoSetItemText(Index, 1, L"%ld%% (%s)",
+                          PowerStatus.BatteryLifePercent, szText);
         }
 
         Index = IoAddValueName(1, IDS_FULL_BATTERY_LIFETIME, 0);
@@ -951,9 +919,8 @@ EnumPrintersInfo(DWORD dwFlag)
 
         /* Jobs count */
         Index = IoAddValueName(1, IDS_PRINTER_JOBS_COUNT, 0);
-        StringCbPrintf(szText, sizeof(szText), L"%d",
-                       pPrinterInfo[dwIndex].cJobs);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d",
+                      pPrinterInfo[dwIndex].cJobs);
 
         if (pDevMode)
         {
@@ -961,20 +928,18 @@ EnumPrintersInfo(DWORD dwFlag)
             if (pDevMode->dmPaperWidth && pDevMode->dmPaperLength)
             {
                 Index = IoAddValueName(1, IDS_PRINTER_PAPER_SIZE, 0);
-                StringCbPrintf(szText, sizeof(szText), L"%ld x %ld mm",
-                               pDevMode->dmPaperWidth / 10,
-                               pDevMode->dmPaperLength / 10);
-                IoSetItemText(Index, 1, szText);
+                IoSetItemText(Index, 1, L"%ld x %ld mm",
+                              pDevMode->dmPaperWidth / 10,
+                              pDevMode->dmPaperLength / 10);
             }
 
             /* Quality */
             if (pDevMode->dmPrintQuality)
             {
                 Index = IoAddValueName(1, IDS_PRINTER_QUALITY, 0);
-                StringCbPrintf(szText, sizeof(szText), L"%ld x %ld dpi",
-                               pDevMode->dmPrintQuality,
-                               pDevMode->dmPrintQuality);
-                IoSetItemText(Index, 1, szText);
+                IoSetItemText(Index, 1, L"%ld x %ld dpi",
+                              pDevMode->dmPrintQuality,
+                              pDevMode->dmPrintQuality);
             }
 
             /* Orientation */
@@ -1562,129 +1527,113 @@ HW_OpenGlInfo(VOID)
     if (data)
     {
         Index = IoAddValueName(1, IDS_OPENGL_VENDOR, 0);
-        StringCbPrintf(szText, sizeof(szText), L"%S", data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%S", data);
     }
 
     data = (char *)glGetString(GL_RENDERER);
     if (data)
     {
         Index = IoAddItem(1, 0, L"Renderer");
-        StringCbPrintf(szText, sizeof(szText), L"%S", data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%S", data);
     }
 
     data = (char *)glGetString(GL_VERSION);
     if (data)
     {
         Index = IoAddValueName(1, IDS_OPENGL_VERSION, 0);
-        StringCbPrintf(szText, sizeof(szText), L"%S", data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%S", data);
     }
 
     glGetIntegerv(GL_MAX_TEXTURE_UNITS, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Multitexture Texture Units");
-        StringCbPrintf(szText, sizeof(szText), L"%d", i_data, i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", i_data);
     }
 
     glGetIntegerv(GL_SUBPIXEL_BITS, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Sub-Pixel Precision");
-        StringCbPrintf(szText, sizeof(szText), L"%d-bit", i_data, i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d-bit", i_data);
     }
 
     glGetIntegerv(GL_MAX_VIEWPORT_DIMS, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Max Viewport Size");
-        StringCbPrintf(szText, sizeof(szText), L"%d x %d", i_data, i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d x %d", i_data, i_data);
     }
 
     glGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE_ARB, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Max Cube Map Texture Size");
-        StringCbPrintf(szText, sizeof(szText), L"%d x %d", i_data, i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d x %d", i_data, i_data);
     }
 
     glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE_ARB, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Max Rectangle Texture Size");
-        StringCbPrintf(szText, sizeof(szText), L"%d x %d", i_data, i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d x %d", i_data, i_data);
     }
 
     glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE_EXT, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Max 3D Texture Size");
-        StringCbPrintf(szText, sizeof(szText), L"%d x %d x %d",
-                       i_data, i_data, i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d x %d x %d",
+                      i_data, i_data, i_data);
     }
 
     glGetIntegerv(GL_MAX_CLIP_PLANES, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Max Clipping Planes");
-        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", i_data);
     }
 
     glGetIntegerv(GL_MAX_LIST_NESTING, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Max Display-List Nesting Level");
-        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", i_data);
     }
 
     glGetIntegerv(GL_MAX_DRAW_BUFFERS_ATI, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Max Draw Buffers");
-        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", i_data);
     }
 
     glGetIntegerv(GL_MAX_EVAL_ORDER, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Max Evaluator Order");
-        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", i_data);
     }
 
     glGetIntegerv(GL_MAX_LIGHTS, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Max Light Sources");
-        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", i_data);
     }
 
     glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Max Pixel Map Table Size");
-        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", i_data);
     }
 
     glGetIntegerv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Max Texture LOD Bias");
-        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", i_data);
     }
 
     IoAddFooter();
@@ -1694,48 +1643,42 @@ HW_OpenGlInfo(VOID)
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Attribute Stack");
-        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", i_data);
     }
 
     glGetIntegerv(GL_MAX_CLIENT_ATTRIB_STACK_DEPTH, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Client Attribute Stack");
-        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", i_data);
     }
 
     glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Modelview Matrix Stack");
-        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", i_data);
     }
 
     glGetIntegerv(GL_MAX_NAME_STACK_DEPTH, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Name Stack");
-        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", i_data);
     }
 
     glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Projection Matrix Stack");
-        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", i_data);
     }
 
     glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Texture Matrix Stack");
-        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", i_data);
     }
 
     IoAddFooter();
@@ -1745,16 +1688,14 @@ HW_OpenGlInfo(VOID)
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Max Index Count");
-        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", i_data);
     }
 
     glGetIntegerv(GL_MAX_ELEMENTS_VERTICES_WIN, &i_data);
     if (i_data)
     {
         Index = IoAddItem(1, 0, L"Max Vertex Count");
-        StringCbPrintf(szText, sizeof(szText), L"%d", i_data);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", i_data);
     }
 
     IoAddFooter();

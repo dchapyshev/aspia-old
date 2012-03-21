@@ -180,9 +180,8 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
                 {
                     ItemIndex = IoAddItem(1, 3, LpcVoltageDesc[i].szDesc);
 
-                    StringCbPrintf(szText, sizeof(szText), L"%.3f V",
+                    IoSetItemText(ItemIndex, 1, L"%.3f V",
                         fvalue + (fvalue - LpcVoltageDesc[i].vf) * LpcVoltageDesc[i].ri / LpcVoltageDesc[i].rf);
-                    IoSetItemText(ItemIndex, 1, szText);
                 }
             }
         }
@@ -202,8 +201,7 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
 
                 ItemIndex = IoAddItem(1, 3, L"VBat");
 
-                StringCbPrintf(szText, sizeof(szText), L"%.3f V", fvalue);
-                IoSetItemText(ItemIndex, 1, szText);
+                IoSetItemText(ItemIndex, 1, L"%.3f V", fvalue);
             }
         }
     }
@@ -227,8 +225,7 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
             {
                 ItemIndex = IoAddItem(1, 4, szLpcTempDesc[i]);
 
-                StringCbPrintf(szText, sizeof(szText), L"%.2f °C", temp);
-                IoSetItemText(ItemIndex, 1, szText);
+                IoSetItemText(ItemIndex, 1, L"%.2f °C", temp);
             }
         }
     }
@@ -277,8 +274,7 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
                 ItemIndex = IoAddItem(1, 5, szText);
             }
 
-            StringCbPrintf(szText, sizeof(szText), L"%.0f RPM", fvalue);
-            IoSetItemText(ItemIndex, 1, szText);
+            IoSetItemText(ItemIndex, 1, L"%.0f RPM", fvalue);
         }
 
         newBits = W836XX_SetBit(newBits, FAN_DIV_BIT2[i], (offset >> 2) & 1);

@@ -905,9 +905,7 @@ DMI_RAMInfo(VOID)
             /* Size */
             Index = IoAddValueName(1, IDS_MEM_SIZE, 0);
             CopyMemory(&wValue, pBuf + 0x0C, 2);
-            StringCbPrintf(szText, sizeof(szText),
-                           L"%d MB", (wValue & MEM_SIZE_MASK));
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%d MB", (wValue & MEM_SIZE_MASK));
 
             /* Type */
             if (Buf[0x12] != 0x02)
@@ -922,8 +920,7 @@ DMI_RAMInfo(VOID)
             if (wValue > 0)
             {
                 Index = IoAddValueName(1, IDS_MEM_SPEED, 0);
-                StringCbPrintf(szText, sizeof(szText), L"%d MHz", wValue);
-                IoSetItemText(Index, 1, szText);
+                IoSetItemText(Index, 1, L"%d MHz", wValue);
             }
 
             /* Form factor */
@@ -966,14 +963,12 @@ DMI_RAMInfo(VOID)
             /* Total width */
             Index = IoAddValueName(1, IDS_MEM_TOTALWIDTH, 0);
             CopyMemory(&wValue, pBuf + 0x08, 2);
-            StringCbPrintf(szText, sizeof(szText), L"%d bit", wValue);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%d bit", wValue);
 
             /* Data width */
             Index = IoAddValueName(1, IDS_MEM_DATAWIDTH, 0);
             CopyMemory(&wValue, pBuf + 0x0A, 2);
-            StringCbPrintf(szText, sizeof(szText), L"%d bit", wValue);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%d bit", wValue);
         }
     }
     while (IsFound);
@@ -1089,9 +1084,8 @@ DMI_CacheInfo(VOID)
             if ((wValue & CACHE_SIZE_MASK) > 0)
             {
                 Index = IoAddValueName(1, IDS_DMI_CACHE_MAX_SIZE, 0);
-                StringCbPrintf(szText, sizeof(szText), L"%d KB",
-                               wValue & CACHE_SIZE_MASK);
-                IoSetItemText(Index, 1, szText);
+                IoSetItemText(Index, 1, L"%d KB",
+                              wValue & CACHE_SIZE_MASK);
             }
 
             /* Max cache size */
@@ -1099,9 +1093,8 @@ DMI_CacheInfo(VOID)
             if ((wValue & CACHE_SIZE_MASK) > 0)
             {
                 Index = IoAddValueName(1, IDS_DMI_CACHE_CURRENT_SIZE, 0);
-                StringCbPrintf(szText, sizeof(szText), L"%d KB",
-                               wValue & CACHE_SIZE_MASK);
-                IoSetItemText(Index, 1, szText);
+                IoSetItemText(Index, 1, L"%d KB",
+                              wValue & CACHE_SIZE_MASK);
             }
 
             /* Supported SRAM type */
@@ -1289,20 +1282,17 @@ DMI_CPUInfo(VOID)
             /* External clock */
             Index = IoAddValueName(1, IDS_CPU_EXTCLOCK, 0);
             CopyMemory(&wValue, pBuf + 0x12, 2);
-            StringCbPrintf(szText, sizeof(szText), L"%d MHz", wValue);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%d MHz", wValue);
 
             /* Current speed */
             Index = IoAddValueName(1, IDS_CPU_CURRENTSPEED, 0);
             CopyMemory(&wValue, pBuf + 0x16, 2);
-            StringCbPrintf(szText, sizeof(szText), L"%d MHz", wValue);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%d MHz", wValue);
 
             /* Max speed */
             Index = IoAddValueName(1, IDS_CPU_MAXSPEED, 0);
             CopyMemory(&wValue, pBuf + 0x14, 2);
-            StringCbPrintf(szText, sizeof(szText), L"%d MHz", wValue);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%d MHz", wValue);
 
             if ((Buf[0x11] & USE_LEGACY_VOLTAGE_MASK))
             {
@@ -1332,9 +1322,7 @@ DMI_CPUInfo(VOID)
 
             /* Voltage */
             Index = IoAddValueName(1, IDS_CPU_VOLTAGE, 0);
-            StringCbPrintf(szText, sizeof(szText),
-                           L"%2.2f Volts", (FLOAT)Voltage);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%2.2f Volts", (FLOAT)Voltage);
         }
     }
     while (IsFound);
@@ -1545,21 +1533,18 @@ DMI_SystemInfo(VOID)
             Uuid.TimeMid != 0xFFFF)
         {
             Index = IoAddValueName(1, IDS_SYS_ID, 0);
-            StringCbPrintf(szText,
-                           sizeof(szText),
-                           L"%08x-%04x%04x-%02x%02x%02x%02x-%02x%02x%02x%02x",
-                           Uuid.TimeLow, 
-                           Uuid.TimeHiAndVersion, 
-                           Uuid.TimeMid, 
-                           Uuid.Node[0x01],
-                           Uuid.Node[0x00],
-                           Uuid.ClockLowSeq,
-                           Uuid.ClockSeqHiAndReserved,
-                           Uuid.Node[0x05],
-                           Uuid.Node[0x04],
-                           Uuid.Node[0x03],
-                           Uuid.Node[0x02]);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%08x-%04x%04x-%02x%02x%02x%02x-%02x%02x%02x%02x",
+                          Uuid.TimeLow, 
+                          Uuid.TimeHiAndVersion, 
+                          Uuid.TimeMid, 
+                          Uuid.Node[0x01],
+                          Uuid.Node[0x00],
+                          Uuid.ClockLowSeq,
+                          Uuid.ClockSeqHiAndReserved,
+                          Uuid.Node[0x05],
+                          Uuid.Node[0x04],
+                          Uuid.Node[0x03],
+                          Uuid.Node[0x02]);
         }
 
         /* Wakeup type */
@@ -2161,14 +2146,12 @@ DMI_BatteryInfo(VOID)
 
             /* Design Capacity */
             Index = IoAddValueName(1, IDS_DMI_BATTERY_DESIGN_CAPACITY, 0);
-            StringCbPrintf(szText, sizeof(szText), L"%u mWh",
-                           Buf[0x15] ? Buf[0x0A] * Buf[0x15] : Buf[0x0A]);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%u mWh",
+                          Buf[0x15] ? Buf[0x0A] * Buf[0x15] : Buf[0x0A]);
 
             /* Design Voltage */
             Index = IoAddValueName(1, IDS_DMI_BATTERY_DESIGN_VOLTAGE, 0);
-            StringCbPrintf(szText, sizeof(szText), L"%u mV", Buf[0x0C]);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%u mV", Buf[0x0C]);
 
             /* SBDS Version Number */
             Index = IoAddValueName(1, IDS_DMI_BATTERY_SBDS_VERSION, 0);
@@ -2177,21 +2160,18 @@ DMI_BatteryInfo(VOID)
 
             /* Max. Error in Battery Data */
             Index = IoAddValueName(1, IDS_DMI_BATTERY_MAXERROR_IN_DATA, 0);
-            StringCbPrintf(szText, sizeof(szText), L"%u", Buf[0x0F]);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%u", Buf[0x0F]);
 
             /* SBDS Serial Number */
             Index = IoAddValueName(1, IDS_DMI_BATTERY_SBDS_SERIAL, 0);
-            StringCbPrintf(szText, sizeof(szText), L"%u", Buf[0x10]);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%u", Buf[0x10]);
 
             /* SBDS Manufacture Date */
             Index = IoAddValueName(1, IDS_DMI_BATTERY_SBDS_MANUFDATE, 0);
-            StringCbPrintf(szText, sizeof(szText), L"%d/%d/%d",
-                           (Buf[0x12] & 0x10), /* Bits 4:0 */
-                           (Buf[0x12] & 0x100) >> 0x4, /* Bits 8:5 */
-                           ((Buf[0x12] & 0x8000) >> 0x8) + 1980 /* Bits 15:9 */);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%d/%d/%d",
+                          (Buf[0x12] & 0x10), /* Bits 4:0 */
+                          (Buf[0x12] & 0x100) >> 0x4, /* Bits 8:5 */
+                          ((Buf[0x12] & 0x8000) >> 0x8) + 1980 /* Bits 15:9 */);
 
             /* SBDS Device Chemistry */
             Index = IoAddValueName(1, IDS_DMI_BATTERY_SBDS_DEV_CHEMIST, 0);
@@ -2315,8 +2295,7 @@ DMI_PointingInfo(VOID)
             }
 
             Index = IoAddValueName(1, IDS_DMI_POINTING_BUTTONS, 0);
-            StringCbPrintf(szText, sizeof(szText), L"%d", Buf[0x06]);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%d", Buf[0x06]);
         }
     }
     while (IsFound);

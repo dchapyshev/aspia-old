@@ -493,25 +493,31 @@ IoAddValueName(INT Indent, UINT ValueID, INT IconIndex)
 }
 
 VOID
-IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
+IoSetItemText(INT Index, INT iSubItem, LPWSTR pText, ...)
 {
+    WCHAR szText[MAX_STR_LEN * 15] = {0};
     WCHAR *ptr = NULL;
+    va_list args;
     SIZE_T size;
+
+    va_start(args, pText);
+    StringCbVPrintf(szText, sizeof(szText), pText, args);
+    va_end(args);
 
     switch (IoTarget)
     {
         case IO_TARGET_LISTVIEW:
-            ListViewSetItemText(Index, iSubItem, pszText);
+            ListViewSetItemText(Index, iSubItem, szText);
             return;
 
         case IO_TARGET_HTML:
         {
-            size = SafeStrLen(pszText) * 15 * sizeof(WCHAR);
+            size = wcslen(szText) * 15 * sizeof(WCHAR);
             ptr = (WCHAR*)Alloc(size);
             if (!ptr) return;
 
             StringCbPrintf(ptr, size, L"<td>%s</td>",
-                           (SafeStrLen(pszText) == 0) ? L"&nbsp;" : pszText);
+                           (wcslen(szText) == 0) ? L"&nbsp;" : szText);
 
             AppendStringToFile(ptr);
 
@@ -525,40 +531,40 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
 
         case IO_TARGET_CSV:
         {
-            size = SafeStrLen(pszText) * 2 * sizeof(WCHAR);
+            size = wcslen(szText) * 2 * sizeof(WCHAR);
             ptr = (WCHAR*)Alloc(size);
             if (!ptr) return;
 
             StringCbPrintf(ptr, size,
-                           (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s;", pszText);
+                           (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s;", szText);
         }
         break;
 
         case IO_TARGET_TXT:
         {
-            size = SafeStrLen(pszText) * 2 * sizeof(WCHAR);
+            size = wcslen(szText) * 2 * sizeof(WCHAR);
             ptr = (WCHAR*)Alloc(size);
             if (!ptr) return;
 
             StringCbPrintf(ptr, size,
-                           (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s ", pszText);
+                           (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s ", szText);
         }
         break;
 
         case IO_TARGET_INI:
         {
-            size = SafeStrLen(pszText) * 2 * sizeof(WCHAR);
+            size = wcslen(szText) * 2 * sizeof(WCHAR);
             ptr = (WCHAR*)Alloc(size);
             if (!ptr) return;
 
             StringCbPrintf(ptr, size,
-                           (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s,", pszText);
+                           (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s,", szText);
         }
         break;
 
         case IO_TARGET_RTF:
         {
-            WCHAR *text = TextToRTFText(pszText);
+            WCHAR *text = TextToRTFText(szText);
 
             if (text != NULL)
             {
@@ -579,12 +585,12 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pszText)
 
         case IO_TARGET_JSON:
         {
-            size = SafeStrLen(pszText) * 2 * sizeof(WCHAR);
+            size = wcslen(szText) * 2 * sizeof(WCHAR);
             ptr = (WCHAR*)Alloc(size);
             if (!ptr) return;
 
             StringCbPrintf(ptr, size,
-                           (IoGetColumnsCount() == iSubItem + 1) ? L"\"%s\"," : L"\"%s\"", pszText);
+                           (IoGetColumnsCount() == iSubItem + 1) ? L"\"%s\"," : L"\"%s\"", szText);
         }
         break;
 

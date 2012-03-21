@@ -155,14 +155,8 @@ OS_UsersInfo(VOID)
                     TimeToString(pBuffer[i].usri3_last_logon, szText, sizeof(szText));
                 }
                 IoSetItemText(Index, 8, szText);
-
-                StringCbPrintf(szText, sizeof(szText),
-                               L"%ld", pBuffer[i].usri3_num_logons);
-                IoSetItemText(Index, 9, szText);
-
-                StringCbPrintf(szText, sizeof(szText),
-                               L"%ld", pBuffer[i].usri3_bad_pw_count);
-                IoSetItemText(Index, 10, szText);
+                IoSetItemText(Index, 9, L"%ld", pBuffer[i].usri3_num_logons);
+                IoSetItemText(Index, 10, L"%ld", pBuffer[i].usri3_bad_pw_count);
             }
             __except(EXCEPTION_EXECUTE_HANDLER)
             {
@@ -231,7 +225,6 @@ OS_UsersGroupsInfo(VOID)
 VOID
 OS_ActiveUsersInfo(VOID)
 {
-    WCHAR szText[MAX_STR_LEN];
     SIZE_T Count, Index;
     PWTS_SESSION_INFO Sessions;
     INT ItemIndex;
@@ -275,12 +268,11 @@ OS_ActiveUsersInfo(VOID)
         }
         else
         {
-            IoSetItemText(ItemIndex, 1, 0);
+            IoSetItemText(ItemIndex, 1, L"-");
         }
 
         /* User ID */
-        StringCbPrintf(szText, sizeof(szText), L"%ld", Sessions[Index].SessionId);
-        IoSetItemText(ItemIndex, 2, szText);
+        IoSetItemText(ItemIndex, 2, L"%ld", Sessions[Index].SessionId);
 
         if (WTSQuerySessionInformation(WTS_CURRENT_SERVER_HANDLE,
                                        Sessions[Index].SessionId,
@@ -328,7 +320,7 @@ OS_ActiveUsersInfo(VOID)
         }
         else
         {
-            IoSetItemText(ItemIndex, 3, 0);
+            IoSetItemText(ItemIndex, 3, L"-");
         }
 
         /* Client Name */
@@ -358,7 +350,7 @@ OS_ActiveUsersInfo(VOID)
         }
         else
         {
-            IoSetItemText(ItemIndex, 5, 0);
+            IoSetItemText(ItemIndex, 5, L"-");
         }
     }
 
@@ -369,8 +361,7 @@ VOID
 OS_FontsInfo(VOID)
 {
     HANDLE hFind = INVALID_HANDLE_VALUE;
-    WCHAR szText[MAX_STR_LEN], szPath[MAX_PATH],
-          szSize[MAX_STR_LEN];
+    WCHAR szText[MAX_STR_LEN], szPath[MAX_PATH];
     WIN32_FIND_DATA FindFileData;
     PGFRI GetFontResourceInfo;
     HINSTANCE hDLL;
@@ -412,10 +403,9 @@ OS_FontsInfo(VOID)
         Index = IoAddItem(0, 0, szText);
         IoSetItemText(Index, 1, FindFileData.cFileName);
 
-        StringCbPrintf(szSize, sizeof(szSize), L"%ld KB",
-                       ((FindFileData.nFileSizeHigh * ((DWORDLONG)MAXDWORD + 1)) +
-                       FindFileData.nFileSizeLow) / 1024);
-        IoSetItemText(Index, 2, szSize);
+        IoSetItemText(Index, 2, L"%ld KB",
+                      ((FindFileData.nFileSizeHigh * ((DWORDLONG)MAXDWORD + 1)) +
+                      FindFileData.nFileSizeLow) / 1024);
 
         RemoveFontResource(FindFileData.cFileName);
 
@@ -1229,28 +1219,22 @@ OS_DesktopInfo(VOID)
 
     /* Resolution */
     Index = IoAddValueName(1, IDS_DESK_RESOLUTION, 0);
-    StringCbPrintf(szText, sizeof(szText),
-                   L"%ld x %ld",
-                   DevMode.dmPelsWidth,
-                   DevMode.dmPelsHeight);
-    IoSetItemText(Index, 1, szText);
+    IoSetItemText(Index, 1, L"%ld x %ld",
+                  DevMode.dmPelsWidth,
+                  DevMode.dmPelsHeight);
 
     /* Color depth */
     Index = IoAddValueName(1, IDS_DESK_COLOR_DEPTH, 0);
-    StringCbPrintf(szText, sizeof(szText),
-                   L"%ld bit",
-                   DevMode.dmBitsPerPel);
-    IoSetItemText(Index, 1, szText);
+    IoSetItemText(Index, 1, L"%ld bit",
+                  DevMode.dmBitsPerPel);
 
     /* DPI */
     // TODO
 
     /* Refresh rate */
     Index = IoAddValueName(1, IDS_DESK_REFRESH_RATE, 0);
-    StringCbPrintf(szText, sizeof(szText),
-                   L"%ld Hz",
-                   DevMode.dmDisplayFrequency);
-    IoSetItemText(Index, 1, szText);
+    IoSetItemText(Index, 1, L"%ld Hz",
+                  DevMode.dmDisplayFrequency);
 
     /* Wallpaper */
     szText[0] = 0;
@@ -1296,8 +1280,7 @@ OS_DesktopInfo(VOID)
     if (SystemParametersInfo(SPI_GETMOUSESPEED, 0, &IntParam, 0))
     {
         Index = IoAddValueName(1, IDS_DESK_MOUSE_SPEED, 1);
-        StringCbPrintf(szText, sizeof(szText), L"%d", IntParam);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", IntParam);
     }
 
     /* Trails */
@@ -1311,8 +1294,7 @@ OS_DesktopInfo(VOID)
     if (SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &UintParam, 0))
     {
         Index = IoAddValueName(1, IDS_DESK_WHELL_SCROLL_LINES, 1);
-        StringCbPrintf(szText, sizeof(szText), L"%ld", UintParam);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%ld", UintParam);
     }
 
     IoAddFooter();
@@ -1324,16 +1306,14 @@ OS_DesktopInfo(VOID)
     if (SystemParametersInfo(SPI_GETKEYBOARDSPEED, 0, &DwordParam, 0))
     {
         Index = IoAddValueName(1, IDS_DESK_KEYBOARD_SPEED, 2);
-        StringCbPrintf(szText, sizeof(szText), L"%ld", DwordParam);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%ld", DwordParam);
     }
 
     /* Delay */
     if (SystemParametersInfo(SPI_GETKEYBOARDDELAY, 0, &IntParam, 0))
     {
         Index = IoAddValueName(1, IDS_DESK_KEYBOARD_DELAY, 2);
-        StringCbPrintf(szText, sizeof(szText), L"%ld", IntParam);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%ld", IntParam);
     }
 
     IoAddFooter();
@@ -1400,8 +1380,7 @@ OS_DesktopInfo(VOID)
     if (SystemParametersInfo(SPI_GETBORDER, 0, &IntParam, 0))
     {
         Index = IoAddValueName(1, IDS_DESK_WND_BORDER, 4);
-        StringCbPrintf(szText, sizeof(szText), L"%ld", IntParam);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%ld", IntParam);
     }
 
     /* Drag full */
@@ -1434,8 +1413,7 @@ OS_DesktopInfo(VOID)
     if (SystemParametersInfo(SPI_GETMENUSHOWDELAY, 0, &DwordParam, 0))
     {
         Index = IoAddValueName(1, IDS_DESK_MENU_SHOW_DELAY, 5);
-        StringCbPrintf(szText, sizeof(szText), L"%ld", DwordParam);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%ld", DwordParam);
     }
 
     /* Flat menu */
@@ -1460,8 +1438,7 @@ OS_DesktopInfo(VOID)
         if (BoolParam && SystemParametersInfo(SPI_GETSCREENSAVETIMEOUT, 0, &IntParam, 0))
         {
             Index = IoAddValueName(1, IDS_DESK_SS_TIMEOUT, 6);
-            StringCbPrintf(szText, sizeof(szText), L"%ld", IntParam);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%ld", IntParam);
         }
     }
 
@@ -1626,15 +1603,12 @@ OS_TaskSchedulerInfo(VOID)
             if (SUCCEEDED(hr))
             {
                 Index = IoAddValueName(1, IDS_TASK_LAST_RUN_TIME, 0);
-                StringCbPrintf(szText,
-                               sizeof(szText),
-                               L"%02u.%02u.%u %u:%02u",
-                               stTime.wDay,
-                               stTime.wMonth,
-                               stTime.wYear,
-                               stTime.wHour,
-                               stTime.wMinute);
-                IoSetItemText(Index, 1, szText);
+                IoSetItemText(Index, 1, L"%02u.%02u.%u %u:%02u",
+                              stTime.wDay,
+                              stTime.wMonth,
+                              stTime.wYear,
+                              stTime.wHour,
+                              stTime.wMinute);
             }
 
             /* Next run */
@@ -1642,15 +1616,12 @@ OS_TaskSchedulerInfo(VOID)
             if (SUCCEEDED(hr))
             {
                 Index = IoAddValueName(1, IDS_TASK_NEXT_RUN_TIME, 0);
-                StringCbPrintf(szText,
-                               sizeof(szText),
-                               L"%02u.%02u.%u %u:%02u",
-                               stTime.wDay,
-                               stTime.wMonth,
-                               stTime.wYear,
-                               stTime.wHour,
-                               stTime.wMinute);
-                IoSetItemText(Index, 1, szText);
+                IoSetItemText(Index, 1, L"%02u.%02u.%u %u:%02u",
+                              stTime.wDay,
+                              stTime.wMonth,
+                              stTime.wYear,
+                              stTime.wHour,
+                              stTime.wMinute);
             }
 
             /* Triggrs */
@@ -1836,9 +1807,9 @@ VOID
 FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
 {
     HANDLE hFind = INVALID_HANDLE_VALUE;
-    WCHAR szPath[MAX_PATH], szSize[MAX_STR_LEN],
-          szText[MAX_STR_LEN], szFilePath[MAX_PATH],
-          szYes[MAX_STR_LEN], szNo[MAX_STR_LEN];
+    WCHAR szPath[MAX_PATH], szText[MAX_STR_LEN],
+          szFilePath[MAX_PATH], szYes[MAX_STR_LEN],
+          szNo[MAX_STR_LEN];
     WIN32_FIND_DATA FindFileData;
     DWORD dwSize, dwHandle;
     LPVOID pData, pResult;
@@ -1867,10 +1838,9 @@ FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
         Index = IoAddItem(0, 0, FindFileData.cFileName);
 
         /* File size */
-        StringCbPrintf(szSize, sizeof(szSize), L"%ld KB",
-                       ((FindFileData.nFileSizeHigh * ((DWORDLONG)MAXDWORD + 1)) +
-                       FindFileData.nFileSizeLow) / 1024);
-        IoSetItemText(Index, 1, szSize);
+        IoSetItemText(Index, 1, L"%ld KB",
+                      ((FindFileData.nFileSizeHigh * ((DWORDLONG)MAXDWORD + 1)) +
+                      FindFileData.nFileSizeLow) / 1024);
 
         StringCbPrintf(szFilePath, sizeof(szFilePath),
                        L"%s\\%s", lpDir, FindFileData.cFileName);

@@ -211,14 +211,12 @@ ShowSpdDataForDDR(BYTE *Spd)
     IoSetItemText(ItemIndex, 1, szText);
 
     ItemIndex = IoAddValueName(1, IDS_SERIAL_NUMBER, 0);
-    StringCbPrintf(szText, sizeof(szText), L"%02X%02X%02X%02X",
-                   Spd[0x5F], Spd[0x60], Spd[0x61], Spd[0x62]);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%02X%02X%02X%02X",
+                  Spd[0x5F], Spd[0x60], Spd[0x61], Spd[0x62]);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_PRODUCT_DATE, 0);
-    StringCbPrintf(szText, sizeof(szText), L"Week %ld, Year 20%ld",
-                   Spd[0x5E], Spd[0x5D]);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"Week %ld, Year 20%ld",
+                  Spd[0x5E], Spd[0x5D]);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_MEMORY_TYPE, 0);
     GetSpdModuleType(Spd, szText, sizeof(szText));
@@ -227,18 +225,14 @@ ShowSpdDataForDDR(BYTE *Spd)
     Rank = (Spd[0x05] & 0x07);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_MODULE_SIZE, 0);
-    StringCbPrintf(szText, sizeof(szText),
-                   L"%ld MB (%ld ranks, %ld banks)",
-                   GetSpdDensity(Spd[0x1F]) * Rank,
-                   Rank, Spd[0x11]);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%ld MB (%ld ranks, %ld banks)",
+                  GetSpdDensity(Spd[0x1F]) * Rank,
+                  Rank, Spd[0x11]);
 
     CycleTime = GetSpdCycleTime(Spd[0x09]);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_FREQUENT, 0);
-    StringCbPrintf(szText, sizeof(szText),
-                   L"%.1f MHz", (double)(1000 / CycleTime));
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%.1f MHz", (double)(1000 / CycleTime));
 
     ItemIndex = IoAddValueName(1, IDS_SPD_VOLTAGE, 0);
     GetSpdVoltage(Spd, szText, sizeof(szText));
@@ -305,48 +299,38 @@ ShowSpdDataForDDR(BYTE *Spd)
     IoSetItemText(ItemIndex, 1, szText);
 
     ItemIndex = IoAddItem(1, 1, L"Minimum RAS to CAS delay (tRCD)");
-    StringCbPrintf(szText, sizeof(szText), L"%.2f ns", GetSpdTime(Spd[0x1D]));
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%.2f ns", GetSpdTime(Spd[0x1D]));
 
     ItemIndex = IoAddItem(1, 1, L"Minimum row precharge time (tRP)");
-    StringCbPrintf(szText, sizeof(szText), L"%.2f ns", GetSpdTime(Spd[0x1B]));
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%.2f ns", GetSpdTime(Spd[0x1B]));
 
     ItemIndex = IoAddItem(1, 1, L"Minimum active to precharge time (tRAS)");
-    StringCbPrintf(szText, sizeof(szText), L"%ld ns", Spd[0x1E]);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%ld ns", Spd[0x1E]);
 
     ItemIndex = IoAddItem(1, 1, L"Minimum row active–row active delay (tRRD)");
-    StringCbPrintf(szText, sizeof(szText), L"%0.2f ns", GetSpdTime(Spd[0x1C]));
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%0.2f ns", GetSpdTime(Spd[0x1C]));
 
     ItemIndex = IoAddItem(1, 1, L"Minimum refresh to active/refresh time (tRFC)");
-    StringCbPrintf(szText, sizeof(szText), L"%0.2f ns", Spd[0x2a]);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%0.2f ns", Spd[0x2a]);
 
     ItemIndex = IoAddItem(1, 1, L"Minimum active to active/refresh time (tRC)");
-    StringCbPrintf(szText, sizeof(szText), L"%0.2f ns", Spd[0x29]);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%0.2f ns", Spd[0x29]);
 
     ItemIndex = IoAddItem(1, 1, L"Address/command setup time from clock (tIS)");
-    StringCbPrintf(szText, sizeof(szText), L"%0.2f ns",
-                   ((double)(Spd[0x20] >> 4) / 10.00) + ((double)(Spd[0x20] & 0x0F) / 100.00));
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%0.2f ns",
+                  ((double)(Spd[0x20] >> 4) / 10.00) + ((double)(Spd[0x20] & 0x0F) / 100.00));
 
     ItemIndex = IoAddItem(1, 1, L"Address/command hold time after clock (tIH)");
-    StringCbPrintf(szText, sizeof(szText), L"%0.2f ns",
-                   ((double)(Spd[0x21] >> 4) / 10.00) + ((double)(Spd[0x21] & 0x0F) / 100.00));
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%0.2f ns",
+                  ((double)(Spd[0x21] >> 4) / 10.00) + ((double)(Spd[0x21] & 0x0F) / 100.00));
 
     ItemIndex = IoAddItem(1, 1, L"Data input setup time from strobe (tDS)");
-    StringCbPrintf(szText, sizeof(szText), L"%0.2f ns",
-                   ((double)(Spd[0x22] >> 4) / 10.00) + ((double)(Spd[0x22] & 0x0F) / 100.00));
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%0.2f ns",
+                  ((double)(Spd[0x22] >> 4) / 10.00) + ((double)(Spd[0x22] & 0x0F) / 100.00));
 
     ItemIndex = IoAddItem(1, 1, L"Data input hold time after strobe (tDH)");
-    StringCbPrintf(szText, sizeof(szText), L"%0.2f ns",
-                   ((double)(Spd[0x23] >> 4) / 10.00) + ((double)(Spd[0x23] & 0x0F) / 100.00));
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%0.2f ns",
+                  ((double)(Spd[0x23] >> 4) / 10.00) + ((double)(Spd[0x23] & 0x0F) / 100.00));
 
     IoAddFooter();
 }
