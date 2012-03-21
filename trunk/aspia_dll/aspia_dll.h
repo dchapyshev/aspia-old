@@ -25,6 +25,7 @@ extern PIO_ADD_HEADER_STRING IoAddHeaderString;
 BOOL GetAdapterFriendlyName(LPWSTR lpszKey, LPWSTR lpszName, INT NameLen);
 VOID ShowInstallDate(VOID);
 INT GetLogicalProcessorsCount(VOID);
+INT GetPhysicalProcessorsCount(VOID);
 VOID ShowIEShortInfo(INT IconIndex);
 BOOL GetCPUName(LPWSTR lpszCpuName, SIZE_T Size);
 VOID GetCPUVendor(LPWSTR lpszCpuVendor, SIZE_T Size);

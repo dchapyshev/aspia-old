@@ -452,8 +452,6 @@ UrlEncode(LPWSTR lpInStr)
         while (CharsToConvert[++j].Encode != NULL);
     }
 
-    DebugTrace(L"lpInStr = %s\nchars_count = %d, enc_count = %d", lpInStr, chars_count, enc_count);
-
     size = ((chars_count - enc_count) + (enc_count * 3)) * sizeof(WCHAR);
     pOut = (WCHAR*)Alloc(size);
     if (pOut)

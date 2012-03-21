@@ -913,6 +913,7 @@ BEGIN
     IDS_REPORT_SAVE_ERROR3, "Error while trying to save the report. For more information, run the program in debug mode."
     IDS_SIGNED_FILE, "Signed"
     IDS_DRIVER_SEARCH_URL, "http://devid.drp.su/?l=en&dev=%s"
+    IDS_CPUID_PHYSICAL_COUNT, "Physical Cores"
 
     IDS_CAT_SUMMARY, "Summary Information"
 
