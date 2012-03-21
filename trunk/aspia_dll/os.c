@@ -1637,9 +1637,7 @@ OS_TaskSchedulerInfo(VOID)
 
                     LoadMUIString(IDS_TASK_TRIGGER_FORMAT,
                                   szFormat, MAX_STR_LEN);
-                    StringCbPrintf(szText, sizeof(szText),
-                                   szFormat, wTriggerIndex + 1);
-                    Index = IoAddItem(1, 0, szText);
+                    Index = IoAddItem(1, 0, szFormat, wTriggerIndex + 1);
                     IoSetItemText(Index, 1, lpszText);
                     CoTaskMemFree(lpszText);
                 }

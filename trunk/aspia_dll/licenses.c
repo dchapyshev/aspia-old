@@ -106,8 +106,7 @@ GetVMWareServerLicenses(VOID)
 VOID
 Get3PlanesoftKeys(VOID)
 {
-    WCHAR szKeyName[MAX_PATH], szValue[MAX_PATH],
-          szProductName[MAX_PATH];
+    WCHAR szKeyName[MAX_PATH], szValue[MAX_PATH];
     DWORD dwSize = MAX_PATH, dwType;
     INT Index, KeyIndex = 0;
     HKEY hKey, hSubKey;
@@ -137,8 +136,7 @@ Get3PlanesoftKeys(VOID)
                             (LPBYTE)szValue,
                             &dwSize) == ERROR_SUCCESS)
         {
-            StringCbPrintf(szProductName, sizeof(szProductName), L"%s (Name)", szKeyName);
-            Index = IoAddItem(0, 0, szProductName);
+            Index = IoAddItem(0, 0, L"%s (Name)", szKeyName);
             IoSetItemText(Index, 1, szValue);
         }
 
@@ -152,8 +150,7 @@ Get3PlanesoftKeys(VOID)
                             (LPBYTE)szValue,
                             &dwSize) == ERROR_SUCCESS)
         {
-            StringCbPrintf(szProductName, sizeof(szProductName), L"%s (Key)", szKeyName);
-            Index = IoAddItem(0, 0, szProductName);
+            Index = IoAddItem(0, 0, L"%s (Key)", szKeyName);
             IoSetItemText(Index, 1, szValue);
         }
 

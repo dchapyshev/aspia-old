@@ -22,12 +22,9 @@ HW_CPUInfo(VOID)
 BOOL CALLBACK
 EnumSmartDataProc(SMART_RESULT *Result)
 {
-    WCHAR szText[MAX_STR_LEN];
     INT Index;
 
     /* Attribute ID */
-    StringCbPrintf(szText, sizeof(szText),
-                   L"%02X", Result->dwAttrID);
     if (Result->IsCritical)
     {
         INT IconIndex;
@@ -38,11 +35,11 @@ EnumSmartDataProc(SMART_RESULT *Result)
         else
             IconIndex = 1;
 
-        Index = IoAddItem(0, IconIndex, szText);
+        Index = IoAddItem(0, IconIndex, L"%02X", Result->dwAttrID);
     }
     else
     {
-        Index = IoAddItem(0, 1, szText);
+        Index = IoAddItem(0, 1, L"%02X", Result->dwAttrID);
     }
 
     /* Name */

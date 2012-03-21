@@ -1165,7 +1165,6 @@ VOID
 NETWORK_OpenFilesInfo(VOID)
 {
     DWORD dwError = 0, dwTotal = 0, dwResume = 0, dwCount;
-    WCHAR szText[MAX_STR_LEN];
     NET_API_STATUS Status;
     PFILE_INFO_3 pInfo, pPtr;
     INT Index;
@@ -1188,9 +1187,7 @@ NETWORK_OpenFilesInfo(VOID)
             for (dwCount = 1; dwCount <= dwError; ++dwCount)
             {
                 /* ID */
-                StringCbPrintf(szText, sizeof(szText),
-                               L"%ld", pPtr->fi3_id);
-                Index = IoAddItem(0, 0, szText);
+                Index = IoAddItem(0, 0, L"%ld", pPtr->fi3_id);
 
                 /* User Name */
                 IoSetItemText(Index, 1, pPtr->fi3_username);

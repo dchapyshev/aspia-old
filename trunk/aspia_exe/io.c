@@ -328,15 +328,21 @@ TextToRTFText(WCHAR *text)
 }
 
 INT
-IoAddHeaderString(INT Indent, INT IconIndex, LPWSTR lpszText)
+IoAddHeaderString(INT Indent, INT IconIndex, LPWSTR pText, ...)
 {
+    WCHAR szText[MAX_STR_LEN * 5] = {0};
     WCHAR *ptr = NULL;
     SIZE_T size = 0;
+    va_list args;
+
+    va_start(args, pText);
+    StringCbVPrintf(szText, sizeof(szText), pText, args);
+    va_end(args);
 
     if (IoTarget != IO_TARGET_LISTVIEW &&
         IoTarget != IO_TARGET_RTF)
     {
-        size = SafeStrLen(lpszText) * 15 * sizeof(WCHAR);
+        size = wcslen(szText) * 15 * sizeof(WCHAR);
         ptr = (WCHAR*)Alloc(size);
         if (!ptr) return -1;
     }
@@ -344,31 +350,31 @@ IoAddHeaderString(INT Indent, INT IconIndex, LPWSTR lpszText)
     switch (IoTarget)
     {
         case IO_TARGET_LISTVIEW:
-            return ListViewAddHeaderString(Indent, lpszText, IconIndex);
+            return ListViewAddHeaderString(Indent, szText, IconIndex);
 
         case IO_TARGET_HTML:
         {
             StringCbPrintf(ptr, size,
                            L"\t<tr><td class='h'>%s</td><td>&nbsp;</td></tr>\r\n",
-                           lpszText);
+                           szText);
         }
         break;
 
         case IO_TARGET_CSV:
-            StringCbPrintf(ptr, size, L"\r\n\r\n%s", lpszText);
+            StringCbPrintf(ptr, size, L"\r\n\r\n%s", szText);
             break;
 
         case IO_TARGET_TXT:
-            StringCbPrintf(ptr, size, L"\r\n\r\n%s", lpszText);
+            StringCbPrintf(ptr, size, L"\r\n\r\n%s", szText);
             break;
 
         case IO_TARGET_INI:
-            StringCbPrintf(ptr, size, L"\r\n\r\n%s=", lpszText);
+            StringCbPrintf(ptr, size, L"\r\n\r\n%s=", szText);
             break;
 
         case IO_TARGET_RTF:
         {
-            WCHAR *text = TextToRTFText(lpszText);
+            WCHAR *text = TextToRTFText(szText);
 
             if (text != NULL)
             {
@@ -410,15 +416,20 @@ IoAddHeader(INT Indent, INT IconIndex, UINT StringID)
 }
 
 INT
-IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
+IoAddItem(INT Indent, INT IconIndex, LPWSTR pText, ...)
 {
     SIZE_T size = 0;
-    WCHAR *ptr = NULL;
+    WCHAR szText[MAX_STR_LEN * 15] = {0}, *ptr = NULL;
+    va_list args;
+
+    va_start(args, pText);
+    StringCbVPrintf(szText, sizeof(szText), pText, args);
+    va_end(args);
 
     if (IoTarget != IO_TARGET_LISTVIEW &&
         IoTarget != IO_TARGET_RTF)
     {
-        size = SafeStrLen(lpText) * 15 * sizeof(WCHAR);
+        size = wcslen(szText) * 15 * sizeof(WCHAR);
         ptr = (WCHAR*)Alloc(size);
         if (!ptr) return -1;
     }
@@ -426,31 +437,31 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
     switch (IoTarget)
     {
         case IO_TARGET_LISTVIEW:
-            return ListViewAddItem(Indent, IconIndex, lpText);
+            return ListViewAddItem(Indent, IconIndex, szText);
 
         case IO_TARGET_HTML:
         {
             StringCbPrintf(ptr, size,
                            L"\r\n\t<tr><td>%s</td>",
-                           lpText);
+                           szText);
         }
         break;
 
         case IO_TARGET_CSV:
-            StringCbPrintf(ptr, size, L"\r\n%s;", lpText);
+            StringCbPrintf(ptr, size, L"\r\n%s;", szText);
             break;
 
         case IO_TARGET_TXT:
-            StringCbPrintf(ptr, size, L"\r\n%s ", lpText);
+            StringCbPrintf(ptr, size, L"\r\n%s ", szText);
             break;
 
         case IO_TARGET_INI:
-            StringCbPrintf(ptr, size, L"\r\n%s=", lpText);
+            StringCbPrintf(ptr, size, L"\r\n%s=", szText);
             break;
 
         case IO_TARGET_RTF:
         {
-            WCHAR *text = TextToRTFText(lpText);
+            WCHAR *text = TextToRTFText(szText);
 
             if (text != NULL)
             {
@@ -469,7 +480,7 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR lpText)
         }
 
         case IO_TARGET_JSON:
-            StringCbPrintf(ptr, size, L"\n    \"%s\": ", lpText);
+            StringCbPrintf(ptr, size, L"\n    \"%s\": ", szText);
             break;
 
         default:

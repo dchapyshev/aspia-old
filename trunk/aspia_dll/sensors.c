@@ -169,8 +169,7 @@ GetIntelCpuInfo(VOID)
 
             LoadMUIString(IDS_SENSOR_CORE_TEMPERATURE,
                           szFormat, MAX_STR_LEN);
-            StringCbPrintf(szText, sizeof(szText), szFormat, bIndex + 1);
-            Index = IoAddItem(1, 4, szText);
+            Index = IoAddItem(1, 4, szFormat, bIndex + 1);
 
             Tjmax = GetTjmaxTemperature(bIndex);
 
@@ -243,8 +242,7 @@ GetAmd0FCpuInfo(VOID)
             }
 
             LoadMUIString(IDS_SENSOR_CORE_TEMPERATURE, szFormat, MAX_STR_LEN);
-            StringCbPrintf(szText, sizeof(szText), szFormat, Count + 1);
-            Index = IoAddItem(1, 1, szText);
+            Index = IoAddItem(1, 1, szFormat, Count + 1);
 
             GetProcessorIDs(&CpuIds);
 

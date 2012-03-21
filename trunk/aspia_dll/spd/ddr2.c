@@ -43,12 +43,11 @@ GetSpdExtensionOfByte42(BYTE Byte)
 VOID
 ShowMemoryTimings(BYTE *Spd, double Latency, int cl)
 {
-    WCHAR szText[MAX_STR_LEN], szFormat[MAX_STR_LEN];
+    WCHAR szFormat[MAX_STR_LEN];
     INT ItemIndex;
 
     LoadMUIString(IDS_SPD_TIMING_FORMAT, szFormat, MAX_STR_LEN);
-    StringCbPrintf(szText, sizeof(szText), szFormat, 1000.00 / Latency);
-    ItemIndex = IoAddItem(1, 1, szText);
+    ItemIndex = IoAddItem(1, 1, szFormat, 1000.00 / Latency);
     IoSetItemText(ItemIndex, 1, L"%i-%i-%i-%i (CL-RCD-RP-RAS)/%i-%i-%i-%i-%i-%i (RC-RFC-RRD-WR-WTR-RTP)",
                   cl,
                   (int)Round(GetSpdTime(Spd[0x1D])/Latency, 0),
