@@ -383,9 +383,9 @@ HW_SensorInfo(VOID)
 
         if (ReadSmartInfo(hHandle, bIndex, &DriveInfo))
         {
-            DWORD dwTemp = GetSmartTemperature(hHandle, bIndex);
+            INT Temp = GetSmartTemperature(hHandle, bIndex);
 
-            if (dwTemp == 0) continue;
+            if (Temp <= 0 || Temp > 100) continue;
 
             ChangeByteOrder((PCHAR)DriveInfo.sModelNumber,
                             sizeof(DriveInfo.sModelNumber));
@@ -394,12 +394,8 @@ HW_SensorInfo(VOID)
             ChopSpaces(szText, sizeof(szText));
             IoAddHeaderString(0, 0, szText);
 
-            StringCbPrintf(szText, sizeof(szText),
-                           L"%ld °C",
-                           dwTemp);
-
             Index = IoAddValueName(1, IDS_SENSOR_TEMPERATURE, 4);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, L"%d °C", Temp);
 
             IoAddFooter();
         }

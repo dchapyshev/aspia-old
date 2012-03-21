@@ -232,7 +232,8 @@ GetLogicalProcessorsCount(VOID)
             __cpuidex(CPUInfo_B, 0xB, 1);
             physical_count = CPUInfo_B[1];
 
-            logical_count *= physical_count;
+            logical_count =
+                (logical_count * physical_count) / 2;
         }
     }
 
@@ -270,7 +271,7 @@ GetPhysicalProcessorsCount(VOID)
         else
         {
             __cpuidex(CPUInfo_B, 0xB, 1);
-            physical_count = CPUInfo_B[1];
+            physical_count = CPUInfo_B[1] / 2;
         }
     }
     else

@@ -272,7 +272,7 @@ BOOL ReadSmartAttributes(HANDLE hHandle, BYTE bDevNumber, SMART_DRIVE_INFO *Info
 BOOL ReadSmartThresholds(HANDLE hHandle, BYTE bDriveNum, SMART_DRIVE_INFO *Info);
 typedef BOOL (CALLBACK *SMART_ENUMDATAPROC)(SMART_RESULT *Result);
 BOOL EnumSmartData(HANDLE hSmartHandle, BYTE bDevNumber, SMART_ENUMDATAPROC lpEnumProc);
-DWORD GetSmartTemperature(HANDLE hSmartHandle, BYTE bDevNumber);
+INT GetSmartTemperature(HANDLE hSmartHandle, BYTE bDevNumber);
 BOOL GetSmartDiskGeometry(BYTE bDevNumber, DISK_GEOMETRY *DiskGeometry);
 
 /* SCSI Structures */
@@ -446,3 +446,27 @@ HICON GetFolderAssocIcon(LPWSTR lpszFolder);
 INT LoadMUIStringF(HINSTANCE hLangInst, UINT ResID, LPWSTR Buffer, INT BufLen);
 
 #define LoadMUIString(a, b, c) LoadMUIStringF(DllParams.hLangInst, a, b, c)
+
+__inline DWORD
+GetBitsDWORD(DWORD val, CHAR from, CHAR to)
+{
+    DWORD mask = (1 << (to + 1)) - 1;
+
+    return ((to > 30) ? (val >> from) : ((val & mask) >> from));
+}
+
+__inline WORD
+GetBitsWORD(WORD val, CHAR from, CHAR to)
+{
+    WORD mask = (1 << (to + 1)) - 1;
+
+    return ((to > 14) ? (val >> from) : ((val & mask) >> from));
+}
+
+__inline BYTE
+GetBitsBYTE(BYTE val, CHAR from, CHAR to)
+{
+    BYTE mask = (1 << (to + 1)) - 1;
+
+    return ((to > 7) ? (val >> from) : ((val & mask) >> from));
+}
