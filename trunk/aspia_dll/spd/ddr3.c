@@ -88,19 +88,17 @@ ShowDDR3MemoryTimings(BYTE *Spd, double Latency, int cl)
     LoadMUIString(IDS_SPD_TIMING_FORMAT, szFormat, MAX_STR_LEN);
     StringCbPrintf(szText, sizeof(szText), szFormat, 1000.0 / Latency);
     ItemIndex = IoAddItem(1, 1, szText);
-    StringCbPrintf(szText, sizeof(szText),
-                   L"%i-%i-%i-%i (CL-RCD-RP-RAS)/%i-%i-%i-%i-%i-%i (RC-RFC-RRD-WR-WTR-RTP)",
-                   cl,
-                   (int)Round((Spd[0x12] * 0.125)/Latency, 0),
-                   (int)Round((Spd[0x14] * 0.125)/Latency, 0),
-                   (int)Round(((Spd[0x16] | (Spd[0x15] & 0x0F) << 8) * 0.125)/Latency, 0),
-                   (int)Round(((Spd[0x17] | ((Spd[0x15] >> 4) << 8)) * 0.125)/Latency, 0),
-                   (int)Round(((Spd[0x18] | (Spd[0x19] << 8)) * 0.125)/Latency, 0),
-                   (int)Round((Spd[0x13] * 0.125)/Latency, 0),
-                   (int)Round((Spd[0x11] * 0.125)/Latency, 0),
-                   (int)Round((Spd[0x1A] * 0.125)/Latency, 0),
-                   (int)Round((Spd[0x1B] * 0.125)/Latency, 0));
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%i-%i-%i-%i (CL-RCD-RP-RAS)/%i-%i-%i-%i-%i-%i (RC-RFC-RRD-WR-WTR-RTP)",
+                  cl,
+                  (int)Round((Spd[0x12] * 0.125)/Latency, 0),
+                  (int)Round((Spd[0x14] * 0.125)/Latency, 0),
+                  (int)Round(((Spd[0x16] | (Spd[0x15] & 0x0F) << 8) * 0.125)/Latency, 0),
+                  (int)Round(((Spd[0x17] | ((Spd[0x15] >> 4) << 8)) * 0.125)/Latency, 0),
+                  (int)Round(((Spd[0x18] | (Spd[0x19] << 8)) * 0.125)/Latency, 0),
+                  (int)Round((Spd[0x13] * 0.125)/Latency, 0),
+                  (int)Round((Spd[0x11] * 0.125)/Latency, 0),
+                  (int)Round((Spd[0x1A] * 0.125)/Latency, 0),
+                  (int)Round((Spd[0x1B] * 0.125)/Latency, 0));
 }
 
 VOID
@@ -126,15 +124,13 @@ ShowSpdDataForDDR3(BYTE *Spd)
     IoSetItemText(ItemIndex, 1, szText);
 
     ItemIndex = IoAddValueName(1, IDS_SERIAL_NUMBER, 0);
-    StringCbPrintf(szText, sizeof(szText), L"%02X%02X%02X%02X",
-                   Spd[0x7A], Spd[0x7B], Spd[0x7C], Spd[0x7D]);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%02X%02X%02X%02X",
+                  Spd[0x7A], Spd[0x7B], Spd[0x7C], Spd[0x7D]);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_PRODUCT_DATE, 0);
-    StringCbPrintf(szText, sizeof(szText), L"Week %ld%ld, Year 20%ld%ld",
-                   Spd[0x79] >> 4, Spd[0x79] & 0x0F,
-                   Spd[0x78] >> 4, Spd[0x78] & 0x0F);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"Week %ld%ld, Year 20%ld%ld",
+                  Spd[0x79] >> 4, Spd[0x79] & 0x0F,
+                  Spd[0x78] >> 4, Spd[0x78] & 0x0F);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_MEMORY_TYPE, 0);
     GetSpdModuleType(Spd, szText, sizeof(szText));
@@ -172,12 +168,10 @@ ShowSpdDataForDDR3(BYTE *Spd)
         case 6:  Size = 16384;break;
         default: Size = 0;    break;
     }
-    StringCbPrintf(szText, sizeof(szText),
-                   L"%d Mb (%ld ranks, %ld banks)",
-                   Size * GetDDR3RanksCount(Spd),
-                   GetDDR3RanksCount(Spd),
-                   GetDDR3BanksCount(Spd));
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%d Mb (%ld ranks, %ld banks)",
+                  Size * GetDDR3RanksCount(Spd),
+                  GetDDR3RanksCount(Spd),
+                  GetDDR3BanksCount(Spd));
 
     ItemIndex = IoAddValueName(1, IDS_SPD_FREQUENT, 0);
     switch (Spd[0x0C])
@@ -262,8 +256,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
     IoAddHeader(1, IDS_SPD_MEMORY_TIMINGS, 1);
 
     ItemIndex = IoAddHeaderString(1, L"Minimum SDRAM Cycle Time (tCKmin)", 1);
-    StringCbPrintf(szText, sizeof(szText), L"%.3f ns", Spd[0x0c] * 0.125);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x0c] * 0.125);
 
     ItemIndex = IoAddHeaderString(1, L"CAS# Latencies Supported", 1);
     szText[0] = 0;
@@ -301,52 +294,41 @@ ShowSpdDataForDDR3(BYTE *Spd)
     IoSetItemText(ItemIndex, 1, szText);
 
     ItemIndex = IoAddHeaderString(1, L"Minimum CAS# Latency Time (tAAmin)", 1);
-    StringCbPrintf(szText, sizeof(szText), L"%.3f ns", Spd[0x10] * 0.125f);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x10] * 0.125f);
 
     ItemIndex = IoAddHeaderString(1, L"Minimum RAS# to CAS# Delay (tRCDmin)", 1);
-    StringCbPrintf(szText, sizeof(szText), L"%.3f ns", Spd[0x12] * 0.125f);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x12] * 0.125f);
 
     ItemIndex = IoAddHeaderString(1, L"Minimum Row Procharge Time (tRPmin)", 1);
-    StringCbPrintf(szText, sizeof(szText), L"%.3f ns", Spd[0x14] * 0.125f);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x14] * 0.125f);
 
     ItemIndex = IoAddHeaderString(1, L"Minimum Active to Precharge Time (tRASmin)", 1);
-    StringCbPrintf(szText, sizeof(szText), L"%.3f ns",
-                   (FLOAT)(Spd[0x16] | (Spd[0x15] & 0x0F) << 8) * 0.125f);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%.3f ns",
+                  (FLOAT)(Spd[0x16] | (Spd[0x15] & 0x0F) << 8) * 0.125f);
 
     ItemIndex = IoAddHeaderString(1, L"Minimum Write Recovery Time (tWRmin)", 1);
-    StringCbPrintf(szText, sizeof(szText), L"%.3f ns", Spd[0x11] * 0.125f);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x11] * 0.125f);
 
     ItemIndex = IoAddHeaderString(1, L"Minimum Row Active to Row Active Delay (tRRDmin)", 1);
-    StringCbPrintf(szText, sizeof(szText), L"%.3f ns", Spd[0x13] * 0.125f);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x13] * 0.125f);
 
     ItemIndex = IoAddHeaderString(1, L"Minimum Active to Active/Refresh Time (tRCmin)", 1);
-    StringCbPrintf(szText, sizeof(szText), L"%.3f ns",
-                   (Spd[0x17] | ((Spd[0x15] >> 4) << 8)) * 0.125f);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%.3f ns",
+                  (Spd[0x17] | ((Spd[0x15] >> 4) << 8)) * 0.125f);
 
     ItemIndex = IoAddHeaderString(1, L"Minimum Refresh Recovery Time Delay (tRFCmin)", 1);
-    StringCbPrintf(szText, sizeof(szText), L"%.3f ns",
-                   (Spd[0x18] | (Spd[0x19] << 8)) * 0.125f);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%.3f ns",
+                  (Spd[0x18] | (Spd[0x19] << 8)) * 0.125f);
 
     ItemIndex = IoAddHeaderString(1, L"Minimum Internal Write to Read Command Delay (tWTRmin)", 1);
-    StringCbPrintf(szText, sizeof(szText), L"%.3f ns", Spd[0x1A] * 0.125f);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x1A] * 0.125f);
 
     ItemIndex = IoAddHeaderString(1, L"Minimum Internal Read to Precharge Command Delay (tRTPmin)", 1);
-    StringCbPrintf(szText, sizeof(szText), L"%.3f ns", Spd[0x1B] * 0.125f);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x1B] * 0.125f);
 
     ItemIndex = IoAddHeaderString(1, L"Minimum Four Activate Window Delay Time (tFAWmin)", 1);
-    StringCbPrintf(szText, sizeof(szText), L"%.3f ns",
-                   (Spd[0x1D] | ((Spd[0x1C] & 0x0F) << 8)) * 0.125f);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, L"%.3f ns",
+                  (Spd[0x1D] | ((Spd[0x1C] & 0x0F) << 8)) * 0.125f);
 
     if ((Spd[0x0e] & 0x04) >> 2)
         ShowDDR3MemoryTimings(Spd, 2.18, 6); /* 400 */

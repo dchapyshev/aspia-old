@@ -143,17 +143,15 @@ IT87XX_GetInfo(WORD wChipType,
                 ItemIndex = IoAddItem(1, 3, LpcVoltageDesc[i].szDesc);
 
                 /* Voltage = value + (value - Vf) * Ri / Rf */
-                StringCbPrintf(szText, sizeof(szText), L"%.3f V",
+                IoSetItemText(ItemIndex, 1, L"%.3f V",
                     fValue + (fValue - LpcVoltageDesc[i].vf) * LpcVoltageDesc[i].ri / LpcVoltageDesc[i].rf);
-                IoSetItemText(ItemIndex, 1, szText);
             }
             else
             {
                 StringCbPrintf(szText, sizeof(szText), L"Voltage #%d", i + 1);
                 ItemIndex = IoAddItem(1, 3, szText);
 
-                StringCbPrintf(szText, sizeof(szText), L"%.3f V", fValue);
-                IoSetItemText(ItemIndex, 1, szText);
+                IoSetItemText(ItemIndex, 1, L"%.3f V", fValue);
             }
         }
     }
@@ -172,8 +170,7 @@ IT87XX_GetInfo(WORD wChipType,
             {
                 ItemIndex = IoAddItem(1, 4, szLpcTempDesc[i]);
 
-                StringCbPrintf(szText, sizeof(szText), L"%d °C", bValue);
-                IoSetItemText(ItemIndex, 1, szText);
+                IoSetItemText(ItemIndex, 1, L"%d °C", bValue);
             }
         }
     }
@@ -208,8 +205,7 @@ IT87XX_GetInfo(WORD wChipType,
                         ItemIndex = IoAddItem(1, 5, szText);
                     }
 
-                    StringCbPrintf(szText, sizeof(szText), L"%.0f RPM", tmp);
-                    IoSetItemText(ItemIndex, 1, szText);
+                    IoSetItemText(ItemIndex, 1, L"%.0f RPM", tmp);
                 }
             }
         }
@@ -251,8 +247,7 @@ IT87XX_GetInfo(WORD wChipType,
                         ItemIndex = IoAddItem(1, 5, szText);
                     }
 
-                    StringCbPrintf(szText, sizeof(szText), L"%.0f RPM", tmp);
-                    IoSetItemText(ItemIndex, 1, szText);
+                    IoSetItemText(ItemIndex, 1, L"%.0f RPM", tmp);
                 }
             }
         }

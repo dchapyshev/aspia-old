@@ -338,14 +338,12 @@ SOFTWARE_TaskMgr(VOID)
         if (GetProcessMemoryInfo(hProcess, &MemCounters, sizeof(MemCounters)))
         {
             /* Memory usage */
-            StringCbPrintf(szText, sizeof(szText), L"%ld KB",
-                           MemCounters.WorkingSetSize / 1024);
-            IoSetItemText(Index, 2, szText);
+            IoSetItemText(Index, 2, L"%ld KB",
+                          MemCounters.WorkingSetSize / 1024);
 
             /* Pagefile usage */
-            StringCbPrintf(szText, sizeof(szText), L"%ld KB",
-                           MemCounters.PagefileUsage / 1024);
-            IoSetItemText(Index, 3, szText);
+            IoSetItemText(Index, 3, L"%ld KB",
+                          MemCounters.PagefileUsage / 1024);
         }
         else
         {

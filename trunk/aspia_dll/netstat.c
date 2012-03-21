@@ -439,16 +439,14 @@ NETWORK_NetStatInfo(VOID)
             GetIpHostName(TRUE, TcpTableEx->table[dwIndex].dwLocalAddr,
                           szAddress, sizeof(szAddress));
             GetPortName(TcpTableEx->table[dwIndex].dwLocalPort, "tcp", szPort, sizeof(szPort));
-            StringCbPrintf(szText, sizeof(szText), L"%s:%s",
-                           szAddress, szPort);
-            IoSetItemText(ItemIndex, 2, szText);
+            IoSetItemText(ItemIndex, 2, L"%s:%s",
+                          szAddress, szPort);
 
             GetIpHostName(FALSE, TcpTableEx->table[dwIndex].dwRemoteAddr,
                           szAddress, sizeof(szAddress));
             GetPortName(TcpTableEx->table[dwIndex].dwRemotePort, "tcp", szPort, sizeof(szPort));
-            StringCbPrintf(szText, sizeof(szText), L"%s:%s",
-                           szAddress, szPort);
-            IoSetItemText(ItemIndex, 3, szText);
+            IoSetItemText(ItemIndex, 3, L"%s:%s",
+                          szAddress, szPort);
 
             IoSetItemText(ItemIndex, 4, TcpState[TcpTableEx->table[dwIndex].dwState]);
 
@@ -473,16 +471,14 @@ NETWORK_NetStatInfo(VOID)
                 GetIpHostName(TRUE, TcpTable->table[dwIndex].dwLocalAddr,
                               szAddress, sizeof(szAddress));
                 GetPortName(TcpTable->table[dwIndex].dwLocalPort, "tcp", szPort, sizeof(szPort));
-                StringCbPrintf(szText, sizeof(szText), L"%s:%s",
-                               szAddress, szPort);
-                IoSetItemText(ItemIndex, 2, szText);
+                IoSetItemText(ItemIndex, 2, L"%s:%s",
+                              szAddress, szPort);
 
                 GetIpHostName(FALSE, TcpTable->table[dwIndex].dwRemoteAddr,
                           szAddress, sizeof(szAddress));
                 GetPortName(TcpTable->table[dwIndex].dwRemotePort, "tcp", szPort, sizeof(szPort));
-                StringCbPrintf(szText, sizeof(szText), L"%s:%s",
-                               szAddress, szPort);
-                IoSetItemText(ItemIndex, 3, szText);
+                IoSetItemText(ItemIndex, 3, L"%s:%s",
+                              szAddress, szPort);
 
                 IoSetItemText(ItemIndex, 4, TcpState[TcpTable->table[dwIndex].dwState]);
 
@@ -517,9 +513,8 @@ NETWORK_NetStatInfo(VOID)
             GetIpHostName(TRUE, UdpTableEx->table[dwIndex].dwLocalAddr,
                           szAddress, sizeof(szAddress));
             GetPortName(UdpTableEx->table[dwIndex].dwLocalPort, "udp", szPort, sizeof(szPort));
-            StringCbPrintf(szText, sizeof(szText), L"%s:%s",
-                           szAddress, szPort);
-            IoSetItemText(ItemIndex, 2, szText);
+            IoSetItemText(ItemIndex, 2, L"%s:%s",
+                          szAddress, szPort);
 
             IoSetItemText(ItemIndex, 3, L"*.*.*.*:*");
 
@@ -546,9 +541,8 @@ NETWORK_NetStatInfo(VOID)
                 GetIpHostName(TRUE, UdpTable->table[dwIndex].dwLocalAddr,
                               szAddress, sizeof(szAddress));
                 GetPortName(UdpTable->table[dwIndex].dwLocalPort, "udp", szPort, sizeof(szPort));
-                StringCbPrintf(szText, sizeof(szText), L"%s:%s",
-                               szAddress, szPort);
-                IoSetItemText(ItemIndex, 2, szText);
+                IoSetItemText(ItemIndex, 2, L"%s:%s",
+                              szAddress, szPort);
 
                 IoSetItemText(ItemIndex, 3, L"*.*.*.*:*");
 

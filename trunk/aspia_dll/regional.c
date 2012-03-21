@@ -74,20 +74,18 @@ OS_RegionalParamInfo(VOID)
             LPWSTR szFormat = L"%02d.%02d (day.month) %02d:%02d (hour:minute)";
 
             Index = IoAddValueName(1, IDS_REGION_CHANGE_TO_STD_TIME, 1);
-            StringCbPrintf(szText, sizeof(szText), szFormat,
-                           TimeZone.StandardDate.wDay,
-                           TimeZone.StandardDate.wMonth,
-                           TimeZone.StandardDate.wHour,
-                           TimeZone.StandardDate.wMinute);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, szFormat,
+                          TimeZone.StandardDate.wDay,
+                          TimeZone.StandardDate.wMonth,
+                          TimeZone.StandardDate.wHour,
+                          TimeZone.StandardDate.wMinute);
 
             Index = IoAddValueName(1, IDS_REGION_CHANGE_TO_DL_TIME, 1);
-            StringCbPrintf(szText, sizeof(szText), szFormat,
-                           TimeZone.DaylightDate.wDay,
-                           TimeZone.DaylightDate.wMonth,
-                           TimeZone.DaylightDate.wHour,
-                           TimeZone.DaylightDate.wMinute);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, 1, szFormat,
+                          TimeZone.DaylightDate.wDay,
+                          TimeZone.DaylightDate.wMonth,
+                          TimeZone.DaylightDate.wHour,
+                          TimeZone.DaylightDate.wMinute);
         }
 
         IoAddFooter();

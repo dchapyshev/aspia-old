@@ -353,29 +353,25 @@ CPUIDInfo(VOID)
 
     /* Stepping ID */
     Index = IoAddValueName(1, IDS_CPUID_STEPPINGID, 0);
-    StringCbPrintf(szText, sizeof(szText), L"%d (%xh)",
-                   CpuIds.Stepping, CpuIds.Stepping);
-    IoSetItemText(Index, 1, szText);
+    IoSetItemText(Index, 1, L"%d (%xh)",
+                  CpuIds.Stepping, CpuIds.Stepping);
 
     /* Model */
     Index = IoAddValueName(1, IDS_CPUID_MODEL, 0);
-    StringCbPrintf(szText, sizeof(szText), L"%d (%xh)",
-                   CpuIds.Model, CpuIds.Model);
-    IoSetItemText(Index, 1, szText);
+    IoSetItemText(Index, 1, L"%d (%xh)",
+                  CpuIds.Model, CpuIds.Model);
 
     /* Family */
     Index = IoAddValueName(1, IDS_CPUID_FAMILY, 0);
-    StringCbPrintf(szText, sizeof(szText), L"%d (%xh)",
-                   CpuIds.Family, CpuIds.Family);
-    IoSetItemText(Index, 1, szText);
+    IoSetItemText(Index, 1, L"%d (%xh)",
+                  CpuIds.Family, CpuIds.Family);
 
     /* Physical processors count */
     Count = GetPhysicalProcessorsCount();
     if (Count > 0)
     {
         Index = IoAddValueName(1, IDS_CPUID_PHYSICAL_COUNT, 0);
-        StringCbPrintf(szText, sizeof(szText), L"%d", Count);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", Count);
     }
 
     /* Logical processors count */
@@ -383,8 +379,7 @@ CPUIDInfo(VOID)
     if (Count > 0)
     {
         Index = IoAddValueName(1, IDS_CPUID_LOGICAL_COUNT, 0);
-        StringCbPrintf(szText, sizeof(szText), L"%d", Count);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 1, L"%d", Count);
     }
 
     IoAddFooter();
