@@ -133,7 +133,7 @@ VOID
 GetSpdRefreshRate(BYTE *Spd, LPWSTR lpszString, SIZE_T Size)
 {
     SIZE_T Index = 0;
-    DWORD dwRate = Spd[0x0C] & 0x3F;
+    DWORD dwRate = GetBitsBYTE(Spd[0x0C], 0, 6);
 
     do
     {
@@ -141,7 +141,7 @@ GetSpdRefreshRate(BYTE *Spd, LPWSTR lpszString, SIZE_T Size)
         {
             StringCbCopy(lpszString, Size,
                          RefreshRateInfo[Index].lpszValue);
-            if ((Spd[0x0C] & 0x80) >> 6)
+            if (GetBitsBYTE(Spd[0x0C], 7, 7))
             {
                 StringCbCat(lpszString, Size, L", Self-Refresh");
             }
@@ -176,7 +176,7 @@ GetSpdTime(BYTE Byte)
 {
     double Time = 0;
 
-    switch (Byte & 0x03)
+    switch (GetBitsBYTE(Byte, 0, 1))
     {
         case 0x00: Time = 0.00; break;
         case 0x01: Time = 0.25; break;
@@ -247,30 +247,22 @@ ShowSpdDataForDDR(BYTE *Spd)
     IoSetItemText(ItemIndex, 1, szText);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_FET_SWITCH_EXT, 0);
-    if ((Spd[0x15] & 0x10) >> 3)
-        StringCbCopy(szText, sizeof(szText), L"Enabled");
-    else
-        StringCbCopy(szText, sizeof(szText), L"Disabled");
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, GetBitsBYTE(Spd[0x15], 4, 4) ? L"Enabled" : L"Disabled");
 
     ItemIndex = IoAddValueName(1, IDS_SPD_WEAK_DRIVER, 0);
-    if (Spd[0x16] & 0x01)
-        StringCbCopy(szText, sizeof(szText), L"Supported");
-    else
-        StringCbCopy(szText, sizeof(szText), L"Not Supported");
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, GetBitsBYTE(Spd[0x16], 0, 0) ? L"Supported" : L"Not Supported");
 
     IoAddHeader(0, 1, IDS_SPD_MEMORY_TIMINGS);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_BURST_LENGTHS, 1);
     szText[0] = 0;
-    if ((Spd[0x10] & 0x08) >> 2)
+    if (GetBitsBYTE(Spd[0x10], 3, 3))
         StringCbCat(szText, sizeof(szText), L"8, ");
-    if ((Spd[0x10] & 0x04) >> 1)
+    if (GetBitsBYTE(Spd[0x10], 2, 2))
         StringCbCat(szText, sizeof(szText), L"4, ");
-    if ((Spd[0x10] & 0x02))
+    if (GetBitsBYTE(Spd[0x10], 1, 1))
         StringCbCat(szText, sizeof(szText), L"2, ");
-    if ((Spd[0x10] & 0x01))
+    if (GetBitsBYTE(Spd[0x10], 0, 0))
         StringCbCat(szText, sizeof(szText), L"1, ");
     szText[wcslen(szText) - 2] = 0;
     IoSetItemText(ItemIndex, 1, szText);
@@ -281,19 +273,19 @@ ShowSpdDataForDDR(BYTE *Spd)
 
     ItemIndex = IoAddValueName(1, IDS_SPD_SUPPORTED_CAS_LATENCIES, 1);
     szText[0] = 0;
-    if ((Spd[0x12] & 0x40) >> 5)
+    if (GetBitsBYTE(Spd[0x12], 6, 6))
         StringCbCat(szText, sizeof(szText), L"4.0, ");
-    if ((Spd[0x12] & 0x20) >> 4)
+    if (GetBitsBYTE(Spd[0x12], 5, 5))
         StringCbCat(szText, sizeof(szText), L"3.5, ");
-    if ((Spd[0x12] & 0x10) >> 3)
+    if (GetBitsBYTE(Spd[0x12], 4, 4))
         StringCbCat(szText, sizeof(szText), L"3.0, ");
-    if ((Spd[0x12] & 0x08) >> 2)
+    if (GetBitsBYTE(Spd[0x12], 3, 3))
         StringCbCat(szText, sizeof(szText), L"2.5, ");
-    if ((Spd[0x12] & 0x04) >> 1)
+    if (GetBitsBYTE(Spd[0x12], 2, 2))
         StringCbCat(szText, sizeof(szText), L"2.0, ");
-    if (Spd[0x12] & 0x02)
+    if (GetBitsBYTE(Spd[0x12], 1, 1))
         StringCbCat(szText, sizeof(szText), L"1.5, ");
-    if (Spd[0x12] & 0x01)
+    if (GetBitsBYTE(Spd[0x12], 0, 0))
         StringCbCat(szText, sizeof(szText), L"1.0, ");
     szText[wcslen(szText) - 2] = 0;
     IoSetItemText(ItemIndex, 1, szText);
@@ -318,19 +310,19 @@ ShowSpdDataForDDR(BYTE *Spd)
 
     ItemIndex = IoAddItem(1, 1, L"Address/command setup time from clock (tIS)");
     IoSetItemText(ItemIndex, 1, L"%0.2f ns",
-                  ((double)(Spd[0x20] >> 4) / 10.00) + ((double)(Spd[0x20] & 0x0F) / 100.00));
+                  ((double)GetBitsBYTE(Spd[0x20], 4, 7) / 10.00) + ((double)GetBitsBYTE(Spd[0x20], 0, 3) / 100.00));
 
     ItemIndex = IoAddItem(1, 1, L"Address/command hold time after clock (tIH)");
     IoSetItemText(ItemIndex, 1, L"%0.2f ns",
-                  ((double)(Spd[0x21] >> 4) / 10.00) + ((double)(Spd[0x21] & 0x0F) / 100.00));
+                  ((double)GetBitsBYTE(Spd[0x21], 4, 7) / 10.00) + ((double)GetBitsBYTE(Spd[0x21], 0, 3) / 100.00));
 
     ItemIndex = IoAddItem(1, 1, L"Data input setup time from strobe (tDS)");
     IoSetItemText(ItemIndex, 1, L"%0.2f ns",
-                  ((double)(Spd[0x22] >> 4) / 10.00) + ((double)(Spd[0x22] & 0x0F) / 100.00));
+                  ((double)GetBitsBYTE(Spd[0x22], 4, 7) / 10.00) + ((double)GetBitsBYTE(Spd[0x22], 0, 3) / 100.00));
 
     ItemIndex = IoAddItem(1, 1, L"Data input hold time after strobe (tDH)");
     IoSetItemText(ItemIndex, 1, L"%0.2f ns",
-                  ((double)(Spd[0x23] >> 4) / 10.00) + ((double)(Spd[0x23] & 0x0F) / 100.00));
+                  ((double)GetBitsBYTE(Spd[0x23], 4 ,7) / 10.00) + ((double)GetBitsBYTE(Spd[0x23], 0, 3) / 100.00));
 
     IoAddFooter();
 }

@@ -13,7 +13,7 @@
 VOID
 GetDDR3Manufacturer(BYTE *Spd, LPWSTR lpName, SIZE_T Size)
 {
-    INT ContCount = (Spd[0x75] & 0x3F); /* bits 6 - 0 */
+    INT ContCount = GetBitsBYTE(Spd[0x75], 0, 6); /* bits 6 - 0 */
     DWORD id;
     SIZE_T Index;
 
@@ -56,7 +56,7 @@ GetDDR3Manufacturer(BYTE *Spd, LPWSTR lpName, SIZE_T Size)
 INT
 GetDDR3BanksCount(BYTE *Spd)
 {
-    switch ((Spd[0x04] & 0x10) >> 4) /* bits 6-4 */
+    switch (GetBitsBYTE(Spd[0x04], 4, 6)) /* bits 6-4 */
     {
         case 0: return 8;
         case 1: return 16;
@@ -69,7 +69,7 @@ GetDDR3BanksCount(BYTE *Spd)
 INT
 GetDDR3RanksCount(BYTE *Spd)
 {
-    switch ((Spd[0x07] & 0x08) >> 3) /* bits 5-3 */
+    switch (GetBitsBYTE(Spd[0x07], 3, 5)) /* bits 5-3 */
     {
         case 0: return 1;
         case 1: return 2;
@@ -128,8 +128,8 @@ ShowSpdDataForDDR3(BYTE *Spd)
 
     ItemIndex = IoAddValueName(1, IDS_SPD_PRODUCT_DATE, 0);
     IoSetItemText(ItemIndex, 1, L"Week %ld%ld, Year 20%ld%ld",
-                  Spd[0x79] >> 4, Spd[0x79] & 0x0F,
-                  Spd[0x78] >> 4, Spd[0x78] & 0x0F);
+                  GetBitsBYTE(Spd[0x79], 4, 7), GetBitsBYTE(Spd[0x79], 0, 3),
+                  GetBitsBYTE(Spd[0x78], 4, 7), GetBitsBYTE(Spd[0x78], 0, 3));
 
     ItemIndex = IoAddValueName(1, IDS_SPD_MEMORY_TYPE, 0);
     GetSpdModuleType(Spd, szText, sizeof(szText));
@@ -137,7 +137,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
 
     ItemIndex = IoAddValueName(1, IDS_SPD_DIMM_TYPE, 0);
 
-    switch (Spd[0x03] & 0x0F)
+    switch (GetBitsBYTE(Spd[0x03], 0, 3))
     {
         case 1:  lpText = L"RDIMM";        break;
         case 2:  lpText = L"UDIMM";        break;
@@ -156,7 +156,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
     IoSetItemText(ItemIndex, 1, lpText);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_MODULE_SIZE, 0);
-    switch (Spd[0x04] & 0x0F) /* bits 3-0 */
+    switch (GetBitsBYTE(Spd[0x04], 0, 3)) /* bits 3-0 */
     {
         case 0:  Size = 256;  break;
         case 1:  Size = 512;  break;
@@ -197,7 +197,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
     IoSetItemText(ItemIndex, 1, lpText);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_ROW_ADDRESS_BITS, 0);
-    switch ((Spd[0x05] & 0x3F) >> 3) /* bits 5 - 3 */
+    switch (GetBitsBYTE(Spd[0x05], 3, 5)) /* bits 5 - 3 */
     {
         case 0: lpText = L"12"; break;
         case 1: lpText = L"13"; break;
@@ -209,7 +209,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
     IoSetItemText(ItemIndex, 1, lpText);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_COLUMN_ADDR_BITS, 0);
-    switch (Spd[0x05] & 0x07) /* bits 2 - 0 */
+    switch (GetBitsBYTE(Spd[0x05], 0, 2)) /* bits 2 - 0 */
     {
         case 0: lpText = L"9"; break;
         case 1: lpText = L"10"; break;
@@ -220,7 +220,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
     IoSetItemText(ItemIndex, 1, lpText);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_DEVICE_WIDTH, 0);
-    switch (Spd[0x07] & 0x07) /* bits 2 - 0 */
+    switch (GetBitsBYTE(Spd[0x07], 0, 2)) /* bits 2 - 0 */
     {
         case 0: lpText = L"4 bits"; break;
         case 1: lpText = L"8 bits"; break;
@@ -231,7 +231,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
     IoSetItemText(ItemIndex, 1, lpText);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_BUS_WIDTH, 0);
-    switch (Spd[0x08] & 0x07) /* bits 2 - 0 */
+    switch (GetBitsBYTE(Spd[0x08], 0, 2)) /* bits 2 - 0 */
     {
         case 0: lpText = L"8 bits"; break;
         case 1: lpText = L"16 bits"; break;
@@ -243,11 +243,11 @@ ShowSpdDataForDDR3(BYTE *Spd)
 
     szText[0] = 0;
     ItemIndex = IoAddValueName(1, IDS_SPD_MODULE_NORM_VOLTAGE, 0);
-    if (((Spd[0x06] & 0x07) >> 2) == 1) /* bit 2 */
+    if (GetBitsBYTE(Spd[0x06], 2, 2) == 1) /* bit 2 */
         StringCbCat(szText, sizeof(szText), L"1.2V, ");
-    if (((Spd[0x06] & 0x03) >> 1) == 1) /* bit 1 */
+    if (GetBitsBYTE(Spd[0x06], 1, 1) == 1) /* bit 1 */
         StringCbCat(szText, sizeof(szText), L"1.35V, ");
-    if ((Spd[0x06] & 0x01) == 0) /* bit 0 */
+    if (GetBitsBYTE(Spd[0x06], 0, 0) == 0) /* bit 0 */
         StringCbCat(szText, sizeof(szText), L"1.5V, ");
     if (szText[0]) szText[wcslen(szText) - 2] = 0;
     IoSetItemText(ItemIndex, 1, szText);
@@ -259,35 +259,35 @@ ShowSpdDataForDDR3(BYTE *Spd)
 
     ItemIndex = IoAddItem(1, 1, L"CAS# Latencies Supported");
     szText[0] = 0;
-    if (Spd[0x0e] & 0x01)
+    if (GetBitsBYTE(Spd[0x0e], 0, 0))
         StringCbCat(szText, sizeof(szText), L"4, ");
-    if ((Spd[0x0e] & 0x02) >> 1)
+    if (GetBitsBYTE(Spd[0x0e], 1, 1))
         StringCbCat(szText, sizeof(szText), L"5, ");
-    if ((Spd[0x0e] & 0x04) >> 2)
+    if (GetBitsBYTE(Spd[0x0e], 2, 2))
         StringCbCat(szText, sizeof(szText), L"6, ");
-    if ((Spd[0x0e] & 0x08) >> 3)
+    if (GetBitsBYTE(Spd[0x0e], 3, 3))
         StringCbCat(szText, sizeof(szText), L"7, ");
-    if ((Spd[0x0e] & 0x10) >> 4)
+    if (GetBitsBYTE(Spd[0x0e], 4, 4))
         StringCbCat(szText, sizeof(szText), L"8, ");
-    if ((Spd[0x0e] & 0x20) >> 5)
+    if (GetBitsBYTE(Spd[0x0e], 5, 5))
         StringCbCat(szText, sizeof(szText), L"9, ");
-    if ((Spd[0x0e] & 0x40) >> 6)
+    if (GetBitsBYTE(Spd[0x0e], 6, 6))
         StringCbCat(szText, sizeof(szText), L"10, ");
-    if ((Spd[0x0e] & 0x80) >> 7)
+    if (GetBitsBYTE(Spd[0x0e], 7, 7))
         StringCbCat(szText, sizeof(szText), L"11, ");
-    if (Spd[0x0f] & 0x01)
+    if (GetBitsBYTE(Spd[0x0f], 0, 0))
         StringCbCat(szText, sizeof(szText), L"12, ");
-    if ((Spd[0x0f] & 0x02) >> 1)
+    if (GetBitsBYTE(Spd[0x0f], 1, 1))
         StringCbCat(szText, sizeof(szText), L"13, ");
-    if ((Spd[0x0f] & 0x04) >> 2)
+    if (GetBitsBYTE(Spd[0x0f], 2, 2))
         StringCbCat(szText, sizeof(szText), L"14, ");
-    if ((Spd[0x0f] & 0x08) >> 3)
+    if (GetBitsBYTE(Spd[0x0f], 3, 3))
         StringCbCat(szText, sizeof(szText), L"15, ");
-    if ((Spd[0x0f] & 0x10) >> 4)
+    if (GetBitsBYTE(Spd[0x0f], 4, 4))
         StringCbCat(szText, sizeof(szText), L"16, ");
-    if ((Spd[0x0f] & 0x20) >> 5)
+    if (GetBitsBYTE(Spd[0x0f], 5, 5))
         StringCbCat(szText, sizeof(szText), L"17, ");
-    if ((Spd[0x0f] & 0x40) >> 6)
+    if (GetBitsBYTE(Spd[0x0f], 6, 6))
         StringCbCat(szText, sizeof(szText), L"18, ");
     szText[wcslen(szText) - 2] = 0;
     IoSetItemText(ItemIndex, 1, szText);
@@ -303,7 +303,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
 
     ItemIndex = IoAddItem(1, 1, L"Minimum Active to Precharge Time (tRASmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns",
-                  (FLOAT)(Spd[0x16] | (Spd[0x15] & 0x0F) << 8) * 0.125f);
+                  (Spd[0x16] | (GetBitsBYTE(Spd[0x15], 0, 3) << 8)) * 0.125f);
 
     ItemIndex = IoAddItem(1, 1, L"Minimum Write Recovery Time (tWRmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x11] * 0.125f);
@@ -313,7 +313,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
 
     ItemIndex = IoAddItem(1, 1, L"Minimum Active to Active/Refresh Time (tRCmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns",
-                  (Spd[0x17] | ((Spd[0x15] >> 4) << 8)) * 0.125f);
+                  (Spd[0x17] | (GetBitsBYTE(Spd[0x15], 0, 3) << 8)) * 0.125f);
 
     ItemIndex = IoAddItem(1, 1, L"Minimum Refresh Recovery Time Delay (tRFCmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns",
@@ -327,7 +327,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
 
     ItemIndex = IoAddItem(1, 1, L"Minimum Four Activate Window Delay Time (tFAWmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns",
-                  (Spd[0x1D] | ((Spd[0x1C] & 0x0F) << 8)) * 0.125f);
+                  (Spd[0x1D] | (GetBitsBYTE(Spd[0x1C], 0, 3) << 8)) * 0.125f);
 
     if ((Spd[0x0e] & 0x04) >> 2)
         ShowDDR3MemoryTimings(Spd, 2.18, 6); /* 400 */

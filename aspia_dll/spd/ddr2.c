@@ -65,7 +65,7 @@ VOID
 ShowSpdDataForDDR2(BYTE *Spd)
 {
     WCHAR szText[MAX_STR_LEN], szType[MAX_STR_LEN],
-          szManuf[MAX_STR_LEN], szPart[MAX_STR_LEN];
+          szManuf[MAX_STR_LEN], szPart[MAX_STR_LEN], *ptr;
     INT ItemIndex, Rank;
     double CycleTime;
 
@@ -113,19 +113,22 @@ ShowSpdDataForDDR2(BYTE *Spd)
     IoSetItemText(ItemIndex, 1, szType);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_DIMM_TYPE, 0);
-    if (Spd[0x14] & 0x01)
-        StringCbPrintf(szText, sizeof(szText), L"RDIMM");
-    else if ((Spd[0x14] & 0x02) >> 0)
-        StringCbPrintf(szText, sizeof(szText), L"UDIMM");
-    else if ((Spd[0x14] & 0x04) >> 1)
-        StringCbPrintf(szText, sizeof(szText), L"SO-DIMM");
-    else if ((Spd[0x14] & 0x08) >> 2)
-        StringCbPrintf(szText, sizeof(szText), L"Micro-DIMM");
-    else if ((Spd[0x14] & 0x10) >> 3)
-        StringCbPrintf(szText, sizeof(szText), L"Mini-DIMM");
-    else if ((Spd[0x14] & 0x20) >> 4)
-        StringCbPrintf(szText, sizeof(szText), L"Mini-UDIMM");
-    IoSetItemText(ItemIndex, 1, szText);
+    switch (GetBitsBYTE(Spd[0x14], 0, 5))
+    {
+        case 0x01: ptr = L"RDIMM"; break;
+        case 0x02: ptr = L"UDIMM"; break;
+        case 0x04: ptr = L"SO-DIMM"; break;
+        case 0x06: ptr = L"SO-CDIMM"; break;
+        case 0x07: ptr = L"SO-RDIMM"; break;
+        case 0x08: ptr = L"Micro-DIMM"; break;
+        case 0x10: ptr = L"Mini-DIMM"; break;
+        case 0x20: ptr = L"Mini-UDIMM"; break;
+        case 0x00:
+        default:
+            ptr = L"Unknown";
+            break;
+    }
+    IoSetItemText(ItemIndex, 1, ptr);
 
     Rank = ((Spd[0x05] & 0x07) + 1);
 
@@ -152,33 +155,21 @@ ShowSpdDataForDDR2(BYTE *Spd)
     IoSetItemText(ItemIndex, 1, szText);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_ANALYSIS_PROBE, 0);
-    if ((Spd[0x15] & 0x40) >> 5)
-        StringCbCopy(szText, sizeof(szText), L"Present");
-    else
-        StringCbCopy(szText, sizeof(szText), L"Not Present");
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, GetBitsBYTE(Spd[0x15], 6, 6) ? L"Present" : L"Not Present");
 
     ItemIndex = IoAddValueName(1, IDS_SPD_FET_SWITCH_EXT, 0);
-    if ((Spd[0x15] & 0x10) >> 3)
-        StringCbCopy(szText, sizeof(szText), L"Enabled");
-    else
-        StringCbCopy(szText, sizeof(szText), L"Disabled");
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, GetBitsBYTE(Spd[0x15], 4, 4) ? L"Enabled" : L"Disabled");
 
     ItemIndex = IoAddValueName(1, IDS_SPD_WEAK_DRIVER, 0);
-    if (Spd[0x16] & 0x01)
-        StringCbCopy(szText, sizeof(szText), L"Supported");
-    else
-        StringCbCopy(szText, sizeof(szText), L"Not Supported");
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, 1, GetBitsBYTE(Spd[0x16], 0, 0) ? L"Supported" : L"Not Supported");
 
     IoAddHeader(1, 1, IDS_SPD_MEMORY_TIMINGS);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_BURST_LENGTHS, 1);
     szText[0] = 0;
-    if ((Spd[0x10] & 0x08) >> 2)
+    if (GetBitsBYTE(Spd[0x10], 3, 3))
         StringCbCat(szText, sizeof(szText), L"8, ");
-    if ((Spd[0x10] & 0x04) >> 1)
+    if (GetBitsBYTE(Spd[0x10], 2, 2))
         StringCbCat(szText, sizeof(szText), L"4, ");
     szText[wcslen(szText) - 2] = 0;
     IoSetItemText(ItemIndex, 1, szText);
@@ -189,17 +180,17 @@ ShowSpdDataForDDR2(BYTE *Spd)
 
     ItemIndex = IoAddValueName(1, IDS_SPD_SUPPORTED_CAS_LATENCIES, 1);
     szText[0] = 0;
-    if ((Spd[0x12] & 0x80) >> 6)
+    if (GetBitsBYTE(Spd[0x12], 7, 7))
         StringCbCat(szText, sizeof(szText), L"7.0, ");
-    if ((Spd[0x12] & 0x40) >> 5)
+    if (GetBitsBYTE(Spd[0x12], 6, 6))
         StringCbCat(szText, sizeof(szText), L"6.0, ");
-    if ((Spd[0x12] & 0x20) >> 4)
+    if (GetBitsBYTE(Spd[0x12], 5, 5))
         StringCbCat(szText, sizeof(szText), L"5.0, ");
-    if ((Spd[0x12] & 0x10) >> 3)
+    if (GetBitsBYTE(Spd[0x12], 4, 4))
         StringCbCat(szText, sizeof(szText), L"4.0, ");
-    if ((Spd[0x12] & 0x08) >> 2)
+    if (GetBitsBYTE(Spd[0x12], 3, 3))
         StringCbCat(szText, sizeof(szText), L"3.0, ");
-    if ((Spd[0x12] & 0x04) >> 1)
+    if (GetBitsBYTE(Spd[0x12], 2, 2))
         StringCbCat(szText, sizeof(szText), L"2.0, ");
     szText[wcslen(szText) - 2] = 0;
     IoSetItemText(ItemIndex, 1, szText);

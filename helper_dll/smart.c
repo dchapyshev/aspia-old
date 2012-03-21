@@ -529,9 +529,9 @@ Failed:
     return FALSE;
 }
 
-DWORD
+INT
 GetSmartTemperature(HANDLE hSmartHandle,
-                          BYTE bDevNumber)
+                    BYTE bDevNumber)
 {
     SMART_DRIVE_INFO m_stDrivesInfo;
     BYTE bIndex;
@@ -560,7 +560,7 @@ GetSmartTemperature(HANDLE hSmartHandle,
     for (bIndex = 0; bIndex < m_stDrivesInfo.m_ucSmartValues; ++bIndex)
     {
         if (m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId == 0xC2 ||
-            m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId == 0xe7)
+            m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId == 0xE7)
         {
             if (!hSmartHandle) CloseSmart(hHandle);
             return m_stDrivesInfo.m_stSmartInfo[bIndex].m_dwAttribValue;
