@@ -82,12 +82,11 @@ GetDDR3RanksCount(BYTE *Spd)
 VOID
 ShowDDR3MemoryTimings(BYTE *Spd, double Latency, int cl)
 {
-    WCHAR szText[MAX_STR_LEN], szFormat[MAX_STR_LEN];
+    WCHAR szFormat[MAX_STR_LEN];
     INT ItemIndex;
 
     LoadMUIString(IDS_SPD_TIMING_FORMAT, szFormat, MAX_STR_LEN);
-    StringCbPrintf(szText, sizeof(szText), szFormat, 1000.0 / Latency);
-    ItemIndex = IoAddItem(1, 1, szText);
+    ItemIndex = IoAddItem(1, 1, szFormat, 1000.0 / Latency);
     IoSetItemText(ItemIndex, 1, L"%i-%i-%i-%i (CL-RCD-RP-RAS)/%i-%i-%i-%i-%i-%i (RC-RFC-RRD-WR-WTR-RTP)",
                   cl,
                   (int)Round((Spd[0x12] * 0.125)/Latency, 0),

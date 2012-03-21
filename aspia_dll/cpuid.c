@@ -125,8 +125,7 @@ const FEATURE_INFO_STRUCT EDX_87_FeaturesList[] =
 static VOID
 EnumSupportedFeatures(const FEATURE_INFO_STRUCT *List, DWORD dwFlag)
 {
-    WCHAR szSupported[MAX_STR_LEN], szUnsupported[MAX_STR_LEN],
-          szText[MAX_STR_LEN];
+    WCHAR szSupported[MAX_STR_LEN], szUnsupported[MAX_STR_LEN];
     INT ItemIndex;
     SIZE_T Index = 0;
 
@@ -139,12 +138,10 @@ EnumSupportedFeatures(const FEATURE_INFO_STRUCT *List, DWORD dwFlag)
 
     do
     {
-        StringCbPrintf(szText,
-                       sizeof(szText),
-                       L"%s (%s)",
-                       List[Index].lpszDesc,
-                       List[Index].lpszFeature);
-        ItemIndex = IoAddItem(1, (List[Index].dwFlag & dwFlag) ? 1 : 2, szText);
+        ItemIndex = IoAddItem(1, (List[Index].dwFlag & dwFlag) ? 1 : 2,
+                              L"%s (%s)",
+                              List[Index].lpszDesc,
+                              List[Index].lpszFeature);
         IoSetItemText(ItemIndex, 1,
                       (List[Index].dwFlag & dwFlag) ? szSupported : szUnsupported);
     }
