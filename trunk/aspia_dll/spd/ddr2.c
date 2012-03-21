@@ -88,7 +88,7 @@ ShowSpdDataForDDR2(BYTE *Spd)
                    L"%s %s", szManuf,
                    (szPart[0] == 0) ? szType : szPart);
 
-    IoAddHeaderString(0, (szText[0] == 0) ? L"Unknown" : szText, 0);
+    IoAddHeaderString(0, 0, (szText[0] == 0) ? L"Unknown" : szText);
 
     ItemIndex = IoAddValueName(1, IDS_MANUFACTURER, 0);
     IoSetItemText(ItemIndex, 1, szManuf);
@@ -173,7 +173,7 @@ ShowSpdDataForDDR2(BYTE *Spd)
         StringCbCopy(szText, sizeof(szText), L"Not Supported");
     IoSetItemText(ItemIndex, 1, szText);
 
-    IoAddHeader(1, IDS_SPD_MEMORY_TIMINGS, 1);
+    IoAddHeader(1, 1, IDS_SPD_MEMORY_TIMINGS);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_BURST_LENGTHS, 1);
     szText[0] = 0;

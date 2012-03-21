@@ -164,7 +164,7 @@ GetIntelCpuInfo(VOID)
 
             if (bIndex == 0)
             {
-                IoAddHeaderString(0, szText, 1);
+                IoAddHeaderString(0, 1, szText);
             }
 
             LoadMUIString(IDS_SENSOR_CORE_TEMPERATURE,
@@ -205,7 +205,7 @@ GetAmd10CpuInfo(VOID)
 
     if (GetCPUName(szText, sizeof(szText)))
     {
-        IoAddHeaderString(0, szText, 1);
+        IoAddHeaderString(0, 1, szText);
 
         LoadMUIString(IDS_SENSOR_TEMPERATURE, szText, MAX_STR_LEN);
         Index = IoAddItem(1, 1, szText);
@@ -239,7 +239,7 @@ GetAmd0FCpuInfo(VOID)
         {
             if (Count == 0)
             {
-                IoAddHeaderString(0, szText, 1);
+                IoAddHeaderString(0, 1, szText);
             }
 
             LoadMUIString(IDS_SENSOR_CORE_TEMPERATURE, szFormat, MAX_STR_LEN);
@@ -286,7 +286,7 @@ NvidiaGPUsEnumProc(PNVIDIA_GPU_INFO GpuInfo)
     INT Index;
 
     /* Add GPU Name */
-    IoAddHeaderString(0, GpuInfo->szName, 6);
+    IoAddHeaderString(0, 6, GpuInfo->szName);
 
     /* GPU board ambient temperature */
     if (GpuInfo->BoardTemp.CurrentTemp > 0)
@@ -394,7 +394,7 @@ HW_SensorInfo(VOID)
             StringCbPrintf(szText, sizeof(szText),
                            L"%S", DriveInfo.sModelNumber);
             ChopSpaces(szText, sizeof(szText));
-            IoAddHeaderString(0, szText, 0);
+            IoAddHeaderString(0, 0, szText);
 
             StringCbPrintf(szText, sizeof(szText),
                            L"%ld °C",

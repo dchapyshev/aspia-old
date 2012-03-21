@@ -181,7 +181,7 @@ NETWORK_CardsInfo(VOID)
 
         DebugTrace(L"Adapter Name: %s", szText);
 
-        IoAddHeaderString(0, szText, 0);
+        IoAddHeaderString(0, 0, szText);
 
         if (GetStringFromRegistry(TRUE,
                                   HKEY_LOCAL_MACHINE,
@@ -653,7 +653,7 @@ NETWORK_IEParamsInfo(VOID)
 
     IoAddIcon(IDI_IE);
 
-    IoAddHeader(0, IDS_CAT_NETWORK_IE_PARAMS, 0);
+    IoAddHeader(0, 0, IDS_CAT_NETWORK_IE_PARAMS);
 
     ShowIEShortInfo(0);
 
@@ -960,7 +960,7 @@ NETWORK_RasInfo(VOID)
             continue;
 
         /* Connection name */
-        IoAddHeaderString(0, pRasEntryName[dwIndex].szEntryName, 0);
+        IoAddHeaderString(0, 0, pRasEntryName[dwIndex].szEntryName);
 
         /* Device name */
         Index = IoAddValueName(1, IDS_RAS_DEVICE_NAME, 0);

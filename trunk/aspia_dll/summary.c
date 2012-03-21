@@ -217,7 +217,7 @@ ShowMonitorsInfo(VOID)
                 StringCbPrintf(szText, sizeof(szText), L"%s (NoDB)", szDeviceName);
             }
 
-            if (++Count == 1) IoAddHeader(0, IDS_CAT_HW_MONITOR, 5);
+            if (++Count == 1) IoAddHeader(0, 5, IDS_CAT_HW_MONITOR);
             ItemIndex = IoAddItem(1, 5, szText);
 
             Block = Edid + DETAILED_TIMING_DESCRIPTIONS_START;
@@ -395,7 +395,7 @@ ShowSummaryInfo(VOID)
     IoAddIcon(IDI_PRINTER); /* Printers */
     IoAddIcon(IDI_NETWORK); /* Network Adapters */
 
-    IoAddHeader(0, IDS_SUMMARY_OS, 0);
+    IoAddHeader(0, 0, IDS_SUMMARY_OS);
 
     /* Product name */
     Index = IoAddValueName(1, IDS_OS_PRODUCT_NAME, 0);
@@ -454,11 +454,11 @@ ShowSummaryInfo(VOID)
     IoAddFooter();
 
     /* Internet Explorer */
-    IoAddHeader(0, IDS_CAT_NETWORK_IE, 4);
+    IoAddHeader(0, 4, IDS_CAT_NETWORK_IE);
     ShowIEShortInfo(4);
     IoAddFooter();
 
-    IoAddHeader(0, IDS_SUMMARY_CPU, 1);
+    IoAddHeader(0, 1, IDS_SUMMARY_CPU);
 
     /* Get CPU Name */
     if (GetCPUName(szText, sizeof(szText)))
@@ -494,7 +494,7 @@ ShowSummaryInfo(VOID)
 
     IoAddFooter();
 
-    IoAddHeader(0, IDS_SUMMARY_HDD, 2);
+    IoAddHeader(0, 2, IDS_SUMMARY_HDD);
     HardDrivesInfo();
     IoAddFooter();
 
@@ -502,16 +502,16 @@ ShowSummaryInfo(VOID)
     ShowMonitorsInfo();
 
     /* Printers */
-    //IoAddHeader(0, IDS_CAT_HW_PRINTERS, 6);
+    //IoAddHeader(0, 6, IDS_CAT_HW_PRINTERS);
     //ShowPrintersInfo();
     //IoAddFooter();
 
     /* Network Adapters */
-    IoAddHeader(0, IDS_CAT_NETWORK_CARDS, 7);
+    IoAddHeader(0, 7, IDS_CAT_NETWORK_CARDS);
     ShowNetAdaptersInfo();
     IoAddFooter();
 
-    IoAddHeader(0, IDS_SUMMARY_MEM, 3);
+    IoAddHeader(0, 3, IDS_SUMMARY_MEM);
 
     MemStatus.dwLength = sizeof(MEMORYSTATUSEX);
     if (GlobalMemoryStatusEx(&MemStatus))

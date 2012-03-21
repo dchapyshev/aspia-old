@@ -204,7 +204,7 @@ ShowSpdDataForDDR(BYTE *Spd)
                    Spd[0x4E], Spd[0x4F], Spd[0x50], Spd[0x51], Spd[0x52],
                    Spd[0x53], Spd[0x54], Spd[0x55], Spd[0x56], Spd[0x57],
                    Spd[0x58], Spd[0x59], Spd[0x5A]);
-    IoAddHeaderString(0, szText, 0);
+    IoAddHeaderString(0, 0, szText);
 
     ItemIndex = IoAddValueName(1, IDS_MANUFACTURER, 0);
     GetSpdManufacturer(Spd, szText, sizeof(szText));
@@ -260,7 +260,7 @@ ShowSpdDataForDDR(BYTE *Spd)
         StringCbCopy(szText, sizeof(szText), L"Not Supported");
     IoSetItemText(ItemIndex, 1, szText);
 
-    IoAddHeader(0, IDS_SPD_MEMORY_TIMINGS, 1);
+    IoAddHeader(0, 1, IDS_SPD_MEMORY_TIMINGS);
 
     ItemIndex = IoAddValueName(1, IDS_SPD_BURST_LENGTHS, 1);
     szText[0] = 0;
