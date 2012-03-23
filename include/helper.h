@@ -171,39 +171,106 @@ WritePciConfigDword(IN DWORD PciAddress, IN BYTE RegAddress, IN DWORD Value)
 #define INDEX_ATTRIB_RAW         5
 
 /* SMART structures */
-typedef struct 
+#pragma pack (push, id_data, 1)
+typedef struct _IDSECTOR
 {
-    WORD wGenConfig;
-    WORD wNumCyls;
-    WORD wReserved;
-    WORD wNumHeads;
-    WORD wBytesPerTrack;
-    WORD wBytesPerSector;
-    WORD wSectorsPerTrack;
-    WORD wVendorUnique[3];
-    BYTE sSerialNumber[20];
-    WORD wBufferType;
-    WORD wBufferSize;
-    WORD wECCSize;
-    BYTE sFirmwareRev[8];
-    BYTE sModelNumber[39];
-    WORD wMoreVendorUnique;
-    WORD wDoubleWordIO;
-    WORD wCapabilities;
-    WORD wReserved1;
-    WORD wPIOTiming;
-    WORD wDMATiming;
-    WORD wBS;
-    WORD wNumCurrentCyls;
-    WORD wNumCurrentHeads;
-    WORD wNumCurrentSectorsPerTrack;
-    WORD ulCurrentSectorCapacity;
-    WORD wMultSectorStuff;
-    DWORD ulTotalAddressableSectors;
-    WORD wSingleWordDMA;
-    WORD wMultiWordDMA;
-    BYTE bReserved[127];
-} IDSECTOR;
+    WORD wGenConfig;                   /* 0 */
+    WORD wNumCyls;                     /* 1 */
+    WORD wSpecConfig;                  /* 2 */
+    WORD wNumHeads;                    /* 3 */
+    WORD wUnused0[6];                  /* 4-9 */
+    CHAR sSerialNumber[20];            /* 10-19 */
+    WORD wBufferType;                  /* 20 */
+    WORD wBufferSize;                  /* 21 */
+    WORD wECCSize;                     /* 22 */
+    CHAR sFirmwareRev[8];              /* 23-26 */
+    CHAR sModelNumber[40];             /* 27-46 */
+    WORD wUnused1;                     /* 47 */
+    WORD wUnused2;                     /* 48 */
+    WORD wCapabilities1;               /* 49 */
+    WORD wCapabilities2;               /* 50 */
+    DWORD wUnused3;                    /* 51, 52 */
+    WORD wBS;                          /* 53 */
+    WORD wUnused4[5];                  /* 54-58 */
+    WORD wMultSectorStuff;             /* 59 */
+    DWORD dwTotalAddressableSectors;   /* 60-61 */
+    WORD wUnused5;                     /* 62 */
+    WORD wMultiWordDMA;                /* 63 */
+    WORD wPIOMode;                     /* 64 */
+    WORD wUnused6;                     /* 65 */
+    WORD wUnused7;                     /* 66 */
+    WORD wUnused8;                     /* 67 */
+    WORD wUnused9;                     /* 68 */
+    WORD wUnused10[6];                 /* 69-74 */
+    WORD wUnused11;                    /* 75 */
+    WORD wSATACapabilities;            /* 76 */
+    WORD wUnused12;                    /* 77 */
+    WORD wSATAFeaturesSuported;        /* 78 */
+    WORD wSATAFeaturesEnabled;         /* 79 */
+    WORD wMajorVersion;                /* 80 */
+    WORD wMinorVersion;                /* 81 */
+    WORD wCommandSetSupport1;          /* 82 */
+    WORD wCommandSetSupport2;          /* 83 */
+    WORD wCommandSetSupport3;          /* 84 */
+    WORD wCommandSetEnabled1;          /* 85 */
+    WORD wCommandSetEnabled2;          /* 86 */
+    WORD wCommandSetDefault;           /* 87 */
+    WORD wUltraDMAMode;                /* 88 */
+    WORD wUnused21;                    /* 89 */
+    WORD wUnused22;                    /* 90 */
+    WORD wUnused23;                    /* 91 */
+    WORD wUnused24;                    /* 92 */
+    WORD wUnused25;                    /* 93 */
+    WORD wUnused26;                    /* 94 */
+    WORD wUnused27;                    /* 95 */
+    WORD wUnused28;                    /* 96 */
+    WORD wUnused29;                    /* 97 */
+    DWORD dwUnused30;                  /* 98, 99 */
+    ULONGLONG ullUnused31;             /* 100-103 */
+    WORD wUnused32;                    /* 104 */
+    WORD wUnused33;                    /* 105 */
+    WORD wUnused34;                    /* 106 */
+    WORD wUnused35;                    /* 107 */
+    WORD wUnused36;                    /* 108 */
+    WORD wUnused37;                    /* 109 */
+    WORD wUnused38;                    /* 110 */
+    WORD wUnused39;                    /* 111 */
+    WORD wUnused40[4];                 /* 112-115 */
+    WORD wUnused41;                    /* 116 */
+    DWORD dwUnused42;                  /* 117, 118 */
+    WORD wUnused43[8];                 /* 119-126 */
+    WORD wUnused44;                    /* 127 */
+    WORD wUnused45;                    /* 128 */
+    WORD wUnused46[31];                /* 129-159 */
+    WORD wUnused47;                    /* 160 */
+    WORD wUnused48[7];                 /* 161-167 */
+    WORD wUnused49;                    /* 168 */
+    WORD wDataSetManagement;           /* 169 */
+    WORD wUnused51[4];                 /* 170-173 */
+    WORD wUnused52[2];                 /* 174, 175 */
+    CHAR bUnused53[60];                /* 176-205 */
+    WORD wUnused54;                    /* 206 */
+    WORD wUnused55[2];                 /* 207, 208 */
+    WORD wUnused56;                    /* 209 */
+    DWORD dwUnused57;                  /* 210, 211 */
+    DWORD dwUnused58;                  /* 212, 213 */
+    WORD wNvCacheCapabilities;         /* 214 */
+    DWORD dwNvCacheLogicalBlocksSize;  /* 215, 216 */
+    WORD wRotationRate;                /* 217 */
+    WORD wUnused60;                    /* 218 */
+    WORD wNvCacheOptions1;             /* 219 */
+    WORD wNvCacheOptions2;             /* 220 */
+    WORD wUnused61;                    /* 221 */
+    WORD wUnused62;                    /* 222 */
+    WORD wUnused63;                    /* 223 */
+    WORD wUnused64[10];                /* 224-233 */
+    WORD wUnused65;                    /* 234 */
+    WORD wUnused68;                    /* 235 */
+    WORD wUnused66[19];                /* 236-254 */
+    WORD wUnused67;                    /* 255 */
+
+} IDSECTOR, *PIDSECTOR;
+#pragma pack (pop, id_data)
 
 typedef struct
 {
@@ -248,6 +315,12 @@ typedef struct
     SMART_DRIVERSTAT DriverStatus;
     BYTE bBuffer[1];
 } SMART_ATAOUTPARAM;
+
+typedef struct
+{
+    SENDCMDOUTPARAMS SendCmdOutParam;
+    BYTE Data[IDENTIFY_BUFFER_SIZE - 1];
+} READ_IDENTIFY_DATA_OUTDATA, *PREAD_IDENTIFY_DATA_OUTDATA;
 
 typedef struct
 {

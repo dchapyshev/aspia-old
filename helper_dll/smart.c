@@ -97,36 +97,44 @@ EnableSmart(HANDLE hHandle, BYTE bDevNumber)
 BOOL
 ReadSmartInfo(HANDLE hHandle, BYTE bDevNumber, IDSECTOR *Info)
 {
+    READ_IDENTIFY_DATA_OUTDATA CmdOut = {0};
     SENDCMDINPARAMS CmdIn = {0};
     DWORD cbBytesReturned;
-    char szOut[IDENTIFY_BUFFER_SIZE + 16];
     BOOL bResult;
 
     if (!Info) return FALSE;
 
-    CmdIn.cBufferSize = IDENTIFY_BUFFER_SIZE;
-    CmdIn.irDriveRegs.bSectorCountReg = 1;
+    CmdIn.cBufferSize                  = IDENTIFY_BUFFER_SIZE;
+    CmdIn.irDriveRegs.bSectorCountReg  = 1;
     CmdIn.irDriveRegs.bSectorNumberReg = 1;
-    CmdIn.irDriveRegs.bDriveHeadReg = 0xA0 | ((bDevNumber & 1) << 4);
-    CmdIn.irDriveRegs.bCommandReg = ID_CMD;
-    CmdIn.bDriveNumber = bDevNumber;
+    CmdIn.irDriveRegs.bDriveHeadReg    = 0xA0 | ((bDevNumber & 1) << 4);
+    CmdIn.irDriveRegs.bCommandReg      = ID_CMD;
+    CmdIn.bDriveNumber                 = bDevNumber;
 
     bResult = DeviceIoControl(hHandle,
                               SMART_RCV_DRIVE_DATA,
                               &CmdIn,
                               sizeof(SENDCMDINPARAMS),
-                              &szOut,
-                              IDENTIFY_BUFFER_SIZE + 16,
+                              &CmdOut,
+                              sizeof(READ_IDENTIFY_DATA_OUTDATA),
                               &cbBytesReturned,
                               NULL);
 
-    if (!bResult)
+    if (!bResult || cbBytesReturned != sizeof(READ_IDENTIFY_DATA_OUTDATA))
     {
         DebugTrace(L"DeviceIoControl() failed. Error code = %d", GetLastError());
         return FALSE;
     }
 
-    CopyMemory(Info, szOut + 16, sizeof(IDSECTOR));
+    __try
+    {
+        CopyMemory(Info, CmdOut.SendCmdOutParam.bBuffer, sizeof(IDSECTOR));
+    }
+    __except(EXCEPTION_EXECUTE_HANDLER)
+    {
+        DebugTrace(L"Exception when copying memory!");
+        return FALSE;
+    }
 
     return TRUE;
 }
