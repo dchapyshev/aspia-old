@@ -751,6 +751,13 @@
 #define IDS_SIGNED_FILE                  776
 #define IDS_DRIVER_SEARCH_URL            777
 #define IDS_CPUID_PHYSICAL_COUNT         778
+#define IDS_SUPPORTED_ENABLED            779
+#define IDS_SUPPORTED_DISABLED           780
+#define IDS_HDD_INTERFACE                781
+#define IDS_HDD_CURRENT_TRANSFER_MODE    782
+#define IDS_HDD_MAX_TRANSFER_MODE        783
+#define IDS_HDD_ROTATION_RATE            784
+#define IDS_HDD_ATA_FEATURES             785
 
 #define IDS_CAT_SUMMARY           1000
 

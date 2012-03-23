@@ -914,6 +914,13 @@ BEGIN
     IDS_SIGNED_FILE, "Signed"
     IDS_DRIVER_SEARCH_URL, "http://devid.drp.su/?l=en&dev=%s"
     IDS_CPUID_PHYSICAL_COUNT, "Physical Cores"
+    IDS_SUPPORTED_ENABLED, "Supported, Enabled"
+    IDS_SUPPORTED_DISABLED, "Supported, Disabled"
+    IDS_HDD_INTERFACE, "Interface"
+    IDS_HDD_CURRENT_TRANSFER_MODE, "Current Transfer Mode"
+    IDS_HDD_MAX_TRANSFER_MODE, "Max Transfer Mode"
+    IDS_HDD_ROTATION_RATE, "Rotation Rate"
+    IDS_HDD_ATA_FEATURES, "ATA Device Features"
 
     IDS_CAT_SUMMARY, "Summary Information"
 

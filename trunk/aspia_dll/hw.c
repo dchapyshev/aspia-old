@@ -60,19 +60,181 @@ EnumSmartDataProc(SMART_RESULT *Result)
     return TRUE;
 }
 
+#define TRANSFER_MODE_UNKNOWN        0x00
+#define TRANSFER_MODE_PIO            0x01
+#define TRANSFER_MODE_PIO_DMA        0x02
+#define TRANSFER_MODE_ULTRA_DMA_16   0x03
+#define TRANSFER_MODE_ULTRA_DMA_25   0x04
+#define TRANSFER_MODE_ULTRA_DMA_33   0x05
+#define TRANSFER_MODE_ULTRA_DMA_44   0x06
+#define TRANSFER_MODE_ULTRA_DMA_66   0x07
+#define TRANSFER_MODE_ULTRA_DMA_100  0x08
+#define TRANSFER_MODE_ULTRA_DMA_133  0x09
+#define TRANSFER_MODE_SATA_150       0x0A
+#define TRANSFER_MODE_SATA_300       0x0B
+#define TRANSFER_MODE_SATA_600       0x0C
+
+BOOL
+IsSATADrive(IDSECTOR DriveInfo)
+{
+    if (DriveInfo.wSATACapabilities != 0x0000 &&
+        DriveInfo.wSATACapabilities != 0xFFFF)
+        return TRUE;
+
+    return FALSE;
+}
+
+BYTE
+GetMaxTransferMode(IDSECTOR DriveInfo)
+{
+    BYTE Mode = TRANSFER_MODE_PIO;
+
+    if (DriveInfo.wMultiWordDMA & 0x0700)
+    {
+        Mode = TRANSFER_MODE_PIO_DMA;
+    }
+
+    if (DriveInfo.wUltraDMAMode & 0x40)
+        Mode = TRANSFER_MODE_ULTRA_DMA_133;
+    else if (DriveInfo.wUltraDMAMode & 0x20)
+        Mode = TRANSFER_MODE_ULTRA_DMA_100;
+    else if (DriveInfo.wUltraDMAMode & 0x10)
+        Mode = TRANSFER_MODE_ULTRA_DMA_66;
+    else if (DriveInfo.wUltraDMAMode & 0x08)
+        Mode = TRANSFER_MODE_ULTRA_DMA_44;
+    else if (DriveInfo.wUltraDMAMode & 0x04)
+        Mode = TRANSFER_MODE_ULTRA_DMA_33;
+    else if (DriveInfo.wUltraDMAMode & 0x02)
+        Mode = TRANSFER_MODE_ULTRA_DMA_25;
+    else if (DriveInfo.wUltraDMAMode & 0x01)
+        Mode = TRANSFER_MODE_ULTRA_DMA_16;
+
+    if (IsSATADrive(DriveInfo))
+    {
+        Mode = TRANSFER_MODE_SATA_150;
+
+        if (DriveInfo.wSATACapabilities & 0x10)
+            Mode = TRANSFER_MODE_UNKNOWN;
+        else if (DriveInfo.wSATACapabilities & 0x8)
+            Mode = TRANSFER_MODE_SATA_600;
+        else if (DriveInfo.wSATACapabilities & 0x4)
+            Mode = TRANSFER_MODE_SATA_300;
+        else if (DriveInfo.wSATACapabilities & 0x2)
+            Mode = TRANSFER_MODE_SATA_150;
+    }
+
+    return Mode;
+}
+
+BYTE
+GetCurrentTransferMode(IDSECTOR DriveInfo)
+{
+    BYTE Mode = TRANSFER_MODE_PIO;
+
+    if (DriveInfo.wMultiWordDMA & 0x0700)
+    {
+        Mode = TRANSFER_MODE_PIO_DMA;
+    }
+
+    if (DriveInfo.wUltraDMAMode & 0x4000)
+        Mode = TRANSFER_MODE_ULTRA_DMA_133;
+    else if (DriveInfo.wUltraDMAMode & 0x2000)
+        Mode = TRANSFER_MODE_ULTRA_DMA_100;
+    else if (DriveInfo.wUltraDMAMode & 0x1000)
+        Mode = TRANSFER_MODE_ULTRA_DMA_66;
+    else if (DriveInfo.wUltraDMAMode & 0x0800)
+        Mode = TRANSFER_MODE_ULTRA_DMA_44;
+    else if (DriveInfo.wUltraDMAMode & 0x0400)
+        Mode = TRANSFER_MODE_ULTRA_DMA_33;
+    else if (DriveInfo.wUltraDMAMode & 0x0200)
+        Mode = TRANSFER_MODE_ULTRA_DMA_25;
+    else if (DriveInfo.wUltraDMAMode & 0x0100)
+        Mode = TRANSFER_MODE_ULTRA_DMA_16;
+
+    if (IsSATADrive(DriveInfo))
+    {
+        Mode = TRANSFER_MODE_SATA_150;
+
+        if (DriveInfo.wSATACapabilities & 0x10)
+            Mode = TRANSFER_MODE_UNKNOWN;
+        else if (DriveInfo.wSATACapabilities & 0x8)
+            Mode = TRANSFER_MODE_SATA_600;
+        else if (DriveInfo.wSATACapabilities & 0x4)
+            Mode = TRANSFER_MODE_SATA_300;
+        else if (DriveInfo.wSATACapabilities & 0x2)
+            Mode = TRANSFER_MODE_SATA_150;
+    }
+
+    return Mode;
+}
+
+VOID
+TransferModeToText(BYTE Mode, LPWSTR lpText, SIZE_T Size)
+{
+    WCHAR *ptr;
+
+    switch (Mode)
+    {
+        case TRANSFER_MODE_PIO:           ptr = L"PIO";                      break;
+        case TRANSFER_MODE_PIO_DMA:       ptr = L"PIO / DMA";                break;
+        case TRANSFER_MODE_ULTRA_DMA_133: ptr = L"Ultra DMA/133 (133 MB/s)"; break;
+        case TRANSFER_MODE_ULTRA_DMA_100: ptr = L"Ultra DMA/100 (100 MB/s)"; break;
+        case TRANSFER_MODE_ULTRA_DMA_66:  ptr = L"Ultra DMA/66 (66 MB/s)";   break;
+        case TRANSFER_MODE_ULTRA_DMA_44:  ptr = L"Ultra DMA/44 (44 MB/s)";   break;
+        case TRANSFER_MODE_ULTRA_DMA_33:  ptr = L"Ultra DMA/33 (33 MB/s)";   break;
+        case TRANSFER_MODE_ULTRA_DMA_25:  ptr = L"Ultra DMA/25 (25 MB/s)";   break;
+        case TRANSFER_MODE_ULTRA_DMA_16:  ptr = L"Ultra DMA/16 (16 MB/s)";   break;
+        case TRANSFER_MODE_SATA_600:      ptr = L"SATA/600 (600 MB/s)";      break;
+        case TRANSFER_MODE_SATA_300:      ptr = L"SATA/300 (300 MB/s)";      break;
+        case TRANSFER_MODE_SATA_150:      ptr = L"SATA/150 (150 MB/s)";      break;
+        default:                          ptr = L"Unknown";                  break;
+    }
+
+    StringCbCopy(lpText, Size, ptr);
+}
+
+WORD
+GetMajorVersion(IDSECTOR DriveInfo)
+{
+    WORD result = 0;
+    INT i = 14;
+
+    if (DriveInfo.wMajorVersion != 0xFFFF &&
+        DriveInfo.wMajorVersion != 0x0)
+    {
+        while (i > 0)
+        {
+            if ((DriveInfo.wMajorVersion >> i) & 0x1)
+            {
+                result = i;
+                break;
+            }
+            --i;
+        }
+    }
+
+    return result;
+}
+
 VOID
 HW_HDDATAInfo(VOID)
 {
     DISK_GEOMETRY DiskGeometry = {0};
     IDSECTOR DriveInfo = {0};
-    WCHAR szText[MAX_STR_LEN], szFormat[MAX_STR_LEN];
+    WCHAR szText[MAX_STR_LEN], szFormat[MAX_STR_LEN], *pText;
+    WCHAR szSupported[MAX_STR_LEN], szUnsupported[MAX_STR_LEN],
+          szSupEnabled[MAX_STR_LEN], szSupDisabled[MAX_STR_LEN];
+    BOOL IsSupported, IsEnabled;
+    WORD wMajorVersion;
     HANDLE hHandle;
-    BYTE bIndex;
+    BYTE bIndex, Mode;
     INT Index;
 
     DebugStartReceiving();
 
     IoAddIcon(IDI_HDD);
+    IoAddIcon(IDI_CHECKED);
+    IoAddIcon(IDI_UNCHECKED);
 
     for (bIndex = 0; bIndex <= 32; ++bIndex)
     {
@@ -103,6 +265,33 @@ HW_HDDATAInfo(VOID)
             ChangeByteOrder((PCHAR)DriveInfo.sFirmwareRev,
                             sizeof(DriveInfo.sFirmwareRev));
             IoSetItemText(Index, 1, L"%S", DriveInfo.sFirmwareRev);
+
+            Index = IoAddValueName(1, IDS_HDD_INTERFACE, 0);
+            if (IsSATADrive(DriveInfo))
+                pText = L"SATA";
+            else
+                pText = L"IDE";
+            IoSetItemText(Index, 1, pText);
+
+            Index = IoAddValueName(1, IDS_HDD_CURRENT_TRANSFER_MODE, 0);
+            Mode = GetCurrentTransferMode(DriveInfo);
+            TransferModeToText(Mode, szText, sizeof(szText));
+            IoSetItemText(Index, 1, szText);
+
+            if (!IsSATADrive(DriveInfo))
+            {
+                Index = IoAddValueName(1, IDS_HDD_MAX_TRANSFER_MODE, 0);
+                Mode = GetCurrentTransferMode(DriveInfo);
+                TransferModeToText(Mode, szText, sizeof(szText));
+                IoSetItemText(Index, 1, szText);
+            }
+
+            if (DriveInfo.wRotationRate < 65535 &&
+                DriveInfo.wRotationRate >= 1025)
+            {
+                Index = Index = IoAddValueName(1, IDS_HDD_ROTATION_RATE, 0);
+                IoSetItemText(Index, 1, L"%d RPM", DriveInfo.wRotationRate);
+            }
 
             if (GetSmartDiskGeometry(bIndex, &DiskGeometry))
             {
@@ -144,6 +333,94 @@ HW_HDDATAInfo(VOID)
             else
                 StringCbCopy(szText, sizeof(szText), L"Unknown");
             IoSetItemText(Index, 1, szText);
+
+            IoAddFooter();
+
+            wMajorVersion = GetMajorVersion(DriveInfo);
+
+            IoAddHeader(1, 0, IDS_HDD_ATA_FEATURES);
+
+            LoadMUIString(IDS_CPUID_SUPPORTED,    szSupported,   MAX_STR_LEN);
+            LoadMUIString(IDS_CPUID_UNSUPPORTED,  szUnsupported, MAX_STR_LEN);
+            LoadMUIString(IDS_SUPPORTED_ENABLED,  szSupEnabled,  MAX_STR_LEN);
+            LoadMUIString(IDS_SUPPORTED_DISABLED, szSupDisabled, MAX_STR_LEN);
+
+            /* 48-bit LBA */
+            IsSupported = (wMajorVersion >= 5 && DriveInfo.wCommandSetSupport2 & (1 << 10)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"48-bit LBA");
+            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+            /* Advanced Power Management */
+            IsSupported = (wMajorVersion >= 3 && DriveInfo.wCommandSetSupport2 & (1 << 3)) ? TRUE : FALSE;
+            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled2 & (1 << 3)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Advanced Power Management");
+            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+            /* Automatic Acoustic Management */
+            IsSupported = (wMajorVersion >= 5 && DriveInfo.wCommandSetSupport2 & (1 << 9)) ? TRUE : FALSE;
+            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled2 & (1 << 9)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Automatic Acoustic Management");
+            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+            /* SMART */
+            IsSupported = (wMajorVersion >= 3 && DriveInfo.wCommandSetSupport1 & (1 << 0)) ? TRUE : FALSE;
+            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 0)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"SMART");
+            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+            /* SMART Error Logging */
+            IsSupported = (DriveInfo.wCommandSetSupport3 & (1 << 0)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"SMART Error Logging");
+            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+            /* SMART Self-Test */
+            IsSupported = (DriveInfo.wCommandSetSupport3 & (1 << 1)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"SMART Self-Test");
+            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+            /* Streaming */
+            IsSupported = (DriveInfo.wCommandSetSupport3 & (1 << 4)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Streaming");
+            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+            /* General Purpose Logging */
+            IsSupported = (DriveInfo.wCommandSetSupport3 & (1 << 5)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"General Purpose Logging");
+            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+            /* Security Mode */
+            IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 1)) ? TRUE : FALSE;
+            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 1)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Security Mode");
+            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+            /* Power Management */
+            IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 3)) ? TRUE : FALSE;
+            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 3)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Power Management");
+            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+            /* Write Cache */
+            IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 5)) ? TRUE : FALSE;
+            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 5)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Write Cache");
+            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+            /* Read Look-Ahead */
+            IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 6)) ? TRUE : FALSE;
+            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 6)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Read Look-Ahead");
+            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+            /* Native Command Queuing (NCQ) */
+            IsSupported = (wMajorVersion >= 6 && DriveInfo.wSATACapabilities & (1 << 8)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Native Command Queuing");
+            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+            /* TRIM */
+            IsSupported = (wMajorVersion >= 7 && DriveInfo.wDataSetManagement & (1 << 0)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"TRIM");
+            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
 
             IoAddFooter();
         }
@@ -1513,10 +1790,21 @@ HW_OpenGlInfo(VOID)
     PixelFormatDesc.iPixelType = PFD_TYPE_RGBA;
     PixelFormatDesc.iLayerType = PFD_MAIN_PLANE;
     PixelFormatDesc.cDepthBits = 16;
+
+    DebugTrace(L"test 0");
+
     iPixelFormat = ChoosePixelFormat(hDC, &PixelFormatDesc);
     SetPixelFormat(hDC, iPixelFormat, &PixelFormatDesc);
+
+    DebugTrace(L"test 1");
+
     hRC = wglCreateContext(hDC);
+
+    DebugTrace(L"test 2");
+
     wglMakeCurrent(hDC, hRC);
+
+    DebugTrace(L"test 3");
 
     IoAddHeader(0, 0, IDS_OPENGL_PROP);
 
@@ -1555,6 +1843,8 @@ HW_OpenGlInfo(VOID)
         IoSetItemText(Index, 1, L"%d-bit", i_data);
     }
 
+    DebugTrace(L"test 4");
+
     glGetIntegerv(GL_MAX_VIEWPORT_DIMS, &i_data);
     if (i_data)
     {
@@ -1584,6 +1874,8 @@ HW_OpenGlInfo(VOID)
                       i_data, i_data, i_data);
     }
 
+    DebugTrace(L"test 5");
+
     glGetIntegerv(GL_MAX_CLIP_PLANES, &i_data);
     if (i_data)
     {
@@ -1612,6 +1904,8 @@ HW_OpenGlInfo(VOID)
         IoSetItemText(Index, 1, L"%d", i_data);
     }
 
+    DebugTrace(L"test 6");
+
     glGetIntegerv(GL_MAX_LIGHTS, &i_data);
     if (i_data)
     {
@@ -1632,6 +1926,8 @@ HW_OpenGlInfo(VOID)
         Index = IoAddItem(1, 0, L"Max Texture LOD Bias");
         IoSetItemText(Index, 1, L"%d", i_data);
     }
+
+    DebugTrace(L"test 7");
 
     IoAddFooter();
     IoAddHeaderString(0, 0, L"Max Stack Depth");
@@ -1664,6 +1960,8 @@ HW_OpenGlInfo(VOID)
         IoSetItemText(Index, 1, L"%d", i_data);
     }
 
+    DebugTrace(L"test 8");
+
     glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, &i_data);
     if (i_data)
     {
@@ -1694,6 +1992,8 @@ HW_OpenGlInfo(VOID)
         Index = IoAddItem(1, 0, L"Max Vertex Count");
         IoSetItemText(Index, 1, L"%d", i_data);
     }
+
+    DebugTrace(L"test 9");
 
     IoAddFooter();
     IoAddHeader(0, 0, IDS_OPENGL_EXTENSIONS);
@@ -1740,9 +2040,14 @@ HW_OpenGlInfo(VOID)
         while (OpenglExtensions[++k].lpExtName != NULL);
     }
 
+    DebugTrace(L"test 10");
+
     /* Cleanup */
     wglMakeCurrent(NULL, NULL);
     wglDeleteContext(hRC);
+
+    DebugTrace(L"test 11");
+
     ReleaseDC(DllParams.hMainWnd, hDC);
 
     DebugEndReceiving();

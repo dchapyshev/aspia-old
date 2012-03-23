@@ -9,8 +9,8 @@
 
 #include <wchar.h>
 
-#define VER_FILEVERSION             0,2,6,0
-#define VER_FILEVERSION_STR         L"0.2.6\0"
+#define VER_FILEVERSION             0,3,0,0
+#define VER_FILEVERSION_STR         L"0.3.0\0"
 
 #define VER_PRODUCTVERSION          VER_FILEVERSION
 #define VER_PRODUCTVERSION_STR      VER_FILEVERSION_STR

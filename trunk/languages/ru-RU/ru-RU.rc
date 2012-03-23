@@ -915,6 +915,13 @@ BEGIN
     IDS_SIGNED_FILE, "Подписан"
     IDS_DRIVER_SEARCH_URL, "http://devid.drp.su/?l=ru&dev=%s"
     IDS_CPUID_PHYSICAL_COUNT, "Физических ядер"
+    IDS_SUPPORTED_ENABLED, "Поддерживается, включено"
+    IDS_SUPPORTED_DISABLED, "Поддерживается, выключено"
+    IDS_HDD_INTERFACE, "Интерфейс"
+    IDS_HDD_CURRENT_TRANSFER_MODE, "Текущий режим передачи"
+    IDS_HDD_MAX_TRANSFER_MODE, "Макс. режим передачи"
+    IDS_HDD_ROTATION_RATE, "Скорость вращения"
+    IDS_HDD_ATA_FEATURES, "Возможности устройства ATA"
 
     IDS_CAT_SUMMARY, "Общая информация"
 
