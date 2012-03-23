@@ -412,6 +412,33 @@ HW_HDDATAInfo(VOID)
             Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Read Look-Ahead");
             IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
 
+            /* Host Protected Area */
+            IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 10)) ? TRUE : FALSE;
+            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 10)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Host Protected Area");
+            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+            /* Release Interrupt */
+            IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 7)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Release Interrupt");
+            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+            /* Power-Up In Standby */
+            IsSupported = (DriveInfo.wCommandSetSupport2 & (1 << 5)) ? TRUE : FALSE;
+            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled2 & (1 << 5)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Power-Up In Standby");
+            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+            /* Device Configuration Overlay */
+            IsSupported = (DriveInfo.wCommandSetSupport2 & (1 << 11)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Device Configuration Overlay");
+            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+            /* Service Interrupt */
+            IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 8)) ? TRUE : FALSE;
+            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Service Interrupt");
+            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
             /* Native Command Queuing (NCQ) */
             IsSupported = (wMajorVersion >= 6 && DriveInfo.wSATACapabilities & (1 << 8)) ? TRUE : FALSE;
             Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Native Command Queuing");
