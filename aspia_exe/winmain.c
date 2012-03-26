@@ -189,7 +189,11 @@ GUIInfoThread(LPVOID lpParameter)
 {
     UINT Category = (UINT)lpParameter;
 
-    if (!IsLoadingDone) return;
+    if (!IsLoadingDone || !ParamsInfo.IsIoInitialized)
+    {
+        _endthread();
+        return;
+    }
 
     EnterCriticalSection(&CriticalSection);
 
@@ -797,6 +801,7 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
                 PostQuitMessage(0);
                 break;
             }
+            ParamsInfo.IsIoInitialized = TRUE;
             _beginthread(GUIInfoThread, 0, (LPVOID)SettingsInfo.StartupCategory);
             break;
 
@@ -892,7 +897,7 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
                         SetCanceledState(TRUE);
 
                         if (CurrentCategory == Category) break;
-                        _beginthread(GUIInfoThread, 0, (LPVOID)Category);
+                        //_beginthread(GUIInfoThread, 0, (LPVOID)Category);
                     }
                 }
                 break;
@@ -1077,6 +1082,7 @@ HandleCommandLine(VOID)
     if (!InitInfoDll())
         return FALSE;
 
+    ParamsInfo.IsIoInitialized = TRUE;
     ReportSave(FALSE, FALSE, szPath, bNavMenu);
 
     return TRUE;
@@ -1316,6 +1322,7 @@ wWinMain(HINSTANCE hInst,
     ParamsInfo.SxSmIcon = GetSystemMetrics(SM_CXSMICON);
     ParamsInfo.SySmIcon = GetSystemMetrics(SM_CYSMICON);
     ParamsInfo.SysColorDepth = GetSystemColorDepth();
+    ParamsInfo.IsIoInitialized = FALSE;
 
     GetCurrentPath(ParamsInfo.szCurrentPath, MAX_PATH);
 

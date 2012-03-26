@@ -47,6 +47,8 @@ typedef struct
 {
     BOOL DebugMode;
 
+    BOOL IsIoInitialized;
+
     INT SxSmIcon;
     INT SySmIcon;
     INT SysColorDepth;
