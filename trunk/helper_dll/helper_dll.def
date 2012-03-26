@@ -31,7 +31,7 @@ EnumSmartData
 GetSmartTemperature
 GetSmartDiskGeometry
 OpenScsi
-OpenScsiCdrom
+OpenScsiByDriveLetter
 CloseScsi
 ReadScsiInfo
 GetInquiryScsi

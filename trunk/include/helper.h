@@ -703,7 +703,7 @@ HANDLE OpenScsi(BYTE bDevNumber);
 BOOL CloseScsi(HANDLE hHandle);
 BOOL ReadScsiInfo(HANDLE hHandle, BYTE bDevNumber, IDSECTOR *Info);
 BOOL GetInquiryScsi(HANDLE hHandle, PINQUIRYDATA pInquiry);
-HANDLE OpenScsiCdrom(BYTE bDevNumber);
+HANDLE OpenScsiByDriveLetter(WCHAR letter);
 BOOL GetConfinurationScsi(HANDLE hHandle, WORD wProfile, PSCSI_GET_CONFIG pConfiguration);
 BOOL GetCDCapabilitiesScsi(HANDLE hHandle, PSCSI_CD_CAPABILITIES pCapabilities);
 BOOL GetCDReportKeyScsi(HANDLE hHandle, PREPORT_KEY_DATA pKeyData);

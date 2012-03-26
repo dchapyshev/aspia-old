@@ -1103,7 +1103,8 @@ FillReadWriteSupport(HANDLE hHandle,
 VOID
 HW_CDInfo(VOID)
 {
-    WCHAR szSupported[MAX_STR_LEN], szUnsupported[MAX_STR_LEN];
+    WCHAR szSupported[MAX_STR_LEN], szUnsupported[MAX_STR_LEN],
+          szDrives[MAX_PATH];
     CD_READ_WRITE_SUPPORT rw;
     SCSI_CD_CAPABILITIES Capabilities;
     REPORT_KEY_DATA KeyData;
@@ -1122,18 +1123,36 @@ HW_CDInfo(VOID)
     LoadMUIString(IDS_CPUID_SUPPORTED,    szSupported,   MAX_STR_LEN);
     LoadMUIString(IDS_CPUID_UNSUPPORTED,  szUnsupported, MAX_STR_LEN);
 
-    for (Index = 0; Index < 33; Index++)
+    if (!GetLogicalDriveStrings(sizeof(szDrives)/sizeof(WCHAR), szDrives))
+        return;
+
+    for (Index = 0; szDrives[Index] != 0; Index += 4)
     {
+        WCHAR szDrive[3];
         CHAR szVendor[8 + 1] = {0};
         CHAR szProductId[16 + 1] = {0};
         CHAR szProductRev[4 + 1] = {0};
 
-        hHandle = OpenScsiCdrom(Index);
+        if (*(szDrives) > L'Z')
+        {
+            if (szDrives[Index] <= L'Z') szDrives[Index] += 32;
+        }
+        else
+        {
+            if (szDrives[Index] > L'Z') szDrives[Index] -= 32;
+        }
+
+        StringCbPrintf(szDrive, sizeof(szDrive), L"%c:", szDrives[Index]);
+
+        if (GetDriveType(szDrive) != DRIVE_CDROM)
+            continue;
+
+        hHandle = OpenScsiByDriveLetter(szDrives[Index]);
 
         if (hHandle == INVALID_HANDLE_VALUE)
             continue;
 
-        DebugTrace(L"CdRom%d found!", Index);
+        DebugTrace(L"CdRom (%c:) found!", szDrives[Index]);
 
         if (!GetInquiryScsi(hHandle, &Inquiry))
             continue;
@@ -1142,7 +1161,7 @@ HW_CDInfo(VOID)
         memcpy(szProductId, Inquiry.ProductId, 16);
         memcpy(szProductRev, Inquiry.ProductRevisionLevel, 4);
 
-        IoAddItem(0, 0, L"%S %S", szVendor, szProductId);
+        IoAddItem(0, 0, L"(%s\\) %S %S", szDrive, szVendor, szProductId);
 
         ItemIndex = IoAddValueName(1, IDS_CDROM_FIRMWARE_REV, 0);
         IoSetItemText(ItemIndex, 1, L"%S", szProductRev);
