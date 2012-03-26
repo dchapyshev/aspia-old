@@ -42,13 +42,13 @@ OpenScsi(BYTE bDevNumber)
 }
 
 HANDLE
-OpenScsiCdrom(BYTE bDevNumber)
+OpenScsiByDriveLetter(WCHAR letter)
 {
     WCHAR szPath[MAX_PATH];
 
     StringCbPrintf(szPath, sizeof(szPath),
-                   L"\\\\.\\CdRom%d",
-                   bDevNumber);
+                   L"\\\\.\\%c:",
+                   letter);
 
     return CreateFile(szPath,
                       GENERIC_READ | GENERIC_WRITE,
