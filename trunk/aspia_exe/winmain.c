@@ -494,6 +494,49 @@ UrlEncode(LPWSTR lpInStr)
     return pOut;
 }
 
+VOID
+RunLocalizedHelp(VOID)
+{
+    WCHAR szIso639[MAX_STR_LEN];
+    WCHAR szIso3166[MAX_STR_LEN];
+    WCHAR szHelpPath[MAX_PATH];
+
+    if (!GetLocaleInfo(LOCALE_USER_DEFAULT,
+                       LOCALE_SISO639LANGNAME,
+                       szIso639, MAX_STR_LEN))
+       return;
+
+    if (!GetLocaleInfo(LOCALE_USER_DEFAULT,
+                       LOCALE_SISO3166CTRYNAME,
+                       szIso3166, MAX_STR_LEN))
+       return;
+
+    StringCbPrintf(szHelpPath, sizeof(szHelpPath),
+                   L"%shelp\\%s-%s.chm",
+                   ParamsInfo.szCurrentPath, szIso639, szIso3166);
+
+    if (GetFileAttributes(szHelpPath) == INVALID_FILE_ATTRIBUTES)
+    {
+        DebugTrace(L"Localized help file not found = %s",
+                   szHelpPath);
+
+        DebugTrace(L"Try to load en-US.chm file...");
+
+        StringCbPrintf(szHelpPath, sizeof(szHelpPath),
+                       L"%shelp\\en-US.chm",
+                       ParamsInfo.szCurrentPath);
+        if (GetFileAttributes(szHelpPath) == INVALID_FILE_ATTRIBUTES)
+        {
+            DebugTrace(L"en-US.chm not found!");
+            return;
+        }
+    }
+
+    DebugTrace(L"Run localized help file: %s", szHelpPath);
+
+    ShellExecute(NULL, NULL, szHelpPath, NULL, NULL, SW_SHOW);
+}
+
 static VOID
 OnCommand(UINT Command)
 {
@@ -581,6 +624,14 @@ OnCommand(UINT Command)
 
         case ID_EXIT:
             PostMessage(hMainWnd, WM_CLOSE, 0, 0);
+            break;
+
+        case ID_HELP:
+            RunLocalizedHelp();
+            break;
+
+        case ID_HELP_MENU:
+            ShowPopupMenu(IDR_HELP_POPUP);
             break;
 
         case ID_ABOUT:

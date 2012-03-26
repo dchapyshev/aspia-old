@@ -98,6 +98,16 @@ BEGIN
     END
 END
 
+IDR_HELP_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Contents...\tF1", ID_HELP
+        MENUITEM SEPARATOR
+        MENUITEM "&About Aspia...", ID_ABOUT
+    END
+END
+
 IDR_SHOW_TRAY_POPUP MENU
 BEGIN
     POPUP "popup"
@@ -230,7 +240,7 @@ STRINGTABLE DISCARDABLE
 BEGIN
     IDS_SAVE, "Save report"
     IDS_RELOAD, "Refresh"
-    IDS_ABOUT, "About..."
+    IDS_HELP, "Help"
     IDS_PARAM, "Parameter"
     IDS_VALUE, "Value"
     IDS_PRODUCT_KEY, "Product Key"

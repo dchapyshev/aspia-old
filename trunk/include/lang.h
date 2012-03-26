@@ -27,6 +27,7 @@
 #define IDR_TASKMGR              505
 #define IDR_INSTALLED_SOFTWARE   506
 #define IDR_DEVICES              507
+#define IDR_HELP_POPUP           508
 
 /* Menu Items */
 #define ID_ABOUT                 1000
@@ -62,6 +63,8 @@
 #define ID_APP_MODIFY            1036
 #define ID_APP_REMOVE_REG        1037
 #define ID_DRIVERS_SEARCH        1038
+#define ID_HELP                  1039
+#define ID_HELP_MENU             1040
 
 /* Controls */
 #define IDC_SET_PATH_BTN        102
@@ -107,7 +110,7 @@
 /* Strings */
 #define IDS_SAVE                    101
 #define IDS_RELOAD                  102
-#define IDS_ABOUT                   103
+#define IDS_HELP                    103
 #define IDS_PARAM                   104
 #define IDS_VALUE                   105
 #define IDS_UNKNOWN                 106
