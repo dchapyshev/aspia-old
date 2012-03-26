@@ -86,7 +86,7 @@ ShowDDR3MemoryTimings(BYTE *Spd, double Latency, int cl)
     INT ItemIndex;
 
     LoadMUIString(IDS_SPD_TIMING_FORMAT, szFormat, MAX_STR_LEN);
-    ItemIndex = IoAddItem(1, 1, szFormat, 1000.0 / Latency);
+    ItemIndex = IoAddItem(2, 1, szFormat, 1000.0 / Latency);
     IoSetItemText(ItemIndex, 1, L"%i-%i-%i-%i (CL-RCD-RP-RAS)/%i-%i-%i-%i-%i-%i (RC-RFC-RRD-WR-WTR-RTP)",
                   cl,
                   (int)Round((Spd[0x12] * 0.125)/Latency, 0),
@@ -254,10 +254,10 @@ ShowSpdDataForDDR3(BYTE *Spd)
 
     IoAddHeader(1, 1, IDS_SPD_MEMORY_TIMINGS);
 
-    ItemIndex = IoAddItem(1, 1, L"Minimum SDRAM Cycle Time (tCKmin)");
+    ItemIndex = IoAddItem(2, 1, L"Minimum SDRAM Cycle Time (tCKmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x0c] * 0.125);
 
-    ItemIndex = IoAddItem(1, 1, L"CAS# Latencies Supported");
+    ItemIndex = IoAddItem(2, 1, L"CAS# Latencies Supported");
     szText[0] = 0;
     if (GetBitsBYTE(Spd[0x0e], 0, 0))
         StringCbCat(szText, sizeof(szText), L"4, ");
@@ -292,40 +292,40 @@ ShowSpdDataForDDR3(BYTE *Spd)
     szText[wcslen(szText) - 2] = 0;
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddItem(1, 1, L"Minimum CAS# Latency Time (tAAmin)");
+    ItemIndex = IoAddItem(2, 1, L"Minimum CAS# Latency Time (tAAmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x10] * 0.125f);
 
-    ItemIndex = IoAddItem(1, 1, L"Minimum RAS# to CAS# Delay (tRCDmin)");
+    ItemIndex = IoAddItem(2, 1, L"Minimum RAS# to CAS# Delay (tRCDmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x12] * 0.125f);
 
-    ItemIndex = IoAddItem(1, 1, L"Minimum Row Procharge Time (tRPmin)");
+    ItemIndex = IoAddItem(2, 1, L"Minimum Row Procharge Time (tRPmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x14] * 0.125f);
 
-    ItemIndex = IoAddItem(1, 1, L"Minimum Active to Precharge Time (tRASmin)");
+    ItemIndex = IoAddItem(2, 1, L"Minimum Active to Precharge Time (tRASmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns",
                   (Spd[0x16] | (GetBitsBYTE(Spd[0x15], 0, 3) << 8)) * 0.125f);
 
-    ItemIndex = IoAddItem(1, 1, L"Minimum Write Recovery Time (tWRmin)");
+    ItemIndex = IoAddItem(2, 1, L"Minimum Write Recovery Time (tWRmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x11] * 0.125f);
 
-    ItemIndex = IoAddItem(1, 1, L"Minimum Row Active to Row Active Delay (tRRDmin)");
+    ItemIndex = IoAddItem(2, 1, L"Minimum Row Active to Row Active Delay (tRRDmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x13] * 0.125f);
 
-    ItemIndex = IoAddItem(1, 1, L"Minimum Active to Active/Refresh Time (tRCmin)");
+    ItemIndex = IoAddItem(2, 1, L"Minimum Active to Active/Refresh Time (tRCmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns",
                   (Spd[0x17] | (GetBitsBYTE(Spd[0x15], 0, 3) << 8)) * 0.125f);
 
-    ItemIndex = IoAddItem(1, 1, L"Minimum Refresh Recovery Time Delay (tRFCmin)");
+    ItemIndex = IoAddItem(2, 1, L"Minimum Refresh Recovery Time Delay (tRFCmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns",
                   (Spd[0x18] | (Spd[0x19] << 8)) * 0.125f);
 
-    ItemIndex = IoAddItem(1, 1, L"Minimum Internal Write to Read Command Delay (tWTRmin)");
+    ItemIndex = IoAddItem(2, 1, L"Minimum Internal Write to Read Command Delay (tWTRmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x1A] * 0.125f);
 
-    ItemIndex = IoAddItem(1, 1, L"Minimum Internal Read to Precharge Command Delay (tRTPmin)");
+    ItemIndex = IoAddItem(2, 1, L"Minimum Internal Read to Precharge Command Delay (tRTPmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns", Spd[0x1B] * 0.125f);
 
-    ItemIndex = IoAddItem(1, 1, L"Minimum Four Activate Window Delay Time (tFAWmin)");
+    ItemIndex = IoAddItem(2, 1, L"Minimum Four Activate Window Delay Time (tFAWmin)");
     IoSetItemText(ItemIndex, 1, L"%.3f ns",
                   (Spd[0x1D] | (GetBitsBYTE(Spd[0x1C], 0, 3) << 8)) * 0.125f);
 

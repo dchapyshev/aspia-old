@@ -91,3 +91,4 @@
 #define IDI_AUDIO         182
 #define IDI_MICROPHONE    183
 #define IDI_CLOSE         184
+#define IDI_DISK          185

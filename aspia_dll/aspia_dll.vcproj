@@ -250,6 +250,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\opticaldrives.c"
+				>
+			</File>
+			<File
 				RelativePath=".\os.c"
 				>
 			</File>

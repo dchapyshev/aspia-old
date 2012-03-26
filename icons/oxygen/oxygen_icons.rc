@@ -83,6 +83,8 @@ IDI_ATI           ICON DISCARDABLE "res/ati.ico"
 IDI_OPENGL        ICON DISCARDABLE "res/opengl.ico"
 IDI_AUDIO         ICON DISCARDABLE "res/audio.ico"
 IDI_MICROPHONE    ICON DISCARDABLE "res/microphone.ico"
+IDI_CLOSE         ICON DISCARDABLE "res/close.ico"
+IDI_DISK          ICON DISCARDABLE "res/disk.ico"
 
 STRINGTABLE DISCARDABLE
 BEGIN

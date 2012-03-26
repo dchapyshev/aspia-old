@@ -236,10 +236,19 @@ HW_HDDATAInfo(VOID)
     IoAddIcon(IDI_CHECKED);
     IoAddIcon(IDI_UNCHECKED);
 
+    LoadMUIString(IDS_CPUID_SUPPORTED,    szSupported,   MAX_STR_LEN);
+    LoadMUIString(IDS_CPUID_UNSUPPORTED,  szUnsupported, MAX_STR_LEN);
+    LoadMUIString(IDS_SUPPORTED_ENABLED,  szSupEnabled,  MAX_STR_LEN);
+    LoadMUIString(IDS_SUPPORTED_DISABLED, szSupDisabled, MAX_STR_LEN);
+
     for (bIndex = 0; bIndex <= 32; ++bIndex)
     {
         hHandle = OpenSmart(bIndex);
-        if (hHandle == INVALID_HANDLE_VALUE) continue;
+        if (hHandle == INVALID_HANDLE_VALUE)
+        {
+            DebugTrace(L"Index = %d", bIndex);
+            continue;
+        }
 
         if (ReadSmartInfo(hHandle, bIndex, &DriveInfo))
         {
@@ -334,16 +343,9 @@ HW_HDDATAInfo(VOID)
                 StringCbCopy(szText, sizeof(szText), L"Unknown");
             IoSetItemText(Index, 1, szText);
 
-            IoAddFooter();
-
             wMajorVersion = GetMajorVersion(DriveInfo);
 
             IoAddHeader(1, 0, IDS_HDD_ATA_FEATURES);
-
-            LoadMUIString(IDS_CPUID_SUPPORTED,    szSupported,   MAX_STR_LEN);
-            LoadMUIString(IDS_CPUID_UNSUPPORTED,  szUnsupported, MAX_STR_LEN);
-            LoadMUIString(IDS_SUPPORTED_ENABLED,  szSupEnabled,  MAX_STR_LEN);
-            LoadMUIString(IDS_SUPPORTED_DISABLED, szSupDisabled, MAX_STR_LEN);
 
             /* 48-bit LBA */
             IsSupported = (wMajorVersion >= 5 && DriveInfo.wCommandSetSupport2 & (1 << 10)) ? TRUE : FALSE;
@@ -454,61 +456,6 @@ HW_HDDATAInfo(VOID)
 
         CloseSmart(hHandle);
     }
-
-    DebugEndReceiving();
-}
-
-VOID
-HW_CDInfo(VOID)
-{
-    SP_DEVINFO_DATA DeviceInfoData = {0};
-    WCHAR szDeviceName[MAX_STR_LEN];
-    HDEVINFO hDevInfo;
-    INT DeviceIndex = 0;
-
-    DebugStartReceiving();
-
-    IoAddIcon(IDI_CD);
-
-    hDevInfo = SetupDiGetClassDevs(&GUID_DEVCLASS_CDROM,
-                                   0, 0,
-                                   DIGCF_PRESENT);
-    if (hDevInfo == INVALID_HANDLE_VALUE)
-        return;
-
-    DeviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
-
-    while (SetupDiEnumDeviceInfo(hDevInfo,
-                                 DeviceIndex,
-                                 &DeviceInfoData))
-    {
-        ++DeviceIndex;
-
-        if (!SetupDiGetDeviceRegistryProperty(hDevInfo,
-                                              &DeviceInfoData,
-                                              SPDRP_FRIENDLYNAME,
-                                              0,
-                                              (BYTE*)szDeviceName,
-                                              MAX_STR_LEN,
-                                              NULL))
-        {
-            if (!SetupDiGetDeviceRegistryProperty(hDevInfo,
-                                                  &DeviceInfoData,
-                                                  SPDRP_DEVICEDESC,
-                                                  0,
-                                                  (BYTE*)szDeviceName,
-                                                  MAX_STR_LEN,
-                                                  NULL))
-            {
-                LoadMUIString(IDS_DEVICE_UNKNOWN_DEVICE,
-                              szDeviceName, MAX_STR_LEN);
-            }
-        }
-
-        MessageBox(0, szDeviceName, 0, 0);
-    }
-
-    SetupDiDestroyDeviceInfoList(hDevInfo);
 
     DebugEndReceiving();
 }
