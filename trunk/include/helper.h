@@ -9,6 +9,7 @@
 #pragma once
 
 #include <batclass.h>
+#include <ntddscsi.h>
 
 /* PCI Ports */
 #define CONFIG_DATA    0xCFC
@@ -348,21 +349,364 @@ BOOL EnumSmartData(HANDLE hSmartHandle, BYTE bDevNumber, SMART_ENUMDATAPROC lpEn
 INT GetSmartTemperature(HANDLE hSmartHandle, BYTE bDevNumber);
 BOOL GetSmartDiskGeometry(BYTE bDevNumber, DISK_GEOMETRY *DiskGeometry);
 
+/* SCSI Defines */
+#define SPT_SENSEBUFFER_LENGTH 32
+#define SPT_DATABUFFER_LENGTH 512
+
+#define FEATURE_PROFILE_LIST                     0x0   /* A list of all Profiles supported by the Drive */
+#define FEATURE_CORE                             0x1   /* Mandatory behavior for all devices */
+#define FEATURE_MORPHING                         0x2   /* The Drive is able to report operational changes to the Host and accept
+                                                          Host requests to prevent operational changes. */
+#define FEATURE_REMOVABLE                        0x3   /* The medium may be removed from the device */
+#define FEATURE_WRITE_PROTECT                    0x4   /* The ability to control Write Protection status */
+/* 0x5 - 0xF - Reserved */
+#define FEATURE_RANDOM_READABLE                  0x10  /* The ability to read sectors with random addressing */
+/* 0x11 - 0x1C - Reserved */
+#define FEATURE_MULTI_READ                       0x1D  /* The Drive is able to read all CD media types; based on OSTA
+                                                          MultiRead */
+#define FEATURE_CD_READ                          0x1E  /* The ability to read CD specific structures */
+#define FEATURE_DVD_READ                         0x1F  /* The ability to read DVD specific structures */
+#define FEATURE_RANDOM_WRITABLE                  0x20  /* Write support for randomly addressed writes */
+#define FEATURE_INCREMENTAL_STREAMING_WRITABLE   0x21  /* Write support for sequential recording */
+#define FEATURE_FORMATTABLE                      0x23  /* Support for formatting of media. */
+#define FEATURE_HARDWARE_DEFECT_MANAGEMENT       0x24  /* Ability of the Drive/media system to provide an apparently defect-free
+                                                          space. */
+#define FEATURE_WRITE_ONCE                       0x25  /* Write support for write-once media that is writable in random order. */
+#define FEATURE_RESTRICTED_OVERWRITE             0x26  /* Write support for media that shall be written from Blocking boundaries
+                                                          only. */
+#define FEATURE_CDW_DASHR_CAV_WRITE              0x27  /* The ability to write high speed CD-RW media */
+#define FEATURE_MRW                              0x28  /* The ability to recognize and read and optionally write MRW formatted 
+                                                          media */
+#define FEATURE_ENHANCED_DEFECT_REPORTING        0x29  /* The ability to control RECOVERED ERROR reporting */
+#define FEATURE_DVD_PLUSRW                       0x2A  /* The ability to recognize, read and optionally write DVD+RW media */
+#define FEATURE_DVD_PLUSR                        0x2B  /* The ability to read DVD+R recorded media formats */
+#define FEATURE_RIGID_RESTRICTED_OVERWRITE       0x2C  /* Write support for media that is required to be written from Blocking
+                                                          boundaries with length of integral multiple of Blocking size only. */
+#define FEATURE_CD_TRACK_AT_ONCE                 0x2D  /* Ability to write CD with Track at Once recording */
+#define FEATURE_CD_MASTERING                     0x2E  /* The ability to write CD with Session at Once or Raw write methods. */
+#define FEATURE_DVD_DASHR_DASHRW_WRITE           0x2F  /* The ability to write DVD specific structures */
+#define FEATURE_LJ_RECORDING                     0x33  /* The ability to record in layer jump mode */
+#define FEATURE_LJ_RIGID_RESTRICTED_OVERWRITE    0x34  /* The ability to perform Layer Jump recording on Rigid Restricted
+                                                          Overwritable media  */
+#define FEATURE_STOP_LONG_OPERATION              0x35  /* The ability to stop the long immediate operation by a command. */
+/* 0x36 - Reserved */
+#define FEATURE_CD_DASHRW_MEDIA_WRITE_SUPPORT    0x37  /* The ability to report CD –RW media sub-types that are supported for
+                                                          write  */
+#define FEATURE_BD_DASHR_POW                     0x38  /* Logical Block overwrite service on BD-R discs formatted as
+                                                          SRM+POW.  */
+/* 0x39 - Reserved */
+#define FEATURE_DVD_PLUSRW_DL                    0x3A  /* The ability to read DVD+RW Dual Layer recorded media formats */
+#define FEATURE_DVD_PLUSR_DL                     0x3B  /* The ability to read DVD+R Dual Layer recorded media formats */
+/* 0x3C - 0x3F - Reserved */
+#define FEATURE_BD_READ                          0x40  /* The ability to read control structures and user data from a BD disc */
+#define FEATURE_BD_WRITE                         0x41  /* The ability to write control structures and user data to certain BD discs */
+#define FEATURE_TSR                              0x42  /* Timely, Safe Recording permits the Host to schedule defect 
+                                                          management. */
+/* 0x43 - 0x4F - Reserved */
+#define FEATURE_HD_DVD_READ                      0x50  /* The ability to read control structures and user data from a HD DVD disc */
+#define FEATURE_HD_DVD_WRITE                     0x51  /* The ability to write control structures and user data to certain HD DVD
+                                                          discs */
+#define FEATURE_HD_DVD_DASHRW_FRAGMENT_RECORDING 0x52  /* The ability to record HD DVD-RW in fragment recording mode */
+/* 0x53 - 0x7F - Reserved */
+#define FEATURE_HYBRID_DISC                      0x80  /* The ability to access some Hybrid Discs.  */
+/* 0x81 - 0xFF - Reserved */
+#define FEATURE_POWER_MANAGEMENT                 0x100 /* Host and device directed power management  */
+#define FEATURE_SMART                            0x101 /* Ability to perform Self Monitoring Analysis and Reporting Technology */
+#define FEATURE_EMBEDDED_CHANGER                 0x102 /* Single mechanism multiple disc changer */
+#define FEATURE_MICROCODE_UPGRADE                0x104 /* Ability for the device to accept new microcode via the interface */
+#define FEATURE_TIMEOUT                          0x105 /* Ability to respond to all commands within a specific time */
+#define FEATURE_DVD_CSS                          0x106 /* Ability to perform DVD CSS/CPPM authentication and RPC */
+#define FEATURE_REAL_TIME_STREAMING              0x107 /* Ability to read and write using Host requested performance parameters */
+#define FEATURE_DRIVE_SERIAL_NUMBER              0x108 /* The Drive has a unique identifier */
+#define FEATURE_DCBS                             0x10A /* The ability to read and/or write DCBs  */
+#define FEATURE_DVD_CPRM                         0x10B /* The Drive supports DVD CPRM authentication  */
+#define FEATURE_FIRMWARE_INFORMATION             0x10C /* Firmware creation date report */
+#define FEATURE_AACS                             0x10D /* The ability to decode and optionally encode AACS protected
+                                                          information */
+#define FEATURE_DVD_CSS_MANAGED_RECORDING        0x10E /* The ability to perform DVD CSS managed recording */
+/* 0x10F - Reserved */
+#define FEATURE_VCPS                             0x110 /* The ability to decode and optionally encode VCPS protected
+                                                          information */
+/* 0x111 - 0x112 - Reserved */
+#define FEATURE_SECURDISK                        0x113 /* The ability to encode and decode SecurDisc protected information */
+/* 0x114 - 0x142 - Reserved */
+#define FEATURE_OSSC                             0x142 /* TCG Optical Security Subsystem Class Feature */
+/* 0x143 - 0xFEFF - Reserved */
+/* 0xFF00 - 0xFFFF - Vendor Specific */
+
+#define PROFILE_NO_ACTIVE_PROFILE 0x0    // no active profile
+#define PROFILE_REMOVABLE_DISK    0x2    // re-writable; with removable media
+#define PROFILE_CD_ROM            0x8    // Read-Only Compact Disc
+#define PROFILE_CD_DASHR          0x9    // Write Once Compact Disc
+#define PROFILE_CD_DASHRW         0xA    // Re-writable compact Disc
+#define PROFILE_DVD_ROM           0x10   // DVD-ROM
+#define PROFILE_DVD_DASHR_SEQ     0x11   // Write once DVD using Sequential Recording
+#define PROFILE_DVD_RAM           0x12   // Rewritable DVD
+#define PROFILE_DVD_DASHRW_RES    0x13   // Re-writable DVD using Restricted Overwrite
+#define PROFILE_DVD_DASHRW_SEQ    0x14   // Re-writable DVD using Sequential Recording
+#define PROFILE_DVD_DASHR_DL_SEQ  0x15   // Dual Layer DVD-R using Sequential Recording
+#define PROFILE_DVD_DASHR_DL_JUMP 0x16   // Dual Layer DVD-R using Layer Jump Recording
+#define PROFILE_DVD_DASHRW_DL     0x17   // Dual Layer DVD-RW
+#define PROFILE_DVD_DDR           0x18   // Write Once DVD Download Disc Recording for CSS managed recording
+#define PROFILE_DVD_PLUSRW        0x1A   // DVD+ReWritable
+#define PROFILE_DVD_PLUSR         0x1B   // DVD+Recordable
+#define PROFILE_DVD_PLUSRW_DL     0x2A   // DVD+ReWritable Dual Layer
+#define PROFILE_DVD_PLUSR_DL      0x2B   // DVD+Recordable Dual Layer
+#define PROFILE_BD_ROM            0x40   // Blu-ray Disc ROM
+#define PROFILE_BD_R_SRM          0x41   // Blu-ray Disc Recordable - Sequential Recording Mode
+#define PROFILE_BD_R_RRM          0x42   // Blu-ray Disc Recordable - Random Recording Mode
+#define PROFILE_BD_RE             0x43   // Blu-ray Disc Rewritable
+#define PROFILE_HD_DVD_ROM        0x50   // Read-only HD DVD
+#define PROFILE_HD_DVD_R          0x51   // Write-once HD DVD
+#define PROFILE_HD_DVD_RAM        0x52   // Rewritable HD DVD
+#define PROFILE_HD_DVD_RW         0x53   // Rewritable HD DVD
+#define PROFILE_HD_DVD_R_DL       0x58   // Dual Layer Write-once HD-DVD
+#define PROFILE_HD_DVD_RW_DL      0x5A   // Dual Layer Rewritable HD-DVD
+#define PROFILE_NOT_CONFORMING    0xFFFF // Does not conform to any profile
+
+/* SCSI Commands */
+#define SCSI_FORMAT_UNIT                   0x04
+#define SCSI_INQUIRY                       0x12
+#define SCSI_START_STOP_UNIT               0x1B
+#define SCSI_READ_FORMAT_CAPACITIES        0x23
+#define SCSI_READ_CAPACITY                 0x25
+#define SCSI_READ                          0x28
+#define SCSI_WRITE                         0x2A
+#define SCSI_SEEK                          0x2B
+#define SCSI_VERIFY                        0x2F
+#define SCSI_WRITE_AND_VERIFY              0x2E
+#define SCSI_SYNCHRONIZE_CACHE             0x35
+#define SCSI_GET_CONFIGURATION             0x46
+#define SCSI_GET_EVENT_STATUS_NOTIFICATION 0x4A
+#define SCSI_READ_DISK_INFORMATION         0x51
+#define SCSI_READ_TRACK_INFORMATION        0x52
+#define SCSI_RESERVE_TRACK                 0x53
+#define SCSI_SEND_OPC_INFORMATION          0x54
+#define SCSI_REPAIR_TRACK                  0x58
+#define SCSI_CLOSE_TRACK_SESSION           0x5B
+#define SCSI_READ_BUFFER_CAPACITY          0x5C
+#define SCSI_SEND_CUE_SHEET                0x5D
+#define SCSI_BLANK                         0xA1
+#define SCSI_SEND_KEY                      0xA3
+#define SCSI_REPORT_KEY                    0xA4
+#define SCSI_LOAD_UNLOAD_MEDIUM            0xA6
+#define SCSI_SET_READ_AHEAD                0xA7
+#define SCSI_GET_PERFORMANCE               0xAC
+#define SCSI_READ_DISK_STRUCTURE           0xAD
+#define SCSI_SET_STREAMING                 0xB6
+#define SCSI_READ_CD_MSF                   0xB9
+#define SCSI_SET_CD_SPEED                  0xBB
+#define SCSI_MECHANISM_STATUS              0xBD
+#define SCSI_READ_CD                       0xBE
+#define SCSI_SEND_DISK_STRUCTURE           0xBF
+
+#pragma warning(disable:4201)
+#pragma warning(disable:4214)
+
 /* SCSI Structures */
-typedef struct _SRB_IO_CONTROL
+#pragma pack(push, inquiry, 1)
+typedef struct
 {
-    ULONG HeaderLength;
-    UCHAR Signature[8];
-    ULONG Timeout;
-    ULONG ControlCode;
-    ULONG ReturnCode;
-    ULONG Length;
-} SRB_IO_CONTROL, *PSRB_IO_CONTROL;
+    UCHAR DeviceType : 5;
+    UCHAR DeviceTypeQualifier : 3;
+    UCHAR DeviceTypeModifier : 7;
+    UCHAR RemovableMedia : 1;
+    union {
+        UCHAR Versions;
+        struct {
+            UCHAR ANSIVersion : 3;
+            UCHAR ECMAVersion : 3;
+            UCHAR ISOVersion : 2;
+        };
+    };
+    UCHAR ResponseDataFormat : 4;
+    UCHAR HiSupport : 1;
+    UCHAR NormACA : 1;
+    UCHAR TerminateTask : 1;
+    UCHAR AERC : 1;
+    UCHAR AdditionalLength;
+    UCHAR Reserved;
+    UCHAR Addr16 : 1;
+    UCHAR Addr32 : 1;
+    UCHAR AckReqQ: 1;
+    UCHAR MediumChanger : 1;
+    UCHAR MultiPort : 1;
+    UCHAR ReservedBit2 : 1;
+    UCHAR EnclosureServices : 1;
+    UCHAR ReservedBit3 : 1;
+    UCHAR SoftReset : 1;
+    UCHAR CommandQueue : 1;
+    UCHAR TransferDisable : 1;
+    UCHAR LinkedCommands : 1;
+    UCHAR Synchronous : 1;
+    UCHAR Wide16Bit : 1;
+    UCHAR Wide32Bit : 1;
+    UCHAR RelativeAddressing : 1;
+    UCHAR VendorId[8];
+    UCHAR ProductId[16];
+    UCHAR ProductRevisionLevel[4];
+    UCHAR VendorSpecific[20];
+    UCHAR Reserved3[40];
+} INQUIRYDATA, *PINQUIRYDATA;
+#pragma pack(pop, inquiry)
+
+#pragma pack(push, cd_cap, 1)
+typedef struct
+{
+    BYTE PageCode:6;
+    BYTE reserved1:1;
+    BYTE PS:1;
+    BYTE PageLength;
+    BYTE CDR_Read:1;
+    BYTE CDRW_Read:1;
+    BYTE Method2:1;
+    BYTE DVDROM_Read:1;
+    BYTE DVDR_Read:1;
+    BYTE DVDRAM_Read:1;
+    BYTE reserved2:2;
+    BYTE CDR_Write:1;
+    BYTE CDRW_Write:1;
+    BYTE Test_Write:1;
+    BYTE reserved3:1;
+    BYTE DVDR_Write:1;
+    BYTE DVDRAM_Write:1;
+    BYTE reserved4:2;
+    BYTE AudioPlay:1;
+    BYTE Composite:1;
+    BYTE DigitalPort1:1;
+    BYTE DigitalPort2:1;
+    BYTE Mode2Form1:1;
+    BYTE Mode2Form2:1;
+    BYTE MultiSession:1;
+    BYTE reserved5:1;
+    BYTE CDDA_CommandsSupported:1;
+    BYTE CDDAStream_is_Accurate:1;
+    BYTE R_W_Supported:1;
+    BYTE R_W_DeinterleavedAndCorrected:1;
+    BYTE C2Pointers_are_Supported:1;
+    BYTE ISRC:1;
+    BYTE UPC:1;
+    BYTE ReadBarCode:1;
+    BYTE Lock:1;
+    BYTE LockState:1;
+    BYTE PreventJumper:1;
+    BYTE Eject:1;
+    BYTE reserved6:1;
+    BYTE LoadingMechanismType:3;
+    BYTE SeparateVolumeLevelsPerChannel:1;
+    BYTE SeparateChannelMuteSupported:1;
+    BYTE ChangerSupportsDiscPresentReporting:1;
+    BYTE S_W_Slot_Selection_SSS:1;
+    BYTE SideChangeCapable:1;
+    BYTE PthroughWinLeadin:1;
+    BYTE reserved7:2;
+    WORD MaximumReadSpeedSupported;
+    WORD NumberOfVolumeLevelsSupported;
+    WORD BufferSize;
+    WORD CurrentreadSpeedSelected;
+    BYTE reserved8;
+    BYTE reserved9:1;
+    BYTE BCK:1;
+    BYTE RCK:1;
+    BYTE LSBF:1;
+    BYTE Length:2;
+    BYTE reserved10:2;
+    WORD MaximumWriteSpeedSupported;
+    WORD CurrentWriteSpeedSelected;
+} SCSI_CD_CAPABILITIES, *PSCSI_CD_CAPABILITIES;
+#pragma pack(pop, cd_cap)
+
+#pragma pack(push, get_conf_feature, 1)
+typedef struct
+{
+    USHORT featureCode;
+    UCHAR current : 1;
+    UCHAR persistent : 1;
+    UCHAR version : 4;
+    UCHAR rsvd1 : 2;
+    UCHAR additionalLength;
+    UCHAR additionalData[102];
+} GET_CONFIGURATION_FEATURE, *PGET_CONFIGURATION_FEATURE;
+#pragma pack(pop, get_conf_feature)
+
+#pragma pack(push, report_key, 1)
+typedef struct
+{
+    UCHAR OperationCode;
+    UCHAR Reserved1 : 5;
+    UCHAR Lun : 3;
+    UCHAR LogicalBlockAddress[4];
+    UCHAR Reserved2[2];
+    USHORT AllocationLength;
+    UCHAR KeyFormat : 6;
+    UCHAR AGID : 2;
+    UCHAR Control;
+} REPORT_KEY, *PREPORT_KEY;
+#pragma pack(pop, report_key)
+
+#pragma pack(push, report_key_data, 1)
+typedef struct
+{
+    UCHAR Reserved1[4];
+    UCHAR UserChanges: 3;
+    UCHAR VendorResets: 3;
+    UCHAR TypeCode: 2;
+    UCHAR RegionMask;
+    UCHAR RpcScheme;
+    UCHAR Reserved2;
+} REPORT_KEY_DATA, *PREPORT_KEY_DATA;
+#pragma pack(pop, report_key_data)
+
+enum MMC_KEY_FORMAT_CODE_CLASS0
+{
+    KEY_FORMAT_AGID_CSS  = 0,
+    KEY_FORMAT_CHAL_KEY  = 1,
+    KEY_FORMAT_KEY1  = 2,
+    KEY_FORMAT_TITLE_KEY  = 4,
+    KEY_FORMAT_ASF   = 5,
+    KEY_FORMAT_RPC_STATE  = 8,
+    KEY_FORMAT_AGID_CPRM  = 0x11,
+    KEY_FORMAT_NONE  = 0x3F
+};
+
+typedef struct
+{
+    UCHAR dataLength[4];
+    UCHAR rsvd1;
+    UCHAR rsvd2;
+    UCHAR currentProfile[2];
+} GET_CONFIGURATION_HEADER, *PGET_CONFIGURATION_HEADER;
+
+typedef struct
+{
+    GET_CONFIGURATION_HEADER Header;
+    GET_CONFIGURATION_FEATURE Feature;
+} SCSI_GET_CONFIG, *PSCSI_GET_CONFIG;
+
+typedef struct
+{
+    SCSI_PASS_THROUGH_DIRECT spt;
+    ULONG Filler;
+    UCHAR SenseBuffer[SPT_SENSEBUFFER_LENGTH];
+} SCSI_PASS_THROUGH_DIRECT_WBUF;
+
+typedef struct
+{
+    SCSI_PASS_THROUGH spt;
+    ULONG Filler;
+    UCHAR SenseBuffer[SPT_SENSEBUFFER_LENGTH];
+    UCHAR DataBuffer[SPT_DATABUFFER_LENGTH];
+} SCSI_PASS_THROUGH_WBUF;
 
 /* SCSI Functions */
 HANDLE OpenScsi(BYTE bDevNumber);
 BOOL CloseScsi(HANDLE hHandle);
 BOOL ReadScsiInfo(HANDLE hHandle, BYTE bDevNumber, IDSECTOR *Info);
+BOOL GetInquiryScsi(HANDLE hHandle, PINQUIRYDATA pInquiry);
+HANDLE OpenScsiCdrom(BYTE bDevNumber);
+BOOL GetConfinurationScsi(HANDLE hHandle, WORD wProfile, PSCSI_GET_CONFIG pConfiguration);
+BOOL GetCDCapabilitiesScsi(HANDLE hHandle, PSCSI_CD_CAPABILITIES pCapabilities);
+BOOL GetCDReportKeyScsi(HANDLE hHandle, PREPORT_KEY_DATA pKeyData);
 
 /* Battery Functions */
 HANDLE OpenBattery(LPWSTR lpszDevice);

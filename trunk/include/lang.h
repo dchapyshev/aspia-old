@@ -758,6 +758,19 @@
 #define IDS_HDD_MAX_TRANSFER_MODE        783
 #define IDS_HDD_ROTATION_RATE            784
 #define IDS_HDD_ATA_FEATURES             785
+#define IDS_CDROM_READ                   786
+#define IDS_CDROM_WRITE                  787
+#define IDS_CDROM_READ_WRITE             788
+#define IDS_CDROM_FIRMWARE_REV           789
+#define IDS_CDROM_SERIAL_NUMBER          790
+#define IDS_CDROM_INTERFACE              791
+#define IDS_CDROM_MANUFACTURER           792
+#define IDS_CDROM_BUFFER_SIZE            793
+#define IDS_CDROM_SUP_DISK_TYPES         794
+#define IDS_CDROM_DRIVE_FEATURES         795
+#define IDS_CDROM_REGION_CODE            796
+#define IDS_CDROM_REMAINING_USER_CHANGES 797
+#define IDS_CDROM_REMAINING_VENDOR_CHANGES 798
 
 #define IDS_CAT_SUMMARY           1000
 
