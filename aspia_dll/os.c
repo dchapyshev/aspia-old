@@ -1910,6 +1910,18 @@ FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
                         IoSetItemText(Index, 5, L"-");
                     }
                 }
+                else
+                {
+                    IoSetItemText(Index, 3, L"-");
+                    IoSetItemText(Index, 4, L"-");
+                    IoSetItemText(Index, 5, L"-");
+                }
+            }
+            else
+            {
+                IoSetItemText(Index, 3, L"-");
+                IoSetItemText(Index, 4, L"-");
+                IoSetItemText(Index, 5, L"-");
             }
         }
         else
