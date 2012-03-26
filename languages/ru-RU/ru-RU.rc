@@ -98,6 +98,16 @@ BEGIN
     END
 END
 
+IDR_HELP_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Содержание...\tF1", ID_HELP
+        MENUITEM SEPARATOR
+        MENUITEM "&О программе...", ID_ABOUT
+    END
+END
+
 IDR_SHOW_TRAY_POPUP MENU
 BEGIN
     POPUP "popup"
@@ -230,7 +240,7 @@ STRINGTABLE DISCARDABLE
 BEGIN
     IDS_SAVE, "Сохранить отчет"
     IDS_RELOAD, "Обновить"
-    IDS_ABOUT, "О программе..."
+    IDS_HELP, "Помощь"
     IDS_PARAM, "Параметр"
     IDS_VALUE, "Значение"
     IDS_PRODUCT_KEY, "Ключ продукта"

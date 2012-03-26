@@ -32,7 +32,7 @@ static const TBBUTTON Buttons[] =
     //{-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
     { 5, ID_SETTINGS, TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0},
     {-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
-    { 6, ID_ABOUT,    TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0}
+    { 6, ID_HELP_MENU,TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0}
 };
 
 
@@ -190,8 +190,8 @@ ToolBarOnGetDispInfo(LPTOOLTIPTEXT lpttt)
         case ID_RELOAD:
             StringID = IDS_RELOAD;
             break;
-        case ID_ABOUT:
-            StringID = IDS_ABOUT;
+        case ID_HELP_MENU:
+            StringID = IDS_HELP;
             break;
         case ID_SETTINGS:
             StringID = IDS_SETTINGS;
