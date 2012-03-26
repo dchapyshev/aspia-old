@@ -189,7 +189,7 @@ GUIInfoThread(LPVOID lpParameter)
 {
     UINT Category = (UINT)lpParameter;
 
-    if (!IsLoadingDone || !ParamsInfo.IsIoInitialized)
+    if (!IsLoadingDone)
     {
         _endthread();
         return;
@@ -896,8 +896,9 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
                         SetCanceledState(TRUE);
 
-                        if (CurrentCategory == Category) break;
-                        //_beginthread(GUIInfoThread, 0, (LPVOID)Category);
+                        if (CurrentCategory == Category ||
+                            !ParamsInfo.IsIoInitialized) break;
+                        _beginthread(GUIInfoThread, 0, (LPVOID)Category);
                     }
                 }
                 break;
