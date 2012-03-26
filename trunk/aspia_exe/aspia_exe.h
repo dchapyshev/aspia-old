@@ -208,6 +208,7 @@ typedef struct
 {
     /* Main Window Position */
     BOOL IsMaximized;
+
     INT Left;
     INT Top;
     INT Right;
@@ -216,6 +217,7 @@ typedef struct
 
     /* Report Window Position */
     BOOL ReportIsMaximized;
+
     INT ReportLeft;
     INT ReportTop;
     INT ReportRight;

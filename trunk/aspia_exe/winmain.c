@@ -1434,7 +1434,10 @@ wWinMain(HINSTANCE hInst,
                               szWindowClass,
                               L"Aspia",
                               WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-                              20, 20, 850, 640,
+                              SettingsInfo.Left,
+                              SettingsInfo.Top,
+                              SettingsInfo.Right - SettingsInfo.Left,
+                              SettingsInfo.Bottom - SettingsInfo.Top,
                               NULL, NULL, hInstance, NULL);
 
     if (!hMainWnd) goto Exit;
@@ -1470,7 +1473,7 @@ wWinMain(HINSTANCE hInst,
             AddMainWindowToTray();
 
         /* Show it */
-        ShowWindow(hMainWnd, SW_SHOW);
+        ShowWindow(hMainWnd, (SettingsInfo.IsMaximized) ? SW_SHOWMAXIMIZED : SW_SHOW);
         UpdateWindow(hMainWnd);
     }
 

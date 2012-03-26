@@ -893,7 +893,7 @@ IoCloseReport(VOID)
     {
         AppendStringToFile(L"\r\n<br /><div id='f'>Aspia ");
         AppendStringToFile(VER_FILEVERSION_STR);
-        AppendStringToFile(L"<br />&copy; 2011 <a href='http://www.aspia.ru'>Aspia Software</a></div>\r\n</body>\r\n</html>");
+        AppendStringToFile(L"<br />&copy; 2011-2012 <a href='http://www.aspia.ru'>Aspia Software</a></div>\r\n</body>\r\n</html>");
     }
     else if (IoTarget == IO_TARGET_RTF)
     {

@@ -428,15 +428,6 @@ InitControls(HWND hwnd)
     WNDCLASSEX SplitWndClass = {0};
     HTREEITEM hSelectedItem;
 
-    if (SettingsInfo.SaveWindowPos)
-    {
-        MoveWindow(hwnd, SettingsInfo.Left, SettingsInfo.Top,
-                   SettingsInfo.Right - SettingsInfo.Left,
-                   SettingsInfo.Bottom - SettingsInfo.Top, TRUE);
-
-        if (SettingsInfo.IsMaximized) ShowWindow(hwnd, SW_MAXIMIZE);
-    }
-
     InitToolBar(hwnd);
 
     hTreeView = CreateWindowEx(WS_EX_CLIENTEDGE,

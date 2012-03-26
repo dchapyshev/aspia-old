@@ -890,18 +890,6 @@ ReportWindowInitControls(HWND hwnd)
     WCHAR szText[MAX_STR_LEN];
     DWORD dwSize;
 
-    if (SettingsInfo.SaveWindowPos)
-    {
-        MoveWindow(hwnd, SettingsInfo.ReportLeft,
-                   SettingsInfo.ReportTop,
-                   SettingsInfo.ReportRight - SettingsInfo.ReportLeft,
-                   SettingsInfo.ReportBottom - SettingsInfo.ReportTop,
-                   TRUE);
-
-        if (SettingsInfo.ReportIsMaximized)
-            ShowWindow(hwnd, SW_MAXIMIZE);
-    }
-
     /* Initialize TreeView */
     hReportTree = CreateWindowEx(WS_EX_CLIENTEDGE,
                                  WC_TREEVIEW,
@@ -1285,7 +1273,10 @@ CreateReportWindow(VOID)
                                 szWindowClass,
                                 szWindowName,
                                 WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-                                22, 16, 357, 440,
+                                SettingsInfo.ReportLeft,
+                                SettingsInfo.ReportTop,
+                                SettingsInfo.ReportRight - SettingsInfo.ReportLeft,
+                                SettingsInfo.ReportBottom - SettingsInfo.ReportTop,
                                 NULL, NULL, hInstance, NULL);
 
     if (!hReportWnd)
@@ -1295,7 +1286,7 @@ CreateReportWindow(VOID)
     }
 
     /* Show it */
-    ShowWindow(hReportWnd, SW_SHOW);
+    ShowWindow(hReportWnd, (SettingsInfo.ReportIsMaximized) ? SW_SHOWMAXIMIZED : SW_SHOW);
     UpdateWindow(hReportWnd);
 
     /* Hide main window */
