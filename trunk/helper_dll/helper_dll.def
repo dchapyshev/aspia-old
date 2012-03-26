@@ -1,71 +1,76 @@
 LIBRARY HELPER.DLL
 EXPORTS
-LoadDriver @1
-UnloadDriver @2
-GetSmbiosData @3
-EnumSmBusBaseAddress @4
-ReadSpdData @5
-ReadMsr @6
-ReadIoPortWord @7
-ReadIoPortDword @8
-ReadIoPortByte @9
-WriteIoPortWord @10
-WriteIoPortDword @11
-WriteIoPortByte @12
-GetRegisterDataDword @13
-GetRegisterDataWord @14
-ReadPciConfig @15
-WritePciConfig @16
-ReadPmc @17
-InitDebugLog @18
-CloseDebugLog @19
-WriteDebugLog @20
-OpenSmart @21
-CloseSmart @22
-GetSmartVersion @23
-EnableSmart @24
-ReadSmartInfo @25
-ReadSmartAttributes @26
-ReadSmartThresholds @27
-EnumSmartData @28
-GetSmartTemperature @29
-GetSmartDiskGeometry @30
-OpenScsi @31
-CloseScsi @32
-ReadScsiInfo @33
-EnableScsiSmart @34
-ReadScsiSmartAttributes @35
-ReadScsiSmartThresholds @36
-OpenBattery @37
-CloseBattery @38
-GetBatteryTag @39
-QueryBatteryInfo @40
-QueryBatteryStatus @41
-GetSystemColorDepth @42
-GetCpuUsage @43
-CreateScreenshot @44
-CenterWindow @45
-ChangeByteOrder @46
-GetCurrentPath @47
-IsWin64System @48
-SafeStrLen @49
-SafeStrCpyN @50
-SafeStrCmp @51
-IsUserAdmin @52
-StrToHex @53
-IsWindows2000 @54
-GetBinaryFromRegistry @55
-GetStringFromRegistry @56
-AddIconToImageList @57
-InitNvidiaApi @58
-FreeNvidiaApi @59
-IsNvidiaApiInitialized @60
-EnumNvidiaGPUs @61
-KillProcess @62
-LoadMUIStringF @63
-Round @64
-ChopSpaces @65
-ConvertSecondsToString @66
-TimeToString @67
-GetFileDescription @68
-GetFolderAssocIcon @69
+LoadDriver
+UnloadDriver
+GetSmbiosData
+EnumSmBusBaseAddress
+ReadSpdData
+ReadMsr
+ReadIoPortWord
+ReadIoPortDword
+ReadIoPortByte
+WriteIoPortWord
+WriteIoPortDword
+WriteIoPortByte
+GetRegisterDataDword
+GetRegisterDataWord
+ReadPciConfig
+WritePciConfig
+ReadPmc
+InitDebugLog
+CloseDebugLog
+WriteDebugLog
+OpenSmart
+CloseSmart
+GetSmartVersion
+EnableSmart
+ReadSmartInfo
+ReadSmartAttributes
+ReadSmartThresholds
+EnumSmartData
+GetSmartTemperature
+GetSmartDiskGeometry
+OpenScsi
+OpenScsiCdrom
+CloseScsi
+ReadScsiInfo
+GetInquiryScsi
+GetConfinurationScsi
+GetCDCapabilitiesScsi
+GetCDReportKeyScsi
+EnableScsiSmart
+ReadScsiSmartAttributes
+ReadScsiSmartThresholds
+OpenBattery
+CloseBattery
+GetBatteryTag
+QueryBatteryInfo
+QueryBatteryStatus
+GetSystemColorDepth
+GetCpuUsage
+CreateScreenshot
+CenterWindow
+ChangeByteOrder
+GetCurrentPath
+IsWin64System
+SafeStrLen
+SafeStrCpyN
+SafeStrCmp
+IsUserAdmin
+StrToHex
+IsWindows2000
+GetBinaryFromRegistry
+GetStringFromRegistry
+AddIconToImageList
+InitNvidiaApi
+FreeNvidiaApi
+IsNvidiaApiInitialized
+EnumNvidiaGPUs
+KillProcess
+LoadMUIStringF
+Round
+ChopSpaces
+ConvertSecondsToString
+TimeToString
+GetFileDescription
+GetFolderAssocIcon

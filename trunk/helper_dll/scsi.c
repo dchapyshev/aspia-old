@@ -41,10 +41,246 @@ OpenScsi(BYTE bDevNumber)
                       NULL);
 }
 
+HANDLE
+OpenScsiCdrom(BYTE bDevNumber)
+{
+    WCHAR szPath[MAX_PATH];
+
+    StringCbPrintf(szPath, sizeof(szPath),
+                   L"\\\\.\\CdRom%d",
+                   bDevNumber);
+
+    return CreateFile(szPath,
+                      GENERIC_READ | GENERIC_WRITE,
+                      FILE_SHARE_READ | FILE_SHARE_WRITE,
+                      NULL,
+                      OPEN_EXISTING,
+                      0,
+                      NULL);
+}
+
 BOOL
 CloseScsi(HANDLE hHandle)
 {
     return CloseHandle(hHandle);
+}
+
+BOOL
+GetConfinurationScsi(HANDLE hHandle,
+                     WORD wProfile,
+                     PSCSI_GET_CONFIG pConfiguration)
+{
+    SCSI_PASS_THROUGH_DIRECT_WBUF SCSICmd = {0};
+    PSCSI_GET_CONFIG pConfig;
+    LPVOID dataBuffer = NULL;
+    ULONG dataBufferSize;
+    DWORD bytesReturned;
+
+    dataBufferSize = sizeof(SCSI_GET_CONFIG);
+    dataBuffer = HeapAlloc(GetProcessHeap(),
+                           HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY,
+                           dataBufferSize);
+    if (!dataBuffer)
+    {
+        return FALSE;
+    }
+
+    pConfig = (PSCSI_GET_CONFIG)dataBuffer;
+
+    SCSICmd.spt.Length             = sizeof(SCSI_PASS_THROUGH);
+    SCSICmd.spt.PathId             = 0;
+    SCSICmd.spt.TargetId           = 1;
+    SCSICmd.spt.Lun                = 0;
+    SCSICmd.spt.TimeOutValue       = 5;
+    SCSICmd.spt.SenseInfoLength    = SPT_SENSEBUFFER_LENGTH;
+    SCSICmd.spt.SenseInfoOffset    = offsetof(SCSI_PASS_THROUGH_WBUF, SenseBuffer);
+    SCSICmd.spt.DataIn             = SCSI_IOCTL_DATA_IN;
+    SCSICmd.spt.DataTransferLength = dataBufferSize;
+    SCSICmd.spt.DataBuffer         = pConfig;
+
+    SCSICmd.spt.CdbLength = 10;
+    SCSICmd.spt.Cdb[0]    = SCSI_GET_CONFIGURATION;
+    SCSICmd.spt.Cdb[1]    = 0;
+    SCSICmd.spt.Cdb[2]    = (wProfile >> 8) & 0xFF;
+    SCSICmd.spt.Cdb[3]    = wProfile & 0xFF;
+    SCSICmd.spt.Cdb[7]    = (dataBufferSize >> 8) & 0xFF;
+    SCSICmd.spt.Cdb[8]    = dataBufferSize & 0xFF;
+
+    if (!DeviceIoControl(hHandle,
+                         IOCTL_SCSI_PASS_THROUGH_DIRECT,
+                         &SCSICmd,
+                         sizeof(SCSI_PASS_THROUGH_DIRECT_WBUF),
+                         &SCSICmd,
+                         sizeof(SCSI_PASS_THROUGH_DIRECT_WBUF),
+                         &bytesReturned,
+                         FALSE))
+    {
+        HeapFree(GetProcessHeap(), 0, dataBuffer);
+        return FALSE;
+    }
+
+    CopyMemory(pConfiguration, pConfig, sizeof(SCSI_GET_CONFIG));
+    HeapFree(GetProcessHeap(), 0, dataBuffer);
+
+    return TRUE;
+}
+
+BOOL
+GetCDCapabilitiesScsi(HANDLE hHandle,
+                      PSCSI_CD_CAPABILITIES pCapabilities)
+{
+    SCSI_PASS_THROUGH_DIRECT_WBUF SCSICmd = {0};
+    BYTE dataBuffer[36];
+    DWORD bytesReturned;
+
+    SCSICmd.spt.Length             = sizeof(SCSI_PASS_THROUGH_DIRECT);
+    SCSICmd.spt.PathId             = 0;
+    SCSICmd.spt.TargetId           = 1;
+    SCSICmd.spt.Lun                = 0;
+    SCSICmd.spt.TimeOutValue       = 10;
+    SCSICmd.spt.SenseInfoLength    = 24;
+    SCSICmd.spt.SenseInfoOffset    = offsetof(SCSI_PASS_THROUGH_WBUF, SenseBuffer);
+    SCSICmd.spt.DataIn             = SCSI_IOCTL_DATA_IN;
+    SCSICmd.spt.DataTransferLength = 36;
+    SCSICmd.spt.DataBuffer         = dataBuffer;
+
+    SCSICmd.spt.CdbLength = 10;
+    SCSICmd.spt.Cdb[0]    = 0x1A;
+    SCSICmd.spt.Cdb[2]    = 0x2A;
+    SCSICmd.spt.Cdb[4]    = 36;
+
+    if (!DeviceIoControl(hHandle,
+                         IOCTL_SCSI_PASS_THROUGH_DIRECT,
+                         &SCSICmd,
+                         sizeof(SCSI_PASS_THROUGH_DIRECT_WBUF),
+                         &SCSICmd,
+                         sizeof(SCSI_PASS_THROUGH_DIRECT_WBUF),
+                         &bytesReturned,
+                         FALSE))
+    {
+        return FALSE;
+    }
+
+    *pCapabilities = *(PSCSI_CD_CAPABILITIES)(dataBuffer + 4);
+
+    return TRUE;
+}
+
+BOOL
+GetInquiryScsi(HANDLE hHandle,
+               PINQUIRYDATA pInquiry)
+{
+    SCSI_PASS_THROUGH_DIRECT_WBUF SCSICmd = {0};
+    PINQUIRYDATA pInqStd;
+    LPVOID dataBuffer = NULL;
+    ULONG dataBufferSize;
+    DWORD bytesReturned;
+
+    dataBufferSize = sizeof(INQUIRYDATA);
+    dataBuffer = HeapAlloc(GetProcessHeap(),
+                           HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY,
+                           dataBufferSize);
+    if (!dataBuffer)
+    {
+        return FALSE;
+    }
+
+    pInqStd = (PINQUIRYDATA)dataBuffer;
+
+    SCSICmd.spt.Length             = sizeof(SCSI_PASS_THROUGH);
+    SCSICmd.spt.PathId             = 0;
+    SCSICmd.spt.TargetId           = 1;
+    SCSICmd.spt.Lun                = 0;
+    SCSICmd.spt.TimeOutValue       = 5;
+    SCSICmd.spt.SenseInfoLength    = SPT_SENSEBUFFER_LENGTH;
+    SCSICmd.spt.SenseInfoOffset    = offsetof(SCSI_PASS_THROUGH_WBUF, SenseBuffer);
+    SCSICmd.spt.DataIn             = SCSI_IOCTL_DATA_IN;
+    SCSICmd.spt.DataTransferLength = dataBufferSize;
+    SCSICmd.spt.DataBuffer         = pInqStd;
+
+    SCSICmd.spt.CdbLength = 6;
+    SCSICmd.spt.Cdb[0]    = SCSI_INQUIRY;
+    SCSICmd.spt.Cdb[1]    = 0;
+    SCSICmd.spt.Cdb[3]    = (dataBufferSize >> 8) & 0xFF;
+    SCSICmd.spt.Cdb[4]    = dataBufferSize & 0xFF;
+
+    if (!DeviceIoControl(hHandle,
+                         IOCTL_SCSI_PASS_THROUGH_DIRECT,
+                         &SCSICmd,
+                         sizeof(SCSI_PASS_THROUGH_DIRECT_WBUF),
+                         &SCSICmd,
+                         sizeof(SCSI_PASS_THROUGH_DIRECT_WBUF),
+                         &bytesReturned,
+                         FALSE))
+    {
+        HeapFree(GetProcessHeap(), 0, dataBuffer);
+        return FALSE;
+    }
+
+    CopyMemory(pInquiry, pInqStd, sizeof(INQUIRYDATA));
+    HeapFree(GetProcessHeap(), 0, dataBuffer);
+
+    return TRUE;
+}
+
+BOOL
+GetCDReportKeyScsi(HANDLE hHandle,
+                   PREPORT_KEY_DATA pKeyData)
+{
+    SCSI_PASS_THROUGH_DIRECT_WBUF SCSICmd = {0};
+    PREPORT_KEY_DATA pKey;
+    REPORT_KEY Key = {0};
+    LPVOID dataBuffer = NULL;
+    ULONG dataBufferSize;
+    DWORD bytesReturned;
+
+    dataBufferSize = sizeof(REPORT_KEY_DATA);
+    dataBuffer = HeapAlloc(GetProcessHeap(),
+                           HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY,
+                           dataBufferSize);
+    if (!dataBuffer)
+    {
+        return FALSE;
+    }
+
+    pKey = (PREPORT_KEY_DATA)dataBuffer;
+
+    SCSICmd.spt.Length             = sizeof(SCSI_PASS_THROUGH);
+    SCSICmd.spt.PathId             = 0;
+    SCSICmd.spt.TargetId           = 1;
+    SCSICmd.spt.Lun                = 0;
+    SCSICmd.spt.TimeOutValue       = 5;
+    SCSICmd.spt.SenseInfoLength    = SPT_SENSEBUFFER_LENGTH;
+    SCSICmd.spt.SenseInfoOffset    = offsetof(SCSI_PASS_THROUGH_WBUF, SenseBuffer);
+    SCSICmd.spt.DataIn             = SCSI_IOCTL_DATA_IN;
+    SCSICmd.spt.DataTransferLength = dataBufferSize;
+    SCSICmd.spt.DataBuffer         = pKey;
+    SCSICmd.spt.CdbLength          = sizeof(REPORT_KEY);
+
+    Key.OperationCode    = SCSI_REPORT_KEY;
+    Key.AllocationLength = sizeof(REPORT_KEY_DATA);
+    Key.AGID             = 0;
+    Key.KeyFormat        = KEY_FORMAT_RPC_STATE;
+
+    CopyMemory(SCSICmd.spt.Cdb, &Key, sizeof(REPORT_KEY));
+
+    if (!DeviceIoControl(hHandle,
+                         IOCTL_SCSI_PASS_THROUGH_DIRECT,
+                         &SCSICmd,
+                         sizeof(SCSI_PASS_THROUGH_DIRECT_WBUF),
+                         &SCSICmd,
+                         sizeof(SCSI_PASS_THROUGH_DIRECT_WBUF),
+                         &bytesReturned,
+                         FALSE))
+    {
+        HeapFree(GetProcessHeap(), 0, dataBuffer);
+        return FALSE;
+    }
+
+    CopyMemory(pKeyData, pKey, sizeof(REPORT_KEY_DATA));
+    HeapFree(GetProcessHeap(), 0, dataBuffer);
+
+    return TRUE;
 }
 
 BOOL
@@ -81,7 +317,7 @@ ReadScsiInfo(HANDLE hHandle, BYTE bDevNumber, IDSECTOR *Info)
         }
     }
 
-    DebugTrace(L"drv_read_scsi_info() failed. Error code: 0x%x",
+    DebugTrace(L"ReadScsiInfo() failed. Error code: 0x%x",
                GetLastError());
 
     return FALSE;
