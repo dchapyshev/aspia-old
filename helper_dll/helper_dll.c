@@ -5,8 +5,8 @@
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
-#include "helper_dll.h"
 #include "aspia.h"
+#include "helper_dll.h"
 
 
 HANDLE hDriverFile = INVALID_HANDLE_VALUE;
