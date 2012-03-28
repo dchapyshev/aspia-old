@@ -181,6 +181,7 @@ MB_MODELS MbModelsList[] =
     /* MSI */
     { G32M3_V2, L"G31M3 V2(MS-7529)" },
     { H55_G43, L"H55-G43(MS-7638)" },
+    { G31TM_P35, L"G31TM-P35 (MS-7529)" },
     /* TYAN */
     { S2882, L"TYAN High-End Dual AMD Opteron, S2882" },
     {0}
@@ -882,6 +883,23 @@ LPC_MainboardInfoInit(WORD wChipType)
                             InitTItem(0, L"CPU");
                             InitTItem(1, L"Auxiliary");
                             InitTItem(2, L"Motherboard");
+
+                            InitFItem(0, L"CPU Fan");
+                            break;
+
+                        case G31TM_P35:
+                            InitVItem(0, L"VCC3V",     150.0f, 150.0f, 0.0f);
+                            InitVItem(1, L"Vcore",     0.0f,   1.0f,   0.0f);
+                            InitVItem(2, L"VIN2",      0.0f,   1.0f,   0.0f);
+                            InitVItem(3, L"VIN3",      0.0f,   1.0f,   0.0f);
+                            InitVItem(4, L"+5V",       200.0f, 47.0f,  0.0f);
+                            InitVItem(5, L"+12V",      200.0f, 20.0f,  0.0f);
+                            InitVItem(6, L"VIN6",      0.0f,   1.0f,   0.0f);
+                            InitVItem(7, L"3VSB",      150.0f, 150.0f, 0.0f);
+                            InitVItem(8, L"VBat",      150.0f, 150.0f, 0.0f);
+
+                            InitTItem(0, L"CPU");
+                            InitTItem(1, L"Motherboard");
 
                             InitFItem(0, L"CPU Fan");
                             break;

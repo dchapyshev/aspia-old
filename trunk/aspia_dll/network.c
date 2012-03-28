@@ -453,7 +453,7 @@ NETWORK_SharedInfo(VOID)
                     (szText[0] != 0) ? szText : L"-");
 
                 /* Description */
-                IoSetItemText(Index, 2, pPtr->shi502_remark);
+                IoSetItemText(Index, 2, (SafeStrLen(pPtr->shi502_remark) > 1) ? pPtr->shi502_remark : L"-");
 
                 /* Local path */
                 IoSetItemText(Index, 3,
@@ -688,6 +688,7 @@ NETWORK_IEHistoryInfo(VOID)
         !DllParams.IEShowFtp &&
         !DllParams.IEShowHttp)
     {
+        DebugTrace(L"Information not selected!");
         return;
     }
 
@@ -702,6 +703,7 @@ NETWORK_IEHistoryInfo(VOID)
                           (LPVOID*)&History);
     if (FAILED(hr))
     {
+        DebugTrace(L"CoCreateInstance() failed! hr = %ld", hr);
         CoUninitialize();
         return;
     }
@@ -709,6 +711,7 @@ NETWORK_IEHistoryInfo(VOID)
     hr = History->lpVtbl->EnumUrls(History, &EnumPtr);
     if (FAILED(hr))
     {
+        DebugTrace(L"EnumUrls() failed! hr = %ld", hr);
         History->lpVtbl->Release(History);
         CoUninitialize();
         return;
@@ -718,7 +721,7 @@ NETWORK_IEHistoryInfo(VOID)
     {
         if (!uFetched) break;
 
-        if (!StatUrl.pwcsUrl) continue;
+        if (SafeStrLen(StatUrl.pwcsUrl) < 8) continue;
 
         if ((wcsncmp(StatUrl.pwcsUrl, L"http://", 7) == 0 && DllParams.IEShowHttp) ||
             (wcsncmp(StatUrl.pwcsUrl, L"ftp://", 6) == 0 && DllParams.IEShowFtp) ||
@@ -752,9 +755,16 @@ NETWORK_IEHistoryInfo(VOID)
 
             /* Title */
             IoSetItemText(Index, 2,
-                          (StatUrl.pwcsTitle) ? StatUrl.pwcsTitle : L"-");
+                          (SafeStrLen(StatUrl.pwcsTitle) > 1) ? StatUrl.pwcsTitle : L"-");
             /* URL */
-            IoSetItemText(Index, 3, (SafeStrLen(StatUrl.pwcsUrl) > 4) ? StatUrl.pwcsUrl : L"-");
+            __try
+            {
+                IoSetItemText(Index, 3, (SafeStrLen(StatUrl.pwcsUrl) > 4) ? StatUrl.pwcsUrl : L"-");
+            }
+            __except(EXCEPTION_EXECUTE_HANDLER)
+            {
+                IoSetItemText(Index, 3, L"-");
+            }
         }
 
         if (IsCanceled) break;
@@ -997,7 +1007,7 @@ NETWORK_RasInfo(VOID)
 
         /* User name */
         Index = IoAddValueName(1, IDS_RAS_USERNAME, 0);
-        IoSetItemText(Index, 1, RasDialParams.szUserName);
+        IoSetItemText(Index, 1, (SafeStrLen(RasDialParams.szUserName) > 1) ? RasDialParams.szUserName : L"-");
 
         /* Domine */
         if (SafeStrLen(RasDialParams.szDomain) > 0)

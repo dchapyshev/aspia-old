@@ -330,7 +330,7 @@ TextToRTFText(WCHAR *text)
 INT
 IoAddHeaderString(INT Indent, INT IconIndex, LPWSTR pText, ...)
 {
-    WCHAR szText[MAX_STR_LEN * 5] = {0};
+    WCHAR szText[MAX_STR_LEN * 10] = {0};
     WCHAR *ptr = NULL;
     SIZE_T size = 0;
     va_list args;
@@ -342,7 +342,7 @@ IoAddHeaderString(INT Indent, INT IconIndex, LPWSTR pText, ...)
     if (IoTarget != IO_TARGET_LISTVIEW &&
         IoTarget != IO_TARGET_RTF)
     {
-        size = wcslen(szText) * 15 * sizeof(WCHAR);
+        size = wcslen(szText) * 18 * sizeof(WCHAR);
         ptr = (WCHAR*)Alloc(size);
         if (!ptr) return -1;
     }
@@ -506,7 +506,7 @@ IoAddValueName(INT Indent, UINT ValueID, INT IconIndex)
 VOID
 IoSetItemText(INT Index, INT iSubItem, LPWSTR pText, ...)
 {
-    WCHAR szText[MAX_STR_LEN * 15] = {0};
+    WCHAR szText[MAX_STR_LEN * 20] = {0};
     WCHAR *ptr = NULL;
     va_list args;
     SIZE_T size;
