@@ -1161,7 +1161,7 @@ HW_CDInfo(VOID)
         memcpy(szProductId, Inquiry.ProductId, 16);
         memcpy(szProductRev, Inquiry.ProductRevisionLevel, 4);
 
-        IoAddItem(0, 0, L"(%s\\) %S %S", szDrive, szVendor, szProductId);
+        IoAddHeaderString(0, 0, L"(%s\\) %S %S", szDrive, szVendor, szProductId);
 
         ItemIndex = IoAddValueName(1, IDS_CDROM_FIRMWARE_REV, 0);
         IoSetItemText(ItemIndex, 1, L"%S", szProductRev);
