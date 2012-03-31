@@ -103,7 +103,8 @@ IT87XX_GetInfo(WORD wChipType,
     IoAddItem(0, 2, szText);
 
     /* IT8721F, IT8728F and IT8772E use a 12mV resultion ADC, all others 16mV */
-    if (wChipType == IT8721F || wChipType == IT8728F || wChipType == IT8772E)
+    if (wChipType == IT8721F || wChipType == IT8728F ||
+        wChipType == IT8771E || wChipType == IT8772E)
     {
         fVoltageGain = 0.012f;
     }
