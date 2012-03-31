@@ -53,6 +53,7 @@ CHIP_INFO ChipInfo[] =
     { IT8726F,    L"ITE IT8726F" },
     { IT8728F,    L"ITE IT8728F" },
     { IT8752F,    L"ITE IT8752F" },
+    { IT8771E,    L"ITE IT8771E" },
     { IT8772E,    L"ITE IT8772E" },
 
     { NCT6771F,   L"Nuvoton NCT6771F" },
@@ -505,39 +506,18 @@ DetectIT87(BYTE bRegisterPort, BYTE bValuePort)
 
     switch (id)
     {
-        case 0x8512:
-            chip = IT8512F;
-            break;
-        case 0x8712:
-            chip = IT8712F;
-            break;
-        case 0x8716:
-            chip = IT8716F;
-            break;
-        case 0x8718:
-            chip = IT8718F;
-            break;
-        case 0x8720:
-            chip = IT8720F;
-            break;
-        case 0x8721:
-            chip = IT8721F;
-            break;
-        case 0x8726:
-            chip = IT8726F;
-            break;
-        case 0x8728:
-            chip = IT8728F;
-            break;
-        case 0x8752:
-            chip = IT8752F;
-            break;
-        case 0x8772:
-            chip = IT8772E;
-            break;
-        default:
-            chip = 0;
-            break;
+        case 0x8512: chip = IT8512F; break;
+        case 0x8712: chip = IT8712F; break;
+        case 0x8716: chip = IT8716F; break;
+        case 0x8718: chip = IT8718F; break;
+        case 0x8720: chip = IT8720F; break;
+        case 0x8721: chip = IT8721F; break;
+        case 0x8726: chip = IT8726F; break;
+        case 0x8728: chip = IT8728F; break;
+        case 0x8752: chip = IT8752F; break;
+        case 0x8771: chip = IT8771E; break;
+        case 0x8772: chip = IT8772E; break;
+        default:     chip = 0;       break;
     }
 
     if (chip == 0)

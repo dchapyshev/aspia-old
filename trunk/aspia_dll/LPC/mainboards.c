@@ -147,6 +147,9 @@ MB_MODELS MbModelsList[] =
     { P5QL_PRO, L"P5QL PRO" },
     { K8V_MX, L"K8V-MX" },
     { P4P800_VM, L"P4P800-VM" },
+    { P9X79, L"P9X79" },
+    { P6T, L"P6T" },
+    { P8Z68_V_PRO, L"P8Z68-V PRO" },
     /* DFI */
     { LP_BI_P45_T2RS_Elite, L"LP BI P45-T2RS Elite" },
     { LP_DK_P55_T3eH9, L"LP DK P55-T3eH9" },
@@ -595,6 +598,7 @@ LPC_MainboardInfoInit(WORD wChipType)
 
         case IT8721F:
         case IT8728F:
+        case IT8771E:
         case IT8772E:
         {
             switch (wManufId)
@@ -1092,8 +1096,9 @@ LPC_MainboardInfoInit(WORD wChipType)
                 {
                     switch (wModelId)
                     {
+                        case P6T: /* W83667HG */
                         case P6X58D_E: /* W83667HG */
-                        case Rampage_II_GENE:
+                        case Rampage_II_GENE: /* W83667HG */
                             InitVItem(0, L"CPU VCore",     0.0f,   1.0f, 0.0f);
                             InitVItem(1, L"+12V",          11.5f,  1.91f, 0.0f);
                             InitVItem(2, L"Analog +3.3V",  34.0f,  34.0f, 0.0f);
@@ -1321,6 +1326,7 @@ LPC_MainboardInfoInit(WORD wChipType)
                             break;
 
                         case P8P67_M_PRO: /* NCT6776F */
+                        case P9X79: /* NCT6776F */
                             InitVItem(0, L"CPU VCore",     0.0f,  1.0f, 0.0f);
                             InitVItem(1, L"+12V",          11.0f, 1.0f, 0.0f);
                             InitVItem(2, L"Analog +3.3V",  34.0f, 34.0f, 0.0f);
@@ -1337,6 +1343,20 @@ LPC_MainboardInfoInit(WORD wChipType)
                             InitFItem(2, L"Chassis Fan #2");
                             InitFItem(3, L"Power Fan");
                             InitFItem(4, L"Auxiliary Fan");
+                            break;
+
+                        case P8Z68_V_PRO: /* NCT6776F */
+                            InitVItem(0, L"CPU VCore",     0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"+12V",          11.0f, 1.0f, 0.0f);
+                            InitVItem(2, L"Analog +3.3V",  34.0f, 34.0f, 0.0f);
+                            InitVItem(3, L"+3.3V",         34.0f, 34.0f, 0.0f);
+                            InitVItem(4, L"+5V",           12.0f, 3.0f, 0.0f);
+                            InitVItem(7, L"Standby +3.3V", 34.0f, 34.0f, 0.0f);
+                            InitVItem(8, L"VBAT",          34.0f, 34.0f, 0.0f);
+
+                            InitTItem(0, L"CPU");
+                            InitTItem(2, L"Auxiliary");
+                            InitTItem(3, L"Motherboard");
                             break;
 
                         default:
