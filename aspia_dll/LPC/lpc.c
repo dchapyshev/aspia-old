@@ -525,7 +525,7 @@ DetectIT87(BYTE bRegisterPort, BYTE bValuePort)
         if (chip != 0 && chip != 0xFFFF)
         {
             IT87Exit(bRegisterPort, bValuePort);
-            DebugTrace(L"Unknown ITI chip: %x", chip);
+            DebugTrace(L"Unknown ITE chip: %x", chip);
         }
     }
 

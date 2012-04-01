@@ -344,10 +344,17 @@ BOOL EnableSmart(HANDLE hHandle, BYTE bDevNumber);
 BOOL ReadSmartInfo(HANDLE hHandle, BYTE bDevNumber, IDSECTOR *Info);
 BOOL ReadSmartAttributes(HANDLE hHandle, BYTE bDevNumber, SMART_DRIVE_INFO *Info);
 BOOL ReadSmartThresholds(HANDLE hHandle, BYTE bDriveNum, SMART_DRIVE_INFO *Info);
-typedef BOOL (CALLBACK *SMART_ENUMDATAPROC)(SMART_RESULT *Result);
+typedef VOID (CALLBACK *SMART_ENUMDATAPROC)(SMART_RESULT *Result);
 BOOL EnumSmartData(HANDLE hSmartHandle, BYTE bDevNumber, SMART_ENUMDATAPROC lpEnumProc);
 INT GetSmartTemperature(HANDLE hSmartHandle, BYTE bDevNumber);
 BOOL GetSmartDiskGeometry(BYTE bDevNumber, DISK_GEOMETRY *DiskGeometry);
+
+/* scsioverata.c */
+BOOL ScsiOverAtaEnumSmartData(HANDLE hSmartHandle, BYTE bDevNumber, SMART_ENUMDATAPROC lpEnumProc);
+BOOL ScsiOverAtaReadSmartThresholds(HANDLE hHandle, BYTE bDriveNum, SMART_DRIVE_INFO *Info);
+BOOL ScsiOverAtaReadSmartAttributes(HANDLE hHandle, BYTE bDevNumber, SMART_DRIVE_INFO *Info);
+BOOL ScsiOverAtaEnableSmart(HANDLE hHandle);
+BOOL ScsiOverAtaReadSmartInfo(HANDLE hHandle, BYTE bDevIndex, IDSECTOR *Info);
 
 /* SCSI Defines */
 #define SPT_SENSEBUFFER_LENGTH 32
@@ -744,6 +751,7 @@ BOOL GetBinaryFromRegistry(HKEY hRootKey, LPWSTR lpszPath, LPWSTR lpszKeyName, L
 BOOL GetStringFromRegistry(BOOL Is64KeyRequired, HKEY hRootKey, LPWSTR lpszPath, LPWSTR lpszKeyName, LPWSTR lpszValue, DWORD dwSize);
 INT AddIconToImageList(HINSTANCE hInst, HIMAGELIST hImageList, UINT IconIndex);
 BOOL KillProcess(DWORD pid, BOOL KillTree);
+BOOL GetFileExt(LPWSTR lpFileName, LPWSTR lpExt, SIZE_T ExtSize);
 
 /* NVIDIA GPU Information */
 typedef struct

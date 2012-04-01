@@ -306,25 +306,10 @@ UINT
 GetIoTargetByFileExt(LPWSTR lpPath)
 {
     WCHAR szExt[MAX_PATH] = {0};
-    INT i, j = 0, len = wcslen(lpPath);
-    INT dot_pos = -1;
 
-    if (len < 5) return IO_TARGET_UNKNOWN;
-
-    for (i = len; i > 0; i--)
+    if (!GetFileExt(lpPath, szExt, sizeof(szExt)))
     {
-        if (lpPath[i] == L'.')
-        {
-            dot_pos = i + 1;
-            break;
-        }
-    }
-
-    if (dot_pos <= 0) return IO_TARGET_UNKNOWN;
-
-    for (i = dot_pos; i < len; i++, j++)
-    {
-        szExt[j] = lpPath[i];
+        return IO_TARGET_UNKNOWN;
     }
 
     if (wcscmp(szExt, L"htm") == 0 || wcscmp(szExt, L"html") == 0)

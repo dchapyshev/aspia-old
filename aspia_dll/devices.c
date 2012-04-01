@@ -121,7 +121,7 @@ GetMonitorID(LPWSTR lpDevice, LPWSTR lpID, SIZE_T Size)
 VOID
 HW_DevicesInfo(VOID)
 {
-    WCHAR szClassRootPath[] = L"SYSTEM\\ControlSet001\\Control\\Class\\";
+    WCHAR szClassRootPath[] = L"SYSTEM\\CurrentControlSet\\Control\\Class\\";
     SP_DEVINFO_DATA DeviceInfoData = {0};
     WCHAR DeviceID[MAX_STR_LEN], ClassName[MAX_STR_LEN],
           DeviceName[MAX_STR_LEN], KeyPath[MAX_PATH],
@@ -229,6 +229,10 @@ HW_DevicesInfo(VOID)
             {
                 IoSetItemText(ItemIndex, 1, ClassName);
             }
+            else
+            {
+                IoSetItemText(ItemIndex, 1, L"-");
+            }
             RegCloseKey(KeyClass);
         }
         else
@@ -244,45 +248,70 @@ HW_DevicesInfo(VOID)
                                              MAX_STR_LEN,
                                              NULL))
         {
+            DWORD Size;
+            HKEY hKey;
+
             StringCbPrintf(KeyPath, sizeof(KeyPath),
                            L"%s%s", szClassRootPath, DriverName);
 
-            if (!GetStringFromRegistry(TRUE,
-                                       HKEY_LOCAL_MACHINE,
-                                       KeyPath, L"DriverVersion",
-                                       DriverName,
-                                       MAX_STR_LEN))
+            if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, KeyPath, 0, KEY_ALL_ACCESS, &hKey) !=
+                ERROR_SUCCESS)
             {
-                 DriverName[0] = 0;
+                IoSetItemText(ItemIndex, 2, L"-");
+                IoSetItemText(ItemIndex, 3, L"-");
+                IoSetItemText(ItemIndex, 4, L"-");
             }
-            IoSetItemText(ItemIndex, 2, DriverName);
+            else
+            {
+                Size = MAX_STR_LEN;
+                if (RegQueryValueEx(hKey,
+                                    L"DriverVersion",
+                                    NULL, NULL,
+                                    (LPBYTE)DriverName,
+                                    &Size) == ERROR_SUCCESS)
+                {
+                    IoSetItemText(ItemIndex, 2, (DriverName[0] != 0) ? DriverName : L"-");
+                }
+                else
+                {
+                    IoSetItemText(ItemIndex, 2, L"-");
+                }
 
-            if (!GetStringFromRegistry(TRUE,
-                                       HKEY_LOCAL_MACHINE,
-                                       KeyPath, L"DriverDate",
-                                       DriverName,
-                                       MAX_STR_LEN))
-            {
-                 DriverName[0] = 0;
-            }
-            IoSetItemText(ItemIndex, 3, DriverName);
+                Size = MAX_STR_LEN;
+                if (RegQueryValueEx(hKey,
+                                    L"DriverDate",
+                                    NULL, NULL,
+                                    (LPBYTE)DriverName,
+                                    &Size) == ERROR_SUCCESS)
+                {
+                    IoSetItemText(ItemIndex, 3, (DriverName[0] != 0) ? DriverName : L"-");
+                }
+                else
+                {
+                    IoSetItemText(ItemIndex, 3, L"-");
+                }
 
-            if (!GetStringFromRegistry(TRUE,
-                                       HKEY_LOCAL_MACHINE,
-                                       KeyPath, L"ProviderName",
-                                       DriverName,
-                                       MAX_STR_LEN))
-            {
-                 DriverName[0] = 0;
+                Size = MAX_STR_LEN;
+                if (RegQueryValueEx(hKey,
+                                    L"ProviderName",
+                                    NULL, NULL,
+                                    (LPBYTE)DriverName,
+                                    &Size) == ERROR_SUCCESS)
+                {
+                    IoSetItemText(ItemIndex, 4, (DriverName[0] != 0) ? DriverName : L"-");
+                }
+                else
+                {
+                    IoSetItemText(ItemIndex, 4, L"-");
+                }
+                RegCloseKey(hKey);
             }
-            IoSetItemText(ItemIndex, 4, DriverName);
         }
         else
         {
-            INT i;
-
-            for (i = 2; i <= 4; ++i)
-                IoSetItemText(ItemIndex, i, L"-");
+            IoSetItemText(ItemIndex, 2, L"-");
+            IoSetItemText(ItemIndex, 3, L"-");
+            IoSetItemText(ItemIndex, 4, L"-");
         }
 
         if (IoGetTarget() == IO_TARGET_LISTVIEW)

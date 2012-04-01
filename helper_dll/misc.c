@@ -915,3 +915,35 @@ GetFolderAssocIcon(LPWSTR lpszFolder)
                   SHGFI_ICON | SHGFI_SMALLICON);
     return sfi.hIcon;
 }
+
+BOOL
+GetFileExt(LPWSTR lpFileName, LPWSTR lpExt, SIZE_T ExtSize)
+{
+    INT i, j = 0, len = wcslen(lpFileName);
+    INT dot_pos = -1;
+    WCHAR szExt[MAX_PATH] = {0};
+
+    if (len < 2)
+        return FALSE;
+
+    for (i = len; i > 0; i--)
+    {
+        if (lpFileName[i] == L'.')
+        {
+            dot_pos = i + 1;
+            break;
+        }
+    }
+
+    if (dot_pos <= 0)
+        return FALSE;
+
+    for (i = dot_pos; i < len; i++, j++)
+    {
+        szExt[j] = lpFileName[i];
+    }
+
+    StringCbPrintf(lpExt, ExtSize, szExt);
+
+    return TRUE;
+}

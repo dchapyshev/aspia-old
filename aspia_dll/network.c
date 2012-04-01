@@ -246,10 +246,13 @@ NETWORK_CardsInfo(VOID)
                           pAdapter->IpAddressList.IpMask.String);
         }
 
-        Index = IoAddValueName(1, IDS_NIC_GETEWAY, 0);
-        StringCbPrintf(szText, sizeof(szText), L"%S",
-                       pAdapter->GatewayList.IpAddress.String);
-        IoSetItemText(Index, 1, (szText[0] != '0') ? szText : szNo);
+        if (pAdapter->GatewayList.IpAddress.String[0] != 0)
+        {
+            Index = IoAddValueName(1, IDS_NIC_GETEWAY, 0);
+            StringCbPrintf(szText, sizeof(szText), L"%S",
+                           pAdapter->GatewayList.IpAddress.String);
+            IoSetItemText(Index, 1, L"%S", pAdapter->GatewayList.IpAddress.String);
+        }
 
         pPerInfo = (PIP_PER_ADAPTER_INFO)Alloc(sizeof(IP_PER_ADAPTER_INFO));
         if (!pPerInfo)

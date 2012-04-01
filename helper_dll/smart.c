@@ -6,6 +6,7 @@
  */
 
 #include "aspia.h"
+#include "helper_dll.h"
 
 
 #define SMART_GET_VERSION        CTL_CODE(IOCTL_DISK_BASE, 0x0020, METHOD_BUFFERED, FILE_READ_ACCESS)
@@ -23,6 +24,7 @@
 HANDLE
 OpenSmart(BYTE bDevNumber)
 {
+    HANDLE hHandle;
     WCHAR szPath[MAX_PATH];
 
     StringCbPrintf(szPath,
@@ -30,13 +32,26 @@ OpenSmart(BYTE bDevNumber)
                    L"\\\\.\\PhysicalDrive%d",
                    bDevNumber);
 
-    return CreateFile(szPath,
-                      GENERIC_READ | GENERIC_WRITE,
-                      FILE_SHARE_READ | FILE_SHARE_WRITE,
-                      NULL,
-                      OPEN_EXISTING,
-                      FILE_ATTRIBUTE_SYSTEM,
-                      NULL);
+    DebugTrace(L"Try to open %s device...", szPath);
+
+    hHandle = CreateFile(szPath,
+                         GENERIC_READ | GENERIC_WRITE,
+                         FILE_SHARE_READ | FILE_SHARE_WRITE,
+                         NULL,
+                         OPEN_EXISTING,
+                         FILE_ATTRIBUTE_SYSTEM,
+                         NULL);
+
+    if (hHandle == INVALID_HANDLE_VALUE)
+    {
+        DebugTrace(L"Device %s not found!", szPath);
+    }
+    else
+    {
+        DebugTrace(L"Device %s exists!", szPath);
+    }
+
+    return hHandle;
 }
 
 BOOL
@@ -151,15 +166,15 @@ ReadSmartAttributes(HANDLE hHandle, BYTE bDevNumber, SMART_DRIVE_INFO *Info)
     UCHAR uIndex;
     BOOL bResult;
 
-    CmdIn.cBufferSize = READ_ATTRIBUTE_BUFFER_SIZE; 
-    CmdIn.irDriveRegs.bFeaturesReg = READ_ATTRIBUTES; 
-    CmdIn.irDriveRegs.bSectorCountReg = 1;
+    CmdIn.cBufferSize                  = READ_ATTRIBUTE_BUFFER_SIZE; 
+    CmdIn.irDriveRegs.bFeaturesReg     = READ_ATTRIBUTES; 
+    CmdIn.irDriveRegs.bSectorCountReg  = 1;
     CmdIn.irDriveRegs.bSectorNumberReg = 1;
-    CmdIn.irDriveRegs.bCylLowReg = SMART_CYL_LOW;
-    CmdIn.irDriveRegs.bCylHighReg = SMART_CYL_HI;
-    CmdIn.irDriveRegs.bDriveHeadReg = DRIVE_HEAD_REG;
-    CmdIn.irDriveRegs.bCommandReg = SMART_CMD;
-    CmdIn.bDriveNumber = bDevNumber;
+    CmdIn.irDriveRegs.bCylLowReg       = SMART_CYL_LOW;
+    CmdIn.irDriveRegs.bCylHighReg      = SMART_CYL_HI;
+    CmdIn.irDriveRegs.bDriveHeadReg    = DRIVE_HEAD_REG;
+    CmdIn.irDriveRegs.bCommandReg      = SMART_CMD;
+    CmdIn.bDriveNumber                 = bDevNumber;
 
     bResult = DeviceIoControl(hHandle,
                               SMART_RCV_DRIVE_DATA,
@@ -247,13 +262,6 @@ ReadSmartThresholds(HANDLE hHandle, BYTE bDriveNum, SMART_DRIVE_INFO *Info)
 
     return TRUE;
 }
-
-typedef struct
-{
-    DWORD dwID;
-    BOOL bCritical;
-    LPWSTR lpszName;
-} INFO_STRUCT;
 
 INFO_STRUCT SmartAttribList[] =
 {
@@ -526,7 +534,7 @@ EnumSmartData(HANDLE hSmartHandle, BYTE bDevNumber, SMART_ENUMDATAPROC lpEnumPro
         /* Значение Value */
         Result.bValue = m_stDrivesInfo.m_stSmartInfo[bIndex].m_ucValue;
 
-        if (!lpEnumProc(&Result)) break;
+        lpEnumProc(&Result);
     }
 
     if (!hSmartHandle) CloseSmart(hHandle);
