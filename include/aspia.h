@@ -65,7 +65,7 @@
 #define ReAlloc(a, b) HeapReAlloc(GetProcessHeap(), 0, a, b)
 
 typedef VOID (*PIO_ADD_FOOTER)(VOID);
-typedef INT  (*PIO_ADD_VALUE_NAME)(INT, UINT, INT);
+typedef INT  (*PIO_ADD_VALUE_NAME)(INT, INT, UINT);
 typedef VOID (*PIO_SET_ITEM_TEXT)(INT, INT, LPWSTR, ...);
 typedef INT  (*PIO_ADD_ICON)(UINT);
 typedef VOID (*PIO_ADD_HEADER)(INT, INT, UINT);

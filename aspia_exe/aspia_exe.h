@@ -182,7 +182,7 @@ BOOL IoCreateReport(LPWSTR);
 VOID IoCloseReport(VOID);
 VOID IoAddHeader(INT, INT, UINT);
 INT IoAddHeaderString(INT, INT, LPWSTR, ...);
-INT IoAddValueName(INT, UINT, INT);
+INT IoAddValueName(INT, INT, UINT);
 INT IoAddItem(INT, INT, LPWSTR, ...);
 VOID IoAddFooter(VOID);
 VOID IoSetItemText(INT, INT, LPWSTR, ...);

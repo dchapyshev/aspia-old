@@ -118,24 +118,24 @@ ShowSpdDataForDDR3(BYTE *Spd)
                    Spd[0x8F], Spd[0x90], Spd[0x91]);
     IoAddHeaderString(0, 0, szText);
 
-    ItemIndex = IoAddValueName(1, IDS_MANUFACTURER, 0);
+    ItemIndex = IoAddValueName(1, 0, IDS_MANUFACTURER);
     GetDDR3Manufacturer(Spd, szText, sizeof(szText));
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(1, IDS_SERIAL_NUMBER, 0);
+    ItemIndex = IoAddValueName(1, 0, IDS_SERIAL_NUMBER);
     IoSetItemText(ItemIndex, 1, L"%02X%02X%02X%02X",
                   Spd[0x7A], Spd[0x7B], Spd[0x7C], Spd[0x7D]);
 
-    ItemIndex = IoAddValueName(1, IDS_SPD_PRODUCT_DATE, 0);
+    ItemIndex = IoAddValueName(1, 0, IDS_SPD_PRODUCT_DATE);
     IoSetItemText(ItemIndex, 1, L"Week %ld%ld, Year 20%ld%ld",
                   GetBitsBYTE(Spd[0x79], 4, 7), GetBitsBYTE(Spd[0x79], 0, 3),
                   GetBitsBYTE(Spd[0x78], 4, 7), GetBitsBYTE(Spd[0x78], 0, 3));
 
-    ItemIndex = IoAddValueName(1, IDS_SPD_MEMORY_TYPE, 0);
+    ItemIndex = IoAddValueName(1, 0, IDS_SPD_MEMORY_TYPE);
     GetSpdModuleType(Spd, szText, sizeof(szText));
     IoSetItemText(ItemIndex, 1, szText);
 
-    ItemIndex = IoAddValueName(1, IDS_SPD_DIMM_TYPE, 0);
+    ItemIndex = IoAddValueName(1, 0, IDS_SPD_DIMM_TYPE);
 
     switch (GetBitsBYTE(Spd[0x03], 0, 3))
     {
@@ -155,7 +155,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
     }
     IoSetItemText(ItemIndex, 1, lpText);
 
-    ItemIndex = IoAddValueName(1, IDS_SPD_MODULE_SIZE, 0);
+    ItemIndex = IoAddValueName(1, 0, IDS_SPD_MODULE_SIZE);
     switch (GetBitsBYTE(Spd[0x04], 0, 3)) /* bits 3-0 */
     {
         case 0:  Size = 256;  break;
@@ -172,7 +172,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
                   GetDDR3RanksCount(Spd),
                   GetDDR3BanksCount(Spd));
 
-    ItemIndex = IoAddValueName(1, IDS_SPD_FREQUENT, 0);
+    ItemIndex = IoAddValueName(1, 0, IDS_SPD_FREQUENT);
     switch (Spd[0x0C])
     {
         case 0x14:
@@ -196,7 +196,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
     }
     IoSetItemText(ItemIndex, 1, lpText);
 
-    ItemIndex = IoAddValueName(1, IDS_SPD_ROW_ADDRESS_BITS, 0);
+    ItemIndex = IoAddValueName(1, 0, IDS_SPD_ROW_ADDRESS_BITS);
     switch (GetBitsBYTE(Spd[0x05], 3, 5)) /* bits 5 - 3 */
     {
         case 0: lpText = L"12"; break;
@@ -208,7 +208,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
     }
     IoSetItemText(ItemIndex, 1, lpText);
 
-    ItemIndex = IoAddValueName(1, IDS_SPD_COLUMN_ADDR_BITS, 0);
+    ItemIndex = IoAddValueName(1, 0, IDS_SPD_COLUMN_ADDR_BITS);
     switch (GetBitsBYTE(Spd[0x05], 0, 2)) /* bits 2 - 0 */
     {
         case 0: lpText = L"9"; break;
@@ -219,7 +219,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
     }
     IoSetItemText(ItemIndex, 1, lpText);
 
-    ItemIndex = IoAddValueName(1, IDS_SPD_DEVICE_WIDTH, 0);
+    ItemIndex = IoAddValueName(1, 0, IDS_SPD_DEVICE_WIDTH);
     switch (GetBitsBYTE(Spd[0x07], 0, 2)) /* bits 2 - 0 */
     {
         case 0: lpText = L"4 bits"; break;
@@ -230,7 +230,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
     }
     IoSetItemText(ItemIndex, 1, lpText);
 
-    ItemIndex = IoAddValueName(1, IDS_SPD_BUS_WIDTH, 0);
+    ItemIndex = IoAddValueName(1, 0, IDS_SPD_BUS_WIDTH);
     switch (GetBitsBYTE(Spd[0x08], 0, 2)) /* bits 2 - 0 */
     {
         case 0: lpText = L"8 bits"; break;
@@ -242,7 +242,7 @@ ShowSpdDataForDDR3(BYTE *Spd)
     IoSetItemText(ItemIndex, 1, lpText);
 
     szText[0] = 0;
-    ItemIndex = IoAddValueName(1, IDS_SPD_MODULE_NORM_VOLTAGE, 0);
+    ItemIndex = IoAddValueName(1, 0, IDS_SPD_MODULE_NORM_VOLTAGE);
     if (GetBitsBYTE(Spd[0x06], 2, 2) == 1) /* bit 2 */
         StringCbCat(szText, sizeof(szText), L"1.2V, ");
     if (GetBitsBYTE(Spd[0x06], 1, 1) == 1) /* bit 1 */
