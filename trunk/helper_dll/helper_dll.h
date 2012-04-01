@@ -10,3 +10,14 @@
 #include <windows.h>
 
 extern HINSTANCE hInst;
+
+typedef struct
+{
+    DWORD dwID;
+    BOOL bCritical;
+    LPWSTR lpszName;
+} INFO_STRUCT;
+
+extern INFO_STRUCT SmartAttribList[];
+
+BOOL SMART_IDToText(INFO_STRUCT *InfoStruct, DWORD dwIndex, LPWSTR lpszText, SIZE_T Size);

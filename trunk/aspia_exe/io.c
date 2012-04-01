@@ -528,7 +528,7 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pText, ...)
             if (!ptr) return;
 
             StringCbPrintf(ptr, size, L"<td>%s</td>",
-                           (wcslen(szText) == 0) ? L"&nbsp;" : szText);
+                           (szText[0] == 0) ? L"&nbsp;" : szText);
 
             AppendStringToFile(ptr);
 

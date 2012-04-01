@@ -716,6 +716,7 @@ AutorunShowFolderContent(LPWSTR lpszPath)
     {
         if (!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
         {
+            WCHAR szExt[MAX_PATH];
             HICON hIcon = NULL;
 
             /* HACK */
@@ -726,7 +727,15 @@ AutorunShowFolderContent(LPWSTR lpszPath)
             StringCbCat(szFilePath, sizeof(szFilePath), L"\\");
             StringCbCat(szFilePath, sizeof(szFilePath), FindFileData.cFileName);
 
-            GetShortcutCommandLine(szFilePath, szCmd, sizeof(szCmd));
+            if (GetFileExt(szFilePath, szExt, sizeof(szExt)) &&
+                (wcscmp(szExt, L"lnk") == 0))
+            {
+                GetShortcutCommandLine(szFilePath, szCmd, sizeof(szCmd));
+            }
+            else
+            {
+                StringCbCopy(szCmd, sizeof(szCmd), L"-");
+            }
 
             ExtractIconEx(szCmd, 0, NULL, &hIcon, 1);
             if (hIcon)
@@ -1549,7 +1558,7 @@ OS_TaskSchedulerInfo(VOID)
             if (SUCCEEDED(hr))
             {
                 Index = IoAddValueName(1, IDS_TASK_APP_NAME, 0);
-                IoSetItemText(Index, 1, lpszText);
+                IoSetItemText(Index, 1, (SafeStrLen(lpszText) > 0) ? lpszText : L"-");
                 CoTaskMemFree(lpszText);
             }
 
@@ -1558,7 +1567,7 @@ OS_TaskSchedulerInfo(VOID)
             if (SUCCEEDED(hr))
             {
                 Index = IoAddValueName(1, IDS_TASK_APP_PARAMS, 0);
-                IoSetItemText(Index, 1, lpszText);
+                IoSetItemText(Index, 1, (SafeStrLen(lpszText) > 0) ? lpszText : L"-");
                 CoTaskMemFree(lpszText);
             }
 
@@ -1567,7 +1576,7 @@ OS_TaskSchedulerInfo(VOID)
             if (SUCCEEDED(hr))
             {
                 Index = IoAddValueName(1, IDS_TASK_WORK_DIR, 0);
-                IoSetItemText(Index, 1, lpszText);
+                IoSetItemText(Index, 1, (SafeStrLen(lpszText) > 0) ? lpszText : L"-");
                 CoTaskMemFree(lpszText);
             }
 
@@ -1576,7 +1585,7 @@ OS_TaskSchedulerInfo(VOID)
             if (SUCCEEDED(hr))
             {
                 Index = IoAddValueName(1, IDS_TASK_COMMENT, 0);
-                IoSetItemText(Index, 1, lpszText);
+                IoSetItemText(Index, 1, (SafeStrLen(lpszText) > 0) ? lpszText : L"-");
                 CoTaskMemFree(lpszText);
             }
 
@@ -1585,7 +1594,7 @@ OS_TaskSchedulerInfo(VOID)
             if (SUCCEEDED(hr))
             {
                 Index = IoAddValueName(1, IDS_TASK_ACCAUNT, 0);
-                IoSetItemText(Index, 1, lpszText);
+                IoSetItemText(Index, 1, (SafeStrLen(lpszText) > 0) ? lpszText : L"-");
                 CoTaskMemFree(lpszText);
             }
 
@@ -1594,7 +1603,7 @@ OS_TaskSchedulerInfo(VOID)
             if (SUCCEEDED(hr))
             {
                 Index = IoAddValueName(1, IDS_TASK_CREATOR, 0);
-                IoSetItemText(Index, 1, lpszText);
+                IoSetItemText(Index, 1, (SafeStrLen(lpszText) > 0) ? lpszText : L"-");
                 CoTaskMemFree(lpszText);
             }
 
@@ -1638,7 +1647,7 @@ OS_TaskSchedulerInfo(VOID)
                     LoadMUIString(IDS_TASK_TRIGGER_FORMAT,
                                   szFormat, MAX_STR_LEN);
                     Index = IoAddItem(1, 0, szFormat, wTriggerIndex + 1);
-                    IoSetItemText(Index, 1, lpszText);
+                    IoSetItemText(Index, 1, (SafeStrLen(lpszText) > 0) ? lpszText : L"-");
                     CoTaskMemFree(lpszText);
                 }
             }

@@ -19,7 +19,7 @@ HW_CPUInfo(VOID)
     DebugEndReceiving();
 }
 
-BOOL CALLBACK
+VOID CALLBACK
 EnumSmartDataProc(SMART_RESULT *Result)
 {
     INT Index;
@@ -56,8 +56,6 @@ EnumSmartDataProc(SMART_RESULT *Result)
 
     /* Data */
     IoSetItemText(Index, 5, L"%d", Result->dwAttrValue);
-
-    return TRUE;
 }
 
 #define TRANSFER_MODE_UNKNOWN        0x00
@@ -216,6 +214,46 @@ GetMajorVersion(IDSECTOR DriveInfo)
     return result;
 }
 
+/*
+    BusTypeUnknown = 0x00,
+    BusTypeScsi,
+    BusTypeAtapi,
+    BusTypeAta,
+    BusType1394,
+    BusTypeSsa,
+    BusTypeFibre,
+    BusTypeUsb,
+    BusTypeRAID,
+    BusTypeiScsi,
+    BusTypeSas,
+    BusTypeSata,
+    BusTypeSd,
+    BusTypeMmc,
+    BusTypeMax,
+    BusTypeMaxReserved = 0x7F
+ */
+STORAGE_BUS_TYPE
+GetHardDriveType(HANDLE hHandle)
+{
+    STORAGE_DEVICE_DESCRIPTOR DeviceDescriptor = {0};
+    STORAGE_PROPERTY_QUERY PropertyQuery = {0};
+    DWORD bytesReturned;
+
+    if (!DeviceIoControl(hHandle,
+                         IOCTL_STORAGE_QUERY_PROPERTY,
+                         &PropertyQuery,
+                         sizeof(STORAGE_PROPERTY_QUERY),
+                         &DeviceDescriptor,
+                         sizeof(STORAGE_DEVICE_DESCRIPTOR),
+                         &bytesReturned,
+                         NULL))
+    {
+        return 0;
+    }
+
+    return DeviceDescriptor.BusType;
+}
+
 VOID
 HW_HDDATAInfo(VOID)
 {
@@ -246,213 +284,230 @@ HW_HDDATAInfo(VOID)
         hHandle = OpenSmart(bIndex);
         if (hHandle == INVALID_HANDLE_VALUE)
         {
-            DebugTrace(L"Index = %d", bIndex);
             continue;
         }
 
-        if (ReadSmartInfo(hHandle, bIndex, &DriveInfo))
+        if (!ReadSmartInfo(hHandle, bIndex, &DriveInfo))
         {
-            ChangeByteOrder((PCHAR)DriveInfo.sModelNumber,
-                            sizeof(DriveInfo.sModelNumber));
-            StringCbPrintf(szText, sizeof(szText),
-                           L"%S", DriveInfo.sModelNumber);
-            ChopSpaces(szText, sizeof(szText));
-            IoAddHeaderString(0, 0, szText);
+            DebugTrace(L"ReadSmartInfo() failed!");
 
-            Index = IoAddValueName(1, IDS_HDD_ID, 0);
-            IoSetItemText(Index, 1, szText);
+            if (!ScsiOverAtaReadSmartInfo(hHandle, bIndex, &DriveInfo))
+            {
+                DebugTrace(L"ScsiOverAtaReadSmartInfo() failed!");
+                continue;
+            }
+        }
 
-            Index = IoAddValueName(1, IDS_SERIAL_NUMBER, 0);
-            ChangeByteOrder((PCHAR)DriveInfo.sSerialNumber,
-                            sizeof(DriveInfo.sSerialNumber));
-            StringCbPrintf(szText, sizeof(szText),
-                           L"%S", DriveInfo.sSerialNumber);
-            ChopSpaces(szText, sizeof(szText));
-            IoSetItemText(Index, 1, szText);
+        ChangeByteOrder((PCHAR)DriveInfo.sModelNumber,
+                        sizeof(DriveInfo.sModelNumber));
+        StringCbPrintf(szText, sizeof(szText),
+                       L"%S", DriveInfo.sModelNumber);
+        ChopSpaces(szText, sizeof(szText));
+        IoAddHeaderString(0, 0, szText);
 
-            Index = IoAddValueName(1, IDS_VERSION, 0);
-            ChangeByteOrder((PCHAR)DriveInfo.sFirmwareRev,
-                            sizeof(DriveInfo.sFirmwareRev));
-            IoSetItemText(Index, 1, L"%S", DriveInfo.sFirmwareRev);
+        Index = IoAddValueName(1, IDS_HDD_ID, 0);
+        IoSetItemText(Index, 1, szText);
 
-            Index = IoAddValueName(1, IDS_HDD_INTERFACE, 0);
-            if (IsSATADrive(DriveInfo))
+        Index = IoAddValueName(1, IDS_SERIAL_NUMBER, 0);
+        ChangeByteOrder((PCHAR)DriveInfo.sSerialNumber,
+                        sizeof(DriveInfo.sSerialNumber));
+        StringCbPrintf(szText, sizeof(szText),
+                       L"%S", DriveInfo.sSerialNumber);
+        ChopSpaces(szText, sizeof(szText));
+        IoSetItemText(Index, 1, szText);
+
+        Index = IoAddValueName(1, IDS_VERSION, 0);
+        ChangeByteOrder((PCHAR)DriveInfo.sFirmwareRev,
+                        sizeof(DriveInfo.sFirmwareRev));
+        IoSetItemText(Index, 1, L"%S", DriveInfo.sFirmwareRev);
+
+        Index = IoAddValueName(1, IDS_HDD_INTERFACE, 0);
+        if (IsSATADrive(DriveInfo))
+        {
+            if (GetHardDriveType(hHandle) == BusTypeUsb)
+                pText = L"USB (SATA)";
+            else
                 pText = L"SATA";
+        }
+        else
+        {
+            if (GetHardDriveType(hHandle) == BusTypeUsb)
+                pText = L"USB (IDE)";
             else
                 pText = L"IDE";
-            IoSetItemText(Index, 1, pText);
+        }
+        IoSetItemText(Index, 1, pText);
 
-            Index = IoAddValueName(1, IDS_HDD_CURRENT_TRANSFER_MODE, 0);
+        Index = IoAddValueName(1, IDS_HDD_CURRENT_TRANSFER_MODE, 0);
+        Mode = GetCurrentTransferMode(DriveInfo);
+        TransferModeToText(Mode, szText, sizeof(szText));
+        IoSetItemText(Index, 1, szText);
+
+        if (!IsSATADrive(DriveInfo))
+        {
+            Index = IoAddValueName(1, IDS_HDD_MAX_TRANSFER_MODE, 0);
             Mode = GetCurrentTransferMode(DriveInfo);
             TransferModeToText(Mode, szText, sizeof(szText));
             IoSetItemText(Index, 1, szText);
-
-            if (!IsSATADrive(DriveInfo))
-            {
-                Index = IoAddValueName(1, IDS_HDD_MAX_TRANSFER_MODE, 0);
-                Mode = GetCurrentTransferMode(DriveInfo);
-                TransferModeToText(Mode, szText, sizeof(szText));
-                IoSetItemText(Index, 1, szText);
-            }
-
-            if (DriveInfo.wRotationRate < 65535 &&
-                DriveInfo.wRotationRate >= 1025)
-            {
-                Index = Index = IoAddValueName(1, IDS_HDD_ROTATION_RATE, 0);
-                IoSetItemText(Index, 1, L"%d RPM", DriveInfo.wRotationRate);
-            }
-
-            if (GetSmartDiskGeometry(bIndex, &DiskGeometry))
-            {
-                ULONGLONG DiskSize;
-
-                Index = IoAddValueName(1, IDS_HDD_PARAMS, 0);
-                LoadMUIString(IDS_HDD_PARAMS_FORMAT, szFormat, MAX_STR_LEN);
-                IoSetItemText(Index, 1, szFormat,
-                              (ULONG)DiskGeometry.Cylinders.QuadPart * (ULONG)DriveInfo.wNumHeads,
-                              (ULONG)DriveInfo.wNumHeads,
-                              (ULONG)DiskGeometry.SectorsPerTrack,
-                              (ULONG)DiskGeometry.BytesPerSector);
-
-                DiskSize = DiskGeometry.Cylinders.QuadPart * (ULONG)DiskGeometry.TracksPerCylinder *
-                           (ULONG)DiskGeometry.SectorsPerTrack * (ULONG)DiskGeometry.BytesPerSector;
-
-                Index = IoAddValueName(1, IDS_HDD_SIZE, 0);
-                IoSetItemText(Index, 1, L"%I64d MB (%I64d GB)",
-                              DiskSize / (1024 * 1024),
-                              DiskSize / (1024 * 1024 * 1024));
-            }
-
-            Index = IoAddValueName(1, IDS_HDD_BUFFER_SIZE, 0);
-            IoSetItemText(Index, 1, L"%d MB",
-                          (DriveInfo.wBufferSize * 512)/(1024 * 1024));
-
-            Index = IoAddValueName(1, IDS_HDD_MULTISECTORS, 0);
-            IoSetItemText(Index, 1, L"%d",
-                          DriveInfo.wMultSectorStuff);
-
-            Index = IoAddValueName(1, IDS_HDD_ECC_BYTES, 0);
-            IoSetItemText(Index, 1, L"%d", DriveInfo.wECCSize);
-
-            Index = IoAddValueName(1, IDS_TYPE, 0);
-            if (DriveInfo.wGenConfig & 0x80)
-                StringCbCopy(szText, sizeof(szText), L"Removable");
-            else if (DriveInfo.wGenConfig & 0x40)
-                StringCbCopy(szText, sizeof(szText), L"Fixed");
-            else
-                StringCbCopy(szText, sizeof(szText), L"Unknown");
-            IoSetItemText(Index, 1, szText);
-
-            wMajorVersion = GetMajorVersion(DriveInfo);
-
-            IoAddHeader(1, 0, IDS_HDD_ATA_FEATURES);
-
-            /* 48-bit LBA */
-            IsSupported = (wMajorVersion >= 5 && DriveInfo.wCommandSetSupport2 & (1 << 10)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"48-bit LBA");
-            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
-
-            /* Advanced Power Management */
-            IsSupported = (wMajorVersion >= 3 && DriveInfo.wCommandSetSupport2 & (1 << 3)) ? TRUE : FALSE;
-            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled2 & (1 << 3)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Advanced Power Management");
-            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
-
-            /* Automatic Acoustic Management */
-            IsSupported = (wMajorVersion >= 5 && DriveInfo.wCommandSetSupport2 & (1 << 9)) ? TRUE : FALSE;
-            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled2 & (1 << 9)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Automatic Acoustic Management");
-            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
-
-            /* SMART */
-            IsSupported = (wMajorVersion >= 3 && DriveInfo.wCommandSetSupport1 & (1 << 0)) ? TRUE : FALSE;
-            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 0)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"SMART");
-            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
-
-            /* SMART Error Logging */
-            IsSupported = (DriveInfo.wCommandSetSupport3 & (1 << 0)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"SMART Error Logging");
-            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
-
-            /* SMART Self-Test */
-            IsSupported = (DriveInfo.wCommandSetSupport3 & (1 << 1)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"SMART Self-Test");
-            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
-
-            /* Streaming */
-            IsSupported = (DriveInfo.wCommandSetSupport3 & (1 << 4)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Streaming");
-            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
-
-            /* General Purpose Logging */
-            IsSupported = (DriveInfo.wCommandSetSupport3 & (1 << 5)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"General Purpose Logging");
-            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
-
-            /* Security Mode */
-            IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 1)) ? TRUE : FALSE;
-            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 1)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Security Mode");
-            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
-
-            /* Power Management */
-            IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 3)) ? TRUE : FALSE;
-            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 3)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Power Management");
-            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
-
-            /* Write Cache */
-            IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 5)) ? TRUE : FALSE;
-            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 5)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Write Cache");
-            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
-
-            /* Read Look-Ahead */
-            IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 6)) ? TRUE : FALSE;
-            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 6)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Read Look-Ahead");
-            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
-
-            /* Host Protected Area */
-            IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 10)) ? TRUE : FALSE;
-            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 10)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Host Protected Area");
-            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
-
-            /* Release Interrupt */
-            IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 7)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Release Interrupt");
-            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
-
-            /* Power-Up In Standby */
-            IsSupported = (DriveInfo.wCommandSetSupport2 & (1 << 5)) ? TRUE : FALSE;
-            IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled2 & (1 << 5)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Power-Up In Standby");
-            IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
-
-            /* Device Configuration Overlay */
-            IsSupported = (DriveInfo.wCommandSetSupport2 & (1 << 11)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Device Configuration Overlay");
-            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
-
-            /* Service Interrupt */
-            IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 8)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Service Interrupt");
-            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
-
-            /* Native Command Queuing (NCQ) */
-            IsSupported = (wMajorVersion >= 6 && DriveInfo.wSATACapabilities & (1 << 8)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Native Command Queuing");
-            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
-
-            /* TRIM */
-            IsSupported = (wMajorVersion >= 7 && DriveInfo.wDataSetManagement & (1 << 0)) ? TRUE : FALSE;
-            Index = IoAddItem(2, (IsSupported ? 1 : 2), L"TRIM");
-            IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
-
-            IoAddFooter();
         }
+
+        if (DriveInfo.wRotationRate < 65535 &&
+            DriveInfo.wRotationRate >= 1025)
+        {
+            Index = Index = IoAddValueName(1, IDS_HDD_ROTATION_RATE, 0);
+            IoSetItemText(Index, 1, L"%d RPM", DriveInfo.wRotationRate);
+        }
+
+        if (GetSmartDiskGeometry(bIndex, &DiskGeometry))
+        {
+            ULONGLONG DiskSize;
+
+            Index = IoAddValueName(1, IDS_HDD_PARAMS, 0);
+            LoadMUIString(IDS_HDD_PARAMS_FORMAT, szFormat, MAX_STR_LEN);
+            IoSetItemText(Index, 1, szFormat,
+                          (ULONG)DiskGeometry.Cylinders.QuadPart * (ULONG)DriveInfo.wNumHeads,
+                          (ULONG)DriveInfo.wNumHeads,
+                          (ULONG)DiskGeometry.SectorsPerTrack,
+                          (ULONG)DiskGeometry.BytesPerSector);
+
+            DiskSize = DiskGeometry.Cylinders.QuadPart * (ULONG)DiskGeometry.TracksPerCylinder *
+                       (ULONG)DiskGeometry.SectorsPerTrack * (ULONG)DiskGeometry.BytesPerSector;
+
+            Index = IoAddValueName(1, IDS_HDD_SIZE, 0);
+            IoSetItemText(Index, 1, L"%I64d MB (%I64d GB)",
+                          DiskSize / (1024 * 1024),
+                          DiskSize / (1024 * 1024 * 1024));
+        }
+
+        Index = IoAddValueName(1, IDS_HDD_BUFFER_SIZE, 0);
+        IoSetItemText(Index, 1, L"%d MB",
+                      (DriveInfo.wBufferSize * 512)/(1024 * 1024));
+
+        Index = IoAddValueName(1, IDS_HDD_MULTISECTORS, 0);
+        IoSetItemText(Index, 1, L"%d",
+                      DriveInfo.wMultSectorStuff);
+
+        Index = IoAddValueName(1, IDS_HDD_ECC_BYTES, 0);
+        IoSetItemText(Index, 1, L"%d", DriveInfo.wECCSize);
+
+        Index = IoAddValueName(1, IDS_TYPE, 0);
+        if (DriveInfo.wGenConfig & 0x80)
+            StringCbCopy(szText, sizeof(szText), L"Removable");
+        else if (DriveInfo.wGenConfig & 0x40)
+            StringCbCopy(szText, sizeof(szText), L"Fixed");
+        else
+            StringCbCopy(szText, sizeof(szText), L"Unknown");
+        IoSetItemText(Index, 1, szText);
+
+        wMajorVersion = GetMajorVersion(DriveInfo);
+
+        IoAddHeader(1, 0, IDS_HDD_ATA_FEATURES);
+
+        /* 48-bit LBA */
+        IsSupported = (wMajorVersion >= 5 && DriveInfo.wCommandSetSupport2 & (1 << 10)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"48-bit LBA");
+        IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+        /* Advanced Power Management */
+        IsSupported = (wMajorVersion >= 3 && DriveInfo.wCommandSetSupport2 & (1 << 3)) ? TRUE : FALSE;
+        IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled2 & (1 << 3)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Advanced Power Management");
+        IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+        /* Automatic Acoustic Management */
+        IsSupported = (wMajorVersion >= 5 && DriveInfo.wCommandSetSupport2 & (1 << 9)) ? TRUE : FALSE;
+        IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled2 & (1 << 9)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Automatic Acoustic Management");
+        IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+        /* SMART */
+        IsSupported = (wMajorVersion >= 3 && DriveInfo.wCommandSetSupport1 & (1 << 0)) ? TRUE : FALSE;
+        IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 0)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"SMART");
+        IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+        /* SMART Error Logging */
+        IsSupported = (DriveInfo.wCommandSetSupport3 & (1 << 0)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"SMART Error Logging");
+        IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+        /* SMART Self-Test */
+        IsSupported = (DriveInfo.wCommandSetSupport3 & (1 << 1)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"SMART Self-Test");
+        IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+        /* Streaming */
+        IsSupported = (DriveInfo.wCommandSetSupport3 & (1 << 4)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Streaming");
+        IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+        /* General Purpose Logging */
+        IsSupported = (DriveInfo.wCommandSetSupport3 & (1 << 5)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"General Purpose Logging");
+        IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+        /* Security Mode */
+        IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 1)) ? TRUE : FALSE;
+        IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 1)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Security Mode");
+        IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+        /* Power Management */
+        IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 3)) ? TRUE : FALSE;
+        IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 3)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Power Management");
+        IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+        /* Write Cache */
+        IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 5)) ? TRUE : FALSE;
+        IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 5)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Write Cache");
+        IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+        /* Read Look-Ahead */
+        IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 6)) ? TRUE : FALSE;
+        IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 6)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Read Look-Ahead");
+        IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+        /* Host Protected Area */
+        IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 10)) ? TRUE : FALSE;
+        IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled1 & (1 << 10)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Host Protected Area");
+        IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+        /* Release Interrupt */
+        IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 7)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Release Interrupt");
+        IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+        /* Power-Up In Standby */
+        IsSupported = (DriveInfo.wCommandSetSupport2 & (1 << 5)) ? TRUE : FALSE;
+        IsEnabled = (IsSupported && DriveInfo.wCommandSetEnabled2 & (1 << 5)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Power-Up In Standby");
+        IoSetItemText(Index, 1, IsSupported ? (IsEnabled ? szSupEnabled : szSupDisabled) : szUnsupported);
+
+        /* Device Configuration Overlay */
+        IsSupported = (DriveInfo.wCommandSetSupport2 & (1 << 11)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Device Configuration Overlay");
+        IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+        /* Service Interrupt */
+        IsSupported = (DriveInfo.wCommandSetSupport1 & (1 << 8)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Service Interrupt");
+        IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+        /* Native Command Queuing (NCQ) */
+        IsSupported = (wMajorVersion >= 6 && DriveInfo.wSATACapabilities & (1 << 8)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"Native Command Queuing");
+        IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+        /* TRIM */
+        IsSupported = (wMajorVersion >= 7 && DriveInfo.wDataSetManagement & (1 << 0)) ? TRUE : FALSE;
+        Index = IoAddItem(2, (IsSupported ? 1 : 2), L"TRIM");
+        IoSetItemText(Index, 1, IsSupported ? szSupported : szUnsupported);
+
+        IoAddFooter();
 
         CloseSmart(hHandle);
     }
@@ -502,6 +557,7 @@ HW_HDDSMARTInfo(VOID)
     HANDLE hHandle;
     INT Index;
     BYTE bIndex;
+    BOOL ScsiOverAta = FALSE;
 
     DebugStartReceiving();
 
@@ -511,26 +567,48 @@ HW_HDDSMARTInfo(VOID)
 
     for (bIndex = 0; bIndex <= 32; ++bIndex)
     {
+        ScsiOverAta = FALSE;
+
         hHandle = OpenSmart(bIndex);
         if (hHandle == INVALID_HANDLE_VALUE) continue;
 
-        if (ReadSmartInfo(hHandle, bIndex, &DriveInfo))
+        if (!ReadSmartInfo(hHandle, bIndex, &DriveInfo))
         {
-            Index = IoAddItem(0, 0, L"\t\0");
-            ChangeByteOrder((PCHAR)DriveInfo.sModelNumber,
-                            sizeof(DriveInfo.sModelNumber));
-            StringCbPrintf(szText, sizeof(szText),
-                           L"%S", DriveInfo.sModelNumber);
-            ChopSpaces(szText, sizeof(szText));
-            IoSetItemText(Index, 1, szText);
-            IoSetItemText(Index, 2, L"\t\0");
-            IoSetItemText(Index, 3, L"\t\0");
-            IoSetItemText(Index, 4, L"\t\0");
-            IoSetItemText(Index, 5, L"\t\0");
+            DebugTrace(L"ReadSmartInfo() failed!");
+
+            if (!ScsiOverAtaReadSmartInfo(hHandle, bIndex, &DriveInfo))
+            {
+                DebugTrace(L"ScsiOverAtaReadSmartInfo() failed!");
+                continue;
+            }
+            else
+            {
+                ScsiOverAta = TRUE;
+            }
         }
 
-        if (EnumSmartData(hHandle, bIndex, EnumSmartDataProc))
-            IoAddFooter();
+        Index = IoAddItem(0, 0, L"-\0");
+        ChangeByteOrder((PCHAR)DriveInfo.sModelNumber,
+                        sizeof(DriveInfo.sModelNumber));
+        StringCbPrintf(szText, sizeof(szText),
+                       L"%S", DriveInfo.sModelNumber);
+        ChopSpaces(szText, sizeof(szText));
+        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, 2, L"-\0");
+        IoSetItemText(Index, 3, L"-\0");
+        IoSetItemText(Index, 4, L"-\0");
+        IoSetItemText(Index, 5, L"-\0");
+
+        if (!ScsiOverAta)
+        {
+            if (EnumSmartData(hHandle, bIndex, EnumSmartDataProc))
+                IoAddFooter();
+        }
+        else
+        {
+            if (ScsiOverAtaEnumSmartData(hHandle, bIndex, EnumSmartDataProc))
+                IoAddFooter();
+        }
         CloseSmart(hHandle);
     }
 
