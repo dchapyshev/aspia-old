@@ -1,11 +1,11 @@
 [OPTIONS]
 Compatibility=1.1 or later
-Compiled file=help_ua.chm
-Contents file=help_ua.hhc
+Compiled file=ru-RU.chm
+Contents file=ru-RU.hhc
 Default topic=index.html
 Display compile progress=No
 Full-text search=Yes
-Language=0x422 Украинский (Украина)
+Language=0x419 Русский (Россия)
 Title=Справка Aspia
 
 
