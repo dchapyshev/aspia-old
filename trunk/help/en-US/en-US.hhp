@@ -1,7 +1,7 @@
 [OPTIONS]
 Compatibility=1.1 or later
-Compiled file=help_en.chm
-Contents file=help_en.hhc
+Compiled file=en-US.chm
+Contents file=en-US.hhc
 Default topic=index.html
 Display compile progress=No
 Full-text search=Yes
