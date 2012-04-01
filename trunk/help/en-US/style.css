@@ -44,6 +44,15 @@ color:#fff;
 font-size:13px;
 }
 
+.logo{
+width:20%;
+}
+
+#topmenu{
+text-align:center;
+width:80%;
+}
+
 #main{
 width:100%;
 height:80%;
