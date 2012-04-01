@@ -184,7 +184,7 @@ BatteryEnumProc(LPWSTR lpszBattery)
                          (LPVOID)szText,
                          sizeof(szText)))
     {
-        Index = IoAddValueName(1, IDS_NAME, 1);
+        Index = IoAddValueName(1, 1, IDS_NAME);
         IoSetItemText(Index, 1, szText);
     }
 
@@ -194,7 +194,7 @@ BatteryEnumProc(LPWSTR lpszBattery)
                          (LPVOID)szText,
                          sizeof(szText)))
     {
-        Index = IoAddValueName(1, IDS_MANUFACTURER, 1);
+        Index = IoAddValueName(1, 1, IDS_MANUFACTURER);
         IoSetItemText(Index, 1, szText);
     }
 
@@ -204,7 +204,7 @@ BatteryEnumProc(LPWSTR lpszBattery)
                          (LPVOID)&BatteryDate,
                          sizeof(BatteryDate)))
     {
-        Index = IoAddValueName(1, IDS_BAT_MANUFACTUREDATE, 1);
+        Index = IoAddValueName(1, 1, IDS_BAT_MANUFACTUREDATE);
         IoSetItemText(Index, 1, L"%d//%d//%d",
                       BatteryDate.Year,
                       BatteryDate.Month,
@@ -220,7 +220,7 @@ BatteryEnumProc(LPWSTR lpszBattery)
         ChopSpaces(szText, sizeof(szText));
         if (szText[0] != 0)
         {
-            Index = IoAddValueName(1, IDS_BAT_ID, 1);
+            Index = IoAddValueName(1, 1, IDS_BAT_ID);
             IoSetItemText(Index, 1, szText);
         }
     }
@@ -234,7 +234,7 @@ BatteryEnumProc(LPWSTR lpszBattery)
         ChopSpaces(szText, sizeof(szText));
         if (szText[0] != 0)
         {
-            Index = IoAddValueName(1, IDS_SERIAL_NUMBER, 1);
+            Index = IoAddValueName(1, 1, IDS_SERIAL_NUMBER);
             IoSetItemText(Index, 1, szText);
         }
     }
@@ -245,7 +245,7 @@ BatteryEnumProc(LPWSTR lpszBattery)
                          (LPVOID)szText,
                          sizeof(szText)))
     {
-        Index = IoAddValueName(1, IDS_BAT_TEMPERATURE, 1);
+        Index = IoAddValueName(1, 1, IDS_BAT_TEMPERATURE);
         IoSetItemText(Index, 1, szText);
     }
 
@@ -255,22 +255,22 @@ BatteryEnumProc(LPWSTR lpszBattery)
                                sizeof(BatteryInfo)))
     {
         /* Capacity */
-        Index = IoAddValueName(1, IDS_BAT_CAPACITY, 1);
+        Index = IoAddValueName(1, 1, IDS_BAT_CAPACITY);
         IoSetItemText(Index, 1, L"%ld mWh",
                       BatteryInfo.DesignedCapacity);
 
         /* Type */
-        Index = IoAddValueName(1, IDS_BAT_TYPE, 1);
+        Index = IoAddValueName(1, 1, IDS_BAT_TYPE);
         GetBatteryTypeString(BatteryInfo, szText, sizeof(szText));
         IoSetItemText(Index, 1, szText);
 
         /* Full charged capacity */
-        Index = IoAddValueName(1, IDS_BAT_FULL_CAPACITY, 1);
+        Index = IoAddValueName(1, 1, IDS_BAT_FULL_CAPACITY);
         IoSetItemText(Index, 1, L"%ld mWh",
                       BatteryInfo.FullChargedCapacity);
 
         /* Depreciation */
-        Index = IoAddValueName(1, IDS_BAT_DEPRECIATION, 1);
+        Index = IoAddValueName(1, 1, IDS_BAT_DEPRECIATION);
 
         Wear = 100 - (BatteryInfo.FullChargedCapacity * 100) /
                    BatteryInfo.DesignedCapacity;
@@ -283,17 +283,17 @@ BatteryEnumProc(LPWSTR lpszBattery)
                            sizeof(BatteryStatus)))
     {
         /* Current capacity */
-        Index = IoAddValueName(1, IDS_BAT_CURRENT_CAPACITY, 1);
+        Index = IoAddValueName(1, 1, IDS_BAT_CURRENT_CAPACITY);
         IoSetItemText(Index, 1, L"%ld mWh (%ld%%)",
                       BatteryStatus.Capacity,
                       (BatteryStatus.Capacity * 100) / BatteryInfo.FullChargedCapacity);
 
         /* Voltage */
-        Index = IoAddValueName(1, IDS_BAT_VOLTAGE, 1);
+        Index = IoAddValueName(1, 1, IDS_BAT_VOLTAGE);
         IoSetItemText(Index, 1, L"%ld mV", BatteryStatus.Voltage);
 
         /* Status */
-        Index = IoAddValueName(1, IDS_STATUS, 1);
+        Index = IoAddValueName(1, 1, IDS_STATUS);
         BatteryPowerStateToText(BatteryStatus.PowerState, szText, sizeof(szText));
         IoSetItemText(Index, 1, szText);
     }

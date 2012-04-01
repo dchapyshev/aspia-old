@@ -338,29 +338,29 @@ CPUIDInfo(VOID)
     /* Get CPU Name */
     if (GetCPUName(szText, sizeof(szText)))
     {
-        Index = IoAddValueName(1, IDS_CPUID_NAME, 0);
+        Index = IoAddValueName(1, 0, IDS_CPUID_NAME);
         IoSetItemText(Index, 1, szText);
     }
 
     /* Get CPU Vendor */
     GetCPUVendor(szText, sizeof(szText));
-    Index = IoAddValueName(1, IDS_MANUFACTURER, 0);
+    Index = IoAddValueName(1, 0, IDS_MANUFACTURER);
     IoSetItemText(Index, 1, szText);
 
     GetProcessorIDs(&CpuIds);
 
     /* Stepping ID */
-    Index = IoAddValueName(1, IDS_CPUID_STEPPINGID, 0);
+    Index = IoAddValueName(1, 0, IDS_CPUID_STEPPINGID);
     IoSetItemText(Index, 1, L"%d (%xh)",
                   CpuIds.Stepping, CpuIds.Stepping);
 
     /* Model */
-    Index = IoAddValueName(1, IDS_CPUID_MODEL, 0);
+    Index = IoAddValueName(1, 0, IDS_CPUID_MODEL);
     IoSetItemText(Index, 1, L"%d (%xh)",
                   CpuIds.Model, CpuIds.Model);
 
     /* Family */
-    Index = IoAddValueName(1, IDS_CPUID_FAMILY, 0);
+    Index = IoAddValueName(1, 0, IDS_CPUID_FAMILY);
     IoSetItemText(Index, 1, L"%d (%xh)",
                   CpuIds.Family, CpuIds.Family);
 
@@ -368,7 +368,7 @@ CPUIDInfo(VOID)
     Count = GetPhysicalProcessorsCount();
     if (Count > 0)
     {
-        Index = IoAddValueName(1, IDS_CPUID_PHYSICAL_COUNT, 0);
+        Index = IoAddValueName(1, 0, IDS_CPUID_PHYSICAL_COUNT);
         IoSetItemText(Index, 1, L"%d", Count);
     }
 
@@ -376,7 +376,7 @@ CPUIDInfo(VOID)
     Count = GetLogicalProcessorsCount();
     if (Count > 0)
     {
-        Index = IoAddValueName(1, IDS_CPUID_LOGICAL_COUNT, 0);
+        Index = IoAddValueName(1, 0, IDS_CPUID_LOGICAL_COUNT);
         IoSetItemText(Index, 1, L"%d", Count);
     }
 

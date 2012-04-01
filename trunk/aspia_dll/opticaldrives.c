@@ -1163,24 +1163,24 @@ HW_CDInfo(VOID)
 
         IoAddHeaderString(0, 0, L"(%s\\) %S %S", szDrive, szVendor, szProductId);
 
-        ItemIndex = IoAddValueName(1, IDS_CDROM_FIRMWARE_REV, 0);
+        ItemIndex = IoAddValueName(1, 0, IDS_CDROM_FIRMWARE_REV);
         IoSetItemText(ItemIndex, 1, L"%S", szProductRev);
 
         GetSerialNumber(hHandle, szText, sizeof(szText));
         if (szText[0] != 0)
         {
-            ItemIndex = IoAddValueName(1, IDS_CDROM_SERIAL_NUMBER, 0);
+            ItemIndex = IoAddValueName(1, 0, IDS_CDROM_SERIAL_NUMBER);
             IoSetItemText(ItemIndex, 1, szText);
         }
 
-        ItemIndex = IoAddValueName(1, IDS_CDROM_INTERFACE, 0);
+        ItemIndex = IoAddValueName(1, 0, IDS_CDROM_INTERFACE);
         GetInterfaceType(hHandle, szText, sizeof(szText));
         IoSetItemText(ItemIndex, 1, szText);
 
         GetScsiVendorById(szVendor, szText, sizeof(szText));
         if (szText[0] != 0)
         {
-            ItemIndex = IoAddValueName(1, IDS_CDROM_MANUFACTURER, 0);
+            ItemIndex = IoAddValueName(1, 0, IDS_CDROM_MANUFACTURER);
             IoSetItemText(ItemIndex, 1, szText);
         }
 
@@ -1191,22 +1191,22 @@ HW_CDInfo(VOID)
             *(BYTE*)&Capabilities.BufferSize = *((BYTE*)&Capabilities.BufferSize + 1);
             *((BYTE*)&Capabilities.BufferSize + 1) = tmp;
 
-            ItemIndex = IoAddValueName(1, IDS_CDROM_BUFFER_SIZE, 0);
+            ItemIndex = IoAddValueName(1, 0, IDS_CDROM_BUFFER_SIZE);
             IoSetItemText(ItemIndex, 1, L"%d KB", Capabilities.BufferSize);
         }
 
         if (GetCDReportKeyScsi(hHandle, &KeyData))
         {
-            ItemIndex = IoAddValueName(1, IDS_CDROM_REGION_CODE, 0);
+            ItemIndex = IoAddValueName(1, 0, IDS_CDROM_REGION_CODE);
             if (KeyData.TypeCode != 0)
                 IoSetItemText(ItemIndex, 1, L"%d", KeyData.TypeCode);
             else
                 IoSetItemText(ItemIndex, 1, L"No");
 
-            ItemIndex = IoAddValueName(1, IDS_CDROM_REMAINING_USER_CHANGES, 0);
+            ItemIndex = IoAddValueName(1, 0, IDS_CDROM_REMAINING_USER_CHANGES);
             IoSetItemText(ItemIndex, 1, L"%d", KeyData.UserChanges);
 
-            ItemIndex = IoAddValueName(1, IDS_CDROM_REMAINING_VENDOR_CHANGES, 0);
+            ItemIndex = IoAddValueName(1, 0, IDS_CDROM_REMAINING_VENDOR_CHANGES);
             IoSetItemText(ItemIndex, 1, L"%d", KeyData.VendorResets);
         }
 

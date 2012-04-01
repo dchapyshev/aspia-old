@@ -289,7 +289,7 @@ NvidiaGPUsEnumProc(PNVIDIA_GPU_INFO GpuInfo)
     /* GPU board ambient temperature */
     if (GpuInfo->BoardTemp.CurrentTemp > 0)
     {
-        Index = IoAddValueName(1, IDS_NVIDIA_BOARD_TEMP, 4);
+        Index = IoAddValueName(1, 4, IDS_NVIDIA_BOARD_TEMP);
         IoSetItemText(Index, 1, L"%ld °C",
                       GpuInfo->BoardTemp.CurrentTemp);
     }
@@ -297,7 +297,7 @@ NvidiaGPUsEnumProc(PNVIDIA_GPU_INFO GpuInfo)
     /* GPU core temperature */
     if (GpuInfo->GpuTemp.CurrentTemp > 0)
     {
-        Index = IoAddValueName(1, IDS_NVIDIA_CORE_TEMP, 4);
+        Index = IoAddValueName(1, 4, IDS_NVIDIA_CORE_TEMP);
         IoSetItemText(Index, 1, L"%ld °C",
                       GpuInfo->GpuTemp.CurrentTemp);
     }
@@ -305,7 +305,7 @@ NvidiaGPUsEnumProc(PNVIDIA_GPU_INFO GpuInfo)
     /* GPU memory temperature */
     if (GpuInfo->MemoryTemp.CurrentTemp > 0)
     {
-        Index = IoAddValueName(1, IDS_NVIDIA_MEMORY_TEMP, 4);
+        Index = IoAddValueName(1, 4, IDS_NVIDIA_MEMORY_TEMP);
         IoSetItemText(Index, 1, L"%ld °C",
                       GpuInfo->MemoryTemp.CurrentTemp);
     }
@@ -313,7 +313,7 @@ NvidiaGPUsEnumProc(PNVIDIA_GPU_INFO GpuInfo)
     /* GPU power supply temperature */
     if (GpuInfo->PowerSupplyTemp.CurrentTemp > 0)
     {
-        Index = IoAddValueName(1, IDS_NVIDIA_POWER_SUPPLY_TEMP, 4);
+        Index = IoAddValueName(1, 4, IDS_NVIDIA_POWER_SUPPLY_TEMP);
         IoSetItemText(Index, 1, L"%ld °C",
                       GpuInfo->PowerSupplyTemp.CurrentTemp);
     }
@@ -321,7 +321,7 @@ NvidiaGPUsEnumProc(PNVIDIA_GPU_INFO GpuInfo)
     /* Visual Computing Device Board temperature */
     if (GpuInfo->VcdBoardTemp.CurrentTemp > 0)
     {
-        Index = IoAddValueName(1, IDS_NVIDIA_VCD_BOARD_TEMP, 4);
+        Index = IoAddValueName(1, 4, IDS_NVIDIA_VCD_BOARD_TEMP);
         IoSetItemText(Index, 1, L"%ld °C",
                       GpuInfo->VcdBoardTemp.CurrentTemp);
     }
@@ -329,7 +329,7 @@ NvidiaGPUsEnumProc(PNVIDIA_GPU_INFO GpuInfo)
     /* Visual Computing Device Inlet temperature */
     if (GpuInfo->VcdInletTemp.CurrentTemp > 0)
     {
-        Index = IoAddValueName(1, IDS_NVIDIA_VCD_INLET_TEMP, 4);
+        Index = IoAddValueName(1, 4, IDS_NVIDIA_VCD_INLET_TEMP);
         IoSetItemText(Index, 1, L"%ld °C",
                       GpuInfo->VcdInletTemp.CurrentTemp);
     }
@@ -337,7 +337,7 @@ NvidiaGPUsEnumProc(PNVIDIA_GPU_INFO GpuInfo)
     /* Visual Computing Device Outlet temperature */
     if (GpuInfo->VcdOutletTemp.CurrentTemp > 0)
     {
-        Index = IoAddValueName(1, IDS_NVIDIA_VCD_OUTLET_TEMP, 4);
+        Index = IoAddValueName(1, 4, IDS_NVIDIA_VCD_OUTLET_TEMP);
         IoSetItemText(Index, 1, L"%ld °C",
                       GpuInfo->VcdOutletTemp.CurrentTemp);
     }
@@ -345,7 +345,7 @@ NvidiaGPUsEnumProc(PNVIDIA_GPU_INFO GpuInfo)
     /* Fan Speed */
     if (GpuInfo->FanSpeed > 0)
     {
-        Index = IoAddValueName(1, IDS_NVIDIA_FAN_SPEED, 5);
+        Index = IoAddValueName(1, 5, IDS_NVIDIA_FAN_SPEED);
         IoSetItemText(Index, 1, L"%ld RPM",
                       GpuInfo->FanSpeed);
     }
@@ -394,7 +394,7 @@ HW_SensorInfo(VOID)
             ChopSpaces(szText, sizeof(szText));
             IoAddHeaderString(0, 0, szText);
 
-            Index = IoAddValueName(1, IDS_SENSOR_TEMPERATURE, 4);
+            Index = IoAddValueName(1, 4, IDS_SENSOR_TEMPERATURE);
             IoSetItemText(Index, 1, L"%d °C", Temp);
 
             IoAddFooter();

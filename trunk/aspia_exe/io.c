@@ -495,7 +495,7 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR pText, ...)
 }
 
 INT
-IoAddValueName(INT Indent, UINT ValueID, INT IconIndex)
+IoAddValueName(INT Indent, INT IconIndex, UINT ValueID)
 {
     WCHAR szText[MAX_STR_LEN * 2];
 
