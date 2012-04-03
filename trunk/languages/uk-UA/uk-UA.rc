@@ -29,25 +29,25 @@ IDR_TASKMGR MENU
 BEGIN
     POPUP "popup"
     BEGIN
-        MENUITEM "Kill Process", ID_KILL_PROCESS
-        MENUITEM "Kill Process Tree", ID_KILL_PROCESS_TREE
-        POPUP "Priority"
+        MENUITEM "Завершити процес", ID_KILL_PROCESS
+        MENUITEM "Завершити дерево процесів", ID_KILL_PROCESS_TREE
+        POPUP "Пріоритет"
         BEGIN
-            MENUITEM "Real Time", ID_REALTIME_PRIORITY
-            MENUITEM "High", ID_HIGH_PRIORITY
-            MENUITEM "Above Normal", ID_ABOVE_NORMAL_PRIORITY
-            MENUITEM "Normal", ID_NORMAL_PRIORITY
-            MENUITEM "Below Normal", ID_BELOW_NORMAL_PRIORITY
-            MENUITEM "Low", ID_LOW_PRIORITY
+            MENUITEM "Реального часу", ID_REALTIME_PRIORITY
+            MENUITEM "Високий", ID_HIGH_PRIORITY
+            MENUITEM "Вище середнього", ID_ABOVE_NORMAL_PRIORITY
+            MENUITEM "Середній", ID_NORMAL_PRIORITY
+            MENUITEM "Нище середнього", ID_BELOW_NORMAL_PRIORITY
+            MENUITEM "Низький", ID_LOW_PRIORITY
         END
-        MENUITEM "Open Folder...", ID_PROCESS_OPEN_FOLDER
-        MENUITEM "Properties", ID_PROCESS_PROPERTIES
+        MENUITEM "Відкрити теку...", ID_PROCESS_OPEN_FOLDER
+        MENUITEM "Властивості", ID_PROCESS_PROPERTIES
         MENUITEM SEPARATOR
-        MENUITEM "Copy String\tCtrl+C", ID_COPY_ALL
-        MENUITEM "Copy Value", ID_COPY_VALUE
-        MENUITEM "Copy Name", ID_COPY_NAME
+        MENUITEM "Копіювати рядок\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Копіювати значення", ID_COPY_VALUE
+        MENUITEM "Копіювати назву", ID_COPY_NAME
         MENUITEM SEPARATOR
-        MENUITEM "Refresh\tF5", ID_RELOAD
+        MENUITEM "Оновити\tF5", ID_RELOAD
     END
 END
 
@@ -55,15 +55,15 @@ IDR_INSTALLED_SOFTWARE MENU
 BEGIN
     POPUP "popup"
     BEGIN
-        MENUITEM "Remove", ID_APP_REMOVE
-        MENUITEM "Modify", ID_APP_MODIFY
-        MENUITEM "Remove from registry", ID_APP_REMOVE_REG
+        MENUITEM "Видалити", ID_APP_REMOVE
+        MENUITEM "Змінити", ID_APP_MODIFY
+        MENUITEM "Видалити з реєстру", ID_APP_REMOVE_REG
         MENUITEM SEPARATOR
-        MENUITEM "Copy String\tCtrl+C", ID_COPY_ALL
-        MENUITEM "Copy Value", ID_COPY_VALUE
-        MENUITEM "Copy Name", ID_COPY_NAME
+        MENUITEM "Копіювати рядок\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Копіювати значення", ID_COPY_VALUE
+        MENUITEM "Копіювати назву", ID_COPY_NAME
         MENUITEM SEPARATOR
-        MENUITEM "Refresh\tF5", ID_RELOAD
+        MENUITEM "Оновити\tF5", ID_RELOAD
     END
 END
 
@@ -71,13 +71,13 @@ IDR_DEVICES MENU
 BEGIN
     POPUP "popup"
     BEGIN
-        MENUITEM "Drivers Search...", ID_DRIVERS_SEARCH
+        MENUITEM "Пошук драйверів...", ID_DRIVERS_SEARCH
         MENUITEM SEPARATOR
-        MENUITEM "Copy String\tCtrl+C", ID_COPY_ALL
-        MENUITEM "Copy Value", ID_COPY_VALUE
-        MENUITEM "Copy Name", ID_COPY_NAME
+        MENUITEM "Копіювати рядок\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Копіювати значення", ID_COPY_VALUE
+        MENUITEM "Копіювати назву", ID_COPY_NAME
         MENUITEM SEPARATOR
-        MENUITEM "Refresh\tF5", ID_RELOAD
+        MENUITEM "Оновити\tF5", ID_RELOAD
     END
 END
 
@@ -103,9 +103,9 @@ IDR_HELP_POPUP MENU
 BEGIN
     POPUP "popup"
     BEGIN
-        MENUITEM "&Contents...\tF1", ID_HELP
+        MENUITEM "&Зміст...\tF1", ID_HELP
         MENUITEM SEPARATOR
-        MENUITEM "&About Aspia...", ID_ABOUT
+        MENUITEM "&Про програму...", ID_ABOUT
     END
 END
 
@@ -115,8 +115,8 @@ BEGIN
     BEGIN
         MENUITEM "&Показати вікно", ID_SHOW_WINDOW
         MENUITEM SEPARATOR
-        MENUITEM "System Monitor", ID_SYSMON
-        MENUITEM "Disk Benchmark", ID_BENCH
+        MENUITEM "Системний монітор", ID_SYSMON
+        MENUITEM "Тест диску", ID_BENCH
         MENUITEM SEPARATOR
         MENUITEM "Звіт: &всі категорії", ID_SAVE_ALL
         MENUITEM "Звіт: &обрані...", ID_SAVE_REPORT
@@ -131,8 +131,8 @@ BEGIN
     BEGIN
         MENUITEM "&Сховати вікно", ID_HIDE_WINDOW
         MENUITEM SEPARATOR
-        MENUITEM "System Monitor", ID_SYSMON
-        MENUITEM "Disk Benchmark", ID_BENCH
+        MENUITEM "Системний монітор", ID_SYSMON
+        MENUITEM "Тест диску", ID_BENCH
         MENUITEM SEPARATOR
         MENUITEM "Звіт: &всі категорії", ID_SAVE_ALL
         MENUITEM "Звіт: &обрані...", ID_SAVE_REPORT
@@ -194,8 +194,8 @@ BEGIN
     AUTOCHECKBOX "Запускати разом з Windows", IDC_START_WITH_WINDOWS, 20, 79, 110, 8
     AUTOCHECKBOX "Зберігати положення вікон", IDC_SAVE_WINDOW_POS, 20, 94, 109, 8
     AUTOCHECKBOX "Зверху всіх вікон", IDC_STAY_ON_TOP, 20, 110, 109, 8
-    AUTOCHECKBOX "Use styles for information windows", IDC_STYLES_WNDS, 20, 126, 163, 8
-    AUTOCHECKBOX "Show alternating rows in the information window", IDC_ALT_ROWS, 20, 142, 187, 8
+    AUTOCHECKBOX "Використовувати стилі для інформаційних вікон", IDC_STYLES_WNDS, 20, 126, 163, 8
+    AUTOCHECKBOX "Чергування рядків в вікні інформації", IDC_ALT_ROWS, 20, 142, 187, 8
     AUTOCHECKBOX "Дозволити драйвер режиму ядра", IDC_ALLOW_KM_DRIVER, 20, 158, 140, 8
 END
 
@@ -218,19 +218,19 @@ STYLE DS_SHELLFONT | DS_CONTROL | WS_CHILD | WS_CLIPCHILDREN
 FONT 8, "MS Shell Dlg"
 BEGIN
     AUTOCHECKBOX "Запускати згорнутою в трей", IDC_START_MINIMIZED, 20, 8, 119, 8
-    AUTOCHECKBOX "Показувати іконку програми в треї", IDC_SHOW_PROG_ICON, 20, 23, 130, 8
-    AUTOCHECKBOX "Показувати іконки датчиків в треї:", IDC_SHOW_SENSOR_ICON, 20, 38, 130, 8
+    AUTOCHECKBOX "Показувати значок програми в треї", IDC_SHOW_PROG_ICON, 20, 23, 130, 8
+    AUTOCHECKBOX "Показувати значки датчиків в треї:", IDC_SHOW_SENSOR_ICON, 20, 38, 130, 8
     CONTROL "", IDC_SENSOR_ICON_LIST, "SysListView32", LVS_REPORT | LVS_SORTASCENDING | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP, 11, 55, 199, 64
 
-    LTEXT "Іконки процесорів:", -1, 11, 148, 93, 10
+    LTEXT "Значки процесорів:", -1, 11, 148, 93, 10
     CONTROL -1, IDC_CPU_ICON, "STATIC", SS_ICON | SS_CENTERIMAGE | SS_REALSIZEIMAGE | WS_BORDER, 16, 165, 18, 15
     PUSHBUTTON "&Колір шрифту", IDC_CPU_FONT_COLOR, 44, 158, 60, 14
-    PUSHBUTTON "&Фон", IDC_CPU_BACKGROUND, 44, 175, 60, 14
+    PUSHBUTTON "&Тло", IDC_CPU_BACKGROUND, 44, 175, 60, 14
 
-    LTEXT "Іконки жорстких дисків:", -1, 117, 148, 96, 10
+    LTEXT "Значки жорстких дисків:", -1, 117, 148, 96, 10
     CONTROL -1, IDC_HDD_ICON, "STATIC", SS_ICON | SS_CENTERIMAGE | SS_REALSIZEIMAGE | WS_BORDER, 122, 165, 18, 15
     PUSHBUTTON "&Колір шрифту", IDC_HDD_FONT_COLOR, 150, 158, 60, 14
-    PUSHBUTTON "&Фон", IDC_HDD_BACKGROUND, 150, 174, 60, 14
+    PUSHBUTTON "&Тло", IDC_HDD_BACKGROUND, 150, 174, 60, 14
 
     LTEXT "Частота оновлення (в секундах):", -1, 20, 129, 120, 10
     EDITTEXT IDC_REFRESH_RATE_EDIT, 143, 127, 37, 12, WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP | ES_NUMBER
@@ -241,7 +241,7 @@ STRINGTABLE DISCARDABLE
 BEGIN
     IDS_SAVE, "Зберегти звіт"
     IDS_RELOAD, "Оновити"
-    IDS_HELP, "Help"
+    IDS_HELP, "Довідка"
     IDS_PARAM, "Параметр"
     IDS_VALUE, "Значення"
     IDS_PRODUCT_KEY, "Ключ продукту"
@@ -298,7 +298,7 @@ BEGIN
     IDS_APP_URL_UPDATEINFO, "Інформація про оновлення"
     IDS_APP_URL_INFOABOUT, "Інформація про програму"
     IDS_APP_INSTALLDATE, "Дата встановлення"
-    IDS_APP_INSTALLLOCATION, "Шлях установки"
+    IDS_APP_INSTALLLOCATION, "Шлях встановлення"
     IDS_APP_UNINSTALL_STR, "Рядок для видалення"
     IDS_APP_MODIFY_PATH, "Рядок для зміни"
 
@@ -309,7 +309,7 @@ BEGIN
     IDS_MEM_SIZE, "Розмір"
     IDS_MEM_FORMFACTOR, "Форм-фактор"
     IDS_MEM_SPEED, "Частота"
-    IDS_MEM_PARTNUMBER, "Шифр компонента"
+    IDS_MEM_PARTNUMBER, "Шифр компоненту"
     IDS_MEM_BANK, "Банк"
     IDS_MEM_TOTALWIDTH, "Загальна ширина"
     IDS_MEM_DATAWIDTH, "Ширина даних"
@@ -351,7 +351,7 @@ BEGIN
     IDS_DMI_CACHE_MAX_SIZE, "Максимальний обсяг"
     IDS_DMI_CACHE_CURRENT_SIZE, "Поточний обсяг"
     IDS_DMI_CACHE_MODE, "Режим роботи"
-    IDS_DMI_CACHE_LEVEL, "Рівень кеша"
+    IDS_DMI_CACHE_LEVEL, "Рівень кешу"
 
     IDS_BIOS_DATE, "Дата випуску"
     IDS_BIOS_SIZE, "Розмір"
@@ -488,8 +488,8 @@ BEGIN
     IDS_BAT_DEPRECIATION, "Ступінь зношеності"
     IDS_BAT_MANUFACTUREDATE, "Дата виробництва"
     IDS_BAT_TEMPERATURE, "Температура"
-    IDS_BAT_RECHARGEABLE, "Перезаряджається"
-    IDS_BAT_NONRECHARGEABLE, "Неможливо заряджати"
+    IDS_BAT_RECHARGEABLE, "Перезаряджувана"
+    IDS_BAT_NONRECHARGEABLE, "Не перезаряджувана"
     IDS_BAT_CHARGING, "Зарядка"
     IDS_BAT_CRITICAL, "Критичне"
     IDS_BAT_DISCHARGING, "Розрядка"
@@ -506,7 +506,7 @@ BEGIN
     IDS_PRINTER_SHARED, "Загальний доступ"
     IDS_PRINTER_DATATYPE, "Тип даних"
     IDS_PRINTER_JOBS_COUNT, "Завдань на друк"
-    IDS_PRINTER_DEFAULT, "За замовчуванням"
+    IDS_PRINTER_DEFAULT, "Типово"
     IDS_PRINTER_DEVICENAME, "Ім’я пристрою"
     IDS_PRINTER_PAPER_SIZE, "Розмір паперу"
     IDS_PRINTER_QUALITY, "Якість друку"
@@ -627,7 +627,7 @@ BEGIN
     IDS_SITE_LINK, "http://www.aspia.ru"
     IDS_SITE_DONATE_LINK, "http://www.aspia.ru/donate"
 
-    IDS_REGION_TIME_ZONE, "Тимчасова зона"
+    IDS_REGION_TIME_ZONE, "Часова зона"
     IDS_REGION_LANGUAGE, "Мова"
     IDS_REGION_COUNTRY, "Країна/регіон"
     IDS_REGION_CURRENCY, "Грошова одиниця"
@@ -680,7 +680,7 @@ BEGIN
     IDS_REGION_MNS_DECEMBER, "Ім’я для грудня"
     IDS_REGION_CALENDAR_TYPE, "Тип календаря"
     IDS_REGION_MEASUREMENT_SYSTEM, "Система числення"
-    IDS_REGION_PAPER_SIZE, "Розмір паперу за замовчуванням"
+    IDS_REGION_PAPER_SIZE, "Типовий розмір паперу"
 
     IDS_LOCAL_TIME, "Локальний час"
     IDS_LOCAL_DATE, "Локальна дата"
@@ -689,7 +689,7 @@ BEGIN
     IDS_CURRENT_POWER_SOURCE, "Поточне джерело живлення"
     IDS_BATTERY_STATUS, "Стан батареї"
     IDS_FULL_BATTERY_LIFETIME, "Повний час роботи від батареї"
-    IDS_REMAINING_BAT_LIFETIME, "Поточний час роботи від батареї"
+    IDS_REMAINING_BAT_LIFETIME, "Залишилось часу роботи від батареї"
     IDS_POWER_ON_AC_LINE, "Електромережа"
     IDS_POWER_ON_DC_BATTERY, "Батарея"
     IDS_POWER_HIGH_BATTERY, "Високий рівень"
@@ -703,7 +703,7 @@ BEGIN
     IDS_USER_ACCOUNT_DISABLED, "Відключений"
     IDS_USER_PASSWD_CANT_CHANGE, "Не може змінити пароль"
     IDS_USER_PASSWORD_EXPIRED, "Термін дії пароля минув"
-    IDS_USER_DONT_EXPIRE_PASSWD, "Термін дії пароля не обмежений"
+    IDS_USER_DONT_EXPIRE_PASSWD, "Термін дії пароля необмежений"
     IDS_USER_LOCKOUT, "Заблоковано"
 
     IDS_REPORT_TITLE, "Зміст"
@@ -727,8 +727,8 @@ BEGIN
     IDS_NETSTAT_REMOTE_ADDRESS, "Віддалена адреса"
     IDS_NETSTAT_STATE, "Стан"
 
-    IDS_SHARE_MAX_USES, "Макс. підключень"
-    IDS_SHARE_CURRENT_USES, "Поточних підключень"
+    IDS_SHARE_MAX_USES, "Макс. під'єднань"
+    IDS_SHARE_CURRENT_USES, "Поточних під'єднань"
     IDS_SHARE_UNLIMITED, "Не обмежено"
 
     IDS_ACTUSERS_DOMAIN, "Домен"
@@ -743,7 +743,7 @@ BEGIN
 
     IDS_USER_LAST_LOGON, "Останній вхід"
     IDS_USER_NUM_LOGONS, "Кількість входів"
-    IDS_USER_BAD_PW_COUNT, "Помилкових вводів пароля"
+    IDS_USER_BAD_PW_COUNT, "Помилкових вводів паролю"
 
     IDS_NEVER, "Ніколи"
 
@@ -756,7 +756,7 @@ BEGIN
     IDS_DEVICE_VERSION, "Версія драйвера"
     IDS_DEVICE_ESTIMATED_VENDOR, "Виробник драйвера"
     IDS_DEVICE_UNKNOWN_DEVICE, "Невідомий пристрій"
-    IDS_DEVICE_INSTANCE_ID, "Instance Id"
+    IDS_DEVICE_INSTANCE_ID, "Id зразка"
 
     IDS_LICENSE_APP_NAME, "Назва продукту"
     IDS_LICENSE_PRODUCT_KEY, "Ключ продукту"
@@ -776,9 +776,9 @@ BEGIN
     IDS_SPD_ERROR_DETECTION, "Метод виявлення помилок"
     IDS_SPD_SUPPORTED_CAS_LATENCIES, "Підтримувані затримки CAS"
     IDS_SPD_DIMM_TYPE, "Тип модуля"
-    IDS_SPD_ANALYSIS_PROBE, "Analysis Probe"
-    IDS_SPD_FET_SWITCH_EXT, "FET Switch External"
-    IDS_SPD_WEAK_DRIVER, "Weak Driver"
+    IDS_SPD_ANALYSIS_PROBE, "Дослідний зонд"
+    IDS_SPD_FET_SWITCH_EXT, "Зовнішній перемикач FET"
+    IDS_SPD_WEAK_DRIVER, "Слабкий драйвер"
     IDS_SPD_BURST_LENGTHS, "Підтримувані розміри пакетів"
     IDS_SPD_TIMING_FORMAT, "Підтримувані таймінги при %.1f MHz"
 
@@ -797,7 +797,7 @@ BEGIN
     IDS_PREV_TASKBAR_CONTEXT_MENU, "Контекстне меню панелі завдань"
     IDS_PREV_HIDE_TRAY, "Область сповіщень на панелі завдань"
     IDS_PREV_HIDE_CLOCK, "Годинник на панелі завдвнь"
-    IDS_PREV_TOOLBARS_ON_TASKBAR, "Панелі інструментів на панелі завдвнь"
+    IDS_PREV_TOOLBARS_ON_TASKBAR, "Панелі інструментів на панелі завдань"
     IDS_PREV_AUTORUN, "Автозапуск"
     IDS_PREV_HKLM_RUN, "HKLM - Run"
     IDS_PREV_HKLM_RUNONCE, "HKLM - RunOnce"
@@ -851,7 +851,7 @@ BEGIN
     IDS_DISPLAY_HORIZ_FREQ, "Частота рядків"
     IDS_DISPLAY_VERT_FREQ, "Частота кадрів"
     IDS_DISPLAY_MAX_RESOLUTION, "Макс. розширення"
-    IDS_DISPLAY_GAMMA, "Гамма"
+    IDS_DISPLAY_GAMMA, "Гама"
     IDS_DISPLAY_DPMS_MODE, "Підтримувані режими DPMS"
     IDS_DISPLAY_SUPPORTED_MODES, "Підтримувані відеорежими"
     IDS_DISPLAY_MODEL, "Модель"
@@ -879,73 +879,73 @@ BEGIN
     IDS_SYSMON_START, "Старт"
     IDS_SYSMON_STOP, "Стоп"
     IDS_SYSMON_TEST, "Стрес-тест"
-    IDS_SYSMON_SENSOR, "Давач"
+    IDS_SYSMON_SENSOR, "Датчик"
     IDS_SYSMON_CURRENT, "Поточне"
     IDS_SYSMON_MIN, "Мінімальне"
     IDS_SYSMON_MAX, "Максимальне"
     IDS_REPORTWND_TITLE, "Збереження звіту"
     IDS_ADD_CONTENT_TABLE, "Додавати зміст у звіт"
-    IDS_CLOSE_BTN, "Close"
+    IDS_CLOSE_BTN, "Закрити"
     IDS_SAVE_BTN, "Зберегти"
     IDS_FILE_TYPE_TEXT, "Тип файлу:"
-    IDS_SPD_DEVICE_WIDTH, "Device Width"
-    IDS_SPD_BUS_WIDTH, "Bus Width"
-    IDS_SPD_MODULE_NORM_VOLTAGE, "Module Normal Voltage (VDD)"
-    IDS_SPD_COLUMN_ADDR_BITS, "Column Address Bits"
-    IDS_SPD_ROW_ADDRESS_BITS, "Row Address Bits"
-    IDS_NOT_CONNECTED, "Not Connected"
-    IDS_HWBENCH, "Hardware Benchmarks"
-    IDS_SYSMON_BTN, "Sensors"
-    IDS_BENCH_BTN, "Benchmarks"
-    IDS_NVIDIA_BOARD_TEMP, "Board Temperature"
-    IDS_NVIDIA_CORE_TEMP, "Core Temperature"
-    IDS_NVIDIA_MEMORY_TEMP, "Memory Temperature"
-    IDS_NVIDIA_POWER_SUPPLY_TEMP, "Power Supply Temperature"
-    IDS_NVIDIA_VCD_BOARD_TEMP, "VCD Board Temperature"
-    IDS_NVIDIA_VCD_INLET_TEMP, "VCD Inlet Temperature"
-    IDS_NVIDIA_VCD_OUTLET_TEMP, "VCD Outlet Temperature"
-    IDS_NVIDIA_FAN_SPEED, "Fan Speed"
-    IDS_OPENGL_PROP, "OpenGL Properties"
-    IDS_OPENGL_VENDOR, "Vendor"
-    IDS_OPENGL_VERSION, "Version"
-    IDS_OPENGL_EXTENSIONS, "OpenGL Extensions"
-    IDS_DMI_POINTING_DEVICE, "Build-in Pointing Device"
-    IDS_DMI_POINTING_TYPE, "Device Type"
-    IDS_DMI_POINTING_INTERFACE, "Device Interface"
-    IDS_DMI_POINTING_BUTTONS, "Buttons Count"
-    IDS_MMDEV_NAME, "Name"
-    IDS_MMDEV_ID, "Identifier"
-    IDS_MMDEV_FORMATS, "Formats"
-    IDS_MMDEV_CHANNELS, "Channels"
-    IDS_MMDEV_SUPPORTS, "Supports"
-    IDS_CPL_NAME, "Name"
-    IDS_CPL_DESC, "Description"
-    IDS_REPORT_SAVE_ERROR1, "Error while trying to save the report. File a report with the specified name already exists and is open in another program."
-    IDS_REPORT_SAVE_ERROR2, "Error while trying to save the report. Invalid path or file name."
-    IDS_REPORT_SAVE_ERROR3, "Error while trying to save the report. For more information, run the program in debug mode."
-    IDS_SIGNED_FILE, "Signed"
+    IDS_SPD_DEVICE_WIDTH, "Ширина пристрою"
+    IDS_SPD_BUS_WIDTH, "Ширина шини"
+    IDS_SPD_MODULE_NORM_VOLTAGE, "Нормальний вольтаж модуля (VDD)"
+    IDS_SPD_COLUMN_ADDR_BITS, "Адресні біти графи"
+    IDS_SPD_ROW_ADDRESS_BITS, "Адресні біти рядка"
+    IDS_NOT_CONNECTED, "Не під'єднано"
+    IDS_HWBENCH, "Тести швидкодії"
+    IDS_SYSMON_BTN, "Датчики"
+    IDS_BENCH_BTN, "Тести"
+    IDS_NVIDIA_BOARD_TEMP, "Температура плати"
+    IDS_NVIDIA_CORE_TEMP, "Температура процесора"
+    IDS_NVIDIA_MEMORY_TEMP, "Температура пам'яті"
+    IDS_NVIDIA_POWER_SUPPLY_TEMP, "Температура блоку живлення"
+    IDS_NVIDIA_VCD_BOARD_TEMP, "Температура плати VCD"
+    IDS_NVIDIA_VCD_INLET_TEMP, "Температура входу VCD"
+    IDS_NVIDIA_VCD_OUTLET_TEMP, "Температура виходу VCD"
+    IDS_NVIDIA_FAN_SPEED, "Швидкість вентилятора"
+    IDS_OPENGL_PROP, "Властивості OpenGL"
+    IDS_OPENGL_VENDOR, "Виробник"
+    IDS_OPENGL_VERSION, "Версія"
+    IDS_OPENGL_EXTENSIONS, "Розширення OpenGL"
+    IDS_DMI_POINTING_DEVICE, "Інтегрований вказівний пристрій"
+    IDS_DMI_POINTING_TYPE, "Тип пристрою"
+    IDS_DMI_POINTING_INTERFACE, "Інтерфейс"
+    IDS_DMI_POINTING_BUTTONS, "Кількість кнопок"
+    IDS_MMDEV_NAME, "Ім'я"
+    IDS_MMDEV_ID, "Ідентифікатор"
+    IDS_MMDEV_FORMATS, "Формати"
+    IDS_MMDEV_CHANNELS, "Канали"
+    IDS_MMDEV_SUPPORTS, "Підтримка"
+    IDS_CPL_NAME, "Ім'я"
+    IDS_CPL_DESC, "Опис"
+    IDS_REPORT_SAVE_ERROR1, "Помилка при спробі збереження звіту. Файл звіту з вказаним іменем вже існує і відкритий в іншій програмі."
+    IDS_REPORT_SAVE_ERROR2, "Помилка при спробі збереження звіту. Невірний шлях до файлу або ім'я файлу."
+    IDS_REPORT_SAVE_ERROR3, "Помилка при спробі збереження звіту. Для отримання детальних відомостей запустіть програму в налагоджувальному режимі."
+    IDS_SIGNED_FILE, "Підписаний"
     IDS_DRIVER_SEARCH_URL, "http://devid.drp.su/?l=en&dev=%s"
-    IDS_CPUID_PHYSICAL_COUNT, "Physical Cores"
-    IDS_SUPPORTED_ENABLED, "Supported, Enabled"
-    IDS_SUPPORTED_DISABLED, "Supported, Disabled"
-    IDS_HDD_INTERFACE, "Interface"
-    IDS_HDD_CURRENT_TRANSFER_MODE, "Current Transfer Mode"
-    IDS_HDD_MAX_TRANSFER_MODE, "Max Transfer Mode"
-    IDS_HDD_ROTATION_RATE, "Rotation Rate"
-    IDS_HDD_ATA_FEATURES, "ATA Device Features"
-    IDS_CDROM_READ, "Read"
-    IDS_CDROM_WRITE, "Write"
-    IDS_CDROM_READ_WRITE, "Read, Write"
-    IDS_CDROM_FIRMWARE_REV, "Firmware Revision"
-    IDS_CDROM_SERIAL_NUMBER, "Serial Number"
-    IDS_CDROM_INTERFACE, "Interface"
-    IDS_CDROM_MANUFACTURER, "Manufacturer"
-    IDS_CDROM_BUFFER_SIZE, "Buffer Size"
-    IDS_CDROM_SUP_DISK_TYPES, "Supported Disk Types"
-    IDS_CDROM_DRIVE_FEATURES, "Optical Drive Features"
-    IDS_CDROM_REGION_CODE, "Region Code"
-    IDS_CDROM_REMAINING_USER_CHANGES, "Remaining User Changes"
-    IDS_CDROM_REMAINING_VENDOR_CHANGES, "Remaining Vendor Changes"
+    IDS_CPUID_PHYSICAL_COUNT, "Фізичних ядер"
+    IDS_SUPPORTED_ENABLED, "Підтримується, Ввімкнено"
+    IDS_SUPPORTED_DISABLED, "Підтримується, Вимкнено"
+    IDS_HDD_INTERFACE, "Інтерфейс"
+    IDS_HDD_CURRENT_TRANSFER_MODE, "Поточний режим передачі"
+    IDS_HDD_MAX_TRANSFER_MODE, "Макс. режим передачі"
+    IDS_HDD_ROTATION_RATE, "Швидкісь обертання"
+    IDS_HDD_ATA_FEATURES, "Можливості пристрою ATA"
+    IDS_CDROM_READ, "Читання"
+    IDS_CDROM_WRITE, "Запис"
+    IDS_CDROM_READ_WRITE, "Читання і запис"
+    IDS_CDROM_FIRMWARE_REV, "Версія прошивки"
+    IDS_CDROM_SERIAL_NUMBER, "Серійний номер"
+    IDS_CDROM_INTERFACE, "Інтерфейс"
+    IDS_CDROM_MANUFACTURER, "Виборник"
+    IDS_CDROM_BUFFER_SIZE, "Розмір буферу"
+    IDS_CDROM_SUP_DISK_TYPES, "Підтримувані типи дисків"
+    IDS_CDROM_DRIVE_FEATURES, "Можливості оптичного приводу"
+    IDS_CDROM_REGION_CODE, "Код регіону"
+    IDS_CDROM_REMAINING_USER_CHANGES, "Залишилось змін користувачем"
+    IDS_CDROM_REMAINING_VENDOR_CHANGES, "Залишилось змін фірмою"
 
     IDS_CAT_SUMMARY, "Загальна інформація"
 
@@ -960,19 +960,19 @@ BEGIN
     IDS_CAT_HW_ALL_DEVICES, "Всі пристрої"
     IDS_CAT_HW_UNKNOWN_DEVICES, "Невідомі пристрої"
 
-    IDS_CAT_HW_DISPLAY, "Display"
+    IDS_CAT_HW_DISPLAY, "Відображення"
     IDS_CAT_HW_MONITOR, "Монітор"
-    IDS_CAT_HW_WIN_VIDEO, "Windows Video"
+    IDS_CAT_HW_WIN_VIDEO, "Відео Windows"
     IDS_CAT_HW_OPENGL, "OpenGL"
 
-    IDS_CAT_HW_MMEDIA, "Multimedia"
-    IDS_CAT_HW_MMEDIA_DEV, "Windows Audio"
+    IDS_CAT_HW_MMEDIA, "Мультимедіа"
+    IDS_CAT_HW_MMEDIA_DEV, "Звук Windows"
     IDS_CAT_HW_MMEDIA_MCI, "MCI"
-    IDS_CAT_HW_MMEDIA_ACODEC, "Audio Codecs"
-    IDS_CAT_HW_MMEDIA_VCODEC, "Video Codecs"
+    IDS_CAT_HW_MMEDIA_ACODEC, "Аудіо кодеки"
+    IDS_CAT_HW_MMEDIA_VCODEC, "Відео кодеки"
 
     IDS_CAT_HW_DATA, "Зберігання даних"
-    IDS_CAT_HW_DATA_CD, "Optical Drives"
+    IDS_CAT_HW_DATA_CD, "Оптичні приводи"
     IDS_CAT_HW_DATA_SCSI, "SCSI"
     IDS_CAT_HW_DATA_ATA, "ATA"
     IDS_CAT_HW_DATA_SMART, "S.M.A.R.T."
@@ -989,7 +989,7 @@ BEGIN
     IDS_CAT_HW_DMI_ENCLOSURE, "Шасі"
     IDS_CAT_HW_DMI_ONBOARD, "Вбудовані пристрої"
     IDS_CAT_HW_DMI_BATTERY, "Батареї"
-    IDS_CAT_HW_DMI_POINTING, "Build-in Pointing"
+    IDS_CAT_HW_DMI_POINTING, "Вказівний пристрій"
 
     IDS_CAT_SOFTWARE, "Програмне забезпечення"
     IDS_CAT_SOFTWARE_UPD_SFT, "Програми та оновлення"
@@ -1008,7 +1008,7 @@ BEGIN
     IDS_CAT_NETWORK_SHARED, "Мережеві ресурси"
     IDS_CAT_NETWORK_FILES, "Відкриті файли"
     IDS_CAT_NETWORK_ROUTE, "Маршрути"
-    IDS_CAT_NETWORK_FIREWALL, "Windows Firewall"
+    IDS_CAT_NETWORK_FIREWALL, "Брандмауер Windows"
     IDS_CAT_NETWORK_IE, "Internet Explorer"
     IDS_CAT_NETWORK_IE_HISTORY, "Історія"
     IDS_CAT_NETWORK_IE_COOKIE, "Cookie"
@@ -1021,9 +1021,9 @@ BEGIN
     IDS_CAT_OS_USERS, "Користувачі"
     IDS_CAT_OS_USERGROUP, "Групи користувачів"
     IDS_CAT_OS_ACTIVEUSERS, "Активні сесії"
-    IDS_CAT_OS_PREVENTS, "Prevents"
+    IDS_CAT_OS_PREVENTS, "Заборони"
     IDS_CAT_OS_REGPARAM, "Регіональні параметри"
-    IDS_CAT_OS_TASKSCHED, "Планувач завдань"
+    IDS_CAT_OS_TASKSCHED, "Планувальник завдань"
     IDS_CAT_OS_FONTS, "Шрифти"
     IDS_CAT_OS_EVENTVIEW, "Системні події"
     IDS_CAT_OS_SYSFILES, "Системні файли"
@@ -1035,7 +1035,7 @@ BEGIN
     IDS_CAT_OS_AUTORUN, "Автозавантаження"
     IDS_CAT_OS_ENVIRON, "Змінні середовища"
     IDS_CAT_OS_SYSFOLDERS, "Системні теки"
-    IDS_CAT_OS_CPL_APPLETS, "Control Panel"
+    IDS_CAT_OS_CPL_APPLETS, "Панель керування"
 
     IDS_ABOUT_STRING, "Aspia - вільне програмне забезпечення, що розповсюджується за ліцензією GNU LGPL.\r\n\
                        Ви можете отримати копію ліцензії GNU LGPL за адресою:\r\n\
