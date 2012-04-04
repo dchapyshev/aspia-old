@@ -869,6 +869,7 @@ BOOL TimeToString(time_t Time, LPWSTR lpTimeStr, SIZE_T Size);
 BOOL GetFileDescription(LPWSTR lpszPath, LPWSTR lpszDesc, SIZE_T Size);
 HICON GetFolderAssocIcon(LPWSTR lpszFolder);
 INT LoadMUIStringF(HINSTANCE hLangInst, UINT ResID, LPWSTR Buffer, INT BufLen);
+WCHAR* EscapePercentSymbols(WCHAR *pIn);
 
 #define LoadMUIString(a, b, c) LoadMUIStringF(DllParams.hLangInst, a, b, c)
 

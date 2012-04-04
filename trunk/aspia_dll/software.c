@@ -119,8 +119,7 @@ GetApplicationString(HKEY hKey, LPWSTR lpKeyName, LPWSTR lpString, SIZE_T Size)
 static VOID CALLBACK
 EnumInstalledAppProc(LPWSTR lpName, INST_APP_INFO Info)
 {
-    WCHAR szText[MAX_PATH];
-    SIZE_T TextSize = sizeof(szText);
+    WCHAR *buf, szText[MAX_PATH];
     INST_APP_INFO *pInfo;
     INT Index;
 
@@ -139,52 +138,90 @@ EnumInstalledAppProc(LPWSTR lpName, INST_APP_INFO Info)
     /* Get version info */
     GetApplicationString(pInfo->hAppKey,
                          L"DisplayVersion",
-                         szText, TextSize);
+                         szText, sizeof(szText));
     IoSetItemText(Index, 1, szText);
     /* Get publisher */
     GetApplicationString(pInfo->hAppKey,
                          L"Publisher",
-                         szText, TextSize);
+                         szText, sizeof(szText));
     IoSetItemText(Index, 2, szText);
+
     /* Get help link */
     GetApplicationString(pInfo->hAppKey,
                          L"HelpLink",
-                         szText, TextSize);
-    IoSetItemText(Index, 3, szText);
+                         szText, sizeof(szText));
+    buf = EscapePercentSymbols(szText);
+
+    if (buf)
+    {
+        IoSetItemText(Index, 3, buf);
+        Free(buf);
+    }
+    else
+    {
+        IoSetItemText(Index, 3, L"-");
+    }
+
     /* Get help telephone */
     GetApplicationString(pInfo->hAppKey,
                          L"HelpTelephone",
-                         szText, TextSize);
+                         szText, sizeof(szText));
     IoSetItemText(Index, 4, szText);
+
     /* Get URL update info */
     GetApplicationString(pInfo->hAppKey,
                          L"URLUpdateInfo",
-                         szText, TextSize);
-    IoSetItemText(Index, 5, szText);
+                         szText, sizeof(szText));
+    buf = EscapePercentSymbols(szText);
+
+    if (buf)
+    {
+        IoSetItemText(Index, 5, buf);
+        Free(buf);
+    }
+    else
+    {
+        IoSetItemText(Index, 5, L"-");
+    }
+
     /* Get URL update info */
     GetApplicationString(pInfo->hAppKey,
                          L"URLInfoAbout",
-                         szText, TextSize);
-    IoSetItemText(Index, 6, szText);
-    /* Get URL update info */
+                         szText, sizeof(szText));
+    buf = EscapePercentSymbols(szText);
+
+    if (buf)
+    {
+        IoSetItemText(Index, 6, buf);
+        Free(buf);
+    }
+    else
+    {
+        IoSetItemText(Index, 6, L"-");
+    }
+
+    /* Get install date */
     GetApplicationString(pInfo->hAppKey,
                          L"InstallDate",
-                         szText, TextSize);
+                         szText, sizeof(szText));
     IoSetItemText(Index, 7, szText);
-    /* Get URL update info */
+
+    /* Get install location */
     GetApplicationString(pInfo->hAppKey,
                          L"InstallLocation",
-                         szText, TextSize);
+                         szText, sizeof(szText));
     IoSetItemText(Index, 8, szText);
-    /* Get URL update info */
+
+    /* Get uninstall string */
     GetApplicationString(pInfo->hAppKey,
                          L"UninstallString",
-                         szText, TextSize);
+                         szText, sizeof(szText));
     IoSetItemText(Index, 9, szText);
-    /* Get URL update info */
+
+    /* Get modify path */
     GetApplicationString(pInfo->hAppKey,
                          L"ModifyPath",
-                         szText, TextSize);
+                         szText, sizeof(szText));
     IoSetItemText(Index, 10, szText);
 
     if (IoGetTarget() != IO_TARGET_LISTVIEW)
@@ -197,8 +234,7 @@ EnumInstalledAppProc(LPWSTR lpName, INST_APP_INFO Info)
 static VOID CALLBACK
 EnumInstalledUpdProc(LPWSTR lpName, INST_APP_INFO Info)
 {
-    WCHAR szText[MAX_PATH];
-    SIZE_T TextSize = sizeof(szText);
+    WCHAR *buf, szText[MAX_PATH];
     INST_APP_INFO *pInfo;
     INT Index;
 
@@ -217,12 +253,23 @@ EnumInstalledUpdProc(LPWSTR lpName, INST_APP_INFO Info)
     /* Get URL update info */
     GetApplicationString(pInfo->hAppKey,
                          L"URLInfoAbout",
-                         szText, TextSize);
-    IoSetItemText(Index, 1, szText);
+                         szText, sizeof(szText));
+    buf = EscapePercentSymbols(szText);
+
+    if (buf)
+    {
+        IoSetItemText(Index, 1, buf);
+        Free(buf);
+    }
+    else
+    {
+        IoSetItemText(Index, 1, L"-");
+    }
+
     /* Get URL update info */
     GetApplicationString(pInfo->hAppKey,
                          L"UninstallString",
-                         szText, TextSize);
+                         szText, sizeof(szText));
     IoSetItemText(Index, 2, szText);
 
     if (IoGetTarget() != IO_TARGET_LISTVIEW)

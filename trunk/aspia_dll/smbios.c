@@ -1243,17 +1243,23 @@ DMI_CPUInfo(VOID)
             /* Version */
             GetStringResourceByID(Buf[0x10], pBuf, szText);
             ChopSpaces(szText, sizeof(szText));
-            IoAddHeaderString(0, 0, szText);
+            IoAddHeaderString(0, 0, (szText[0] != 0) ? szText : L"Not installed");
 
             /* Manufacturer */
-            Index = IoAddValueName(1, 0, IDS_MANUFACTURER);
             GetStringResourceByID(Buf[0x07], pBuf, szText);
-            IoSetItemText(Index, 1, szText);
+            if (szText[0] != 0)
+            {
+                Index = IoAddValueName(1, 0, IDS_MANUFACTURER);
+                IoSetItemText(Index, 1, szText);
+            }
 
             /* Family */
-            Index = IoAddValueName(1, 0, IDS_CPU_FAMILY);
             SMBIOS_ProcessorFamilyToText(Buf[0x06], szText, sizeof(szText));
-            IoSetItemText(Index, 1, szText);
+            if (szText[0] != 0)
+            {
+                Index = IoAddValueName(1, 0, IDS_CPU_FAMILY);
+                IoSetItemText(Index, 1, szText);
+            }
 
             /* Type */
             Index = IoAddValueName(1, 0, IDS_TYPE);
@@ -1280,19 +1286,28 @@ DMI_CPUInfo(VOID)
             IoSetItemText(Index, 1, szText);
 
             /* External clock */
-            Index = IoAddValueName(1, 0, IDS_CPU_EXTCLOCK);
             CopyMemory(&wValue, pBuf + 0x12, 2);
-            IoSetItemText(Index, 1, L"%d MHz", wValue);
+            if (wValue > 0)
+            {
+                Index = IoAddValueName(1, 0, IDS_CPU_EXTCLOCK);
+                IoSetItemText(Index, 1, L"%d MHz", wValue);
+            }
 
             /* Current speed */
-            Index = IoAddValueName(1, 0, IDS_CPU_CURRENTSPEED);
             CopyMemory(&wValue, pBuf + 0x16, 2);
-            IoSetItemText(Index, 1, L"%d MHz", wValue);
+            if (wValue > 0)
+            {
+                Index = IoAddValueName(1, 0, IDS_CPU_CURRENTSPEED);
+                IoSetItemText(Index, 1, L"%d MHz", wValue);
+            }
 
             /* Max speed */
-            Index = IoAddValueName(1, 0, IDS_CPU_MAXSPEED);
             CopyMemory(&wValue, pBuf + 0x14, 2);
-            IoSetItemText(Index, 1, L"%d MHz", wValue);
+            if (wValue > 0)
+            {
+                Index = IoAddValueName(1, 0, IDS_CPU_MAXSPEED);
+                IoSetItemText(Index, 1, L"%d MHz", wValue);
+            }
 
             if ((Buf[0x11] & USE_LEGACY_VOLTAGE_MASK))
             {
@@ -1321,8 +1336,11 @@ DMI_CPUInfo(VOID)
             }
 
             /* Voltage */
-            Index = IoAddValueName(1, 0, IDS_CPU_VOLTAGE);
-            IoSetItemText(Index, 1, L"%2.2f Volts", (FLOAT)Voltage);
+            if (Voltage > 0.0f)
+            {
+                Index = IoAddValueName(1, 0, IDS_CPU_VOLTAGE);
+                IoSetItemText(Index, 1, L"%2.2f Volts", (FLOAT)Voltage);
+            }
         }
     }
     while (IsFound);

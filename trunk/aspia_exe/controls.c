@@ -41,8 +41,19 @@ ListViewClear(VOID)
 {
     INT i;
 
-    ImageList_RemoveAll(hListViewImageList);
     ListView_DeleteAllItems(hListView);
+
+    ImageList_RemoveAll(hListViewImageList);
+    ImageList_Destroy(hListViewImageList);
+
+    hListViewImageList = ImageList_Create(ParamsInfo.SxSmIcon,
+                                          ParamsInfo.SySmIcon,
+                                          ILC_MASK | ParamsInfo.SysColorDepth,
+                                          1, 1);
+
+    ListView_SetImageList(hListView,
+                          hListViewImageList,
+                          LVSIL_SMALL);
 
     for (i = IoGetColumnsCount(); i >= 0; --i)
     {
