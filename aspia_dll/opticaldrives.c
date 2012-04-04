@@ -1119,6 +1119,7 @@ HW_CDInfo(VOID)
 
     IoAddIcon(IDI_CD);
     IoAddIcon(IDI_DISK);
+    IoAddIcon(IDI_LOCALES);
 
     LoadMUIString(IDS_CPUID_SUPPORTED,    szSupported,   MAX_STR_LEN);
     LoadMUIString(IDS_CPUID_UNSUPPORTED,  szUnsupported, MAX_STR_LEN);
@@ -1197,16 +1198,16 @@ HW_CDInfo(VOID)
 
         if (GetCDReportKeyScsi(hHandle, &KeyData))
         {
-            ItemIndex = IoAddValueName(1, 0, IDS_CDROM_REGION_CODE);
+            ItemIndex = IoAddValueName(1, 2, IDS_CDROM_REGION_CODE);
             if (KeyData.TypeCode != 0)
                 IoSetItemText(ItemIndex, 1, L"%d", KeyData.TypeCode);
             else
                 IoSetItemText(ItemIndex, 1, L"No");
 
-            ItemIndex = IoAddValueName(1, 0, IDS_CDROM_REMAINING_USER_CHANGES);
+            ItemIndex = IoAddValueName(1, 2, IDS_CDROM_REMAINING_USER_CHANGES);
             IoSetItemText(ItemIndex, 1, L"%d", KeyData.UserChanges);
 
-            ItemIndex = IoAddValueName(1, 0, IDS_CDROM_REMAINING_VENDOR_CHANGES);
+            ItemIndex = IoAddValueName(1, 2, IDS_CDROM_REMAINING_VENDOR_CHANGES);
             IoSetItemText(ItemIndex, 1, L"%d", KeyData.VendorResets);
         }
 

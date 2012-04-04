@@ -595,7 +595,6 @@ OnCommand(UINT Command)
         break;
 
         case ID_SYSMON:
-            CreateSysMonWindow();
             break;
 
         case ID_BENCH:

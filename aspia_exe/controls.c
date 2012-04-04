@@ -30,9 +30,9 @@ static const TBBUTTON Buttons[] =
     //{ 3, ID_SYSMON,   TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szSysMonBtn},
     //{ 4, ID_BENCH,    TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szBenchBtn},
     //{-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
-    { 5, ID_SETTINGS, TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0},
+    { 2, ID_SETTINGS, TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0},
     {-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
-    { 6, ID_HELP_MENU,TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0}
+    { 3, ID_HELP_MENU,TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0}
 };
 
 
@@ -329,9 +329,8 @@ InitToolBar(HWND hwnd)
     /* Add images to ImageList */
     AddIconToImageList(hIconsInst, hImageList, IDI_SAVE);
     AddIconToImageList(hIconsInst, hImageList, IDI_RELOAD);
-    AddIconToImageList(hIconsInst, hImageList, IDI_PRINTER);
-    AddIconToImageList(hIconsInst, hImageList, IDI_TASKMGR);
-    AddIconToImageList(hIconsInst, hImageList, IDI_HWBENCH);
+    //AddIconToImageList(hIconsInst, hImageList, IDI_TASKMGR);
+    //AddIconToImageList(hIconsInst, hImageList, IDI_HWBENCH);
     AddIconToImageList(hIconsInst, hImageList, IDI_SETTINGS);
     AddIconToImageList(hIconsInst, hImageList, IDI_INFO);
 

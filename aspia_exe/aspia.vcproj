@@ -374,14 +374,6 @@
 				RelativePath=".\winmain.c"
 				>
 			</File>
-			<Filter
-				Name="sysmon"
-				>
-				<File
-					RelativePath=".\sysmon\sysmon.c"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Заголовочные файлы"

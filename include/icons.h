@@ -78,17 +78,12 @@
 #define IDI_FIREWALL      169
 #define IDI_USB_DEV       170
 #define IDI_ENCLOSURE     171
-#define IDI_START         172
-#define IDI_STOP          173
-#define IDI_STRESS_TEST   174
 #define IDI_VOLTAGE       175
 #define IDI_TEMPERATURE   176
 #define IDI_FAN           177
-#define IDI_HWBENCH       178
 #define IDI_NVIDIA        179
 #define IDI_ATI           180
 #define IDI_OPENGL        181
 #define IDI_AUDIO         182
 #define IDI_MICROPHONE    183
-#define IDI_CLOSE         184
 #define IDI_DISK          185
