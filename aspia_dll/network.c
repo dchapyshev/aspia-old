@@ -586,8 +586,15 @@ ShowIERegInfo(UINT StringID, LPWSTR lpszPath, LPWSTR lpszKeyName, INT IconIndex)
                               szText,
                               MAX_STR_LEN))
     {
-        Index = IoAddValueName(1, IconIndex, StringID);
-        IoSetItemText(Index, 1, szText);
+        WCHAR *buf = EscapePercentSymbols(szText);
+
+        if (buf)
+        {
+            Index = IoAddValueName(1, IconIndex, StringID);
+            IoSetItemText(Index, 1, buf);
+
+            Free(buf);
+        }
     }
 }
 
@@ -763,7 +770,24 @@ NETWORK_IEHistoryInfo(VOID)
             /* URL */
             __try
             {
-                IoSetItemText(Index, 3, (SafeStrLen(StatUrl.pwcsUrl) > 4) ? StatUrl.pwcsUrl : L"-");
+                if (wcslen(StatUrl.pwcsUrl) > 4)
+                {
+                    WCHAR *buf = EscapePercentSymbols(StatUrl.pwcsUrl);
+
+                    if (buf)
+                    {
+                        IoSetItemText(Index, 3, buf);
+                        Free(buf);
+                    }
+                    else
+                    {
+                        IoSetItemText(Index, 3, L"-");
+                    }
+                }
+                else
+                {
+                    IoSetItemText(Index, 3, L"-");
+                }
             }
             __except(EXCEPTION_EXECUTE_HANDLER)
             {

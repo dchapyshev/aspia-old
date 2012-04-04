@@ -750,7 +750,7 @@ AutorunShowFolderContent(LPWSTR lpszPath)
             }
             else
             {
-                StringCbCopy(szCmd, sizeof(szCmd), L"-");
+                StringCbCopy(szCmd, sizeof(szCmd), szFilePath);
             }
 
             ExtractIconEx(szCmd, 0, NULL, &hIcon, 1);
@@ -1039,8 +1039,15 @@ AddFolderInfoToListView(LPWSTR lpName, INT nFolder)
         if (IoGetTarget() == IO_TARGET_LISTVIEW)
         {
             hIcon = GetFolderAssocIcon(szPath);
-            IconIndex = ImageList_AddIcon(DllParams.hListImgList,
-                                          hIcon);
+            if (hIcon != NULL)
+            {
+                IconIndex = ImageList_AddIcon(DllParams.hListImgList,
+                                              hIcon);
+            }
+            else
+            {
+                IconIndex = IoAddIcon(IDI_FOLDER);
+            }
         }
 
         Index = IoAddItem(0, IconIndex, lpName);
@@ -1048,7 +1055,7 @@ AddFolderInfoToListView(LPWSTR lpName, INT nFolder)
 
         if (IoGetTarget() == IO_TARGET_LISTVIEW)
         {
-            DestroyIcon(hIcon);
+            if (hIcon != NULL) DestroyIcon(hIcon);
         }
     }
 }

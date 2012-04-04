@@ -947,3 +947,38 @@ GetFileExt(LPWSTR lpFileName, LPWSTR lpExt, SIZE_T ExtSize)
 
     return TRUE;
 }
+
+WCHAR*
+EscapePercentSymbols(WCHAR *pIn)
+{
+    INT i, j, len = SafeStrLen(pIn);
+    INT count = 0;
+    WCHAR *buf;
+
+    if (len == 0) return NULL;
+
+    /* Подсчитываем количество знаков процента в строке */
+    for (i = 0; i < len; i++)
+    {
+        if (pIn[i] == L'%')
+            count++;
+    }
+
+    /* Вычисляем количество памяти, которое необходимо для новой строки
+       и выделяем память */
+    buf = (WCHAR*)Alloc((len + count + 1) * sizeof(WCHAR));
+    if (!buf) return NULL;
+
+    /* Копируем строку посимвольно, добавляя после каждого знака
+       процента еще один знак процента */
+    for (i = 0, j = 0; i < len; i++, j++)
+    {
+        buf[j] = pIn[i];
+        if (pIn[i] == L'%')
+            buf[++j] = L'%';
+    }
+
+    buf[j] = 0;
+
+    return buf;
+}
