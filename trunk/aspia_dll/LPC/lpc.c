@@ -466,7 +466,8 @@ DetectWinbondFintek(BYTE bRegisterPort,
 
         case NCT6771F:
         case NCT6776F:
-            NCT677X_GetInfo(chip, rev, wAddress);
+            DebugTrace(L"NCT677X unsupported yet!");
+            //NCT677X_GetInfo(chip, rev, wAddress);
             break;
 
         default:
