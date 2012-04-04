@@ -142,6 +142,7 @@ NETWORK_CardsInfo(VOID)
     DebugStartReceiving();
 
     IoAddIcon(IDI_HW);
+    IoAddIcon(IDI_NETWORK);
 
     LoadMUIString(IDS_NO, szNo, MAX_STR_LEN);
 
@@ -227,7 +228,7 @@ NETWORK_CardsInfo(VOID)
                       pIfRow->bPhysAddr[5],
                       pIfRow->bPhysAddr[6]);
 
-        Index = IoAddValueName(1, 0, IDS_NIC_IP);
+        Index = IoAddValueName(1, 1, IDS_NIC_IP);
         if (pAdapter->IpAddressList.IpAddress.String[0] == '0')
         {
             LoadMUIString(IDS_NOT_CONNECTED, szText, MAX_STR_LEN);
@@ -241,14 +242,14 @@ NETWORK_CardsInfo(VOID)
 
         if (pAdapter->IpAddressList.IpMask.String[0] != '0')
         {
-            Index = IoAddValueName(1, 0, IDS_NIC_SUBNET_MASK);
+            Index = IoAddValueName(1, 1, IDS_NIC_SUBNET_MASK);
             IoSetItemText(Index, 1, L"%S",
                           pAdapter->IpAddressList.IpMask.String);
         }
 
         if (pAdapter->GatewayList.IpAddress.String[0] != 0)
         {
-            Index = IoAddValueName(1, 0, IDS_NIC_GETEWAY);
+            Index = IoAddValueName(1, 1, IDS_NIC_GETEWAY);
             StringCbPrintf(szText, sizeof(szText), L"%S",
                            pAdapter->GatewayList.IpAddress.String);
             IoSetItemText(Index, 1, L"%S", pAdapter->GatewayList.IpAddress.String);
@@ -284,14 +285,14 @@ NETWORK_CardsInfo(VOID)
 
         if (pPerInfo->DnsServerList.IpAddress.String[0] != '\0')
         {
-            Index = IoAddItem(1, 0, L"DNS 1");
+            Index = IoAddItem(1, 1, L"DNS 1");
 
             IoSetItemText(Index, 1, L"%S",
                           pPerInfo->DnsServerList.IpAddress.String);
 
             if (pPerInfo->DnsServerList.Next)
             {
-                Index = IoAddItem(1, 0, L"DNS 2");
+                Index = IoAddItem(1, 1, L"DNS 2");
                 IoSetItemText(Index, 1, L"%S",
                               pPerInfo->DnsServerList.Next->IpAddress.String);
             }
@@ -299,55 +300,55 @@ NETWORK_CardsInfo(VOID)
 
         if (pAdapter->DhcpEnabled)
         {
-            Index = IoAddValueName(1, 0, IDS_NIC_DHCP_STATUS);
+            Index = IoAddValueName(1, 1, IDS_NIC_DHCP_STATUS);
             LoadMUIString(IDS_YES, szText, MAX_STR_LEN);
             IoSetItemText(Index, 1, szText);
 
             if (pAdapter->DhcpServer.IpAddress.String[0] != '\0')
             {
-                Index = IoAddValueName(1, 0, IDS_NIC_DHCP_ADDR);
+                Index = IoAddValueName(1, 1, IDS_NIC_DHCP_ADDR);
                 IoSetItemText(Index, 1, L"%S",
                               pAdapter->DhcpServer.IpAddress.String);
 
                 if (TimeToString(pAdapter->LeaseObtained, szText, sizeof(szText)))
                 {
-                    Index = IoAddValueName(1, 0, IDS_NIC_DHCP_OBTAINED);
+                    Index = IoAddValueName(1, 1, IDS_NIC_DHCP_OBTAINED);
                     IoSetItemText(Index, 1, szText);
                 }
 
                 if (TimeToString(pAdapter->LeaseExpires, szText, sizeof(szText)))
                 {
-                    Index = IoAddValueName(1, 0, IDS_NIC_DHCP_EXPIRES);
+                    Index = IoAddValueName(1, 1, IDS_NIC_DHCP_EXPIRES);
                     IoSetItemText(Index, 1, szText);
                 }
             }
         }
         else
         {
-            Index = IoAddValueName(1, 0, IDS_NIC_DHCP_STATUS);
+            Index = IoAddValueName(1, 1, IDS_NIC_DHCP_STATUS);
             IoSetItemText(Index, 1, szNo);
         }
 
         if (pAdapter->HaveWins)
         {
-            Index = IoAddValueName(1, 0, IDS_NIC_WINS_STATUS);
+            Index = IoAddValueName(1, 1, IDS_NIC_WINS_STATUS);
             LoadMUIString(IDS_YES, szText, MAX_STR_LEN);
             IoSetItemText(Index, 1, szText);
 
-            Index = IoAddItem(1, 0, L"WINS 1");
+            Index = IoAddItem(1, 1, L"WINS 1");
             IoSetItemText(Index, 1, L"%S",
                           pAdapter->PrimaryWinsServer.IpAddress.String);
 
             if (pAdapter->SecondaryWinsServer.IpAddress.String[0] != 0)
             {
-                Index = IoAddItem(1, 0, L"WINS 2");
+                Index = IoAddItem(1, 1, L"WINS 2");
                 IoSetItemText(Index, 1, L"%S",
                               pAdapter->SecondaryWinsServer.IpAddress.String);
             }
         }
         else
         {
-            Index = IoAddValueName(1, 0, IDS_NIC_WINS_STATUS);
+            Index = IoAddValueName(1, 1, IDS_NIC_WINS_STATUS);
             IoSetItemText(Index, 1, szNo);
         }
 

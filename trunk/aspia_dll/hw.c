@@ -896,6 +896,8 @@ HW_WinVideoInfo(VOID)
     DebugStartReceiving();
 
     IoAddIcon(IDI_MONITOR);
+    IoAddIcon(IDI_CPU);
+    IoAddIcon(IDI_HW);
 
     for (;;)
     {
@@ -935,7 +937,7 @@ HW_WinVideoInfo(VOID)
                                   szText, MAX_STR_LEN) &&
             szText[0] != 0)
         {
-            Index = IoAddValueName(1, 0, IDS_MONITOR_CHIP_TYPE);
+            Index = IoAddValueName(1, 1, IDS_MONITOR_CHIP_TYPE);
             IoSetItemText(Index, 1, szText);
         }
 
@@ -947,7 +949,7 @@ HW_WinVideoInfo(VOID)
                                   szText, MAX_STR_LEN) &&
             szText[0] != 0)
         {
-            Index = IoAddValueName(1, 0, IDS_MONITOR_DAC_TYPE);
+            Index = IoAddValueName(1, 1, IDS_MONITOR_DAC_TYPE);
             IoSetItemText(Index, 1, szText);
         }
 
@@ -1001,7 +1003,7 @@ HW_WinVideoInfo(VOID)
                                                  sizeof(szText),
                                                  NULL))
             {
-                Index = IoAddValueName(1, 0, IDS_MONITOR_DRIVER_VENDOR);
+                Index = IoAddValueName(1, 2, IDS_MONITOR_DRIVER_VENDOR);
                 IoSetItemText(Index, 1, szText);
             }
         }
@@ -1174,7 +1176,7 @@ EnumPrintersInfo(DWORD dwFlag)
         IoSetItemText(Index, 1, szText);
 
         /* Shared? */
-        Index = IoAddValueName(1, 0, IDS_PRINTER_SHARED);
+        Index = IoAddValueName(1, 4, IDS_PRINTER_SHARED);
         if (pPrinterInfo[dwIndex].Attributes & PRINTER_ATTRIBUTE_SHARED)
             LoadMUIString(IDS_YES, szText, MAX_STR_LEN);
         else
@@ -1185,28 +1187,28 @@ EnumPrintersInfo(DWORD dwFlag)
         /* Share name */
         if (SafeStrLen(pPrinterInfo[dwIndex].pShareName) > 1)
         {
-            Index = IoAddValueName(1, 0, IDS_PRINTER_SHARENAME);
+            Index = IoAddValueName(1, 4, IDS_PRINTER_SHARENAME);
             IoSetItemText(Index, 1, pPrinterInfo[dwIndex].pShareName);
         }
 
         /* Port name */
         if (SafeStrLen(pPrinterInfo[dwIndex].pPortName) > 1)
         {
-            Index = IoAddValueName(1, 0, IDS_PRINTER_PORT);
+            Index = IoAddValueName(1, 2, IDS_PRINTER_PORT);
             IoSetItemText(Index, 1, pPrinterInfo[dwIndex].pPortName);
         }
 
         /* Driver name */
         if (SafeStrLen(pPrinterInfo[dwIndex].pDriverName) > 1)
         {
-            Index = IoAddValueName(1, 0, IDS_PRINTER_DRIVER);
+            Index = IoAddValueName(1, 3, IDS_PRINTER_DRIVER);
             IoSetItemText(Index, 1, pPrinterInfo[dwIndex].pDriverName);
         }
 
         /* Device name */
         if (SafeStrLen(pDevMode->dmDeviceName) > 1)
         {
-            Index = IoAddValueName(1, 0, IDS_PRINTER_DEVICENAME);
+            Index = IoAddValueName(1, 3, IDS_PRINTER_DEVICENAME);
             IoSetItemText(Index, 1, pDevMode->dmDeviceName);
         }
 
@@ -1256,7 +1258,7 @@ EnumPrintersInfo(DWORD dwFlag)
             /* Paper size */
             if (pDevMode->dmPaperWidth && pDevMode->dmPaperLength)
             {
-                Index = IoAddValueName(1, 0, IDS_PRINTER_PAPER_SIZE);
+                Index = IoAddValueName(1, 1, IDS_PRINTER_PAPER_SIZE);
                 IoSetItemText(Index, 1, L"%ld x %ld mm",
                               pDevMode->dmPaperWidth / 10,
                               pDevMode->dmPaperLength / 10);
@@ -1265,14 +1267,14 @@ EnumPrintersInfo(DWORD dwFlag)
             /* Quality */
             if (pDevMode->dmPrintQuality)
             {
-                Index = IoAddValueName(1, 0, IDS_PRINTER_QUALITY);
+                Index = IoAddValueName(1, 1, IDS_PRINTER_QUALITY);
                 IoSetItemText(Index, 1, L"%ld x %ld dpi",
                               pDevMode->dmPrintQuality,
                               pDevMode->dmPrintQuality);
             }
 
             /* Orientation */
-            Index = IoAddValueName(1, 0, IDS_PRINTER_ORIENTATION);
+            Index = IoAddValueName(1, 1, IDS_PRINTER_ORIENTATION);
             if (pDevMode->dmOrientation == DMORIENT_PORTRAIT)
                 LoadMUIString(IDS_PRINTER_PORTRAIT, szText, MAX_STR_LEN);
             else
@@ -1295,6 +1297,10 @@ HW_PrintersInfo(VOID)
     DebugStartReceiving();
 
     IoAddIcon(IDI_PRINTER);
+    IoAddIcon(IDI_TEXT);
+    IoAddIcon(IDI_PORT);
+    IoAddIcon(IDI_HW);
+    IoAddIcon(IDI_SHARED);
 
     EnumPrintersInfo(PRINTER_ENUM_FAVORITE | PRINTER_ENUM_LOCAL |
                      PRINTER_ENUM_NETWORK);
