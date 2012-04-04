@@ -388,6 +388,7 @@ InitLangCombo(IN HWND hCombo)
     HANDLE hFind = INVALID_HANDLE_VALUE;
     WIN32_FIND_DATA FindFileData;
     WCHAR szPath[MAX_PATH], szDllPath[MAX_PATH], szLangDir[MAX_PATH], szText[MAX_STR_LEN];
+    WCHAR szLangDll[MAX_PATH];
     HINSTANCE hDLL;
     INT ItemIndex;
 
@@ -421,6 +422,9 @@ InitLangCombo(IN HWND hCombo)
                 ItemIndex = SendMessage(hCombo, CB_ADDSTRING, 0,
                                         (LPARAM)szText);
 
+                /* Отсекаем расширение .dll */
+                FileName[wcslen(FileName) - 4] = 0;
+
                 SendMessage(hCombo, CB_SETITEMDATA, ItemIndex,
                             (LPARAM)FileName);
             }
@@ -428,7 +432,10 @@ InitLangCombo(IN HWND hCombo)
             FreeLibrary(hDLL);
         }
 
-        if (wcscmp(FindFileData.cFileName, ThemesInfo.szLangFile) == 0)
+        StringCbPrintf(szLangDll, sizeof(szLangDll),
+                       L"%s.dll", ThemesInfo.szLangFile);
+
+        if (wcscmp(FindFileData.cFileName, szLangDll) == 0)
         {
             SendMessage(hCombo, CB_SELECTSTRING, (WPARAM)-1,
                         (LPARAM)szText);

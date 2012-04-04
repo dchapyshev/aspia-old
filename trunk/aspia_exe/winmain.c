@@ -497,23 +497,11 @@ UrlEncode(LPWSTR lpInStr)
 VOID
 RunLocalizedHelp(VOID)
 {
-    WCHAR szIso639[MAX_STR_LEN];
-    WCHAR szIso3166[MAX_STR_LEN];
     WCHAR szHelpPath[MAX_PATH];
 
-    if (!GetLocaleInfo(LOCALE_USER_DEFAULT,
-                       LOCALE_SISO639LANGNAME,
-                       szIso639, MAX_STR_LEN))
-       return;
-
-    if (!GetLocaleInfo(LOCALE_USER_DEFAULT,
-                       LOCALE_SISO3166CTRYNAME,
-                       szIso3166, MAX_STR_LEN))
-       return;
-
     StringCbPrintf(szHelpPath, sizeof(szHelpPath),
-                   L"%shelp\\%s-%s.chm",
-                   ParamsInfo.szCurrentPath, szIso639, szIso3166);
+                   L"%shelp\\%s.chm",
+                   ParamsInfo.szCurrentPath, ThemesInfo.szLangFile);
 
     if (GetFileAttributes(szHelpPath) == INVALID_FILE_ATTRIBUTES)
     {
@@ -1170,7 +1158,7 @@ GetLangFileNameFromSystem(LPWSTR lpFileName, SIZE_T Size)
                        szIso3166, MAX_STR_LEN))
        return FALSE;
 
-    StringCbPrintf(lpFileName, Size, L"%s-%s.dll",
+    StringCbPrintf(lpFileName, Size, L"%s-%s",
                    szIso639, szIso3166);
 
     return TRUE;
@@ -1186,14 +1174,14 @@ LoadLanguage(VOID)
 
     hLangInst = NULL;
 
-    if (!IsIniFileExists())
+    if (!IsIniFileExists() && ThemesInfo.szLangFile[0] == 0)
     {
         if (!GetLangFileNameFromSystem(ThemesInfo.szLangFile,
                                        sizeof(ThemesInfo.szLangFile)))
         {
             StringCbCopy(ThemesInfo.szLangFile,
                          sizeof(ThemesInfo.szLangFile),
-                         L"en-US.dll");
+                         L"en-US");
         }
     }
     else
@@ -1202,7 +1190,7 @@ LoadLanguage(VOID)
         {
             StringCbCopy(ThemesInfo.szLangFile,
                          sizeof(ThemesInfo.szLangFile),
-                         L"en-US.dll");
+                         L"en-US");
         }
     }
 
@@ -1210,6 +1198,7 @@ LoadLanguage(VOID)
 
     StringCbCat(szPath, sizeof(szPath), L"languages\\");
     StringCbCat(szPath, sizeof(szPath), ThemesInfo.szLangFile);
+    StringCbCat(szPath, sizeof(szPath), L".dll");
 
     DebugTrace(L"Loading language file: %s", szPath);
 
