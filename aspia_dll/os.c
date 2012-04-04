@@ -554,11 +554,13 @@ OS_CPLAppletsInfo(VOID)
 VOID
 AutorunShowRegPath(HKEY hRootKey, LPWSTR lpszPath, LPWSTR lpszName)
 {
-    WCHAR szName[MAX_PATH], szPath[MAX_PATH];
     DWORD dwIndex, dwSize, dwPathSize;
     INT Index, Count = 0;
     INT IconIndex;
     HKEY hKey;
+
+    DebugTrace(L"AutorunShowRegPath(%x, %s, %s) called",
+               hRootKey, lpszPath, lpszName);
 
     if (RegOpenKeyEx(hRootKey,
                      lpszPath,
@@ -566,11 +568,16 @@ AutorunShowRegPath(HKEY hRootKey, LPWSTR lpszPath, LPWSTR lpszName)
                      KEY_QUERY_VALUE,
                      &hKey) != ERROR_SUCCESS)
     {
+        DebugTrace(L"RegOpenKeyEx() failed");
         goto None;
     }
 
     for (dwIndex = 0; ; ++dwIndex)
     {
+        WCHAR szFullPath[MAX_PATH] = {0};
+        WCHAR szPath[MAX_PATH] = {0};
+        WCHAR szName[MAX_PATH] = {0};
+
         dwPathSize = sizeof(szPath);
         dwSize = sizeof(szName);
 
@@ -627,7 +634,16 @@ AutorunShowRegPath(HKEY hRootKey, LPWSTR lpszPath, LPWSTR lpszName)
             }
 
             Index = IoAddItem(1, IconIndex, szName);
-            IoSetItemText(Index, 1, szPath);
+
+            DebugTrace(L"IoAddItem: Index = %d, IconIndex = %d, szName = %s",
+                       Index, IconIndex, szName);
+
+            ExpandEnvironmentStrings(szPath, szFullPath, MAX_PATH);
+            IoSetItemText(Index, 1, szFullPath);
+
+            DebugTrace(L"IoSetItemText: Index = %d, szPath = %s",
+                       Index, szPath);
+
             ++Count;
         }
     }
