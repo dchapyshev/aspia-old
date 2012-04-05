@@ -55,6 +55,8 @@ ListViewClear(VOID)
                           hListViewImageList,
                           LVSIL_SMALL);
 
+    InitInfoDll();
+
     for (i = IoGetColumnsCount(); i >= 0; --i)
     {
         ListView_DeleteColumn(hListView, i);
@@ -409,7 +411,7 @@ InitInfoDll(VOID)
     DllParams.hLangInst  = hLangInst;
     DllParams.hIconsInst = hIconsInst;
 
-    DllParams.hListImgList = hListViewImageList;
+    DllParams.hListImgList = &hListViewImageList;
 
     DllParams.IoAddFooter       = IoAddFooter;
     DllParams.IoAddHeader       = IoAddHeader;
