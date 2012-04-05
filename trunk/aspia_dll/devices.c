@@ -148,14 +148,15 @@ HW_DevicesInfo(VOID)
 
     if (IoGetTarget() == IO_TARGET_LISTVIEW)
     {
+        ImageList_Destroy(*DllParams.hListImgList);
+
         ImageListData.cbSize = sizeof(ImageListData);
         SetupDiGetClassImageList(&ImageListData);
 
-        ImageList_Destroy(DllParams.hListImgList);
-        DllParams.hListImgList = ImageList_Duplicate(ImageListData.ImageList);
+        *DllParams.hListImgList = ImageList_Duplicate(ImageListData.ImageList);
 
         ListView_SetImageList(DllParams.hListView,
-                              DllParams.hListImgList,
+                              *DllParams.hListImgList,
                               LVSIL_SMALL);
     }
 

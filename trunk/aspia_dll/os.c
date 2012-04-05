@@ -508,13 +508,11 @@ OS_CPLAppletsInfo(VOID)
 
                         if (hIcon == NULL)
                         {
-                            IconIndex = AddIconToImageList(DllParams.hIconsInst,
-                                                           DllParams.hListImgList,
-                                                           IDI_APPS);
+                            IconIndex = IoAddIcon(IDI_APPS);
                         }
                         else
                         {
-                            IconIndex = ImageList_AddIcon(DllParams.hListImgList,
+                            IconIndex = ImageList_AddIcon(*DllParams.hListImgList,
                                                           hIcon);
                         }
 
@@ -534,7 +532,7 @@ OS_CPLAppletsInfo(VOID)
 
                 if (IoGetTarget() == IO_TARGET_LISTVIEW)
                 {
-                    IconIndex = ImageList_AddIcon(DllParams.hListImgList,
+                    IconIndex = ImageList_AddIcon(*DllParams.hListImgList,
                                                   NewInfo.hIcon);
                 }
 
@@ -622,7 +620,7 @@ AutorunShowRegPath(HKEY hRootKey, LPWSTR lpszPath, LPWSTR lpszName)
             }
             else
             {
-                IconIndex = ImageList_AddIcon(DllParams.hListImgList,
+                IconIndex = ImageList_AddIcon(*DllParams.hListImgList,
                                               hIcon);
 
                 DestroyIcon(hIcon);
@@ -756,7 +754,7 @@ AutorunShowFolderContent(LPWSTR lpszPath)
             ExtractIconEx(szCmd, 0, NULL, &hIcon, 1);
             if (hIcon)
             {
-                IconIndex = ImageList_AddIcon(DllParams.hListImgList,
+                IconIndex = ImageList_AddIcon(*DllParams.hListImgList,
                                               hIcon);
 
                 DestroyIcon(hIcon);
@@ -893,7 +891,7 @@ OS_AutorunInfo(VOID)
 
         if (hIcon)
         {
-            IconIndex = ImageList_AddIcon(DllParams.hListImgList, hIcon);
+            IconIndex = ImageList_AddIcon(*DllParams.hListImgList, hIcon);
             DestroyIcon(hIcon);
         }
         else
@@ -928,7 +926,7 @@ OS_AutorunInfo(VOID)
 
         if (hIcon)
         {
-            IconIndex = ImageList_AddIcon(DllParams.hListImgList, hIcon);
+            IconIndex = ImageList_AddIcon(*DllParams.hListImgList, hIcon);
             DestroyIcon(hIcon);
         }
         else
@@ -1041,7 +1039,7 @@ AddFolderInfoToListView(LPWSTR lpName, INT nFolder)
             hIcon = GetFolderAssocIcon(szPath);
             if (hIcon != NULL)
             {
-                IconIndex = ImageList_AddIcon(DllParams.hListImgList,
+                IconIndex = ImageList_AddIcon(*DllParams.hListImgList,
                                               hIcon);
             }
             else

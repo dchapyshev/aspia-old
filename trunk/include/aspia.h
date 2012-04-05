@@ -81,7 +81,7 @@ typedef struct
     HINSTANCE hIconsInst;
 
     HWND hListView;
-    HIMAGELIST hListImgList;
+    HIMAGELIST *hListImgList;
 
     WCHAR szCurrentPath[MAX_PATH];
 

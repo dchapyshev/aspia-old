@@ -369,7 +369,7 @@ SOFTWARE_TaskMgr(VOID)
             }
             else
             {
-                IconIndex = ImageList_AddIcon(DllParams.hListImgList, hIcon);
+                IconIndex = ImageList_AddIcon(*DllParams.hListImgList, hIcon);
                 DestroyIcon(hIcon);
             }
         }
