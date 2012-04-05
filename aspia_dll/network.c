@@ -64,7 +64,10 @@ GetAdapterFriendlyName(LPWSTR lpszKey, LPWSTR lpszName, INT NameLen)
                                    NULL,
                                    DIGCF_PRESENT);
     if (hDevInfo == INVALID_HANDLE_VALUE)
+    {
+        DebugTrace(L"SetupDiGetClassDevs() failed!");
         return FALSE;
+    }
 
     if (!GetStringFromRegistry(TRUE,
                                HKEY_LOCAL_MACHINE,
@@ -72,6 +75,7 @@ GetAdapterFriendlyName(LPWSTR lpszKey, LPWSTR lpszName, INT NameLen)
                                AdapterID,
                                MAX_PATH))
     {
+        DebugTrace(L"GetStringFromRegistry() failed!");
         SetupDiDestroyDeviceInfoList(hDevInfo);
         return FALSE;
     }
@@ -147,7 +151,7 @@ NETWORK_CardsInfo(VOID)
     LoadMUIString(IDS_NO, szNo, MAX_STR_LEN);
 
     pAdapterInfo = (PIP_ADAPTER_INFO)Alloc(sizeof(IP_ADAPTER_INFO));
-    if (!pAdapterInfo) return;
+    if (!pAdapterInfo) goto Cleanup;
 
     ulOutBufLen = sizeof(IP_ADAPTER_INFO);
 
@@ -156,13 +160,13 @@ NETWORK_CardsInfo(VOID)
         Free(pAdapterInfo);
         pAdapterInfo = (IP_ADAPTER_INFO*)Alloc(ulOutBufLen);
         if (!pAdapterInfo)
-            return;
+            goto Cleanup;
     }
 
     if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) != NOERROR)
     {
-        Free(pAdapterInfo);
-        return;
+        DebugTrace(L"GetAdaptersInfo() failed!");
+        goto Cleanup;
     }
 
     pAdapter = pAdapterInfo;
@@ -196,16 +200,15 @@ NETWORK_CardsInfo(VOID)
         pIfRow = (MIB_IFROW*)Alloc(sizeof(MIB_IFROW));
         if (!pIfRow)
         {
-            Free(pAdapterInfo);
-            return;
+            goto Cleanup;
         }
 
         pIfRow->dwIndex = pAdapter->Index;
         if (GetIfEntry(pIfRow) != NO_ERROR)
         {
-            Free(pAdapterInfo);
+            DebugTrace(L"GetIfEntry() failed!");
             Free(pIfRow);
-            return;
+            goto Cleanup;
         }
 
         Index = IoAddValueName(1, 0, IDS_NIC_TYPE);
@@ -256,11 +259,7 @@ NETWORK_CardsInfo(VOID)
         }
 
         pPerInfo = (PIP_PER_ADAPTER_INFO)Alloc(sizeof(IP_PER_ADAPTER_INFO));
-        if (!pPerInfo)
-        {
-            Free(pAdapterInfo);
-            return;
-        }
+        if (!pPerInfo) goto Cleanup;
 
         PerLen = sizeof(IP_PER_ADAPTER_INFO);
 
@@ -269,18 +268,14 @@ NETWORK_CardsInfo(VOID)
         {
             Free(pPerInfo);
             pPerInfo = (PIP_PER_ADAPTER_INFO)Alloc(PerLen);
-            if (!pPerInfo)
-            {
-                Free(pAdapterInfo);
-                return;
-            }
+            if (!pPerInfo) goto Cleanup;
         }
 
         if (GetPerAdapterInfo(pAdapter->Index, pPerInfo, &PerLen) != NO_ERROR)
         {
-            Free(pAdapterInfo);
+            DebugTrace(L"GetPerAdapterInfo() failed!");
             Free(pPerInfo);
-            return;
+            goto Cleanup;
         }
 
         if (pPerInfo->DnsServerList.IpAddress.String[0] != '\0')
@@ -362,7 +357,8 @@ NETWORK_CardsInfo(VOID)
         if (IsCanceled) break;
     }
 
-    Free(pAdapterInfo);
+Cleanup:
+    if (pAdapterInfo) Free(pAdapterInfo);
 
     DebugEndReceiving();
 }
@@ -526,7 +522,7 @@ NETWORK_RouteInfo(VOID)
 
     pIpForwardTable = (MIB_IPFORWARDTABLE*)Alloc(sizeof(MIB_IPFORWARDTABLE));
     if (!pIpForwardTable)
-        return;
+        goto Cleanup;
 
     if (GetIpForwardTable(pIpForwardTable, &dwSize, 0) ==
         ERROR_INSUFFICIENT_BUFFER)
@@ -534,15 +530,15 @@ NETWORK_RouteInfo(VOID)
         Free(pIpForwardTable);
         pIpForwardTable = (MIB_IPFORWARDTABLE*)Alloc(dwSize);
         if (!pIpForwardTable)
-            return;
+            goto Cleanup;
     }
 
     dwRet = GetIpForwardTable(pIpForwardTable, &dwSize, 0);
 
     if (dwRet != NO_ERROR)
     {
-        Free(pIpForwardTable);
-        return;
+        DebugTrace(L"GetIpForwardTable() failed!");
+        goto Cleanup;
     }
 
     for (Index = 0; Index < (INT)pIpForwardTable->dwNumEntries; ++Index)
@@ -568,7 +564,9 @@ NETWORK_RouteInfo(VOID)
         if (IsCanceled) break;
     }
 
-    Free(pIpForwardTable);
+Cleanup:
+    if (pIpForwardTable != NULL)
+        Free(pIpForwardTable);
 
     DebugEndReceiving();
 }
@@ -700,7 +698,7 @@ NETWORK_IEHistoryInfo(VOID)
         !DllParams.IEShowHttp)
     {
         DebugTrace(L"Information not selected!");
-        return;
+        goto Cleanup;
     }
 
     IoAddIcon(IDI_IE);
@@ -715,17 +713,14 @@ NETWORK_IEHistoryInfo(VOID)
     if (FAILED(hr))
     {
         DebugTrace(L"CoCreateInstance() failed! hr = %ld", hr);
-        CoUninitialize();
-        return;
+        goto Cleanup;
     }
 
     hr = History->lpVtbl->EnumUrls(History, &EnumPtr);
     if (FAILED(hr))
     {
         DebugTrace(L"EnumUrls() failed! hr = %ld", hr);
-        History->lpVtbl->Release(History);
-        CoUninitialize();
-        return;
+        goto Cleanup;
     }
 
     while (SUCCEEDED(EnumPtr->lpVtbl->Next(EnumPtr, 1, &StatUrl, &uFetched)))
@@ -798,7 +793,9 @@ NETWORK_IEHistoryInfo(VOID)
         if (IsCanceled) break;
     }
 
-    History->lpVtbl->Release(History);
+Cleanup:
+    if (History)
+        History->lpVtbl->Release(History);
     CoUninitialize();
 
     DebugEndReceiving();
@@ -853,14 +850,14 @@ NETWORK_IECookieInfo(VOID)
 {
     LPINTERNET_CACHE_ENTRY_INFO pCacheInfo;
     DWORD dwEntrySize = sizeof(INTERNET_CACHE_ENTRY_INFO);
-    HANDLE hHandle;
+    HANDLE hHandle = NULL;
 
     DebugStartReceiving();
 
     IoAddIcon(IDI_IE);
 
     pCacheInfo = (LPINTERNET_CACHE_ENTRY_INFO)Alloc(dwEntrySize);
-    if (!pCacheInfo) return;
+    if (!pCacheInfo) goto Cleanup;
 
     pCacheInfo->dwStructSize = dwEntrySize;
 
@@ -870,17 +867,17 @@ NETWORK_IECookieInfo(VOID)
         Free(pCacheInfo);
 
         if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
-            return;
+            goto Cleanup;
 
         pCacheInfo = (LPINTERNET_CACHE_ENTRY_INFO)Alloc(dwEntrySize);
-        if (!pCacheInfo) return;
+        if (!pCacheInfo) goto Cleanup;
 
         pCacheInfo->dwStructSize = dwEntrySize;
         hHandle = FindFirstUrlCacheEntry(L"cookie:", pCacheInfo, &dwEntrySize);
         if (!hHandle)
         {
             Free(pCacheInfo);
-            return;
+            goto Cleanup;
         }
     }
 
@@ -915,7 +912,9 @@ NETWORK_IECookieInfo(VOID)
         if (IsCanceled) break;
     }
 
-    FindCloseUrlCache(hHandle);
+Cleanup:
+    if (hHandle != NULL)
+        FindCloseUrlCache(hHandle);
 
     DebugEndReceiving();
 }
@@ -960,7 +959,7 @@ NETWORK_RasInfo(VOID)
 
     pRasEntryName = (RASENTRYNAME*)Alloc(dwCb);
     if (!pRasEntryName)
-        return;
+        goto Cleanup;
 
     pRasEntryName->dwSize = sizeof(RASENTRYNAME);
     dwErr = RasEnumEntries(NULL, NULL,
@@ -968,8 +967,8 @@ NETWORK_RasInfo(VOID)
                            &dwCb, &dwEntries);
     if (dwErr != ERROR_SUCCESS)
     {
-        Free(pRasEntryName);
-        return;
+        DebugTrace(L"RasEnumEntries() failed!");
+        goto Cleanup;
     }
 
     for (dwIndex = 0; dwIndex < dwEntries; ++dwIndex)
@@ -1194,7 +1193,9 @@ NETWORK_RasInfo(VOID)
         if (IsCanceled) break;
     }
 
-    Free(pRasEntryName);
+Cleanup:
+    if (pRasEntryName != NULL)
+        Free(pRasEntryName);
 
     DebugEndReceiving();
 }

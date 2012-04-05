@@ -823,7 +823,11 @@ HW_MonitorInfo(VOID)
                                    0, 0,
                                    DIGCF_PRESENT);
     if (hDevInfo == INVALID_HANDLE_VALUE)
-        return;
+    {
+        DebugTrace(L"SetupDiGetClassDevs() falied. Error code = %x",
+                   GetLastError());
+        goto Cleanup;
+    }
 
     DeviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
 
@@ -876,7 +880,9 @@ HW_MonitorInfo(VOID)
         }
     }
 
-    SetupDiDestroyDeviceInfoList(hDevInfo);
+Cleanup:
+    if (hDevInfo != INVALID_HANDLE_VALUE)
+        SetupDiDestroyDeviceInfoList(hDevInfo);
 
     DebugEndReceiving();
 }
@@ -1114,7 +1120,7 @@ HW_PowerInfo(VOID)
         if (PowerStatus.BatteryFlag == 128 ||
             PowerStatus.BatteryFlag == 255)
         {
-            return;
+            goto Cleanup;
         }
     }
     IoAddFooter();
@@ -1122,6 +1128,7 @@ HW_PowerInfo(VOID)
     IoAddHeader(0, 1, IDS_BAT_BATTERYS);
     GetBatteryInformation();
 
+Cleanup:
     DebugEndReceiving();
 }
 
@@ -1849,250 +1856,268 @@ HW_OpenGlInfo(VOID)
     PixelFormatDesc.nVersion = 1;
     PixelFormatDesc.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
     PixelFormatDesc.iPixelType = PFD_TYPE_RGBA;
+    PixelFormatDesc.cColorBits = 32;
     PixelFormatDesc.iLayerType = PFD_MAIN_PLANE;
-    PixelFormatDesc.cDepthBits = 16;
+    PixelFormatDesc.cDepthBits = 32;
 
     iPixelFormat = ChoosePixelFormat(hDC, &PixelFormatDesc);
-    SetPixelFormat(hDC, iPixelFormat, &PixelFormatDesc);
+    if (iPixelFormat == 0)
+    {
+        DebugTrace(L"ChoosePixelFormat() failed! Error code = %x",
+                   GetLastError());
+        goto Cleanup;
+    }
+
+    if (!SetPixelFormat(hDC, iPixelFormat, &PixelFormatDesc))
+    {
+        DebugTrace(L"SetPixelFormat() failed! Error code = %x",
+                   GetLastError());
+        goto Cleanup;
+    }
 
     hRC = wglCreateContext(hDC);
+    if (hRC == NULL)
+    {
+        DebugTrace(L"wglCreateContext() failed! Error code = %x",
+                   GetLastError());
+        goto Cleanup;
+    }
 
-    wglMakeCurrent(hDC, hRC);
+    if (!wglMakeCurrent(hDC, hRC))
+    {
+        DebugTrace(L"wglMakeCurrent() failed! Error code = %x",
+                   GetLastError());
+        goto Cleanup;
+    }
 
     IoAddHeader(0, 0, IDS_OPENGL_PROP);
 
-    __try
+    data = (char *)glGetString(GL_VENDOR);
+    if (data)
     {
-        data = (char *)glGetString(GL_VENDOR);
-        if (data)
+        Index = IoAddValueName(1, 0, IDS_OPENGL_VENDOR);
+        IoSetItemText(Index, 1, L"%S", data);
+    }
+
+    data = (char *)glGetString(GL_RENDERER);
+    if (data)
+    {
+        Index = IoAddItem(1, 0, L"Renderer");
+        IoSetItemText(Index, 1, L"%S", data);
+    }
+
+    data = (char *)glGetString(GL_VERSION);
+    if (data)
+    {
+        Index = IoAddValueName(1, 0, IDS_OPENGL_VERSION);
+        IoSetItemText(Index, 1, L"%S", data);
+    }
+
+    glGetIntegerv(GL_MAX_TEXTURE_UNITS, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Multitexture Texture Units");
+        IoSetItemText(Index, 1, L"%d", i_data);
+    }
+
+    glGetIntegerv(GL_SUBPIXEL_BITS, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Sub-Pixel Precision");
+        IoSetItemText(Index, 1, L"%d-bit", i_data);
+    }
+
+    glGetIntegerv(GL_MAX_VIEWPORT_DIMS, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Viewport Size");
+        IoSetItemText(Index, 1, L"%d x %d", i_data, i_data);
+    }
+
+    glGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE_ARB, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Cube Map Texture Size");
+        IoSetItemText(Index, 1, L"%d x %d", i_data, i_data);
+    }
+
+    glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE_ARB, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Rectangle Texture Size");
+        IoSetItemText(Index, 1, L"%d x %d", i_data, i_data);
+    }
+
+    glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE_EXT, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max 3D Texture Size");
+        IoSetItemText(Index, 1, L"%d x %d x %d",
+                      i_data, i_data, i_data);
+    }
+
+    glGetIntegerv(GL_MAX_CLIP_PLANES, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Clipping Planes");
+        IoSetItemText(Index, 1, L"%d", i_data);
+    }
+
+    glGetIntegerv(GL_MAX_LIST_NESTING, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Display-List Nesting Level");
+        IoSetItemText(Index, 1, L"%d", i_data);
+    }
+
+    glGetIntegerv(GL_MAX_DRAW_BUFFERS_ATI, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Draw Buffers");
+        IoSetItemText(Index, 1, L"%d", i_data);
+    }
+
+    glGetIntegerv(GL_MAX_EVAL_ORDER, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Evaluator Order");
+        IoSetItemText(Index, 1, L"%d", i_data);
+    }
+
+    glGetIntegerv(GL_MAX_LIGHTS, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Light Sources");
+        IoSetItemText(Index, 1, L"%d", i_data);
+    }
+
+    glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Pixel Map Table Size");
+        IoSetItemText(Index, 1, L"%d", i_data);
+    }
+
+    glGetIntegerv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Texture LOD Bias");
+        IoSetItemText(Index, 1, L"%d", i_data);
+    }
+
+    IoAddFooter();
+    IoAddHeaderString(0, 0, L"Max Stack Depth");
+
+    glGetIntegerv(GL_MAX_ATTRIB_STACK_DEPTH, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Attribute Stack");
+        IoSetItemText(Index, 1, L"%d", i_data);
+    }
+
+    glGetIntegerv(GL_MAX_CLIENT_ATTRIB_STACK_DEPTH, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Client Attribute Stack");
+        IoSetItemText(Index, 1, L"%d", i_data);
+    }
+
+    glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Modelview Matrix Stack");
+        IoSetItemText(Index, 1, L"%d", i_data);
+    }
+
+    glGetIntegerv(GL_MAX_NAME_STACK_DEPTH, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Name Stack");
+        IoSetItemText(Index, 1, L"%d", i_data);
+    }
+
+    glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Projection Matrix Stack");
+        IoSetItemText(Index, 1, L"%d", i_data);
+    }
+
+    glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Texture Matrix Stack");
+        IoSetItemText(Index, 1, L"%d", i_data);
+    }
+
+    IoAddFooter();
+    IoAddHeaderString(0, 0, L"Draw Range Elements");
+
+    glGetIntegerv(GL_MAX_ELEMENTS_INDICES_WIN, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Index Count");
+        IoSetItemText(Index, 1, L"%d", i_data);
+    }
+
+    glGetIntegerv(GL_MAX_ELEMENTS_VERTICES_WIN, &i_data);
+    if (i_data)
+    {
+        Index = IoAddItem(1, 0, L"Max Vertex Count");
+        IoSetItemText(Index, 1, L"%d", i_data);
+    }
+
+    IoAddFooter();
+    IoAddHeader(0, 0, IDS_OPENGL_EXTENSIONS);
+
+    data = (char *)glGetString(GL_EXTENSIONS);
+    if (data)
+    {
+        WCHAR szExts[MAX_STR_LEN * 5];
+        SIZE_T i, j, k;
+
+        StringCbPrintf(szExts, sizeof(szExts), L"%S", data);
+
+        for (i = 0, j = 0, len = wcslen(szExts); i < len; i++, j++)
         {
-            Index = IoAddValueName(1, 0, IDS_OPENGL_VENDOR);
-            IoSetItemText(Index, 1, L"%S", data);
-        }
-
-        data = (char *)glGetString(GL_RENDERER);
-        if (data)
-        {
-            Index = IoAddItem(1, 0, L"Renderer");
-            IoSetItemText(Index, 1, L"%S", data);
-        }
-
-        data = (char *)glGetString(GL_VERSION);
-        if (data)
-        {
-            Index = IoAddValueName(1, 0, IDS_OPENGL_VERSION);
-            IoSetItemText(Index, 1, L"%S", data);
-        }
-
-        glGetIntegerv(GL_MAX_TEXTURE_UNITS, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Multitexture Texture Units");
-            IoSetItemText(Index, 1, L"%d", i_data);
-        }
-
-        glGetIntegerv(GL_SUBPIXEL_BITS, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Sub-Pixel Precision");
-            IoSetItemText(Index, 1, L"%d-bit", i_data);
-        }
-
-        glGetIntegerv(GL_MAX_VIEWPORT_DIMS, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Max Viewport Size");
-            IoSetItemText(Index, 1, L"%d x %d", i_data, i_data);
-        }
-
-        glGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE_ARB, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Max Cube Map Texture Size");
-            IoSetItemText(Index, 1, L"%d x %d", i_data, i_data);
-        }
-
-        glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE_ARB, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Max Rectangle Texture Size");
-            IoSetItemText(Index, 1, L"%d x %d", i_data, i_data);
-        }
-
-        glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE_EXT, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Max 3D Texture Size");
-            IoSetItemText(Index, 1, L"%d x %d x %d",
-                          i_data, i_data, i_data);
-        }
-
-        glGetIntegerv(GL_MAX_CLIP_PLANES, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Max Clipping Planes");
-            IoSetItemText(Index, 1, L"%d", i_data);
-        }
-
-        glGetIntegerv(GL_MAX_LIST_NESTING, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Max Display-List Nesting Level");
-            IoSetItemText(Index, 1, L"%d", i_data);
-        }
-
-        glGetIntegerv(GL_MAX_DRAW_BUFFERS_ATI, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Max Draw Buffers");
-            IoSetItemText(Index, 1, L"%d", i_data);
-        }
-
-        glGetIntegerv(GL_MAX_EVAL_ORDER, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Max Evaluator Order");
-            IoSetItemText(Index, 1, L"%d", i_data);
-        }
-
-        glGetIntegerv(GL_MAX_LIGHTS, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Max Light Sources");
-            IoSetItemText(Index, 1, L"%d", i_data);
-        }
-
-        glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Max Pixel Map Table Size");
-            IoSetItemText(Index, 1, L"%d", i_data);
-        }
-
-        glGetIntegerv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Max Texture LOD Bias");
-            IoSetItemText(Index, 1, L"%d", i_data);
-        }
-
-        IoAddFooter();
-        IoAddHeaderString(0, 0, L"Max Stack Depth");
-
-        glGetIntegerv(GL_MAX_ATTRIB_STACK_DEPTH, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Attribute Stack");
-            IoSetItemText(Index, 1, L"%d", i_data);
-        }
-
-        glGetIntegerv(GL_MAX_CLIENT_ATTRIB_STACK_DEPTH, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Client Attribute Stack");
-            IoSetItemText(Index, 1, L"%d", i_data);
-        }
-
-        glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Modelview Matrix Stack");
-            IoSetItemText(Index, 1, L"%d", i_data);
-        }
-
-        glGetIntegerv(GL_MAX_NAME_STACK_DEPTH, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Name Stack");
-            IoSetItemText(Index, 1, L"%d", i_data);
-        }
-
-        glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Projection Matrix Stack");
-            IoSetItemText(Index, 1, L"%d", i_data);
-        }
-
-        glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Texture Matrix Stack");
-            IoSetItemText(Index, 1, L"%d", i_data);
-        }
-
-        IoAddFooter();
-        IoAddHeaderString(0, 0, L"Draw Range Elements");
-
-        glGetIntegerv(GL_MAX_ELEMENTS_INDICES_WIN, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Max Index Count");
-            IoSetItemText(Index, 1, L"%d", i_data);
-        }
-
-        glGetIntegerv(GL_MAX_ELEMENTS_VERTICES_WIN, &i_data);
-        if (i_data)
-        {
-            Index = IoAddItem(1, 0, L"Max Vertex Count");
-            IoSetItemText(Index, 1, L"%d", i_data);
-        }
-
-        IoAddFooter();
-        IoAddHeader(0, 0, IDS_OPENGL_EXTENSIONS);
-
-        data = (char *)glGetString(GL_EXTENSIONS);
-        if (data)
-        {
-            WCHAR szExts[MAX_STR_LEN * 5];
-            SIZE_T i, j, k;
-
-            StringCbPrintf(szExts, sizeof(szExts), L"%S", data);
-
-            for (i = 0, j = 0, len = wcslen(szExts); i < len; i++, j++)
+            if (szExts[i] == L' ')
             {
-                if (szExts[i] == L' ')
+                WCHAR *p = szText;
+
+                szText[j] = 0;
+                j = 0, k = 0;
+                if (i > 0) ++p;
+
+                do
                 {
-                    WCHAR *p = szText;
-
-                    szText[j] = 0;
-                    j = 0, k = 0;
-                    if (i > 0) ++p;
-
-                    do
+                    if (wcscmp(OpenglExtensions[k].lpExtName, p) == 0)
                     {
-                        if (wcscmp(OpenglExtensions[k].lpExtName, p) == 0)
-                        {
-                            OpenglExtensions[k].IsSupported = TRUE;
-                            break;
-                        }
+                        OpenglExtensions[k].IsSupported = TRUE;
+                        break;
                     }
-                    while (OpenglExtensions[++k].lpExtName != NULL);
                 }
-
-                szText[j] = szExts[i];
+                while (OpenglExtensions[++k].lpExtName != NULL);
             }
 
-            k = 0;
-            do
-            {
-                Index = IoAddItem(1, OpenglExtensions[k].IsSupported ? 1 : 2,
-                                  OpenglExtensions[k].lpExtName);
-                IoSetItemText(Index, 1, OpenglExtensions[k].IsSupported ? szSupported : szUnsupported);
-            }
-            while (OpenglExtensions[++k].lpExtName != NULL);
+            szText[j] = szExts[i];
         }
 
-        /* Cleanup */
-        wglMakeCurrent(NULL, NULL);
-        wglDeleteContext(hRC);
+        k = 0;
+        do
+        {
+            Index = IoAddItem(1, OpenglExtensions[k].IsSupported ? 1 : 2,
+                              OpenglExtensions[k].lpExtName);
+            IoSetItemText(Index, 1, OpenglExtensions[k].IsSupported ? szSupported : szUnsupported);
+        }
+        while (OpenglExtensions[++k].lpExtName != NULL);
+    }
 
-        ReleaseDC(DllParams.hMainWnd, hDC);
-    }
-    __except(EXCEPTION_EXECUTE_HANDLER)
-    {
-        DebugTrace(L"Exception when retrieving information!");
-    }
+Cleanup:
+    /* Cleanup */
+    wglMakeCurrent(NULL, NULL);
+    if (hRC != NULL) wglDeleteContext(hRC);
+
+    ReleaseDC(DllParams.hMainWnd, hDC);
 
     DebugEndReceiving();
 }
