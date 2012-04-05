@@ -866,6 +866,7 @@ GetSerialNumber(HANDLE hHandle, LPWSTR lpSerial, SIZE_T SerialSize)
         {
             Config.Feature.additionalData[Config.Feature.additionalLength + 1] = 0;
             StringCbPrintf(lpSerial, SerialSize, L"%S", Config.Feature.additionalData);
+            lpSerial[wcslen(lpSerial) - 1] = 0;
         }
     }
 }

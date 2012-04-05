@@ -335,14 +335,19 @@ SOFTWARE_TaskMgr(VOID)
 
     hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if (hProcessSnap == INVALID_HANDLE_VALUE)
-        return;
+    {
+        DebugTrace(L"CreateToolhelp32Snapshot() failed! Error code = %x",
+                   GetLastError());
+        goto Cleanup;
+    }
 
     pe32.dwSize = sizeof(PROCESSENTRY32);
 
     if (!Process32First(hProcessSnap, &pe32))
     {
-        CloseHandle(hProcessSnap);
-        return;
+        DebugTrace(L"Process32First() failed! Error code = %x",
+                   GetLastError());
+        goto Cleanup;
     }
 
     do
@@ -412,7 +417,9 @@ SOFTWARE_TaskMgr(VOID)
     }
     while (Process32Next(hProcessSnap, &pe32));
 
-    CloseHandle(hProcessSnap);
+Cleanup:
+    if (hProcessSnap != INVALID_HANDLE_VALUE)
+        CloseHandle(hProcessSnap);
 
     DebugEndReceiving();
 }
