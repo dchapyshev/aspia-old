@@ -15,7 +15,7 @@
 static VOID
 CardsTypeToText(DWORD Type, LPWSTR Str, SIZE_T Size)
 {
-    LPWSTR lpszValue = 0;
+    LPWSTR lpszValue;
 
     switch (Type)
     {
@@ -45,6 +45,9 @@ CardsTypeToText(DWORD Type, LPWSTR Str, SIZE_T Size)
             break;
         case IF_TYPE_IEEE1394:
             lpszValue = L"IEEE 1394 Firewire";
+            break;
+        default:
+            lpszValue = L"Unknown";
             break;
     }
     StringCbCopy(Str, Size, lpszValue);
@@ -94,6 +97,8 @@ GetAdapterFriendlyName(LPWSTR lpszKey, LPWSTR lpszName, INT NameLen)
                                         MAX_PATH,
                                         NULL))
         {
+            DebugTrace(L"SetupDiGetDeviceInstanceId() failed! Error code = 0x%x",
+                       GetLastError());
             continue;
         }
 
@@ -108,6 +113,9 @@ GetAdapterFriendlyName(LPWSTR lpszKey, LPWSTR lpszName, INT NameLen)
                                                   NameLen,
                                                   NULL))
             {
+                DebugTrace(L"SetupDiGetDeviceRegistryProperty() failed! Error code = 0x%x",
+                           GetLastError());
+
                 /* if the friendly name fails, try the description instead */
                 if (SetupDiGetDeviceRegistryProperty(hDevInfo,
                                                      &DeviceInfoData,
@@ -118,6 +126,11 @@ GetAdapterFriendlyName(LPWSTR lpszKey, LPWSTR lpszName, INT NameLen)
                                                      NULL))
                 {
                     Result = TRUE;
+                }
+                else
+                {
+                    DebugTrace(L"SetupDiGetDeviceRegistryProperty() failed! Error code = 0x%x",
+                               GetLastError());
                 }
             }
             else
@@ -151,7 +164,11 @@ NETWORK_CardsInfo(VOID)
     LoadMUIString(IDS_NO, szNo, MAX_STR_LEN);
 
     pAdapterInfo = (PIP_ADAPTER_INFO)Alloc(sizeof(IP_ADAPTER_INFO));
-    if (!pAdapterInfo) goto Cleanup;
+    if (!pAdapterInfo)
+    {
+        DebugTrace(L"Alloc(%d) failed!", sizeof(IP_ADAPTER_INFO));
+        goto Cleanup;
+    }
 
     ulOutBufLen = sizeof(IP_ADAPTER_INFO);
 
@@ -160,7 +177,10 @@ NETWORK_CardsInfo(VOID)
         Free(pAdapterInfo);
         pAdapterInfo = (IP_ADAPTER_INFO*)Alloc(ulOutBufLen);
         if (!pAdapterInfo)
+        {
+            DebugTrace(L"Alloc(%d) failed!", ulOutBufLen);
             goto Cleanup;
+        }
     }
 
     if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) != NOERROR)
@@ -200,6 +220,7 @@ NETWORK_CardsInfo(VOID)
         pIfRow = (MIB_IFROW*)Alloc(sizeof(MIB_IFROW));
         if (!pIfRow)
         {
+            DebugTrace(L"Alloc(%d) failed!", sizeof(MIB_IFROW));
             goto Cleanup;
         }
 
@@ -259,7 +280,11 @@ NETWORK_CardsInfo(VOID)
         }
 
         pPerInfo = (PIP_PER_ADAPTER_INFO)Alloc(sizeof(IP_PER_ADAPTER_INFO));
-        if (!pPerInfo) goto Cleanup;
+        if (!pPerInfo)
+        {
+            DebugTrace(L"Alloc(%d) failed!", sizeof(IP_PER_ADAPTER_INFO));
+            goto Cleanup;
+        }
 
         PerLen = sizeof(IP_PER_ADAPTER_INFO);
 
@@ -268,7 +293,11 @@ NETWORK_CardsInfo(VOID)
         {
             Free(pPerInfo);
             pPerInfo = (PIP_PER_ADAPTER_INFO)Alloc(PerLen);
-            if (!pPerInfo) goto Cleanup;
+            if (!pPerInfo)
+            {
+                DebugTrace(L"Alloc(%d) failed!", PerLen);
+                goto Cleanup;
+            }
         }
 
         if (GetPerAdapterInfo(pAdapter->Index, pPerInfo, &PerLen) != NO_ERROR)
@@ -425,7 +454,12 @@ NETWORK_SharedInfo(VOID)
     IoAddIcon(IDI_APPS); /* For IPC */
 
     dwSize = MAX_STR_LEN;
-    GetComputerName(szCompName, &dwSize);
+    if (!GetComputerName(szCompName, &dwSize))
+    {
+        DebugTrace(L"GetComputerName() failed! Error code 0x%x",
+                   GetLastError());
+        goto Cleanup;
+    }
 
     do
     {
@@ -481,6 +515,7 @@ NETWORK_SharedInfo(VOID)
     }
     while (Status == ERROR_MORE_DATA);
 
+Cleanup:
     DebugEndReceiving();
 }
 
@@ -517,7 +552,10 @@ NETWORK_RouteInfo(VOID)
 
     pIpForwardTable = (MIB_IPFORWARDTABLE*)Alloc(sizeof(MIB_IPFORWARDTABLE));
     if (!pIpForwardTable)
+    {
+        DebugTrace(L"Alloc(%d) failed!", sizeof(MIB_IPFORWARDTABLE));
         goto Cleanup;
+    }
 
     if (GetIpForwardTable(pIpForwardTable, &dwSize, 0) ==
         ERROR_INSUFFICIENT_BUFFER)
@@ -525,14 +563,17 @@ NETWORK_RouteInfo(VOID)
         Free(pIpForwardTable);
         pIpForwardTable = (MIB_IPFORWARDTABLE*)Alloc(dwSize);
         if (!pIpForwardTable)
+        {
+            DebugTrace(L"Alloc(%d) failed!", dwSize);
             goto Cleanup;
+        }
     }
 
     dwRet = GetIpForwardTable(pIpForwardTable, &dwSize, 0);
 
     if (dwRet != NO_ERROR)
     {
-        DebugTrace(L"GetIpForwardTable() failed!");
+        DebugTrace(L"GetIpForwardTable() failed! Error code = 0x%x", dwRet);
         goto Cleanup;
     }
 
@@ -567,7 +608,10 @@ Cleanup:
 }
 
 static VOID
-ShowIERegInfo(UINT StringID, LPWSTR lpszPath, LPWSTR lpszKeyName, INT IconIndex)
+ShowIERegInfo(UINT StringID,
+              LPWSTR lpszPath,
+              LPWSTR lpszKeyName,
+              INT IconIndex)
 {
     WCHAR szText[MAX_STR_LEN];
 
@@ -578,15 +622,8 @@ ShowIERegInfo(UINT StringID, LPWSTR lpszPath, LPWSTR lpszKeyName, INT IconIndex)
                               szText,
                               MAX_STR_LEN))
     {
-        WCHAR *buf = EscapePercentSymbols(szText);
-
-        if (buf)
-        {
-            IoAddValueName(1, IconIndex, StringID);
-            IoSetItemText(buf);
-
-            Free(buf);
-        }
+        IoAddValueName(1, IconIndex, StringID);
+        IoSetItemText(L"%s", szText);
     }
 }
 
@@ -613,8 +650,6 @@ ShowIEShortInfo(INT IconIndex)
                   L"Start Page",
                   IconIndex);
 
-    IoAddValueName(1, IconIndex, IDS_IE_USE_PROXY);
-
     Option[0].dwOption = INTERNET_PER_CONN_FLAGS;
     Option[1].dwOption = INTERNET_PER_CONN_PROXY_SERVER;
 
@@ -625,26 +660,35 @@ ShowIEShortInfo(INT IconIndex)
     Info.pOptions = Option;
 
     dwSize = sizeof(Info);
-    InternetQueryOption(NULL,
-                        INTERNET_OPTION_PER_CONNECTION_OPTION,
-                        &Info,
-                        &dwSize);
-    if (Option[0].Value.dwValue & PROXY_TYPE_PROXY)
+    if (InternetQueryOption(NULL,
+                            INTERNET_OPTION_PER_CONNECTION_OPTION,
+                            &Info,
+                            &dwSize))
     {
-        LoadMUIString(IDS_YES, szText, MAX_STR_LEN);
-        IoSetItemText(szText);
+        IoAddValueName(1, IconIndex, IDS_IE_USE_PROXY);
+
+        if (Option[0].Value.dwValue & PROXY_TYPE_PROXY)
+        {
+            LoadMUIString(IDS_YES, szText, MAX_STR_LEN);
+            IoSetItemText(szText);
+        }
+        else
+        {
+            LoadMUIString(IDS_NO, szText, MAX_STR_LEN);
+            IoSetItemText(szText);
+        }
+
+        if (SafeStrLen(Option[1].Value.pszValue) != 0)
+        {
+            IoAddValueName(1, IconIndex, IDS_IE_PROXY_ADDR);
+            IoSetItemText(Option[1].Value.pszValue);
+            GlobalFree(Option[1].Value.pszValue);
+        }
     }
     else
     {
-        LoadMUIString(IDS_NO, szText, MAX_STR_LEN);
-        IoSetItemText(szText);
-    }
-
-    if (SafeStrLen(Option[1].Value.pszValue) != 0)
-    {
-        IoAddValueName(1, IconIndex, IDS_IE_PROXY_ADDR);
-        IoSetItemText(Option[1].Value.pszValue);
-        GlobalFree(Option[1].Value.pszValue);
+        DebugTrace(L"InternetQueryOption() failed! Error code = 0x%x",
+                   GetLastError());
     }
 }
 
@@ -725,29 +769,38 @@ NETWORK_IEHistoryInfo(VOID)
             (wcsncmp(StatUrl.pwcsUrl, L"ftp://", 6) == 0 && DllParams.IEShowFtp) ||
             (wcsncmp(StatUrl.pwcsUrl, L"file://", 7) == 0 && DllParams.IEShowFile))
         {
-            FileTimeToSystemTime(&StatUrl.ftLastVisited, &SysTime);
-
-            /* Time */
-            if (GetTimeFormat(LOCALE_USER_DEFAULT,
-                              0, &SysTime, NULL, szText,
-                              MAX_STR_LEN))
+            if (FileTimeToSystemTime(&StatUrl.ftLastVisited, &SysTime))
             {
-                IoAddItem(0, 0, szText);
+                /* Time */
+                if (GetTimeFormat(LOCALE_USER_DEFAULT,
+                                  0, &SysTime, NULL, szText,
+                                  MAX_STR_LEN))
+                {
+                    IoAddItem(0, 0, szText);
+                }
+                else
+                {
+                    IoAddItem(0, 0, L"-");
+                }
+
+                /* Date */
+                if (GetDateFormat(LOCALE_USER_DEFAULT,
+                                  0, &SysTime, NULL, szText,
+                                  MAX_STR_LEN))
+                {
+                    IoSetItemText(szText);
+                }
+                else
+                {
+                    IoSetItemText(L"-");
+                }
             }
             else
             {
+                DebugTrace(L"FileTimeToSystemTime() failed! Error code = 0x%x",
+                           GetLastError());
+
                 IoAddItem(0, 0, L"-");
-            }
-
-            /* Date */
-            if (GetDateFormat(LOCALE_USER_DEFAULT,
-                              0, &SysTime, NULL, szText,
-                              MAX_STR_LEN))
-            {
-                IoSetItemText(szText);
-            }
-            else
-            {
                 IoSetItemText(L"-");
             }
 
@@ -758,17 +811,7 @@ NETWORK_IEHistoryInfo(VOID)
             {
                 if (wcslen(StatUrl.pwcsUrl) > 4)
                 {
-                    WCHAR *buf = EscapePercentSymbols(StatUrl.pwcsUrl);
-
-                    if (buf)
-                    {
-                        IoSetItemText(buf);
-                        Free(buf);
-                    }
-                    else
-                    {
-                        IoSetItemText(L"-");
-                    }
+                    IoSetItemText(L"%s", StatUrl.pwcsUrl);
                 }
                 else
                 {
@@ -795,18 +838,43 @@ Cleanup:
 static VOID
 GetDateTimeString(FILETIME FileTime, LPWSTR lpszDateTime, SIZE_T Size)
 {
-    WCHAR szTime[MAX_STR_LEN], szDate[MAX_STR_LEN];
+    WCHAR szTime[MAX_STR_LEN] = {0}, szDate[MAX_STR_LEN] = {0};
     SYSTEMTIME SysTime;
 
-    FileTimeToLocalFileTime(&FileTime, &FileTime);
-    FileTimeToSystemTime(&FileTime, &SysTime);
-    GetDateFormat(LOCALE_USER_DEFAULT,
-                  0, &SysTime, NULL, szDate,
-                  MAX_STR_LEN);
-    GetTimeFormat(LOCALE_USER_DEFAULT,
-                  0, &SysTime, NULL, szTime,
-                  MAX_STR_LEN);
-    StringCbPrintf(lpszDateTime, Size, L"%s %s", szDate, szTime);
+    if (!FileTimeToLocalFileTime(&FileTime, &FileTime))
+    {
+        DebugTrace(L"FileTimeToLocalFileTime() failed! Error code = 0x%x",
+                   GetLastError());
+    }
+    else
+    {
+        if (FileTimeToSystemTime(&FileTime, &SysTime))
+        {
+            if (!GetTimeFormat(LOCALE_USER_DEFAULT,
+                               0, &SysTime, NULL, szTime,
+                               MAX_STR_LEN))
+            {
+                DebugTrace(L"GetTimeFormat() failed! Error code = 0x%x",
+                           GetLastError());
+            }
+
+            if (!GetDateFormat(LOCALE_USER_DEFAULT,
+                               0, &SysTime, NULL, szDate,
+                               MAX_STR_LEN))
+            {
+                DebugTrace(L"GetDateFormat() failed! Error code = 0x%x",
+                           GetLastError());
+            }
+        }
+        else
+        {
+            DebugTrace(L"FileTimeToSystemTime() failed! Error code = 0x%x",
+                       GetLastError());
+        }
+    }
+
+    StringCbPrintf(lpszDateTime, Size, L"%s %s",
+        (szDate[0] != 0) ? szDate : L"-", (szTime[0] != 0) ? szTime : L"-");
 }
 
 static VOID
@@ -849,7 +917,11 @@ NETWORK_IECookieInfo(VOID)
     IoAddIcon(IDI_IE);
 
     pCacheInfo = (LPINTERNET_CACHE_ENTRY_INFO)Alloc(dwEntrySize);
-    if (!pCacheInfo) goto Cleanup;
+    if (!pCacheInfo)
+    {
+        DebugTrace(L"Alloc(%d) failed!", dwEntrySize);
+        goto Cleanup;
+    }
 
     pCacheInfo->dwStructSize = dwEntrySize;
 
@@ -862,12 +934,18 @@ NETWORK_IECookieInfo(VOID)
             goto Cleanup;
 
         pCacheInfo = (LPINTERNET_CACHE_ENTRY_INFO)Alloc(dwEntrySize);
-        if (!pCacheInfo) goto Cleanup;
+        if (!pCacheInfo)
+        {
+            DebugTrace(L"Alloc(%d) failed!", dwEntrySize);
+            goto Cleanup;
+        }
 
         pCacheInfo->dwStructSize = dwEntrySize;
         hHandle = FindFirstUrlCacheEntry(L"cookie:", pCacheInfo, &dwEntrySize);
         if (!hHandle)
         {
+            DebugTrace(L"FindFirstUrlCacheEntry() failed! Error code = 0x%x",
+                       GetLastError());
             Free(pCacheInfo);
             goto Cleanup;
         }
@@ -879,7 +957,11 @@ NETWORK_IECookieInfo(VOID)
     for (;;)
     {
         pCacheInfo = (LPINTERNET_CACHE_ENTRY_INFO)Alloc(dwEntrySize);
-        if (!pCacheInfo) break;
+        if (!pCacheInfo)
+        {
+            DebugTrace(L"Alloc(%d) failed!", dwEntrySize);
+            break;
+        }
 
         if (!FindNextUrlCacheEntry(hHandle, pCacheInfo, &dwEntrySize))
         {
@@ -889,10 +971,16 @@ NETWORK_IECookieInfo(VOID)
                 break;
 
             pCacheInfo = (LPINTERNET_CACHE_ENTRY_INFO)Alloc(dwEntrySize);
-            if (!pCacheInfo) break;
+            if (!pCacheInfo)
+            {
+                DebugTrace(L"Alloc(%d) failed!", dwEntrySize);
+                break;
+            }
 
             if (!FindNextUrlCacheEntry(hHandle, pCacheInfo, &dwEntrySize))
             {
+                DebugTrace(L"FindNextUrlCacheEntry() failed! Error code = 0x%x",
+                           GetLastError());
                 Free(pCacheInfo);
                 break;
             }
@@ -945,11 +1033,17 @@ NETWORK_RasInfo(VOID)
     dwErr = RasEnumEntries(NULL, NULL, NULL,
                            &dwCb, &dwEntries);
     if (dwErr != ERROR_BUFFER_TOO_SMALL)
+    {
+        DebugTrace(L"RasEnumEntries() failed! Error code = 0x%x", dwErr);
         return;
+    }
 
     pRasEntryName = (RASENTRYNAME*)Alloc(dwCb);
     if (!pRasEntryName)
+    {
+        DebugTrace(L"Alloc(%d) failed!", dwCb);
         goto Cleanup;
+    }
 
     pRasEntryName->dwSize = sizeof(RASENTRYNAME);
     dwErr = RasEnumEntries(NULL, NULL,
@@ -957,7 +1051,7 @@ NETWORK_RasInfo(VOID)
                            &dwCb, &dwEntries);
     if (dwErr != ERROR_SUCCESS)
     {
-        DebugTrace(L"RasEnumEntries() failed!");
+        DebugTrace(L"RasEnumEntries() failed! Error code = 0x%x", dwErr);
         goto Cleanup;
     }
 

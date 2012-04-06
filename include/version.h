@@ -9,6 +9,8 @@
 
 #include <wchar.h>
 
+#define _DEBUG_FUNCTIONS_
+
 #define VER_FILEVERSION             0,3,0,0
 #define VER_FILEVERSION_STR         L"0.3.0\0"
 

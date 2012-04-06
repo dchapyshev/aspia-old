@@ -9,7 +9,7 @@
 #include "aspia_dll.h"
 
 
-typedef BOOL (CALLBACK *BATTERYENUMPROC)(LPWSTR lpszBattery);
+typedef VOID (CALLBACK *BATTERYENUMPROC)(LPWSTR lpszBattery);
 
 typedef struct
 {
@@ -32,6 +32,8 @@ EnumBatteryDevices(BATTERYENUMPROC lpBatteryEnumProc)
                                    DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
     if (hDevInfo == INVALID_HANDLE_VALUE)
     {
+        DebugTrace(L"SetupDiGetClassDevs() failed! Error code = 0x%x",
+                   GetLastError());
         return FALSE;
     }
 
@@ -74,12 +76,7 @@ EnumBatteryDevices(BATTERYENUMPROC lpBatteryEnumProc)
             continue;
         }
 
-        if (!lpBatteryEnumProc(pDevDetail->DevicePath))
-        {
-            Free(pDevDetail);
-            SetupDiDestroyDeviceInfoList(hDevInfo);
-            return FALSE;
-        }
+        lpBatteryEnumProc(pDevDetail->DevicePath);
 
         Free(pDevDetail);
         ++iBattery;
@@ -161,7 +158,7 @@ BatteryPowerStateToText(ULONG PowerState, LPWSTR lpszText, SIZE_T Size)
     }
 }
 
-static BOOL CALLBACK
+static VOID CALLBACK
 BatteryEnumProc(LPWSTR lpszBattery)
 {
     BATTERY_MANUFACTURE_DATE BatteryDate;
@@ -175,7 +172,7 @@ BatteryEnumProc(LPWSTR lpszBattery)
     if (hHandle == INVALID_HANDLE_VALUE)
     {
         DebugTrace(L"Invalid handle value");
-        return TRUE;
+        return;
     }
 
     /* Device name */
@@ -301,7 +298,6 @@ BatteryEnumProc(LPWSTR lpszBattery)
     IoAddFooter();
 
     CloseBattery(hHandle);
-    return TRUE;
 }
 
 BOOL
