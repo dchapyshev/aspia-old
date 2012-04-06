@@ -2039,16 +2039,19 @@ DMI_OnboardInfo(VOID)
         {
             GetStringResourceByID(Buf[5 + 2 * (Count - 1)], pBuf, szText);
             ChopSpaces(szText, sizeof(szText));
-            IoAddHeaderString(0, 0, szText);
+            IoAddHeaderString(0, 0, (szText[0] != 0) ? szText : L"Unknown");
 
             Type = Buf[4 + 2 * (Count - 1)];
 
-            DeviceStatus = (Type & 0x80) >> 0x6; /* Bit 7 */
-            DeviceType = Type & 0x7F; /* Bits 6:0 */
+            DeviceStatus = GetBitsBYTE(Type, 7, 7); /* Bit 7 */
+            DeviceType = GetBitsBYTE(Type, 0, 6); /* Bits 6:0 */
 
             /* Desc */
-            IoAddValueName(1, 0, IDS_DMI_ONBOARD_DESC);
-            IoSetItemText(szText);
+            if (szText[0] != 0)
+            {
+                IoAddValueName(1, 0, IDS_DMI_ONBOARD_DESC);
+                IoSetItemText(szText);
+            }
 
             /* Type */
             IoAddValueName(1, 0, IDS_DMI_ONBOARD_TYPE);
