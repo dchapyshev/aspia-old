@@ -159,7 +159,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)\x64"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(OutDir)\obj\$(ProjectName)"
 			ConfigurationType="2"
 			CharacterSet="1"
@@ -242,7 +242,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|x64"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)\x64"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(OutDir)\obj\$(ProjectName)"
 			ConfigurationType="2"
 			CharacterSet="1"
@@ -269,7 +269,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)include&quot;"
-				PreprocessorDefinitions="_AMD64_;NDEBUG;_WINDOWS;_USRDLL;DLL_EXPORTS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;DLL_EXPORTS"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"

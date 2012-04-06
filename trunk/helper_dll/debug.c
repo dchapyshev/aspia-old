@@ -80,7 +80,11 @@ InitDebugLog(LPWSTR lpLogName, LPWSTR lpVersion)
     WriteFile(hDebugLog, "\xFF\xFE", 2, &dwBytesWritten, NULL);
 
     StringCbPrintf(szMsg, sizeof(szMsg),
+#ifdef _M_IX86
                    L"Log file created, Aspia %s",
+#else
+                   L"Log file created, Aspia %s (x64)",
+#endif
                    lpVersion);
     DebugTrace(szMsg);
 
