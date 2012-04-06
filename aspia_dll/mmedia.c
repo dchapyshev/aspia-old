@@ -14,7 +14,6 @@ HW_MediaDevicesInfo(VOID)
 {
     WAVEOUTCAPS waveOutputPaps;
     UINT DevsNum, i;
-    INT Index;
 
     DebugStartReceiving();
 
@@ -33,7 +32,7 @@ HW_MediaDevicesInfo(VOID)
                 continue;
             }
 
-            Index = IoAddItem(0, 0, waveOutputPaps.szPname);
+            IoAddItem(0, 0, waveOutputPaps.szPname);
         }
     }
 

@@ -384,7 +384,7 @@ QueryEventMessages(LPWSTR lpMachineName,
     WCHAR szUsername[MAX_PATH];
     WCHAR szEventText[EVENT_MESSAGE_FILE_BUFFER];
     WCHAR szCategory[MAX_PATH];
-    INT ItemIndex, IconIndex;
+    INT IconIndex;
     SIZE_T dwCurrentRecord = 0;
     SYSTEMTIME time;
 
@@ -514,19 +514,19 @@ QueryEventMessages(LPWSTR lpMachineName,
                                L"%u",
                                (DWORD)(pevlr->EventCategory));
 
-                ItemIndex = IoAddItem(0, IconIndex, szEventTypeText);
+                IoAddItem(0, IconIndex, szEventTypeText);
 
-                IoSetItemText(ItemIndex, szLocalDate);
-                IoSetItemText(ItemIndex, szLocalTime);
-                IoSetItemText(ItemIndex, lpSourceName);
-                IoSetItemText(ItemIndex, szCategory);
-                IoSetItemText(ItemIndex, szEventID);
-                IoSetItemText(ItemIndex, szUsername);
-                IoSetItemText(ItemIndex, lpComputerName);
+                IoSetItemText(szLocalDate);
+                IoSetItemText(szLocalTime);
+                IoSetItemText(lpSourceName);
+                IoSetItemText(szCategory);
+                IoSetItemText(szEventID);
+                IoSetItemText(szUsername);
+                IoSetItemText(lpComputerName);
 
                 GetEventMessage(lpSourceLogName, lpSourceName,
                                 pevlr, szEventText, sizeof(szEventText));
-                IoSetItemText(ItemIndex, szEventText);
+                IoSetItemText(szEventText);
             }
 
             dwRead -= pevlr->Length;

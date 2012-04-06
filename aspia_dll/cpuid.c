@@ -126,7 +126,6 @@ static VOID
 EnumSupportedFeatures(const FEATURE_INFO_STRUCT *List, DWORD dwFlag)
 {
     WCHAR szSupported[MAX_STR_LEN], szUnsupported[MAX_STR_LEN];
-    INT ItemIndex;
     SIZE_T Index = 0;
 
     LoadMUIString(IDS_CPUID_SUPPORTED,
@@ -138,12 +137,11 @@ EnumSupportedFeatures(const FEATURE_INFO_STRUCT *List, DWORD dwFlag)
 
     do
     {
-        ItemIndex = IoAddItem(1, (List[Index].dwFlag & dwFlag) ? 1 : 2,
-                              L"%s (%s)",
-                              List[Index].lpszDesc,
-                              List[Index].lpszFeature);
-        IoSetItemText(ItemIndex,
-                      (List[Index].dwFlag & dwFlag) ? szSupported : szUnsupported);
+        IoAddItem(1, (List[Index].dwFlag & dwFlag) ? 1 : 2,
+                  L"%s (%s)",
+                  List[Index].lpszDesc,
+                  List[Index].lpszFeature);
+        IoSetItemText((List[Index].dwFlag & dwFlag) ? szSupported : szUnsupported);
     }
     while (List[++Index].dwFlag != 0);
 }
@@ -327,7 +325,7 @@ CPUIDInfo(VOID)
     DWORD dwECX, dwEDX;
     INT CPUInfo[4] = {-1};
     CPU_IDS CpuIds = {0};
-    INT Index, Count;
+    INT Count;
 
     IoAddIcon(IDI_CPU);
     IoAddIcon(IDI_CHECKED);
@@ -338,46 +336,46 @@ CPUIDInfo(VOID)
     /* Get CPU Name */
     if (GetCPUName(szText, sizeof(szText)))
     {
-        Index = IoAddValueName(1, 0, IDS_CPUID_NAME);
-        IoSetItemText(Index, szText);
+        IoAddValueName(1, 0, IDS_CPUID_NAME);
+        IoSetItemText(szText);
     }
 
     /* Get CPU Vendor */
     GetCPUVendor(szText, sizeof(szText));
-    Index = IoAddValueName(1, 0, IDS_MANUFACTURER);
-    IoSetItemText(Index, szText);
+    IoAddValueName(1, 0, IDS_MANUFACTURER);
+    IoSetItemText(szText);
 
     GetProcessorIDs(&CpuIds);
 
     /* Stepping ID */
-    Index = IoAddValueName(1, 0, IDS_CPUID_STEPPINGID);
-    IoSetItemText(Index, L"%d (%xh)",
+    IoAddValueName(1, 0, IDS_CPUID_STEPPINGID);
+    IoSetItemText(L"%d (%xh)",
                   CpuIds.Stepping, CpuIds.Stepping);
 
     /* Model */
-    Index = IoAddValueName(1, 0, IDS_CPUID_MODEL);
-    IoSetItemText(Index, L"%d (%xh)",
+    IoAddValueName(1, 0, IDS_CPUID_MODEL);
+    IoSetItemText(L"%d (%xh)",
                   CpuIds.Model, CpuIds.Model);
 
     /* Family */
-    Index = IoAddValueName(1, 0, IDS_CPUID_FAMILY);
-    IoSetItemText(Index, L"%d (%xh)",
+    IoAddValueName(1, 0, IDS_CPUID_FAMILY);
+    IoSetItemText(L"%d (%xh)",
                   CpuIds.Family, CpuIds.Family);
 
     /* Physical processors count */
     Count = GetPhysicalProcessorsCount();
     if (Count > 0)
     {
-        Index = IoAddValueName(1, 0, IDS_CPUID_PHYSICAL_COUNT);
-        IoSetItemText(Index, L"%d", Count);
+        IoAddValueName(1, 0, IDS_CPUID_PHYSICAL_COUNT);
+        IoSetItemText(L"%d", Count);
     }
 
     /* Logical processors count */
     Count = GetLogicalProcessorsCount();
     if (Count > 0)
     {
-        Index = IoAddValueName(1, 0, IDS_CPUID_LOGICAL_COUNT);
-        IoSetItemText(Index, L"%d", Count);
+        IoAddValueName(1, 0, IDS_CPUID_LOGICAL_COUNT);
+        IoSetItemText(L"%d", Count);
     }
 
     IoAddFooter();

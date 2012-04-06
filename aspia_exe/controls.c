@@ -421,6 +421,7 @@ InitInfoDll(VOID)
     DllParams.IoAddValueName    = IoAddValueName;
     DllParams.IoGetTarget       = IoGetTarget;
     DllParams.IoSetItemText     = IoSetItemText;
+    DllParams.IoGetCurrentItemIndex = IoGetCurrentItemIndex;
 
     StringCbCopy(DllParams.szCurrentPath,
                  sizeof(DllParams.szCurrentPath),

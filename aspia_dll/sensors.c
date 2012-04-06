@@ -142,7 +142,6 @@ GetIntelCpuInfo(VOID)
 {
     WCHAR szText[MAX_STR_LEN], szFormat[MAX_STR_LEN];
     BYTE bIndex;
-    INT Index;
 
     DebugTrace(L"Intel CPU");
 
@@ -169,11 +168,11 @@ GetIntelCpuInfo(VOID)
 
             LoadMUIString(IDS_SENSOR_CORE_TEMPERATURE,
                           szFormat, MAX_STR_LEN);
-            Index = IoAddItem(1, 4, szFormat, bIndex + 1);
+            IoAddItem(1, 4, szFormat, bIndex + 1);
 
             Tjmax = GetTjmaxTemperature(bIndex);
 
-            IoSetItemText(Index, L"%d °C", Tjmax - Temp);
+            IoSetItemText(L"%d °C", Tjmax - Temp);
 
             DebugTrace(L"Core = %d, Tjmax = %d, Temp = %d, Result = %d",
                        bIndex + 1, Tjmax, Temp, Tjmax - Temp);
@@ -194,7 +193,6 @@ VOID
 GetAmd10CpuInfo(VOID)
 {
     WCHAR szText[MAX_STR_LEN];
-    INT Index;
     ULONG Device;
     DWORD ThermValue;
 
@@ -207,11 +205,11 @@ GetAmd10CpuInfo(VOID)
         IoAddHeaderString(0, 1, szText);
 
         LoadMUIString(IDS_SENSOR_TEMPERATURE, szText, MAX_STR_LEN);
-        Index = IoAddItem(1, 1, szText);
+        IoAddItem(1, 1, szText);
 
         ThermValue = ReadPciConfigDword(Device, 0xA4);
 
-        IoSetItemText(Index, L"%d °C",
+        IoSetItemText(L"%d °C",
                       ((ThermValue >> 21) & 0x7FF) / 8);
 
         IoAddFooter();
@@ -222,7 +220,7 @@ VOID
 GetAmd0FCpuInfo(VOID)
 {
     WCHAR szText[MAX_STR_LEN], szFormat[MAX_STR_LEN];
-    INT Index, Count;
+    INT Count;
     ULONG Device;
     DWORD ThermValue;
     INT Offset = -49;
@@ -242,7 +240,7 @@ GetAmd0FCpuInfo(VOID)
             }
 
             LoadMUIString(IDS_SENSOR_CORE_TEMPERATURE, szFormat, MAX_STR_LEN);
-            Index = IoAddItem(1, 1, szFormat, Count + 1);
+            IoAddItem(1, 1, szFormat, Count + 1);
 
             GetProcessorIDs(&CpuIds);
 
@@ -270,7 +268,7 @@ GetAmd0FCpuInfo(VOID)
                 CpuIds.Model != 0x6c && CpuIds.Model != 0x7c)
                 Offset += 21;
 
-            IoSetItemText(Index, L"%u °C",
+            IoSetItemText(L"%u °C",
                           ((ThermValue >> 16) & 0xFF) + Offset);
         }
 
@@ -281,72 +279,70 @@ GetAmd0FCpuInfo(VOID)
 BOOL CALLBACK
 NvidiaGPUsEnumProc(PNVIDIA_GPU_INFO GpuInfo)
 {
-    INT Index;
-
     /* Add GPU Name */
     IoAddHeaderString(0, 6, GpuInfo->szName);
 
     /* GPU board ambient temperature */
     if (GpuInfo->BoardTemp.CurrentTemp > 0)
     {
-        Index = IoAddValueName(1, 4, IDS_NVIDIA_BOARD_TEMP);
-        IoSetItemText(Index, L"%ld °C",
+        IoAddValueName(1, 4, IDS_NVIDIA_BOARD_TEMP);
+        IoSetItemText(L"%ld °C",
                       GpuInfo->BoardTemp.CurrentTemp);
     }
 
     /* GPU core temperature */
     if (GpuInfo->GpuTemp.CurrentTemp > 0)
     {
-        Index = IoAddValueName(1, 4, IDS_NVIDIA_CORE_TEMP);
-        IoSetItemText(Index, L"%ld °C",
+        IoAddValueName(1, 4, IDS_NVIDIA_CORE_TEMP);
+        IoSetItemText(L"%ld °C",
                       GpuInfo->GpuTemp.CurrentTemp);
     }
 
     /* GPU memory temperature */
     if (GpuInfo->MemoryTemp.CurrentTemp > 0)
     {
-        Index = IoAddValueName(1, 4, IDS_NVIDIA_MEMORY_TEMP);
-        IoSetItemText(Index, L"%ld °C",
+        IoAddValueName(1, 4, IDS_NVIDIA_MEMORY_TEMP);
+        IoSetItemText(L"%ld °C",
                       GpuInfo->MemoryTemp.CurrentTemp);
     }
 
     /* GPU power supply temperature */
     if (GpuInfo->PowerSupplyTemp.CurrentTemp > 0)
     {
-        Index = IoAddValueName(1, 4, IDS_NVIDIA_POWER_SUPPLY_TEMP);
-        IoSetItemText(Index, L"%ld °C",
+        IoAddValueName(1, 4, IDS_NVIDIA_POWER_SUPPLY_TEMP);
+        IoSetItemText(L"%ld °C",
                       GpuInfo->PowerSupplyTemp.CurrentTemp);
     }
 
     /* Visual Computing Device Board temperature */
     if (GpuInfo->VcdBoardTemp.CurrentTemp > 0)
     {
-        Index = IoAddValueName(1, 4, IDS_NVIDIA_VCD_BOARD_TEMP);
-        IoSetItemText(Index, L"%ld °C",
+        IoAddValueName(1, 4, IDS_NVIDIA_VCD_BOARD_TEMP);
+        IoSetItemText(L"%ld °C",
                       GpuInfo->VcdBoardTemp.CurrentTemp);
     }
 
     /* Visual Computing Device Inlet temperature */
     if (GpuInfo->VcdInletTemp.CurrentTemp > 0)
     {
-        Index = IoAddValueName(1, 4, IDS_NVIDIA_VCD_INLET_TEMP);
-        IoSetItemText(Index, L"%ld °C",
+        IoAddValueName(1, 4, IDS_NVIDIA_VCD_INLET_TEMP);
+        IoSetItemText(L"%ld °C",
                       GpuInfo->VcdInletTemp.CurrentTemp);
     }
 
     /* Visual Computing Device Outlet temperature */
     if (GpuInfo->VcdOutletTemp.CurrentTemp > 0)
     {
-        Index = IoAddValueName(1, 4, IDS_NVIDIA_VCD_OUTLET_TEMP);
-        IoSetItemText(Index, L"%ld °C",
+        IoAddValueName(1, 4, IDS_NVIDIA_VCD_OUTLET_TEMP);
+        IoSetItemText(L"%ld °C",
                       GpuInfo->VcdOutletTemp.CurrentTemp);
     }
 
     /* Fan Speed */
     if (GpuInfo->FanSpeed > 0)
     {
-        Index = IoAddValueName(1, 5, IDS_NVIDIA_FAN_SPEED);
-        IoSetItemText(Index, L"%ld RPM",
+        IoAddValueName(1, 5, IDS_NVIDIA_FAN_SPEED);
+        IoSetItemText(L"%ld RPM",
                       GpuInfo->FanSpeed);
     }
 
@@ -362,7 +358,6 @@ HW_SensorInfo(VOID)
     WCHAR szText[MAX_STR_LEN];
     HANDLE hHandle;
     BYTE bIndex;
-    INT Index;
 
     DebugStartReceiving();
 
@@ -394,8 +389,8 @@ HW_SensorInfo(VOID)
             ChopSpaces(szText, sizeof(szText));
             IoAddHeaderString(0, 0, szText);
 
-            Index = IoAddValueName(1, 4, IDS_SENSOR_TEMPERATURE);
-            IoSetItemText(Index, L"%d °C", Temp);
+            IoAddValueName(1, 4, IDS_SENSOR_TEMPERATURE);
+            IoSetItemText(L"%d °C", Temp);
 
             IoAddFooter();
         }

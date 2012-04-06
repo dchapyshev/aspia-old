@@ -403,7 +403,6 @@ NETWORK_NetStatInfo(VOID)
     PMIB_UDPTABLE UdpTable;
     HANDLE hProcessSnap;
     WSADATA WsaData;
-    INT ItemIndex;
     DWORD dwIndex;
 
     DebugStartReceiving();
@@ -432,23 +431,21 @@ NETWORK_NetStatInfo(VOID)
                                   TcpTableEx->table[dwIndex].dwProcessId,
                                   szText, sizeof(szText)))
                 StringCbCopy(szText, sizeof(szText), szUnknown);
-            ItemIndex = IoAddItem(0, 0, szText);
+            IoAddItem(0, 0, szText);
 
-            IoSetItemText(ItemIndex, L"TCP");
+            IoSetItemText(L"TCP");
 
             GetIpHostName(TRUE, TcpTableEx->table[dwIndex].dwLocalAddr,
                           szAddress, sizeof(szAddress));
             GetPortName(TcpTableEx->table[dwIndex].dwLocalPort, "tcp", szPort, sizeof(szPort));
-            IoSetItemText(ItemIndex, L"%s:%s",
-                          szAddress, szPort);
+            IoSetItemText(L"%s:%s", szAddress, szPort);
 
             GetIpHostName(FALSE, TcpTableEx->table[dwIndex].dwRemoteAddr,
                           szAddress, sizeof(szAddress));
             GetPortName(TcpTableEx->table[dwIndex].dwRemotePort, "tcp", szPort, sizeof(szPort));
-            IoSetItemText(ItemIndex, L"%s:%s",
-                          szAddress, szPort);
+            IoSetItemText(L"%s:%s", szAddress, szPort);
 
-            IoSetItemText(ItemIndex, TcpState[TcpTableEx->table[dwIndex].dwState]);
+            IoSetItemText(TcpState[TcpTableEx->table[dwIndex].dwState]);
 
             if (IsCanceled)
             {
@@ -465,22 +462,20 @@ NETWORK_NetStatInfo(VOID)
         {
             for (dwIndex = 0; dwIndex < TcpTable->dwNumEntries; dwIndex++)
             {
-                ItemIndex = IoAddItem(0, 0, szUnknown);
-                IoSetItemText(ItemIndex, L"TCP");
+                IoAddItem(0, 0, szUnknown);
+                IoSetItemText(L"TCP");
 
                 GetIpHostName(TRUE, TcpTable->table[dwIndex].dwLocalAddr,
                               szAddress, sizeof(szAddress));
                 GetPortName(TcpTable->table[dwIndex].dwLocalPort, "tcp", szPort, sizeof(szPort));
-                IoSetItemText(ItemIndex, L"%s:%s",
-                              szAddress, szPort);
+                IoSetItemText(L"%s:%s", szAddress, szPort);
 
                 GetIpHostName(FALSE, TcpTable->table[dwIndex].dwRemoteAddr,
                           szAddress, sizeof(szAddress));
                 GetPortName(TcpTable->table[dwIndex].dwRemotePort, "tcp", szPort, sizeof(szPort));
-                IoSetItemText(ItemIndex, L"%s:%s",
-                              szAddress, szPort);
+                IoSetItemText(L"%s:%s", szAddress, szPort);
 
-                IoSetItemText(ItemIndex, TcpState[TcpTable->table[dwIndex].dwState]);
+                IoSetItemText(TcpState[TcpTable->table[dwIndex].dwState]);
 
                 if (IsCanceled)
                 {
@@ -506,19 +501,18 @@ NETWORK_NetStatInfo(VOID)
                                   UdpTableEx->table[dwIndex].dwProcessId,
                                   szText, sizeof(szText)))
                 StringCbCopy(szText, sizeof(szText), szUnknown);
-            ItemIndex = IoAddItem(0, 0, szText);
+            IoAddItem(0, 0, szText);
 
-            IoSetItemText(ItemIndex, L"UDP");
+            IoSetItemText(L"UDP");
 
             GetIpHostName(TRUE, UdpTableEx->table[dwIndex].dwLocalAddr,
                           szAddress, sizeof(szAddress));
             GetPortName(UdpTableEx->table[dwIndex].dwLocalPort, "udp", szPort, sizeof(szPort));
-            IoSetItemText(ItemIndex, L"%s:%s",
-                          szAddress, szPort);
+            IoSetItemText(L"%s:%s", szAddress, szPort);
 
-            IoSetItemText(ItemIndex, L"*.*.*.*:*");
+            IoSetItemText(L"*.*.*.*:*");
 
-            IoSetItemText(ItemIndex, L"-");
+            IoSetItemText(L"-");
 
             if (IsCanceled)
             {
@@ -535,18 +529,17 @@ NETWORK_NetStatInfo(VOID)
         {
             for (dwIndex = 0; dwIndex < UdpTable->dwNumEntries; dwIndex++)
             {
-                ItemIndex = IoAddItem(0, 0, szUnknown);
-                IoSetItemText(ItemIndex, L"UDP");
+                IoAddItem(0, 0, szUnknown);
+                IoSetItemText(L"UDP");
 
                 GetIpHostName(TRUE, UdpTable->table[dwIndex].dwLocalAddr,
                               szAddress, sizeof(szAddress));
                 GetPortName(UdpTable->table[dwIndex].dwLocalPort, "udp", szPort, sizeof(szPort));
-                IoSetItemText(ItemIndex, L"%s:%s",
-                              szAddress, szPort);
+                IoSetItemText(L"%s:%s", szAddress, szPort);
 
-                IoSetItemText(ItemIndex, L"*.*.*.*:*");
+                IoSetItemText(L"*.*.*.*:*");
 
-                IoSetItemText(ItemIndex, L"-");
+                IoSetItemText(L"-");
 
                 if (IsCanceled)
                 {

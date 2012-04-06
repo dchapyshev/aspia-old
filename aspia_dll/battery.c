@@ -169,7 +169,7 @@ BatteryEnumProc(LPWSTR lpszBattery)
     BATTERY_STATUS BatteryStatus;
     WCHAR szText[MAX_STR_LEN];
     HANDLE hHandle;
-    INT Index, Wear;
+    INT Wear;
 
     hHandle = OpenBattery(lpszBattery);
     if (hHandle == INVALID_HANDLE_VALUE)
@@ -184,8 +184,8 @@ BatteryEnumProc(LPWSTR lpszBattery)
                          (LPVOID)szText,
                          sizeof(szText)))
     {
-        Index = IoAddValueName(1, 1, IDS_NAME);
-        IoSetItemText(Index, szText);
+        IoAddValueName(1, 1, IDS_NAME);
+        IoSetItemText(szText);
     }
 
     /* Manufacture name */
@@ -194,8 +194,8 @@ BatteryEnumProc(LPWSTR lpszBattery)
                          (LPVOID)szText,
                          sizeof(szText)))
     {
-        Index = IoAddValueName(1, 1, IDS_MANUFACTURER);
-        IoSetItemText(Index, szText);
+        IoAddValueName(1, 1, IDS_MANUFACTURER);
+        IoSetItemText(szText);
     }
 
     /* Manufacture date */
@@ -204,8 +204,8 @@ BatteryEnumProc(LPWSTR lpszBattery)
                          (LPVOID)&BatteryDate,
                          sizeof(BatteryDate)))
     {
-        Index = IoAddValueName(1, 1, IDS_BAT_MANUFACTUREDATE);
-        IoSetItemText(Index, L"%d//%d//%d",
+        IoAddValueName(1, 1, IDS_BAT_MANUFACTUREDATE);
+        IoSetItemText(L"%d//%d//%d",
                       BatteryDate.Year,
                       BatteryDate.Month,
                       BatteryDate.Day);
@@ -220,8 +220,8 @@ BatteryEnumProc(LPWSTR lpszBattery)
         ChopSpaces(szText, sizeof(szText));
         if (szText[0] != 0)
         {
-            Index = IoAddValueName(1, 1, IDS_BAT_ID);
-            IoSetItemText(Index, szText);
+            IoAddValueName(1, 1, IDS_BAT_ID);
+            IoSetItemText(szText);
         }
     }
 
@@ -234,8 +234,8 @@ BatteryEnumProc(LPWSTR lpszBattery)
         ChopSpaces(szText, sizeof(szText));
         if (szText[0] != 0)
         {
-            Index = IoAddValueName(1, 1, IDS_SERIAL_NUMBER);
-            IoSetItemText(Index, szText);
+            IoAddValueName(1, 1, IDS_SERIAL_NUMBER);
+            IoSetItemText(szText);
         }
     }
 
@@ -245,8 +245,8 @@ BatteryEnumProc(LPWSTR lpszBattery)
                          (LPVOID)szText,
                          sizeof(szText)))
     {
-        Index = IoAddValueName(1, 1, IDS_BAT_TEMPERATURE);
-        IoSetItemText(Index, szText);
+        IoAddValueName(1, 1, IDS_BAT_TEMPERATURE);
+        IoSetItemText(szText);
     }
 
     if (QueryBatteryInfo(hHandle,
@@ -255,27 +255,27 @@ BatteryEnumProc(LPWSTR lpszBattery)
                                sizeof(BatteryInfo)))
     {
         /* Capacity */
-        Index = IoAddValueName(1, 1, IDS_BAT_CAPACITY);
-        IoSetItemText(Index, L"%ld mWh",
+        IoAddValueName(1, 1, IDS_BAT_CAPACITY);
+        IoSetItemText(L"%ld mWh",
                       BatteryInfo.DesignedCapacity);
 
         /* Type */
-        Index = IoAddValueName(1, 1, IDS_BAT_TYPE);
+        IoAddValueName(1, 1, IDS_BAT_TYPE);
         GetBatteryTypeString(BatteryInfo, szText, sizeof(szText));
-        IoSetItemText(Index, szText);
+        IoSetItemText(szText);
 
         /* Full charged capacity */
-        Index = IoAddValueName(1, 1, IDS_BAT_FULL_CAPACITY);
-        IoSetItemText(Index, L"%ld mWh",
+        IoAddValueName(1, 1, IDS_BAT_FULL_CAPACITY);
+        IoSetItemText(L"%ld mWh",
                       BatteryInfo.FullChargedCapacity);
 
         /* Depreciation */
-        Index = IoAddValueName(1, 1, IDS_BAT_DEPRECIATION);
+        IoAddValueName(1, 1, IDS_BAT_DEPRECIATION);
 
         Wear = 100 - (BatteryInfo.FullChargedCapacity * 100) /
                    BatteryInfo.DesignedCapacity;
 
-        IoSetItemText(Index, L"%ld%%", (Wear >= 0) ? Wear : 0);
+        IoSetItemText(L"%ld%%", (Wear >= 0) ? Wear : 0);
     }
 
     if (QueryBatteryStatus(hHandle,
@@ -283,19 +283,19 @@ BatteryEnumProc(LPWSTR lpszBattery)
                            sizeof(BatteryStatus)))
     {
         /* Current capacity */
-        Index = IoAddValueName(1, 1, IDS_BAT_CURRENT_CAPACITY);
-        IoSetItemText(Index, L"%ld mWh (%ld%%)",
+        IoAddValueName(1, 1, IDS_BAT_CURRENT_CAPACITY);
+        IoSetItemText(L"%ld mWh (%ld%%)",
                       BatteryStatus.Capacity,
                       (BatteryStatus.Capacity * 100) / BatteryInfo.FullChargedCapacity);
 
         /* Voltage */
-        Index = IoAddValueName(1, 1, IDS_BAT_VOLTAGE);
-        IoSetItemText(Index, L"%ld mV", BatteryStatus.Voltage);
+        IoAddValueName(1, 1, IDS_BAT_VOLTAGE);
+        IoSetItemText(L"%ld mV", BatteryStatus.Voltage);
 
         /* Status */
-        Index = IoAddValueName(1, 1, IDS_STATUS);
+        IoAddValueName(1, 1, IDS_STATUS);
         BatteryPowerStateToText(BatteryStatus.PowerState, szText, sizeof(szText));
-        IoSetItemText(Index, szText);
+        IoSetItemText(szText);
     }
 
     IoAddFooter();

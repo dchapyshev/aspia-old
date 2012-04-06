@@ -14,7 +14,7 @@ GetVMWareWorkstationLicenses(VOID)
 {
     WCHAR szKeyName[MAX_PATH], szSerial[MAX_PATH];
     DWORD dwType, dwSize = MAX_PATH;
-    INT Index, ItemIndex = 0;
+    INT ItemIndex = 0;
     HKEY hKey, hSubKey;
 
     if (RegOpenKey(HKEY_LOCAL_MACHINE,
@@ -41,8 +41,8 @@ GetVMWareWorkstationLicenses(VOID)
                                     (LPBYTE)szSerial,
                                     &dwSize) == ERROR_SUCCESS)
                 {
-                    Index = IoAddItem(0, 0, L"VMWare Workstation");
-                    IoSetItemText(Index, szSerial);
+                    IoAddItem(0, 0, L"VMWare Workstation");
+                    IoSetItemText(szSerial);
                 }
             }
 
@@ -61,7 +61,7 @@ GetVMWareServerLicenses(VOID)
 {
     WCHAR szKeyName[MAX_PATH], szSerial[MAX_PATH];
     DWORD dwType, dwSize = MAX_PATH;
-    INT Index, ItemIndex = 0;
+    INT ItemIndex = 0;
     HKEY hKey, hSubKey;
 
     if (RegOpenKey(HKEY_LOCAL_MACHINE,
@@ -88,8 +88,8 @@ GetVMWareServerLicenses(VOID)
                                     (LPBYTE)szSerial,
                                     &dwSize) == ERROR_SUCCESS)
                 {
-                    Index = IoAddItem(0, 0, L"VMWare Server");
-                    IoSetItemText(Index, szSerial);
+                    IoAddItem(0, 0, L"VMWare Server");
+                    IoSetItemText(szSerial);
                 }
             }
 
@@ -108,7 +108,7 @@ Get3PlanesoftKeys(VOID)
 {
     WCHAR szKeyName[MAX_PATH], szValue[MAX_PATH];
     DWORD dwSize = MAX_PATH, dwType;
-    INT Index, KeyIndex = 0;
+    INT KeyIndex = 0;
     HKEY hKey, hSubKey;
 
     if (RegOpenKey(HKEY_LOCAL_MACHINE,
@@ -136,8 +136,8 @@ Get3PlanesoftKeys(VOID)
                             (LPBYTE)szValue,
                             &dwSize) == ERROR_SUCCESS)
         {
-            Index = IoAddItem(0, 0, L"%s (Name)", szKeyName);
-            IoSetItemText(Index, szValue);
+            IoAddItem(0, 0, L"%s (Name)", szKeyName);
+            IoSetItemText(szValue);
         }
 
         dwType = REG_SZ;
@@ -150,8 +150,8 @@ Get3PlanesoftKeys(VOID)
                             (LPBYTE)szValue,
                             &dwSize) == ERROR_SUCCESS)
         {
-            Index = IoAddItem(0, 0, L"%s (Key)", szKeyName);
-            IoSetItemText(Index, szValue);
+            IoAddItem(0, 0, L"%s (Key)", szKeyName);
+            IoSetItemText(szValue);
         }
 
         RegCloseKey(hSubKey);
@@ -169,7 +169,7 @@ GetAheadNeroLicensies(VOID)
     WCHAR szKeyName[MAX_PATH], szValueName[MAX_PATH],
           szValue[MAX_PATH];
     DWORD dwSize = MAX_PATH, dwValueSize;
-    INT Index, KeyIndex = 0, ValIndex;
+    INT KeyIndex = 0, ValIndex;
     HKEY hKey, hSubKey;
 
     if (RegOpenKey(HKEY_LOCAL_MACHINE,
@@ -203,8 +203,8 @@ GetAheadNeroLicensies(VOID)
             {
                 if (wcsncmp(szValueName, L"Serial", 6) == 0)
                 {
-                    Index = IoAddItem(0, 0, L"Ahead Nero");
-                    IoSetItemText(Index, szValue);
+                    IoAddItem(0, 0, L"Ahead Nero");
+                    IoSetItemText(szValue);
                 }
 
                 dwValueSize = MAX_PATH;
@@ -984,7 +984,7 @@ VOID
 GetOtherLicensiesInfo(VOID)
 {
     WCHAR szText[MAX_STR_LEN];
-    INT Index, i = 0;
+    INT i = 0;
 
     do
     {
@@ -999,8 +999,8 @@ GetOtherLicensiesInfo(VOID)
         {
             if (szText[0] != 0)
             {
-                Index = IoAddItem(0, 0, LicensiesInfo[i].lpProductName);
-                IoSetItemText(Index, szText);
+                IoAddItem(0, 0, LicensiesInfo[i].lpProductName);
+                IoSetItemText(szText);
             }
         }
     }
@@ -1188,7 +1188,7 @@ VOID
 SOFTWARE_LicensesInfo(VOID)
 {
     WCHAR szText[MAX_STR_LEN], szTemp[MAX_STR_LEN];
-    INT Index, i = 0;
+    INT i = 0;
 
     DebugStartReceiving();
 
@@ -1207,8 +1207,8 @@ SOFTWARE_LicensesInfo(VOID)
         }
         if (szText[0] != 0)
         {
-            Index = IoAddItem(0, 0, MsLicensies[i].lpProductName);
-            IoSetItemText(Index, szText);
+            IoAddItem(0, 0, MsLicensies[i].lpProductName);
+            IoSetItemText(szText);
         }
     }
     while (MsLicensies[++i].lpProductName != 0);
@@ -1222,8 +1222,8 @@ SOFTWARE_LicensesInfo(VOID)
                               sizeof(szTemp)/sizeof(WCHAR)))
     {
         InsertKeySep(szTemp, szText);
-        Index = IoAddItem(0, 0, L"Microsoft Visual Studio 2010");
-        IoSetItemText(Index, szText);
+        IoAddItem(0, 0, L"Microsoft Visual Studio 2010");
+        IoSetItemText(szText);
     }
 
     /* Visual Studio 2008 Key */
@@ -1235,8 +1235,8 @@ SOFTWARE_LicensesInfo(VOID)
                               sizeof(szTemp)/sizeof(WCHAR)))
     {
         InsertKeySep(szTemp, szText);
-        Index = IoAddItem(0, 0, L"Microsoft Visual Studio 2008");
-        IoSetItemText(Index, szText);
+        IoAddItem(0, 0, L"Microsoft Visual Studio 2008");
+        IoSetItemText(szText);
     }
 
     /* Visual Studio 2005 Key */
@@ -1248,8 +1248,8 @@ SOFTWARE_LicensesInfo(VOID)
                               sizeof(szTemp)/sizeof(WCHAR)))
     {
         InsertKeySep(szTemp, szText);
-        Index = IoAddItem(0, 0, L"Microsoft Visual Studio 2005");
-        IoSetItemText(Index, szText);
+        IoAddItem(0, 0, L"Microsoft Visual Studio 2005");
+        IoSetItemText(szText);
     }
 
     /* Visual Studio for Applications 7.1 Key */
@@ -1261,8 +1261,8 @@ SOFTWARE_LicensesInfo(VOID)
                               sizeof(szTemp)/sizeof(WCHAR)))
     {
         InsertKeySep(szTemp, szText);
-        Index = IoAddItem(0, 0, L"Microsoft Visual Studio for Applications 7.1");
-        IoSetItemText(Index, szText);
+        IoAddItem(0, 0, L"Microsoft Visual Studio for Applications 7.1");
+        IoSetItemText(szText);
     }
 
     /* Visual Studio for Applications 8 Key */
@@ -1274,8 +1274,8 @@ SOFTWARE_LicensesInfo(VOID)
                               sizeof(szTemp)/sizeof(WCHAR)))
     {
         InsertKeySep(szTemp, szText);
-        Index = IoAddItem(0, 0, L"Microsoft Visual Studio for Applications 8");
-        IoSetItemText(Index, szText);
+        IoAddItem(0, 0, L"Microsoft Visual Studio for Applications 8");
+        IoSetItemText(szText);
     }
 
     /* VMWare Workstation */
