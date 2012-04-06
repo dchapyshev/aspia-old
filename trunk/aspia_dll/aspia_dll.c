@@ -22,6 +22,7 @@ PIO_ADD_HEADER        IoAddHeader       = NULL;
 PIO_ADD_ITEM          IoAddItem         = NULL;
 PIO_GET_TARGET        IoGetTarget       = NULL;
 PIO_ADD_HEADER_STRING IoAddHeaderString = NULL;
+PIO_GET_CURRENT_ITEM_INDEX IoGetCurrentItemIndex = NULL;
 
 
 BOOL
@@ -59,6 +60,7 @@ AspiaDllInitialize(ASPIA_DLL_PARAMS *Params)
     IoAddItem         = Params->IoAddItem;
     IoGetTarget       = Params->IoGetTarget;
     IoAddHeaderString = Params->IoAddHeaderString;
+    IoGetCurrentItemIndex = Params->IoGetCurrentItemIndex;
 
     return TRUE;
 }

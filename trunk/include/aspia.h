@@ -65,13 +65,14 @@
 #define ReAlloc(a, b) HeapReAlloc(GetProcessHeap(), 0, a, b)
 
 typedef VOID (*PIO_ADD_FOOTER)(VOID);
-typedef INT  (*PIO_ADD_VALUE_NAME)(INT, INT, UINT);
-typedef VOID (*PIO_SET_ITEM_TEXT)(INT, LPWSTR, ...);
+typedef VOID (*PIO_ADD_VALUE_NAME)(INT, INT, UINT);
+typedef VOID (*PIO_SET_ITEM_TEXT)(LPWSTR, ...);
 typedef INT  (*PIO_ADD_ICON)(UINT);
 typedef VOID (*PIO_ADD_HEADER)(INT, INT, UINT);
-typedef INT  (*PIO_ADD_ITEM)(INT, INT, LPWSTR, ...);
+typedef VOID (*PIO_ADD_ITEM)(INT, INT, LPWSTR, ...);
 typedef UINT (*PIO_GET_TARGET)(VOID);
-typedef INT  (*PIO_ADD_HEADER_STRING)(INT, INT, LPWSTR, ...);
+typedef VOID (*PIO_ADD_HEADER_STRING)(INT, INT, LPWSTR, ...);
+typedef INT (*PIO_GET_CURRENT_ITEM_INDEX)(VOID);
 
 typedef struct
 {
@@ -105,6 +106,7 @@ typedef struct
     PIO_ADD_ITEM          IoAddItem;
     PIO_GET_TARGET        IoGetTarget;
     PIO_ADD_HEADER_STRING IoAddHeaderString;
+    PIO_GET_CURRENT_ITEM_INDEX IoGetCurrentItemIndex;
 
 } ASPIA_DLL_PARAMS, *PASPIA_DLL_PARAMS;
 

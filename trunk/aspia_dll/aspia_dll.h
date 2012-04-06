@@ -21,6 +21,7 @@ extern PIO_ADD_HEADER        IoAddHeader;
 extern PIO_ADD_ITEM          IoAddItem;
 extern PIO_GET_TARGET        IoGetTarget;
 extern PIO_ADD_HEADER_STRING IoAddHeaderString;
+extern PIO_GET_CURRENT_ITEM_INDEX IoGetCurrentItemIndex;
 
 BOOL GetAdapterFriendlyName(LPWSTR lpszKey, LPWSTR lpszName, INT NameLen);
 VOID ShowInstallDate(VOID);

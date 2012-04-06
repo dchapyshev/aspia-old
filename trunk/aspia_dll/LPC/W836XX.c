@@ -82,7 +82,6 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
     FLOAT fvalue, voltageGain = 0.008f;
     DWORD offset, divisor, count;
     DWORD newBits, bits = 0;
-    INT ItemIndex;
 
     if (!IsWinbondVendor(address))
         return;
@@ -178,9 +177,9 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
 
                 if (SafeStrLen(LpcVoltageDesc[i].szDesc) > 0)
                 {
-                    ItemIndex = IoAddItem(1, 3, LpcVoltageDesc[i].szDesc);
+                    IoAddItem(1, 3, LpcVoltageDesc[i].szDesc);
 
-                    IoSetItemText(ItemIndex, L"%.3f V",
+                    IoSetItemText(L"%.3f V",
                         fvalue + (fvalue - LpcVoltageDesc[i].vf) * LpcVoltageDesc[i].ri / LpcVoltageDesc[i].rf);
                 }
             }
@@ -199,9 +198,9 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
                 fvalue = voltageGain * tmp;
                 DebugTrace(L"Voltages[%d] = %f, voltageGain = %f, tmp = %d", i, fvalue, voltageGain, tmp);
 
-                ItemIndex = IoAddItem(1, 3, L"VBat");
+                IoAddItem(1, 3, L"VBat");
 
-                IoSetItemText(ItemIndex, L"%.3f V", fvalue);
+                IoSetItemText(L"%.3f V", fvalue);
             }
         }
     }
@@ -223,9 +222,9 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
 
             if (SafeStrLen(szLpcTempDesc[i]) > 0)
             {
-                ItemIndex = IoAddItem(1, 4, szLpcTempDesc[i]);
+                IoAddItem(1, 4, szLpcTempDesc[i]);
 
-                IoSetItemText(ItemIndex, L"%.2f °C", temp);
+                IoSetItemText(L"%.2f °C", temp);
             }
         }
     }
@@ -266,15 +265,15 @@ W836XX_GetInfo(WORD wChipType, BYTE revision, WORD address)
         {
             if (SafeStrLen(szLpcFanDesc[i]) > 0)
             {
-                ItemIndex = IoAddItem(1, 5, szLpcFanDesc[i]);
+                IoAddItem(1, 5, szLpcFanDesc[i]);
             }
             else
             {
                 StringCbPrintf(szText, sizeof(szText), L"Fans #%d", i + 1);
-                ItemIndex = IoAddItem(1, 5, szText);
+                IoAddItem(1, 5, szText);
             }
 
-            IoSetItemText(ItemIndex, L"%.0f RPM", fvalue);
+            IoSetItemText(L"%.0f RPM", fvalue);
         }
 
         newBits = W836XX_SetBit(newBits, FAN_DIV_BIT2[i], (offset >> 2) & 1);

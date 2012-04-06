@@ -140,7 +140,7 @@ NETWORK_CardsInfo(VOID)
     PIP_ADAPTER_INFO pAdapter = NULL;
     PIP_PER_ADAPTER_INFO pPerInfo;
     ULONG ulOutBufLen, PerLen;
-    INT Index, Count = 0;
+    INT Count = 0;
     MIB_IFROW *pIfRow;
 
     DebugStartReceiving();
@@ -193,8 +193,8 @@ NETWORK_CardsInfo(VOID)
                                   szKey, L"Name",
                                   szText, MAX_STR_LEN))
         {
-            Index = IoAddValueName(1, 0, IDS_NIC_NAME);
-            IoSetItemText(Index, szText);
+            IoAddValueName(1, 0, IDS_NIC_NAME);
+            IoSetItemText(szText);
         }
 
         pIfRow = (MIB_IFROW*)Alloc(sizeof(MIB_IFROW));
@@ -211,18 +211,18 @@ NETWORK_CardsInfo(VOID)
             goto Cleanup;
         }
 
-        Index = IoAddValueName(1, 0, IDS_NIC_TYPE);
+        IoAddValueName(1, 0, IDS_NIC_TYPE);
         CardsTypeToText(pIfRow->dwType, szText, sizeof(szText));
-        IoSetItemText(Index, szText);
+        IoSetItemText(szText);
 
-        Index = IoAddValueName(1, 0, IDS_NIC_MTU);
-        IoSetItemText(Index, L"%ld byte", pIfRow->dwMtu);
+        IoAddValueName(1, 0, IDS_NIC_MTU);
+        IoSetItemText(L"%ld byte", pIfRow->dwMtu);
 
-        Index = IoAddValueName(1, 0, IDS_NIC_SPEED);
-        IoSetItemText(Index, L"%ld Mbps", pIfRow->dwSpeed / (1000 * 1000));
+        IoAddValueName(1, 0, IDS_NIC_SPEED);
+        IoSetItemText(L"%ld Mbps", pIfRow->dwSpeed / (1000 * 1000));
 
-        Index = IoAddValueName(1, 0, IDS_NIC_MAC);
-        IoSetItemText(Index, L"%.2X-%.2X-%.2X-%.2X-%.2X-%.2X",
+        IoAddValueName(1, 0, IDS_NIC_MAC);
+        IoSetItemText(L"%.2X-%.2X-%.2X-%.2X-%.2X-%.2X",
                       pIfRow->bPhysAddr[0],
                       pIfRow->bPhysAddr[1],
                       pIfRow->bPhysAddr[2],
@@ -231,7 +231,7 @@ NETWORK_CardsInfo(VOID)
                       pIfRow->bPhysAddr[5],
                       pIfRow->bPhysAddr[6]);
 
-        Index = IoAddValueName(1, 1, IDS_NIC_IP);
+        IoAddValueName(1, 1, IDS_NIC_IP);
         if (pAdapter->IpAddressList.IpAddress.String[0] == '0')
         {
             LoadMUIString(IDS_NOT_CONNECTED, szText, MAX_STR_LEN);
@@ -241,21 +241,21 @@ NETWORK_CardsInfo(VOID)
             StringCbPrintf(szText, sizeof(szText), L"%S",
                            pAdapter->IpAddressList.IpAddress.String);
         }
-        IoSetItemText(Index, szText);
+        IoSetItemText(szText);
 
         if (pAdapter->IpAddressList.IpMask.String[0] != '0')
         {
-            Index = IoAddValueName(1, 1, IDS_NIC_SUBNET_MASK);
-            IoSetItemText(Index, L"%S",
+            IoAddValueName(1, 1, IDS_NIC_SUBNET_MASK);
+            IoSetItemText(L"%S",
                           pAdapter->IpAddressList.IpMask.String);
         }
 
         if (pAdapter->GatewayList.IpAddress.String[0] != 0)
         {
-            Index = IoAddValueName(1, 1, IDS_NIC_GETEWAY);
+            IoAddValueName(1, 1, IDS_NIC_GETEWAY);
             StringCbPrintf(szText, sizeof(szText), L"%S",
                            pAdapter->GatewayList.IpAddress.String);
-            IoSetItemText(Index, L"%S", pAdapter->GatewayList.IpAddress.String);
+            IoSetItemText(L"%S", pAdapter->GatewayList.IpAddress.String);
         }
 
         pPerInfo = (PIP_PER_ADAPTER_INFO)Alloc(sizeof(IP_PER_ADAPTER_INFO));
@@ -280,71 +280,71 @@ NETWORK_CardsInfo(VOID)
 
         if (pPerInfo->DnsServerList.IpAddress.String[0] != '\0')
         {
-            Index = IoAddItem(1, 1, L"DNS 1");
+            IoAddItem(1, 1, L"DNS 1");
 
-            IoSetItemText(Index, L"%S",
+            IoSetItemText(L"%S",
                           pPerInfo->DnsServerList.IpAddress.String);
 
             if (pPerInfo->DnsServerList.Next)
             {
-                Index = IoAddItem(1, 1, L"DNS 2");
-                IoSetItemText(Index, L"%S",
+                IoAddItem(1, 1, L"DNS 2");
+                IoSetItemText(L"%S",
                               pPerInfo->DnsServerList.Next->IpAddress.String);
             }
         }
 
         if (pAdapter->DhcpEnabled)
         {
-            Index = IoAddValueName(1, 1, IDS_NIC_DHCP_STATUS);
+            IoAddValueName(1, 1, IDS_NIC_DHCP_STATUS);
             LoadMUIString(IDS_YES, szText, MAX_STR_LEN);
-            IoSetItemText(Index, szText);
+            IoSetItemText(szText);
 
             if (pAdapter->DhcpServer.IpAddress.String[0] != '\0')
             {
-                Index = IoAddValueName(1, 1, IDS_NIC_DHCP_ADDR);
-                IoSetItemText(Index, L"%S",
+                IoAddValueName(1, 1, IDS_NIC_DHCP_ADDR);
+                IoSetItemText(L"%S",
                               pAdapter->DhcpServer.IpAddress.String);
 
                 if (TimeToString(pAdapter->LeaseObtained, szText, sizeof(szText)))
                 {
-                    Index = IoAddValueName(1, 1, IDS_NIC_DHCP_OBTAINED);
-                    IoSetItemText(Index, szText);
+                    IoAddValueName(1, 1, IDS_NIC_DHCP_OBTAINED);
+                    IoSetItemText(szText);
                 }
 
                 if (TimeToString(pAdapter->LeaseExpires, szText, sizeof(szText)))
                 {
-                    Index = IoAddValueName(1, 1, IDS_NIC_DHCP_EXPIRES);
-                    IoSetItemText(Index, szText);
+                    IoAddValueName(1, 1, IDS_NIC_DHCP_EXPIRES);
+                    IoSetItemText(szText);
                 }
             }
         }
         else
         {
-            Index = IoAddValueName(1, 1, IDS_NIC_DHCP_STATUS);
-            IoSetItemText(Index, szNo);
+            IoAddValueName(1, 1, IDS_NIC_DHCP_STATUS);
+            IoSetItemText(szNo);
         }
 
         if (pAdapter->HaveWins)
         {
-            Index = IoAddValueName(1, 1, IDS_NIC_WINS_STATUS);
+            IoAddValueName(1, 1, IDS_NIC_WINS_STATUS);
             LoadMUIString(IDS_YES, szText, MAX_STR_LEN);
-            IoSetItemText(Index, szText);
+            IoSetItemText(szText);
 
-            Index = IoAddItem(1, 1, L"WINS 1");
-            IoSetItemText(Index, L"%S",
+            IoAddItem(1, 1, L"WINS 1");
+            IoSetItemText(L"%S",
                           pAdapter->PrimaryWinsServer.IpAddress.String);
 
             if (pAdapter->SecondaryWinsServer.IpAddress.String[0] != 0)
             {
-                Index = IoAddItem(1, 1, L"WINS 2");
-                IoSetItemText(Index, L"%S",
+                IoAddItem(1, 1, L"WINS 2");
+                IoSetItemText(L"%S",
                               pAdapter->SecondaryWinsServer.IpAddress.String);
             }
         }
         else
         {
-            Index = IoAddValueName(1, 1, IDS_NIC_WINS_STATUS);
-            IoSetItemText(Index, szNo);
+            IoAddValueName(1, 1, IDS_NIC_WINS_STATUS);
+            IoSetItemText(szNo);
         }
 
         IoAddFooter();
@@ -417,7 +417,6 @@ NETWORK_SharedInfo(VOID)
     WCHAR szCompName[MAX_STR_LEN], szText[MAX_STR_LEN];
     NET_API_STATUS Status;
     PSHARE_INFO_502 pInfo, pPtr;
-    INT Index;
 
     DebugStartReceiving();
 
@@ -442,27 +441,23 @@ NETWORK_SharedInfo(VOID)
             for (dwCount = 1; dwCount <= dwError; ++dwCount)
             {
                 /* Name */
-                Index = IoAddItem(0, GetShareIconIndexByType(pPtr->shi502_type),
-                                  pPtr->shi502_netname);
+                IoAddItem(0, GetShareIconIndexByType(pPtr->shi502_type),
+                          pPtr->shi502_netname);
 
                 /* Type */
                 ShareTypeToText(pPtr->shi502_type,
                                 szText,
                                 MAX_STR_LEN);
-                IoSetItemText(Index,
-                    (szText[0] != 0) ? szText : L"-");
+                IoSetItemText((szText[0] != 0) ? szText : L"-");
 
                 /* Description */
-                IoSetItemText(Index, (SafeStrLen(pPtr->shi502_remark) > 1) ? pPtr->shi502_remark : L"-");
+                IoSetItemText((SafeStrLen(pPtr->shi502_remark) > 1) ? pPtr->shi502_remark : L"-");
 
                 /* Local path */
-                IoSetItemText(Index,
-                    (SafeStrLen(pPtr->shi502_path) > 0) ? pPtr->shi502_path : L"-");
+                IoSetItemText((SafeStrLen(pPtr->shi502_path) > 0) ? pPtr->shi502_path : L"-");
 
                 /* Current uses */
-                StringCbPrintf(szText, sizeof(szText),
-                               L"%ld", pPtr->shi502_current_uses);
-                IoSetItemText(Index, szText);
+                IoSetItemText(L"%ld", pPtr->shi502_current_uses);
 
                 /* Maximum uses */
                 if (pPtr->shi502_max_uses != -1)
@@ -475,7 +470,7 @@ NETWORK_SharedInfo(VOID)
                     LoadMUIString(IDS_SHARE_UNLIMITED,
                                   szText, MAX_STR_LEN);
                 }
-                IoSetItemText(Index, szText);
+                IoSetItemText(szText);
 
                 ++pPtr;
             }
@@ -514,7 +509,7 @@ NETWORK_RouteInfo(VOID)
     DWORD dwSize = 0, dwRet = 0;
     WCHAR szText[MAX_STR_LEN];
     struct in_addr IpAddr;
-    INT Index, ItemIndex;
+    INT Index;
 
     DebugStartReceiving();
 
@@ -546,19 +541,19 @@ NETWORK_RouteInfo(VOID)
         IpAddr.S_un.S_addr =
             (u_long)pIpForwardTable->table[Index].dwForwardDest;
         IpToStr(IpAddr, szText, sizeof(szText));
-        ItemIndex = IoAddItem(0, 0, szText);
+        IoAddItem(0, 0, szText);
 
         IpAddr.S_un.S_addr =
             (u_long)pIpForwardTable->table[Index].dwForwardMask;
         IpToStr(IpAddr, szText, sizeof(szText));
-        IoSetItemText(ItemIndex, szText);
+        IoSetItemText(szText);
 
         IpAddr.S_un.S_addr =
             (u_long)pIpForwardTable->table[Index].dwForwardNextHop;
         IpToStr(IpAddr, szText, sizeof(szText));
-        IoSetItemText(ItemIndex, szText);
+        IoSetItemText(szText);
 
-        IoSetItemText(ItemIndex, L"%ld",
+        IoSetItemText(L"%ld",
                       pIpForwardTable->table[Index].dwForwardMetric1);
 
         if (IsCanceled) break;
@@ -575,7 +570,6 @@ static VOID
 ShowIERegInfo(UINT StringID, LPWSTR lpszPath, LPWSTR lpszKeyName, INT IconIndex)
 {
     WCHAR szText[MAX_STR_LEN];
-    INT Index;
 
     if (GetStringFromRegistry(TRUE,
                               HKEY_CURRENT_USER,
@@ -588,8 +582,8 @@ ShowIERegInfo(UINT StringID, LPWSTR lpszPath, LPWSTR lpszKeyName, INT IconIndex)
 
         if (buf)
         {
-            Index = IoAddValueName(1, IconIndex, StringID);
-            IoSetItemText(Index, buf);
+            IoAddValueName(1, IconIndex, StringID);
+            IoSetItemText(buf);
 
             Free(buf);
         }
@@ -603,7 +597,6 @@ ShowIEShortInfo(INT IconIndex)
     INTERNET_PER_CONN_OPTION Option[2];
     WCHAR szText[MAX_STR_LEN];
     DWORD dwSize;
-    INT Index;
 
     if (GetStringFromRegistry(TRUE,
                               HKEY_LOCAL_MACHINE,
@@ -611,8 +604,8 @@ ShowIEShortInfo(INT IconIndex)
                               L"Version", szText,
                               MAX_STR_LEN))
     {
-        Index = IoAddValueName(1, IconIndex, IDS_VERSION);
-        IoSetItemText(Index, szText);
+        IoAddValueName(1, IconIndex, IDS_VERSION);
+        IoSetItemText(szText);
     }
 
     ShowIERegInfo(IDS_IE_STARTPAGE,
@@ -620,7 +613,7 @@ ShowIEShortInfo(INT IconIndex)
                   L"Start Page",
                   IconIndex);
 
-    Index = IoAddValueName(1, IconIndex, IDS_IE_USE_PROXY);
+    IoAddValueName(1, IconIndex, IDS_IE_USE_PROXY);
 
     Option[0].dwOption = INTERNET_PER_CONN_FLAGS;
     Option[1].dwOption = INTERNET_PER_CONN_PROXY_SERVER;
@@ -639,18 +632,18 @@ ShowIEShortInfo(INT IconIndex)
     if (Option[0].Value.dwValue & PROXY_TYPE_PROXY)
     {
         LoadMUIString(IDS_YES, szText, MAX_STR_LEN);
-        IoSetItemText(Index, szText);
+        IoSetItemText(szText);
     }
     else
     {
         LoadMUIString(IDS_NO, szText, MAX_STR_LEN);
-        IoSetItemText(Index, szText);
+        IoSetItemText(szText);
     }
 
     if (SafeStrLen(Option[1].Value.pszValue) != 0)
     {
-        Index = IoAddValueName(1, IconIndex, IDS_IE_PROXY_ADDR);
-        IoSetItemText(Index, Option[1].Value.pszValue);
+        IoAddValueName(1, IconIndex, IDS_IE_PROXY_ADDR);
+        IoSetItemText(Option[1].Value.pszValue);
         GlobalFree(Option[1].Value.pszValue);
     }
 }
@@ -687,7 +680,6 @@ NETWORK_IEHistoryInfo(VOID)
     WCHAR szText[MAX_STR_LEN];
     STATURL StatUrl;
     ULONG uFetched;
-    INT Index;
     SYSTEMTIME SysTime;
     HRESULT hr;
 
@@ -740,11 +732,11 @@ NETWORK_IEHistoryInfo(VOID)
                               0, &SysTime, NULL, szText,
                               MAX_STR_LEN))
             {
-                Index = IoAddItem(0, 0, szText);
+                IoAddItem(0, 0, szText);
             }
             else
             {
-                Index = IoAddItem(0, 0, L"-");
+                IoAddItem(0, 0, L"-");
             }
 
             /* Date */
@@ -752,16 +744,15 @@ NETWORK_IEHistoryInfo(VOID)
                               0, &SysTime, NULL, szText,
                               MAX_STR_LEN))
             {
-                IoSetItemText(Index, szText);
+                IoSetItemText(szText);
             }
             else
             {
-                IoSetItemText(Index, L"-");
+                IoSetItemText(L"-");
             }
 
             /* Title */
-            IoSetItemText(Index,
-                          (SafeStrLen(StatUrl.pwcsTitle) > 1) ? StatUrl.pwcsTitle : L"-");
+            IoSetItemText((SafeStrLen(StatUrl.pwcsTitle) > 1) ? StatUrl.pwcsTitle : L"-");
             /* URL */
             __try
             {
@@ -771,22 +762,22 @@ NETWORK_IEHistoryInfo(VOID)
 
                     if (buf)
                     {
-                        IoSetItemText(Index, buf);
+                        IoSetItemText(buf);
                         Free(buf);
                     }
                     else
                     {
-                        IoSetItemText(Index, L"-");
+                        IoSetItemText(L"-");
                     }
                 }
                 else
                 {
-                    IoSetItemText(Index, L"-");
+                    IoSetItemText(L"-");
                 }
             }
             __except(EXCEPTION_EXECUTE_HANDLER)
             {
-                IoSetItemText(Index, L"-");
+                IoSetItemText(L"-");
             }
         }
 
@@ -821,28 +812,29 @@ GetDateTimeString(FILETIME FileTime, LPWSTR lpszDateTime, SIZE_T Size)
 static VOID
 IECookieAdd(LPINTERNET_CACHE_ENTRY_INFO pCacheInfo)
 {
-    INT Index = IoAddItem(0, 0, pCacheInfo->lpszSourceUrlName);
     WCHAR szText[MAX_STR_LEN];
+
+    IoAddItem(0, 0, pCacheInfo->lpszSourceUrlName);
 
     GetDateTimeString(pCacheInfo->LastAccessTime,
                       szText, sizeof(szText));
-    IoSetItemText(Index, szText);
+    IoSetItemText(szText);
 
-    IoSetItemText(Index, L"%ld", pCacheInfo->dwHitRate);
+    IoSetItemText(L"%ld", pCacheInfo->dwHitRate);
 
     GetDateTimeString(pCacheInfo->LastModifiedTime,
                       szText, sizeof(szText));
-    IoSetItemText(Index, szText);
+    IoSetItemText(szText);
 
     GetDateTimeString(pCacheInfo->LastSyncTime,
                       szText, sizeof(szText));
-    IoSetItemText(Index, szText);
+    IoSetItemText(szText);
 
     GetDateTimeString(pCacheInfo->ExpireTime,
                       szText, sizeof(szText));
-    IoSetItemText(Index, szText);
+    IoSetItemText(szText);
 
-    IoSetItemText(Index, pCacheInfo->lpszLocalFileName);
+    IoSetItemText(pCacheInfo->lpszLocalFileName);
 }
 
 VOID
@@ -923,13 +915,12 @@ VOID
 RasAddParam(UINT StringID, BOOL State)
 {
     WCHAR szText[MAX_STR_LEN];
-    INT Index;
 
     LoadMUIString(StringID, szText, MAX_STR_LEN);
-    Index = IoAddItem(1, State ? 1 : 2, szText);
+    IoAddItem(1, State ? 1 : 2, szText);
 
     LoadMUIString(State ? IDS_YES : IDS_NO, szText, MAX_STR_LEN);
-    IoSetItemText(Index, szText);
+    IoSetItemText(szText);
 }
 
 VOID
@@ -942,7 +933,6 @@ NETWORK_RasInfo(VOID)
     RASENTRYNAME *pRasEntryName;
     BOOL IsPasswordReturned;
     RASENTRY RasEntry;
-    INT Index;
 
     DebugStartReceiving();
 
@@ -1000,51 +990,51 @@ NETWORK_RasInfo(VOID)
         IoAddHeaderString(0, 0, pRasEntryName[dwIndex].szEntryName);
 
         /* Device name */
-        Index = IoAddValueName(1, 0, IDS_RAS_DEVICE_NAME);
-        IoSetItemText(Index, RasEntry.szDeviceName);
+        IoAddValueName(1, 0, IDS_RAS_DEVICE_NAME);
+        IoSetItemText(RasEntry.szDeviceName);
 
         /* Device type */
-        Index = IoAddValueName(1, 0, IDS_RAS_DEVICE_TYPE);
-        IoSetItemText(Index, RasEntry.szDeviceType);
+        IoAddValueName(1, 0, IDS_RAS_DEVICE_TYPE);
+        IoSetItemText(RasEntry.szDeviceType);
 
         /* Country Code */
         if (RasEntry.dwCountryCode > 0)
         {
-            Index = IoAddValueName(1, 0, IDS_RAS_COUNTRY_CODE);
-            IoSetItemText(Index, L"%ld", RasEntry.dwCountryCode);
+            IoAddValueName(1, 0, IDS_RAS_COUNTRY_CODE);
+            IoSetItemText(L"%ld", RasEntry.dwCountryCode);
         }
 
         /* Area code */
         if (SafeStrLen(RasEntry.szAreaCode) > 0)
         {
-            Index = IoAddValueName(1, 0, IDS_RAS_AREA_CODE);
-            IoSetItemText(Index, RasEntry.szAreaCode);
+            IoAddValueName(1, 0, IDS_RAS_AREA_CODE);
+            IoSetItemText(RasEntry.szAreaCode);
         }
 
         /* Local phone number */
         if (SafeStrLen(RasEntry.szLocalPhoneNumber) > 0)
         {
             if (wcscmp(RasEntry.szDeviceType, L"vpn") == 0)
-                Index = IoAddValueName(1, 0, IDS_NETWORK_RAS_SERVER);
+                IoAddValueName(1, 0, IDS_NETWORK_RAS_SERVER);
             else
-                Index = IoAddValueName(1, 0, IDS_RAS_PHONE_NUMBER);
+                IoAddValueName(1, 0, IDS_RAS_PHONE_NUMBER);
 
-            IoSetItemText(Index, RasEntry.szLocalPhoneNumber);
+            IoSetItemText(RasEntry.szLocalPhoneNumber);
         }
 
         /* User name */
-        Index = IoAddValueName(1, 0, IDS_RAS_USERNAME);
-        IoSetItemText(Index, (SafeStrLen(RasDialParams.szUserName) > 1) ? RasDialParams.szUserName : L"-");
+        IoAddValueName(1, 0, IDS_RAS_USERNAME);
+        IoSetItemText((SafeStrLen(RasDialParams.szUserName) > 1) ? RasDialParams.szUserName : L"-");
 
         /* Domine */
         if (SafeStrLen(RasDialParams.szDomain) > 0)
         {
-            Index = IoAddValueName(1, 0, IDS_RAS_DOMAIN);
-            IoSetItemText(Index, RasDialParams.szDomain);
+            IoAddValueName(1, 0, IDS_RAS_DOMAIN);
+            IoSetItemText(RasDialParams.szDomain);
         }
 
         /* IP */
-        Index = IoAddValueName(1, 0, IDS_RAS_IP);
+        IoAddValueName(1, 0, IDS_RAS_IP);
         if (RasEntry.ipaddr.a == 0 && RasEntry.ipaddr.b == 0 &&
             RasEntry.ipaddr.c == 0 && RasEntry.ipaddr.d == 0)
         {
@@ -1059,10 +1049,10 @@ NETWORK_RasInfo(VOID)
                            RasEntry.ipaddr.c,
                            RasEntry.ipaddr.d);
         }
-        IoSetItemText(Index, szText);
+        IoSetItemText(szText);
 
         /* DNS */
-        Index = IoAddItem(1, 0, L"DNS 1");
+        IoAddItem(1, 0, L"DNS 1");
         if (RasEntry.ipaddrDns.a == 0 && RasEntry.ipaddrDns.b == 0 &&
             RasEntry.ipaddrDns.c == 0 && RasEntry.ipaddrDns.d == 0)
         {
@@ -1070,14 +1060,14 @@ NETWORK_RasInfo(VOID)
         }
         else
         {
-            IoSetItemText(Index, L"%d.%d.%d.%d",
+            IoSetItemText(L"%d.%d.%d.%d",
                           RasEntry.ipaddrDns.a,
                           RasEntry.ipaddrDns.b,
                           RasEntry.ipaddrDns.c,
                           RasEntry.ipaddrDns.d);
 
             /* DNS Alt */
-            Index = IoAddItem(1, 0, L"DNS 2");
+            IoAddItem(1, 0, L"DNS 2");
             StringCbPrintf(szText, sizeof(szText),
                            L"%d.%d.%d.%d",
                            RasEntry.ipaddrDnsAlt.a,
@@ -1085,10 +1075,10 @@ NETWORK_RasInfo(VOID)
                            RasEntry.ipaddrDnsAlt.c,
                            RasEntry.ipaddrDnsAlt.d);
         }
-        IoSetItemText(Index, szText);
+        IoSetItemText(szText);
 
         /* WINS */
-        Index = IoAddItem(1, 0, L"WINS 1");
+        IoAddItem(1, 0, L"WINS 1");
         if (RasEntry.ipaddrWins.a == 0 && RasEntry.ipaddrWins.b == 0 &&
             RasEntry.ipaddrWins.c == 0 && RasEntry.ipaddrWins.d == 0)
         {
@@ -1096,14 +1086,14 @@ NETWORK_RasInfo(VOID)
         }
         else
         {
-            IoSetItemText(Index, L"%d.%d.%d.%d",
+            IoSetItemText(L"%d.%d.%d.%d",
                           RasEntry.ipaddrWins.a,
                           RasEntry.ipaddrWins.b,
                           RasEntry.ipaddrWins.c,
                           RasEntry.ipaddrWins.d);
 
             /* WINS Alt */
-            Index = IoAddItem(1, 0, L"WINS 2");
+            IoAddItem(1, 0, L"WINS 2");
             StringCbPrintf(szText, sizeof(szText),
                            L"%d.%d.%d.%d",
                            RasEntry.ipaddrWinsAlt.a,
@@ -1111,10 +1101,10 @@ NETWORK_RasInfo(VOID)
                            RasEntry.ipaddrWinsAlt.c,
                            RasEntry.ipaddrWinsAlt.d);
         }
-        IoSetItemText(Index, szText);
+        IoSetItemText(szText);
 
         /* Framing protocol */
-        Index = IoAddValueName(1, 0, IDS_RAS_FRAMING_PROTOCOL);
+        IoAddValueName(1, 0, IDS_RAS_FRAMING_PROTOCOL);
         if (RasEntry.dwFramingProtocol == RASFP_Ppp)
         {
             StringCbCopy(szText, sizeof(szText), L"PPP");
@@ -1127,17 +1117,17 @@ NETWORK_RasInfo(VOID)
         {
             StringCbCopy(szText, sizeof(szText), L"Unknown");
         }
-        IoSetItemText(Index, szText);
+        IoSetItemText(szText);
 
         /* Script */
-        Index = IoAddValueName(1, 0, IDS_RAS_SCRIPT);
+        IoAddValueName(1, 0, IDS_RAS_SCRIPT);
         if (SafeStrLen(RasEntry.szScript) == 0)
         {
-            IoSetItemText(Index, szNo);
+            IoSetItemText(szNo);
         }
         else
         {
-            IoSetItemText(Index, RasEntry.szScript);
+            IoSetItemText(RasEntry.szScript);
         }
 
         /* IP Header compression */
@@ -1206,7 +1196,6 @@ NETWORK_OpenFilesInfo(VOID)
     DWORD dwError = 0, dwTotal = 0, dwResume = 0, dwCount;
     NET_API_STATUS Status;
     PFILE_INFO_3 pInfo, pPtr;
-    INT Index;
 
     DebugStartReceiving();
 
@@ -1226,16 +1215,16 @@ NETWORK_OpenFilesInfo(VOID)
             for (dwCount = 1; dwCount <= dwError; ++dwCount)
             {
                 /* ID */
-                Index = IoAddItem(0, 0, L"%ld", pPtr->fi3_id);
+                IoAddItem(0, 0, L"%ld", pPtr->fi3_id);
 
                 /* User Name */
-                IoSetItemText(Index, pPtr->fi3_username);
+                IoSetItemText(pPtr->fi3_username);
 
                 /* Locks Count */
-                IoSetItemText(Index, L"%ld", pPtr->fi3_num_locks);
+                IoSetItemText(L"%ld", pPtr->fi3_num_locks);
 
                 /* File Path */
-                IoSetItemText(Index, pPtr->fi3_pathname);
+                IoSetItemText(pPtr->fi3_pathname);
 
                 ++pPtr;
             }
@@ -1260,7 +1249,7 @@ NETWORK_FirewallInfo(VOID)
     IEnumVARIANT* pEnum = NULL;
     IUnknown *pUnknown = NULL;
     LONG Index, Count = 0;
-    INT ItemIndex, IconIndex = -1;
+    INT IconIndex = -1;
     BSTR Path = NULL, Name = NULL, Dest = NULL;
     NET_FW_IP_VERSION Proto;
     NET_FW_SCOPE Scope;
@@ -1322,34 +1311,34 @@ NETWORK_FirewallInfo(VOID)
             }
             else
             {
-                IconIndex = ImageList_AddIcon(DllParams.hListImgList, hIcon);
+                IconIndex = ImageList_AddIcon(*DllParams.hListImgList, hIcon);
                 DestroyIcon(hIcon);
             }
         }
 
-        ItemIndex = IoAddItem(0, IconIndex, Name);
-        IoSetItemText(ItemIndex, Path);
-        IoSetItemText(ItemIndex, State ? L"Enabled" : L"Disabled");
-        IoSetItemText(ItemIndex, L"Allowed");
-        IoSetItemText(ItemIndex, Dest);
+        IoAddItem(0, IconIndex, Name);
+        IoSetItemText(Path);
+        IoSetItemText(State ? L"Enabled" : L"Disabled");
+        IoSetItemText(L"Allowed");
+        IoSetItemText(Dest);
 
         if (Proto == NET_FW_IP_VERSION_V4)
-            IoSetItemText(ItemIndex, L"TCP/IP v4");
+            IoSetItemText(L"TCP/IP v4");
         else if (Proto == NET_FW_IP_VERSION_V6)
-            IoSetItemText(ItemIndex, L"TCP/IP v6");
+            IoSetItemText(L"TCP/IP v6");
         else if (Proto == NET_FW_IP_VERSION_ANY)
-            IoSetItemText(ItemIndex, L"Any");
+            IoSetItemText(L"Any");
         else
-            IoSetItemText(ItemIndex, L"Unknown");
+            IoSetItemText(L"Unknown");
 
         if (Scope == NET_FW_SCOPE_ALL)
-            IoSetItemText(ItemIndex, L"All");
+            IoSetItemText(L"All");
         else if (Scope == NET_FW_SCOPE_LOCAL_SUBNET)
-            IoSetItemText(ItemIndex, L"Local Subnet");
+            IoSetItemText(L"Local Subnet");
         else if (Scope == NET_FW_SCOPE_CUSTOM)
-            IoSetItemText(ItemIndex, L"Custom");
+            IoSetItemText(L"Custom");
         else
-            IoSetItemText(ItemIndex, L"Unknown");
+            IoSetItemText(L"Unknown");
 
         SysFreeString(Name);
         SysFreeString(Path);

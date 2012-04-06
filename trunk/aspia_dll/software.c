@@ -121,30 +121,29 @@ EnumInstalledAppProc(LPWSTR lpName, INST_APP_INFO Info)
 {
     WCHAR *buf, szText[MAX_PATH];
     INST_APP_INFO *pInfo;
-    INT Index;
 
     pInfo = Alloc(sizeof(INST_APP_INFO));
     if (!pInfo) return;
 
     *pInfo = Info;
 
-    Index = IoAddItem(0, 0, lpName);
+    IoAddItem(0, 0, lpName);
 
     if (IoGetTarget() == IO_TARGET_LISTVIEW)
     {
-        ListViewSetItemParam(DllParams.hListView, Index, (LPARAM)pInfo);
+        ListViewSetItemParam(DllParams.hListView, IoGetCurrentItemIndex(), (LPARAM)pInfo);
     }
 
     /* Get version info */
     GetApplicationString(pInfo->hAppKey,
                          L"DisplayVersion",
                          szText, sizeof(szText));
-    IoSetItemText(Index, szText);
+    IoSetItemText(szText);
     /* Get publisher */
     GetApplicationString(pInfo->hAppKey,
                          L"Publisher",
                          szText, sizeof(szText));
-    IoSetItemText(Index, szText);
+    IoSetItemText(szText);
 
     /* Get help link */
     GetApplicationString(pInfo->hAppKey,
@@ -154,19 +153,19 @@ EnumInstalledAppProc(LPWSTR lpName, INST_APP_INFO Info)
 
     if (buf)
     {
-        IoSetItemText(Index, buf);
+        IoSetItemText(buf);
         Free(buf);
     }
     else
     {
-        IoSetItemText(Index, L"-");
+        IoSetItemText(L"-");
     }
 
     /* Get help telephone */
     GetApplicationString(pInfo->hAppKey,
                          L"HelpTelephone",
                          szText, sizeof(szText));
-    IoSetItemText(Index, szText);
+    IoSetItemText(szText);
 
     /* Get URL update info */
     GetApplicationString(pInfo->hAppKey,
@@ -176,12 +175,12 @@ EnumInstalledAppProc(LPWSTR lpName, INST_APP_INFO Info)
 
     if (buf)
     {
-        IoSetItemText(Index, buf);
+        IoSetItemText(buf);
         Free(buf);
     }
     else
     {
-        IoSetItemText(Index, L"-");
+        IoSetItemText(L"-");
     }
 
     /* Get URL update info */
@@ -192,37 +191,37 @@ EnumInstalledAppProc(LPWSTR lpName, INST_APP_INFO Info)
 
     if (buf)
     {
-        IoSetItemText(Index, buf);
+        IoSetItemText(buf);
         Free(buf);
     }
     else
     {
-        IoSetItemText(Index, L"-");
+        IoSetItemText(L"-");
     }
 
     /* Get install date */
     GetApplicationString(pInfo->hAppKey,
                          L"InstallDate",
                          szText, sizeof(szText));
-    IoSetItemText(Index, szText);
+    IoSetItemText(szText);
 
     /* Get install location */
     GetApplicationString(pInfo->hAppKey,
                          L"InstallLocation",
                          szText, sizeof(szText));
-    IoSetItemText(Index, szText);
+    IoSetItemText(szText);
 
     /* Get uninstall string */
     GetApplicationString(pInfo->hAppKey,
                          L"UninstallString",
                          szText, sizeof(szText));
-    IoSetItemText(Index, szText);
+    IoSetItemText(szText);
 
     /* Get modify path */
     GetApplicationString(pInfo->hAppKey,
                          L"ModifyPath",
                          szText, sizeof(szText));
-    IoSetItemText(Index, szText);
+    IoSetItemText(szText);
 
     if (IoGetTarget() != IO_TARGET_LISTVIEW)
     {
@@ -236,18 +235,17 @@ EnumInstalledUpdProc(LPWSTR lpName, INST_APP_INFO Info)
 {
     WCHAR *buf, szText[MAX_PATH];
     INST_APP_INFO *pInfo;
-    INT Index;
 
     pInfo = Alloc(sizeof(INST_APP_INFO));
     if (!pInfo) return;
 
     *pInfo = Info;
 
-    Index = IoAddItem(0, 0, lpName);
+    IoAddItem(0, 0, lpName);
 
     if (IoGetTarget() == IO_TARGET_LISTVIEW)
     {
-        ListViewSetItemParam(DllParams.hListView, Index, (LPARAM)pInfo);
+        ListViewSetItemParam(DllParams.hListView, IoGetCurrentItemIndex(), (LPARAM)pInfo);
     }
 
     /* Get URL update info */
@@ -258,19 +256,19 @@ EnumInstalledUpdProc(LPWSTR lpName, INST_APP_INFO Info)
 
     if (buf)
     {
-        IoSetItemText(Index, buf);
+        IoSetItemText(buf);
         Free(buf);
     }
     else
     {
-        IoSetItemText(Index, L"-");
+        IoSetItemText(L"-");
     }
 
     /* Get URL update info */
     GetApplicationString(pInfo->hAppKey,
                          L"UninstallString",
                          szText, sizeof(szText));
-    IoSetItemText(Index, szText);
+    IoSetItemText(szText);
 
     if (IoGetTarget() != IO_TARGET_LISTVIEW)
     {
@@ -328,7 +326,7 @@ SOFTWARE_TaskMgr(VOID)
     WCHAR szText[MAX_STR_LEN], szFilePath[MAX_PATH];
     PROCESS_MEMORY_COUNTERS MemCounters;
     PROCESSENTRY32 pe32;
-    INT Index, IconIndex;
+    INT IconIndex;
     HICON hIcon;
 
     DebugStartReceiving();
@@ -379,36 +377,38 @@ SOFTWARE_TaskMgr(VOID)
             IconIndex = IoAddIcon(IDI_APPS);
         }
 
-        Index = IoAddItem(0, IconIndex, pe32.szExeFile);
+        IoAddItem(0, IconIndex, pe32.szExeFile);
 
-        ListViewSetItemParam(DllParams.hListView, Index, pe32.th32ProcessID);
+        if (IoGetTarget() == IO_TARGET_LISTVIEW)
+        {
+            ListViewSetItemParam(DllParams.hListView, IoGetCurrentItemIndex(), pe32.th32ProcessID);
+        }
 
-        IoSetItemText(Index,
-                      (szFilePath[0] != 0) ? szFilePath : L"-");
+        IoSetItemText((szFilePath[0] != 0) ? szFilePath : L"-");
 
         MemCounters.cb = sizeof(MemCounters);
         if (GetProcessMemoryInfo(hProcess, &MemCounters, sizeof(MemCounters)))
         {
             /* Memory usage */
-            IoSetItemText(Index, L"%ld KB",
+            IoSetItemText(L"%ld KB",
                           MemCounters.WorkingSetSize / 1024);
 
             /* Pagefile usage */
-            IoSetItemText(Index, L"%ld KB",
+            IoSetItemText(L"%ld KB",
                           MemCounters.PagefileUsage / 1024);
         }
         else
         {
-            IoSetItemText(Index, L"-");
-            IoSetItemText(Index, L"-");
+            IoSetItemText(L"-");
+            IoSetItemText(L"-");
         }
 
         /* Description */
         if (!GetFileDescription(szFilePath, szText, sizeof(szText)))
-            IoSetItemText(Index, L"-");
+            IoSetItemText(L"-");
         else
         {
-            IoSetItemText(Index, (szText[0] != 0) ? szText : L"-");
+            IoSetItemText((szText[0] != 0) ? szText : L"-");
         }
 
         CloseHandle(hProcess);
@@ -432,7 +432,6 @@ SOFTWARE_FileTypesInfo(VOID)
     DWORD dwSize;
     HKEY hKey;
     LONG lIndex = 0, res;
-    INT Index;
 
     DebugStartReceiving();
 
@@ -496,12 +495,12 @@ SOFTWARE_FileTypesInfo(VOID)
                     continue;
                 }
 
-                Index = IoAddItem(0, 0, szKeyName);
+                IoAddItem(0, 0, szKeyName);
                 if (szDesc[0] != 0)
-                    IoSetItemText(Index, szDesc);
+                    IoSetItemText(szDesc);
                 else
-                    IoSetItemText(Index, L"-");
-                IoSetItemText(Index, szContentType);
+                    IoSetItemText(L"-");
+                IoSetItemText(szContentType);
             }
         }
 

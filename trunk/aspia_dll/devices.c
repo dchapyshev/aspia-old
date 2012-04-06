@@ -132,7 +132,7 @@ HW_DevicesInfo(VOID)
     SP_CLASSIMAGELIST_DATA ImageListData;
     HDEVINFO hDevInfo;
     INT DeviceIndex = 0;
-    INT ItemIndex, IconIndex = -1;
+    INT IconIndex = -1;
     HKEY KeyClass;
 
     DebugStartReceiving();
@@ -212,7 +212,7 @@ HW_DevicesInfo(VOID)
             IconIndex = 24;
         }
 
-        ItemIndex = IoAddItem(0, IconIndex, DeviceName);
+        IoAddItem(0, IconIndex, DeviceName);
 
         KeyClass = SetupDiOpenClassRegKeyEx(&DeviceInfoData.ClassGuid,
                                             MAXIMUM_ALLOWED,
@@ -228,17 +228,17 @@ HW_DevicesInfo(VOID)
                               ClassName,
                               &dwSize) == ERROR_SUCCESS)
             {
-                IoSetItemText(ItemIndex, ClassName);
+                IoSetItemText(ClassName);
             }
             else
             {
-                IoSetItemText(ItemIndex, L"-");
+                IoSetItemText(L"-");
             }
             RegCloseKey(KeyClass);
         }
         else
         {
-            IoSetItemText(ItemIndex, L"Other Devices");
+            IoSetItemText(L"Other Devices");
         }
 
         if (SetupDiGetDeviceRegistryProperty(hDevInfo,
@@ -258,9 +258,9 @@ HW_DevicesInfo(VOID)
             if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, KeyPath, 0, KEY_ALL_ACCESS, &hKey) !=
                 ERROR_SUCCESS)
             {
-                IoSetItemText(ItemIndex, L"-");
-                IoSetItemText(ItemIndex, L"-");
-                IoSetItemText(ItemIndex, L"-");
+                IoSetItemText(L"-");
+                IoSetItemText(L"-");
+                IoSetItemText(L"-");
             }
             else
             {
@@ -271,11 +271,11 @@ HW_DevicesInfo(VOID)
                                     (LPBYTE)DriverName,
                                     &Size) == ERROR_SUCCESS)
                 {
-                    IoSetItemText(ItemIndex, (DriverName[0] != 0) ? DriverName : L"-");
+                    IoSetItemText((DriverName[0] != 0) ? DriverName : L"-");
                 }
                 else
                 {
-                    IoSetItemText(ItemIndex, L"-");
+                    IoSetItemText(L"-");
                 }
 
                 Size = MAX_STR_LEN;
@@ -285,11 +285,11 @@ HW_DevicesInfo(VOID)
                                     (LPBYTE)DriverName,
                                     &Size) == ERROR_SUCCESS)
                 {
-                    IoSetItemText(ItemIndex, (DriverName[0] != 0) ? DriverName : L"-");
+                    IoSetItemText((DriverName[0] != 0) ? DriverName : L"-");
                 }
                 else
                 {
-                    IoSetItemText(ItemIndex, L"-");
+                    IoSetItemText(L"-");
                 }
 
                 Size = MAX_STR_LEN;
@@ -299,20 +299,20 @@ HW_DevicesInfo(VOID)
                                     (LPBYTE)DriverName,
                                     &Size) == ERROR_SUCCESS)
                 {
-                    IoSetItemText(ItemIndex, (DriverName[0] != 0) ? DriverName : L"-");
+                    IoSetItemText((DriverName[0] != 0) ? DriverName : L"-");
                 }
                 else
                 {
-                    IoSetItemText(ItemIndex, L"-");
+                    IoSetItemText(L"-");
                 }
                 RegCloseKey(hKey);
             }
         }
         else
         {
-            IoSetItemText(ItemIndex, L"-");
-            IoSetItemText(ItemIndex, L"-");
-            IoSetItemText(ItemIndex, L"-");
+            IoSetItemText(L"-");
+            IoSetItemText(L"-");
+            IoSetItemText(L"-");
         }
 
         if (IoGetTarget() == IO_TARGET_LISTVIEW)
@@ -322,7 +322,7 @@ HW_DevicesInfo(VOID)
             {
                 wcscpy(lpId, DeviceID);
 
-                ListViewSetItemParam(DllParams.hListView, ItemIndex, (LPARAM)lpId);
+                ListViewSetItemParam(DllParams.hListView, IoGetCurrentItemIndex(), (LPARAM)lpId);
             }
         }
 
@@ -360,9 +360,9 @@ HW_DevicesInfo(VOID)
             StringCbCopy(szVendorName, sizeof(szVendorName), L"-");
             StringCbCopy(szDeviceName, sizeof(szDeviceName), L"-");
         }
-        IoSetItemText(ItemIndex, szVendorID);
-        IoSetItemText(ItemIndex, szVendorName);
-        IoSetItemText(ItemIndex, szDeviceName);
+        IoSetItemText(szVendorID);
+        IoSetItemText(szVendorName);
+        IoSetItemText(szDeviceName);
 
         if (IsCanceled) break;
     }
@@ -390,7 +390,6 @@ HW_UnknownDevicesInfo(VOID)
     WCHAR *lpId, DeviceID[MAX_STR_LEN];
     HDEVINFO hDevInfo;
     INT DeviceIndex = 0;
-    INT ItemIndex;
     HKEY KeyClass;
 
     DebugStartReceiving();
@@ -440,7 +439,7 @@ HW_UnknownDevicesInfo(VOID)
         }
         else
         {
-            ItemIndex = IoAddItem(0, 0, DeviceID);
+            IoAddItem(0, 0, DeviceID);
         }
 
         if (IoGetTarget() == IO_TARGET_LISTVIEW)
@@ -450,7 +449,7 @@ HW_UnknownDevicesInfo(VOID)
             {
                 wcscpy(lpId, DeviceID);
 
-                ListViewSetItemParam(DllParams.hListView, ItemIndex, (LPARAM)lpId);
+                ListViewSetItemParam(DllParams.hListView, IoGetCurrentItemIndex(), (LPARAM)lpId);
             }
         }
 
@@ -488,9 +487,9 @@ HW_UnknownDevicesInfo(VOID)
             StringCbCopy(szVendorName, sizeof(szVendorName), L"-");
             StringCbCopy(szDeviceName, sizeof(szDeviceName), L"-");
         }
-        IoSetItemText(ItemIndex, szVendorID);
-        IoSetItemText(ItemIndex, szVendorName);
-        IoSetItemText(ItemIndex, szDeviceName);
+        IoSetItemText(szVendorID);
+        IoSetItemText(szVendorName);
+        IoSetItemText(szDeviceName);
 
         if (IsCanceled) break;
     }

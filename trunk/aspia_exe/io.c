@@ -20,6 +20,7 @@ VOID ListViewAddColumn(SIZE_T Index, INT Width, LPWSTR lpszText);
 static UINT IoTarget = IO_TARGET_LISTVIEW;
 static INT ColumnsCount = 0;
 static INT CurrentColumn = 0;
+static INT CurrentItemIndex = 0;
 static HANDLE hReport = INVALID_HANDLE_VALUE;
 
 
@@ -242,6 +243,12 @@ IoGetTarget(VOID)
     return IoTarget;
 }
 
+INT
+IoGetCurrentItemIndex(VOID)
+{
+    return CurrentItemIndex;
+}
+
 __inline VOID
 WriteRTFRowHeader(VOID)
 {
@@ -328,7 +335,7 @@ TextToRTFText(WCHAR *text)
     return buffer;
 }
 
-INT
+VOID
 IoAddHeaderString(INT Indent, INT IconIndex, LPWSTR pText, ...)
 {
     WCHAR szText[MAX_STR_LEN * 10] = {0};
@@ -345,13 +352,14 @@ IoAddHeaderString(INT Indent, INT IconIndex, LPWSTR pText, ...)
     {
         size = wcslen(szText) * 18 * sizeof(WCHAR);
         ptr = (WCHAR*)Alloc(size);
-        if (!ptr) return -1;
+        if (!ptr) return;
     }
 
     switch (IoTarget)
     {
         case IO_TARGET_LISTVIEW:
-            return ListViewAddHeaderString(Indent, szText, IconIndex);
+            ListViewAddHeaderString(Indent, szText, IconIndex);
+            return;
 
         case IO_TARGET_HTML:
         {
@@ -381,7 +389,7 @@ IoAddHeaderString(INT Indent, INT IconIndex, LPWSTR pText, ...)
             {
                 size = wcslen(text) * 5 * sizeof(WCHAR);
                 ptr = (WCHAR*)Alloc(size);
-                if (!ptr) return -1;
+                if (!ptr) return;
 
                 WriteRTFRowHeader();
                 StringCbPrintf(ptr, size, L"{\\b %s}\\cell \t\\cell\r\n\\row\r\n", text);
@@ -390,21 +398,19 @@ IoAddHeaderString(INT Indent, INT IconIndex, LPWSTR pText, ...)
                 Free(text);
                 Free(ptr);
             }
-            return -1;
+            return;
         }
 
         case IO_TARGET_JSON:
-            return -1;
+            return;
 
         default:
-            return -1;
+            return;
     }
 
     AppendStringToFile(ptr);
 
     if (ptr) Free(ptr);
-
-    return -1;
 }
 
 VOID
@@ -416,7 +422,7 @@ IoAddHeader(INT Indent, INT IconIndex, UINT StringID)
     IoAddHeaderString(Indent, IconIndex, szText);
 }
 
-INT
+VOID
 IoAddItem(INT Indent, INT IconIndex, LPWSTR pText, ...)
 {
     SIZE_T size = 0;
@@ -434,13 +440,14 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR pText, ...)
     {
         size = wcslen(szText) * 15 * sizeof(WCHAR);
         ptr = (WCHAR*)Alloc(size);
-        if (!ptr) return -1;
+        if (!ptr) return;
     }
 
     switch (IoTarget)
     {
         case IO_TARGET_LISTVIEW:
-            return ListViewAddItem(Indent, IconIndex, szText);
+            CurrentItemIndex = ListViewAddItem(Indent, IconIndex, szText);
+            return;
 
         case IO_TARGET_HTML:
         {
@@ -470,7 +477,7 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR pText, ...)
             {
                 size = wcslen(text) * 5 * sizeof(WCHAR);
                 ptr = (WCHAR*)Alloc(size);
-                if (!ptr) return -1;
+                if (!ptr) return;
 
                 WriteRTFRowHeader();
                 StringCbPrintf(ptr, size, L"%s\\cell\r\n", text);
@@ -479,35 +486,30 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR pText, ...)
                 Free(text);
                 Free(ptr);
             }
-            return -1;
+            return;
         }
 
         case IO_TARGET_JSON:
             StringCbPrintf(ptr, size, L"\n    \"%s\": ", szText);
             break;
-
-        default:
-            return -1;
     }
 
     AppendStringToFile(ptr);
 
     if (ptr) Free(ptr);
-
-    return -1;
 }
 
-INT
+VOID
 IoAddValueName(INT Indent, INT IconIndex, UINT ValueID)
 {
     WCHAR szText[MAX_STR_LEN * 2];
 
     LoadMUIStringF(hLangInst, ValueID, szText, MAX_STR_LEN);
-    return IoAddItem(Indent, IconIndex, szText);
+    IoAddItem(Indent, IconIndex, szText);
 }
 
 VOID
-IoSetItemText(INT Index, LPWSTR pText, ...)
+IoSetItemText(LPWSTR pText, ...)
 {
     WCHAR szText[MAX_STR_LEN * 20] = {0};
     WCHAR *ptr = NULL;
@@ -523,7 +525,7 @@ IoSetItemText(INT Index, LPWSTR pText, ...)
     switch (IoTarget)
     {
         case IO_TARGET_LISTVIEW:
-            ListViewSetItemText(Index, CurrentColumn, szText);
+            ListViewSetItemText(CurrentItemIndex, CurrentColumn, szText);
             return;
 
         case IO_TARGET_HTML:

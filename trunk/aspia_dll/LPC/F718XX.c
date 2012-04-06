@@ -45,7 +45,6 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
     INT iValue, i;
     short sValue;
     BYTE bValue;
-    INT ItemIndex;
 
     switch (wChipType)
     {
@@ -90,18 +89,18 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
 
         if (SafeStrLen(LpcVoltageDesc[i].szDesc) > 0)
         {
-            ItemIndex = IoAddItem(1, 3, LpcVoltageDesc[i].szDesc);
+            IoAddItem(1, 3, LpcVoltageDesc[i].szDesc);
 
             /* Voltage = value + (value - Vf) * Ri / Rf */
-            IoSetItemText(ItemIndex, L"%.3f V",
+            IoSetItemText(L"%.3f V",
                           fValue + (fValue - 0) * LpcVoltageDesc[i].ri / LpcVoltageDesc[i].rf);
         }
         else
         {
             StringCbPrintf(szText, sizeof(szText), L"Voltage #%d", i + 1);
-            ItemIndex = IoAddItem(1, 3, szText);
+            IoAddItem(1, 3, szText);
 
-            IoSetItemText(ItemIndex, L"%.3f V", fValue);
+            IoSetItemText(L"%.3f V", fValue);
         }
     }
 
@@ -136,9 +135,9 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
 
                     if (SafeStrLen(szLpcTempDesc[i]) > 0)
                     {
-                        ItemIndex = IoAddItem(1, 4, szLpcTempDesc[i]);
+                        IoAddItem(1, 4, szLpcTempDesc[i]);
 
-                        IoSetItemText(ItemIndex, L"%.1f °C", (FLOAT)sValue / 128.0f);
+                        IoSetItemText(L"%.1f °C", (FLOAT)sValue / 128.0f);
                     }
                 }
             }
@@ -155,9 +154,9 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
 
                     if (SafeStrLen(szLpcTempDesc[i]) > 0)
                     {
-                        ItemIndex = IoAddItem(1, 4, szLpcTempDesc[i]);
+                        IoAddItem(1, 4, szLpcTempDesc[i]);
 
-                        IoSetItemText(ItemIndex, L"%d °C", bValue);
+                        IoSetItemText(L"%d °C", bValue);
                     }
                 }
             }
@@ -173,9 +172,9 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
 
                     if (SafeStrLen(szLpcTempDesc[i]) > 0)
                     {
-                        ItemIndex = IoAddItem(1, 4, szLpcTempDesc[i]);
+                        IoAddItem(1, 4, szLpcTempDesc[i]);
 
-                        IoSetItemText(ItemIndex, L"%d °C", bValue);
+                        IoSetItemText(L"%d °C", bValue);
                     }
                 }
             }
@@ -205,15 +204,15 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
             {
                 if (SafeStrLen(szLpcFanDesc[i]) > 0)
                 {
-                    ItemIndex = IoAddItem(1, 5, szLpcFanDesc[i]);
+                    IoAddItem(1, 5, szLpcFanDesc[i]);
                 }
                 else
                 {
                     StringCbPrintf(szText, sizeof(szText), L"Fans #%d", i + 1);
-                    ItemIndex = IoAddItem(1, 5, szText);
+                    IoAddItem(1, 5, szText);
                 }
 
-                IoSetItemText(ItemIndex, L"%.0f RPM", fValue);
+                IoSetItemText(L"%.0f RPM", fValue);
             }
         }
     }
