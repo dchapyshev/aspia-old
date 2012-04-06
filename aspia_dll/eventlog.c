@@ -516,17 +516,17 @@ QueryEventMessages(LPWSTR lpMachineName,
 
                 ItemIndex = IoAddItem(0, IconIndex, szEventTypeText);
 
-                IoSetItemText(ItemIndex, 1, szLocalDate);
-                IoSetItemText(ItemIndex, 2, szLocalTime);
-                IoSetItemText(ItemIndex, 3, lpSourceName);
-                IoSetItemText(ItemIndex, 4, szCategory);
-                IoSetItemText(ItemIndex, 5, szEventID);
-                IoSetItemText(ItemIndex, 6, szUsername);
-                IoSetItemText(ItemIndex, 7, lpComputerName);
+                IoSetItemText(ItemIndex, szLocalDate);
+                IoSetItemText(ItemIndex, szLocalTime);
+                IoSetItemText(ItemIndex, lpSourceName);
+                IoSetItemText(ItemIndex, szCategory);
+                IoSetItemText(ItemIndex, szEventID);
+                IoSetItemText(ItemIndex, szUsername);
+                IoSetItemText(ItemIndex, lpComputerName);
 
                 GetEventMessage(lpSourceLogName, lpSourceName,
                                 pevlr, szEventText, sizeof(szEventText));
-                IoSetItemText(ItemIndex, 8, szEventText);
+                IoSetItemText(ItemIndex, szEventText);
             }
 
             dwRead -= pevlr->Length;

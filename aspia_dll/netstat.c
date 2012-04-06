@@ -434,21 +434,21 @@ NETWORK_NetStatInfo(VOID)
                 StringCbCopy(szText, sizeof(szText), szUnknown);
             ItemIndex = IoAddItem(0, 0, szText);
 
-            IoSetItemText(ItemIndex, 1, L"TCP");
+            IoSetItemText(ItemIndex, L"TCP");
 
             GetIpHostName(TRUE, TcpTableEx->table[dwIndex].dwLocalAddr,
                           szAddress, sizeof(szAddress));
             GetPortName(TcpTableEx->table[dwIndex].dwLocalPort, "tcp", szPort, sizeof(szPort));
-            IoSetItemText(ItemIndex, 2, L"%s:%s",
+            IoSetItemText(ItemIndex, L"%s:%s",
                           szAddress, szPort);
 
             GetIpHostName(FALSE, TcpTableEx->table[dwIndex].dwRemoteAddr,
                           szAddress, sizeof(szAddress));
             GetPortName(TcpTableEx->table[dwIndex].dwRemotePort, "tcp", szPort, sizeof(szPort));
-            IoSetItemText(ItemIndex, 3, L"%s:%s",
+            IoSetItemText(ItemIndex, L"%s:%s",
                           szAddress, szPort);
 
-            IoSetItemText(ItemIndex, 4, TcpState[TcpTableEx->table[dwIndex].dwState]);
+            IoSetItemText(ItemIndex, TcpState[TcpTableEx->table[dwIndex].dwState]);
 
             if (IsCanceled)
             {
@@ -466,21 +466,21 @@ NETWORK_NetStatInfo(VOID)
             for (dwIndex = 0; dwIndex < TcpTable->dwNumEntries; dwIndex++)
             {
                 ItemIndex = IoAddItem(0, 0, szUnknown);
-                IoSetItemText(ItemIndex, 1, L"TCP");
+                IoSetItemText(ItemIndex, L"TCP");
 
                 GetIpHostName(TRUE, TcpTable->table[dwIndex].dwLocalAddr,
                               szAddress, sizeof(szAddress));
                 GetPortName(TcpTable->table[dwIndex].dwLocalPort, "tcp", szPort, sizeof(szPort));
-                IoSetItemText(ItemIndex, 2, L"%s:%s",
+                IoSetItemText(ItemIndex, L"%s:%s",
                               szAddress, szPort);
 
                 GetIpHostName(FALSE, TcpTable->table[dwIndex].dwRemoteAddr,
                           szAddress, sizeof(szAddress));
                 GetPortName(TcpTable->table[dwIndex].dwRemotePort, "tcp", szPort, sizeof(szPort));
-                IoSetItemText(ItemIndex, 3, L"%s:%s",
+                IoSetItemText(ItemIndex, L"%s:%s",
                               szAddress, szPort);
 
-                IoSetItemText(ItemIndex, 4, TcpState[TcpTable->table[dwIndex].dwState]);
+                IoSetItemText(ItemIndex, TcpState[TcpTable->table[dwIndex].dwState]);
 
                 if (IsCanceled)
                 {
@@ -508,17 +508,17 @@ NETWORK_NetStatInfo(VOID)
                 StringCbCopy(szText, sizeof(szText), szUnknown);
             ItemIndex = IoAddItem(0, 0, szText);
 
-            IoSetItemText(ItemIndex, 1, L"UDP");
+            IoSetItemText(ItemIndex, L"UDP");
 
             GetIpHostName(TRUE, UdpTableEx->table[dwIndex].dwLocalAddr,
                           szAddress, sizeof(szAddress));
             GetPortName(UdpTableEx->table[dwIndex].dwLocalPort, "udp", szPort, sizeof(szPort));
-            IoSetItemText(ItemIndex, 2, L"%s:%s",
+            IoSetItemText(ItemIndex, L"%s:%s",
                           szAddress, szPort);
 
-            IoSetItemText(ItemIndex, 3, L"*.*.*.*:*");
+            IoSetItemText(ItemIndex, L"*.*.*.*:*");
 
-            IoSetItemText(ItemIndex, 4, L"-");
+            IoSetItemText(ItemIndex, L"-");
 
             if (IsCanceled)
             {
@@ -536,17 +536,17 @@ NETWORK_NetStatInfo(VOID)
             for (dwIndex = 0; dwIndex < UdpTable->dwNumEntries; dwIndex++)
             {
                 ItemIndex = IoAddItem(0, 0, szUnknown);
-                IoSetItemText(ItemIndex, 1, L"UDP");
+                IoSetItemText(ItemIndex, L"UDP");
 
                 GetIpHostName(TRUE, UdpTable->table[dwIndex].dwLocalAddr,
                               szAddress, sizeof(szAddress));
                 GetPortName(UdpTable->table[dwIndex].dwLocalPort, "udp", szPort, sizeof(szPort));
-                IoSetItemText(ItemIndex, 2, L"%s:%s",
+                IoSetItemText(ItemIndex, L"%s:%s",
                               szAddress, szPort);
 
-                IoSetItemText(ItemIndex, 3, L"*.*.*.*:*");
+                IoSetItemText(ItemIndex, L"*.*.*.*:*");
 
-                IoSetItemText(ItemIndex, 4, L"-");
+                IoSetItemText(ItemIndex, L"-");
 
                 if (IsCanceled)
                 {

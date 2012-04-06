@@ -93,7 +93,7 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
             ItemIndex = IoAddItem(1, 3, LpcVoltageDesc[i].szDesc);
 
             /* Voltage = value + (value - Vf) * Ri / Rf */
-            IoSetItemText(ItemIndex, 1, L"%.3f V",
+            IoSetItemText(ItemIndex, L"%.3f V",
                           fValue + (fValue - 0) * LpcVoltageDesc[i].ri / LpcVoltageDesc[i].rf);
         }
         else
@@ -101,7 +101,7 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
             StringCbPrintf(szText, sizeof(szText), L"Voltage #%d", i + 1);
             ItemIndex = IoAddItem(1, 3, szText);
 
-            IoSetItemText(ItemIndex, 1, L"%.3f V", fValue);
+            IoSetItemText(ItemIndex, L"%.3f V", fValue);
         }
     }
 
@@ -138,7 +138,7 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
                     {
                         ItemIndex = IoAddItem(1, 4, szLpcTempDesc[i]);
 
-                        IoSetItemText(ItemIndex, 1, L"%.1f °C", (FLOAT)sValue / 128.0f);
+                        IoSetItemText(ItemIndex, L"%.1f °C", (FLOAT)sValue / 128.0f);
                     }
                 }
             }
@@ -157,7 +157,7 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
                     {
                         ItemIndex = IoAddItem(1, 4, szLpcTempDesc[i]);
 
-                        IoSetItemText(ItemIndex, 1, L"%d °C", bValue);
+                        IoSetItemText(ItemIndex, L"%d °C", bValue);
                     }
                 }
             }
@@ -175,7 +175,7 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
                     {
                         ItemIndex = IoAddItem(1, 4, szLpcTempDesc[i]);
 
-                        IoSetItemText(ItemIndex, 1, L"%d °C", bValue);
+                        IoSetItemText(ItemIndex, L"%d °C", bValue);
                     }
                 }
             }
@@ -213,7 +213,7 @@ F718XX_GetInfo(WORD wChipType, WORD wAddress)
                     ItemIndex = IoAddItem(1, 5, szText);
                 }
 
-                IoSetItemText(ItemIndex, 1, L"%.0f RPM", fValue);
+                IoSetItemText(ItemIndex, L"%.0f RPM", fValue);
             }
         }
     }

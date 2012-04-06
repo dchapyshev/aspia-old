@@ -25,7 +25,7 @@ AddLocaleInfoString2(INT Icon, UINT StringID, LCTYPE Type1, LCTYPE Type2)
             StringCbCat(szText, sizeof(szText), szTemp);
         }
         Index = IoAddValueName(1, Icon, StringID);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
 }
 
@@ -39,7 +39,7 @@ AddLocaleInfoString1(INT Icon, UINT StringID, LCTYPE Type)
                       szText, MAX_STR_LEN))
     {
         Index = IoAddValueName(1, Icon, StringID);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
 }
 
@@ -65,23 +65,23 @@ OS_RegionalParamInfo(VOID)
         IoAddHeader(0, 1, IDS_REGION_TIME_ZONE);
         Index = IoAddValueName(1, 1, IDS_REGION_CUR_TIMEZONE);
         if (dwRet == TIME_ZONE_ID_DAYLIGHT)
-            IoSetItemText(Index, 1, TimeZone.DaylightName);
+            IoSetItemText(Index, TimeZone.DaylightName);
         else
-            IoSetItemText(Index, 1, TimeZone.StandardName);
+            IoSetItemText(Index, TimeZone.StandardName);
 
         if (dwRet != TIME_ZONE_ID_UNKNOWN)
         {
             LPWSTR szFormat = L"%02d.%02d (day.month) %02d:%02d (hour:minute)";
 
             Index = IoAddValueName(1, 1, IDS_REGION_CHANGE_TO_STD_TIME);
-            IoSetItemText(Index, 1, szFormat,
+            IoSetItemText(Index, szFormat,
                           TimeZone.StandardDate.wDay,
                           TimeZone.StandardDate.wMonth,
                           TimeZone.StandardDate.wHour,
                           TimeZone.StandardDate.wMinute);
 
             Index = IoAddValueName(1, 1, IDS_REGION_CHANGE_TO_DL_TIME);
-            IoSetItemText(Index, 1, szFormat,
+            IoSetItemText(Index, szFormat,
                           TimeZone.DaylightDate.wDay,
                           TimeZone.DaylightDate.wMonth,
                           TimeZone.DaylightDate.wHour,
@@ -114,14 +114,14 @@ OS_RegionalParamInfo(VOID)
                           NULL, szText, MAX_STR_LEN))
     {
         Index = IoAddValueName(1, 0, IDS_REGION_CUR_FORMAT);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
 
     if (GetCurrencyFormat(UserLcid, 0, L"-123456789.00",
                           NULL, szText, MAX_STR_LEN))
     {
         Index = IoAddValueName(1, 0, IDS_REGION_CUR_NEG_FORMAT);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
     IoAddFooter();
 
@@ -134,13 +134,13 @@ OS_RegionalParamInfo(VOID)
                         NULL, szText, MAX_STR_LEN))
     {
         Index = IoAddValueName(1, 2, IDS_REGION_FRMT_NUMBER_FORMAT);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
     if (GetNumberFormat(UserLcid, 0, L"-123456789",
                         NULL, szText, MAX_STR_LEN))
     {
         Index = IoAddValueName(1, 2, IDS_REGION_FRMT_NEG_NUM_FORMAT);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
     if (GetLocaleInfo(UserLcid, LOCALE_SLIST,
                       szText, MAX_STR_LEN))
@@ -150,13 +150,13 @@ OS_RegionalParamInfo(VOID)
         StringCbPrintf(szResult, sizeof(szResult),
                        L"first%s second%s third", szText, szText);
         Index = IoAddValueName(1, 2, IDS_REGION_FRMT_LIST_FORMAT);
-        IoSetItemText(Index, 1, szResult);
+        IoSetItemText(Index, szResult);
     }
     if (GetLocaleInfo(UserLcid, LOCALE_SNATIVEDIGITS,
                       szText, MAX_STR_LEN))
     {
         Index = IoAddValueName(1, 2, IDS_REGION_FRMT_NATIVE_DIGITS);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
     IoAddFooter();
 
@@ -241,7 +241,7 @@ OS_RegionalParamInfo(VOID)
                 break;
         }
         Index = IoAddValueName(1, 0, IDS_REGION_CALENDAR_TYPE);
-        IoSetItemText(Index, 1, lpszValue);
+        IoSetItemText(Index, lpszValue);
     }
     if (GetLocaleInfo(UserLcid, LOCALE_IPAPERSIZE,
                       szText, MAX_STR_LEN))
@@ -268,7 +268,7 @@ OS_RegionalParamInfo(VOID)
         }
 
         Index = IoAddValueName(1, 0, IDS_REGION_PAPER_SIZE);
-        IoSetItemText(Index, 1, lpszValue);
+        IoSetItemText(Index, lpszValue);
     }
     if (GetLocaleInfo(UserLcid, LOCALE_IMEASURE,
                       szText, MAX_STR_LEN))
@@ -289,7 +289,7 @@ OS_RegionalParamInfo(VOID)
         }
 
         Index = IoAddValueName(1, 0, IDS_REGION_MEASUREMENT_SYSTEM);
-        IoSetItemText(Index, 1, lpszValue);
+        IoSetItemText(Index, lpszValue);
     }
 
     AddLocaleInfoString1(0, IDS_REGION_ANSI_CODEPAGE, LOCALE_IDEFAULTANSICODEPAGE);

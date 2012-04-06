@@ -142,7 +142,7 @@ EnumSupportedFeatures(const FEATURE_INFO_STRUCT *List, DWORD dwFlag)
                               L"%s (%s)",
                               List[Index].lpszDesc,
                               List[Index].lpszFeature);
-        IoSetItemText(ItemIndex, 1,
+        IoSetItemText(ItemIndex,
                       (List[Index].dwFlag & dwFlag) ? szSupported : szUnsupported);
     }
     while (List[++Index].dwFlag != 0);
@@ -339,29 +339,29 @@ CPUIDInfo(VOID)
     if (GetCPUName(szText, sizeof(szText)))
     {
         Index = IoAddValueName(1, 0, IDS_CPUID_NAME);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
 
     /* Get CPU Vendor */
     GetCPUVendor(szText, sizeof(szText));
     Index = IoAddValueName(1, 0, IDS_MANUFACTURER);
-    IoSetItemText(Index, 1, szText);
+    IoSetItemText(Index, szText);
 
     GetProcessorIDs(&CpuIds);
 
     /* Stepping ID */
     Index = IoAddValueName(1, 0, IDS_CPUID_STEPPINGID);
-    IoSetItemText(Index, 1, L"%d (%xh)",
+    IoSetItemText(Index, L"%d (%xh)",
                   CpuIds.Stepping, CpuIds.Stepping);
 
     /* Model */
     Index = IoAddValueName(1, 0, IDS_CPUID_MODEL);
-    IoSetItemText(Index, 1, L"%d (%xh)",
+    IoSetItemText(Index, L"%d (%xh)",
                   CpuIds.Model, CpuIds.Model);
 
     /* Family */
     Index = IoAddValueName(1, 0, IDS_CPUID_FAMILY);
-    IoSetItemText(Index, 1, L"%d (%xh)",
+    IoSetItemText(Index, L"%d (%xh)",
                   CpuIds.Family, CpuIds.Family);
 
     /* Physical processors count */
@@ -369,7 +369,7 @@ CPUIDInfo(VOID)
     if (Count > 0)
     {
         Index = IoAddValueName(1, 0, IDS_CPUID_PHYSICAL_COUNT);
-        IoSetItemText(Index, 1, L"%d", Count);
+        IoSetItemText(Index, L"%d", Count);
     }
 
     /* Logical processors count */
@@ -377,7 +377,7 @@ CPUIDInfo(VOID)
     if (Count > 0)
     {
         Index = IoAddValueName(1, 0, IDS_CPUID_LOGICAL_COUNT);
-        IoSetItemText(Index, 1, L"%d", Count);
+        IoSetItemText(Index, L"%d", Count);
     }
 
     IoAddFooter();
