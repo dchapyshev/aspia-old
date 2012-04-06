@@ -843,7 +843,7 @@ ReportWindowOnSize(LPARAM lParam)
                    FILE_TYPE_TEXT_WIDTH + (ITEMS_DIVIDER * 2),
                    HIWORD(lParam) - BUTTON_HEIGHT - FILE_TYPE_TEXT_HEIGHT - (ITEMS_DIVIDER * 2) - 10,
                    LOWORD(lParam) - FILE_TYPE_TEXT_WIDTH - (ITEMS_DIVIDER * 3),
-                   FILE_TYPE_COMBO_HEIGHT,
+                   FILE_TYPE_COMBO_HEIGHT + 150,
                    SWP_NOZORDER|SWP_NOACTIVATE);
 
     /* Size "Save" button */
@@ -1033,7 +1033,7 @@ ReportWindowInitControls(HWND hwnd)
     /* File type combobox */
     hComboBox = CreateWindow(L"COMBOBOX", L"",
                              CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL,
-                             0, 0, 0, 0,
+                             0, 0, 0, 150,
                              hwnd, 0, hInstance, NULL);
     if (!hComboBox)
     {
@@ -1081,6 +1081,21 @@ ReportWindowInitControls(HWND hwnd)
 }
 
 VOID
+SelectStringByItemData(UINT StringID)
+{
+    INT Count = SendMessage(hComboBox, CB_GETCOUNT, 0, 0) - 1;
+
+    while (Count >= 0)
+    {
+        if (SendMessage(hComboBox, CB_GETITEMDATA, Count, 0) == StringID)
+        {
+            SendMessage(hComboBox, CB_SETCURSEL, Count, 0);
+        }
+        Count--;
+    }
+}
+
+VOID
 ReportWindowOnCommand(HWND hwnd, WPARAM wParam, LPARAM lParam)
 {
     if (HIWORD(wParam) == BN_CLICKED)
@@ -1109,7 +1124,13 @@ ReportWindowOnCommand(HWND hwnd, WPARAM wParam, LPARAM lParam)
                                      SettingsInfo.szReportPath,
                                      sizeof(SettingsInfo.szReportPath)))
             {
+                UINT StringId;
+
                 SetWindowText(hFilePath, SettingsInfo.szReportPath);
+                StringId = GetIdByIoTarget(GetIoTargetByFileExt(SettingsInfo.szReportPath));
+
+                SettingsInfo.ReportFileType = StringId;
+                SelectStringByItemData(StringId);
             }
         }
         else if (lParam == (LPARAM)hSelectAll)

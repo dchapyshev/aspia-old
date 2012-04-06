@@ -154,12 +154,12 @@ OS_UsersInfo(VOID)
             }
             __except(EXCEPTION_EXECUTE_HANDLER)
             {
-                NetApiBufferFree(&pBuffer);
+                NetApiBufferFree(pBuffer);
                 continue;
             }
         }
 
-        NetApiBufferFree(&pBuffer);
+        NetApiBufferFree(pBuffer);
 
         /* No more data left */
         if (netStatus != ERROR_MORE_DATA)
@@ -186,7 +186,7 @@ OS_UsersGroupsInfo(VOID)
     for (;;)
     {
         netStatus = NetLocalGroupEnum(NULL, 1, (LPBYTE*)&pBuffer,
-                                      1024, &entriesread,
+                                      (DWORD)-1, &entriesread,
                                       &totalentries, &resume_handle);
         if (netStatus != NERR_Success && netStatus != ERROR_MORE_DATA)
             break;
@@ -200,12 +200,12 @@ OS_UsersGroupsInfo(VOID)
             }
             __except(EXCEPTION_EXECUTE_HANDLER)
             {
-                NetApiBufferFree(&pBuffer);
+                NetApiBufferFree(pBuffer);
                 continue;
             }
         }
 
-        NetApiBufferFree(&pBuffer);
+        NetApiBufferFree(pBuffer);
 
         /* No more data left */
         if (netStatus != ERROR_MORE_DATA)
@@ -786,55 +786,109 @@ AUTORUN_INFO AutorunInfo[] =
         L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
         L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
     },
-
+#ifdef _AMD64_
+    {
+        HKEY_LOCAL_MACHINE,
+        L"SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run",
+        L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
+    },
+#endif
     {
         HKEY_LOCAL_MACHINE,
         L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
         L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce"
     },
-
+#ifdef _AMD64_
+    {
+        HKEY_LOCAL_MACHINE,
+        L"SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+        L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce"
+    },
+#endif
     {
         HKEY_LOCAL_MACHINE,
         L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx",
         L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx"
     },
-
+#ifdef _AMD64_
+    {
+        HKEY_LOCAL_MACHINE,
+        L"SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx",
+        L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx"
+    },
+#endif
     {
         HKEY_LOCAL_MACHINE,
         L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServices",
         L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServices"
     },
-
+#ifdef _AMD64_
+    {
+        HKEY_LOCAL_MACHINE,
+        L"SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\RunServices",
+        L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServices"
+    },
+#endif
     {
         HKEY_LOCAL_MACHINE,
         L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce",
         L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce"
     },
-
+#ifdef _AMD64_
+    {
+        HKEY_LOCAL_MACHINE,
+        L"SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce",
+        L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce"
+    },
+#endif
     {
         HKEY_CURRENT_USER,
         L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
         L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
     },
-
+#ifdef _AMD64_
+    {
+        HKEY_CURRENT_USER,
+        L"SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run",
+        L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
+    },
+#endif
     {
         HKEY_CURRENT_USER,
         L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
         L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce"
     },
-
+#ifdef _AMD64_
+    {
+        HKEY_CURRENT_USER,
+        L"SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+        L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce"
+    },
+#endif
     {
         HKEY_LOCAL_MACHINE,
         L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run",
         L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run"
     },
-
+#ifdef _AMD64_
+    {
+        HKEY_LOCAL_MACHINE,
+        L"SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run",
+        L"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run"
+    },
+#endif
     {
         HKEY_CURRENT_USER,
         L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run",
         L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run"
     },
-
+#ifdef _AMD64_
+    {
+        HKEY_CURRENT_USER,
+        L"SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run",
+        L"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Polices\\Explorer\\Run"
+    },
+#endif
     {0}
 };
 
@@ -2047,7 +2101,7 @@ OS_SysFilesKnownInfo(VOID)
                         &dwValueSize) == ERROR_SUCCESS)
     {
         IoAddItem(0, 0, szValueName);
-        IoSetItemText(szValue);
+        IoSetItemText(L"%s", szValue);
 
         dwValueSize = MAX_PATH;
         dwSize = MAX_PATH;
