@@ -279,6 +279,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)/include/&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -297,9 +298,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msvcrt_win2003.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib"
-				OutputFile="$(OutDir)\$(ProjectName)x64.exe"
-				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\amd64\&quot;;&quot;$(DDK)\lib\wlh\amd64\&quot;"
+				AdditionalDependencies="msvcrt_win2003.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib aspia64.lib helper64.lib"
+				OutputFile="$(OutDir)\$(ProjectName)64.exe"
+				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\amd64\&quot;;&quot;$(DDK)\lib\wlh\amd64\&quot;;&quot;$(OutDir)\&quot;"
 				GenerateManifest="false"
 				SubSystem="2"
 				OptimizeReferences="2"
