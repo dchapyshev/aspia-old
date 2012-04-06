@@ -77,7 +77,12 @@ GetExtTcpTableXP(VOID)
     PVOID TcpTable = NULL;
 
     hDLL = LoadLibrary(L"IPHLPAPI.DLL");
-    if (!hDLL) return NULL;
+    if (!hDLL)
+    {
+        DebugTrace(L"LoadLibrary() failed! Error code = 0x%x",
+                   GetLastError());
+        return NULL;
+    }
 
     pAllocateAndGetTcpExTableFromStack =
         (ALLOCGETTCPEXTTABLE)GetProcAddress(hDLL, "AllocateAndGetTcpExTableFromStack");
@@ -92,6 +97,11 @@ GetExtTcpTableXP(VOID)
             return TcpTable;
         }
     }
+    else
+    {
+        DebugTrace(L"GetProcAddress() failed! Error code = 0x%x",
+                   GetLastError());
+    }
 
     FreeLibrary(hDLL);
     return NULL;
@@ -105,7 +115,12 @@ GetExtUdpTableXP(VOID)
     PVOID UdpTable = NULL;
 
     hDLL = LoadLibrary(L"IPHLPAPI.DLL");
-    if (!hDLL) return NULL;
+    if (!hDLL)
+    {
+        DebugTrace(L"LoadLibrary() failed! Error code = 0x%x",
+                   GetLastError());
+        return NULL;
+    }
 
     pAllocateAndGetUdpExTableFromStack =
         (ALLOCGETUDPEXTTABLE)GetProcAddress(hDLL, "AllocateAndGetUdpExTableFromStack");
@@ -119,6 +134,11 @@ GetExtUdpTableXP(VOID)
             FreeLibrary(hDLL);
             return UdpTable;
         }
+    }
+    else
+    {
+        DebugTrace(L"GetProcAddress() failed! Error code = 0x%x",
+                   GetLastError());
     }
 
     FreeLibrary(hDLL);
@@ -134,11 +154,18 @@ GetExtTcpTableVista(VOID)
     PVOID TcpTable = NULL;
 
     hDLL = LoadLibrary(L"IPHLPAPI.DLL");
-    if (!hDLL) return NULL;
+    if (!hDLL)
+    {
+        DebugTrace(L"LoadLibrary() failed! Error code = 0x%x",
+                   GetLastError());
+        return NULL;
+    }
 
     pGetExtendedTcpTable = (GETEXTTCPTABLE)GetProcAddress(hDLL, "GetExtendedTcpTable");
     if (!pGetExtendedTcpTable)
     {
+        DebugTrace(L"GetProcAddress() failed! Error code = 0x%x",
+                   GetLastError());
         FreeLibrary(hDLL);
         return NULL;
     }
@@ -198,11 +225,18 @@ GetExtUdpTableVista(VOID)
     PVOID UdpTable = NULL;
 
     hDLL = LoadLibrary(L"IPHLPAPI.DLL");
-    if (!hDLL) return NULL;
+    if (!hDLL)
+    {
+        DebugTrace(L"LoadLibrary() failed! Error code = 0x%x",
+                   GetLastError());
+        return NULL;
+    }
 
     pGetExtendedUdpTable = (GETEXTUDPTABLE)GetProcAddress(hDLL, "GetExtendedUdpTable");
     if (!pGetExtendedUdpTable)
     {
+        DebugTrace(L"GetProcAddress() failed! Error code = 0x%x",
+                   GetLastError());
         FreeLibrary(hDLL);
         return NULL;
     }

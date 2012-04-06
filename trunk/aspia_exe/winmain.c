@@ -1092,10 +1092,6 @@ HandleCommandLine(VOID)
                 MessageBox(0, szText, szTitle, MB_OK | MB_ICONINFORMATION);
                 return TRUE;
             }
-            else if (wcscmp(ptr, L"debug") == 0)
-            {
-                ParamsInfo.DebugMode = TRUE;
-            }
             else if (wcscmp(ptr, L"nonav") == 0)
             {
                 bNavMenu = FALSE;
@@ -1109,12 +1105,6 @@ HandleCommandLine(VOID)
         if (++Index >= (SIZE_T)NumArgs) break;
         ptr = lpCmd[Index];
     }
-
-    if (ParamsInfo.DebugMode && NumArgs == 2)
-        return FALSE;
-
-    if (ParamsInfo.DebugMode)
-        ParamsInfo.DebugMode = InitDebugLog(L"aspia.log", VER_FILEVERSION_STR);
 
     LoadDriver();
 
@@ -1265,6 +1255,22 @@ SetPrivilege(LPCTSTR lpName)
     }
 }
 
+BOOL
+IsDebugModeEnabled(VOID)
+{
+    WCHAR szPath[MAX_PATH];
+
+    if (!GetCurrentPath(szPath, MAX_PATH))
+        return FALSE;
+
+    StringCbCat(szPath, sizeof(szPath), L"\\debug");
+
+    if (GetFileAttributes(szPath) == INVALID_FILE_ATTRIBUTES)
+        return FALSE;
+
+    return TRUE;
+}
+
 INT WINAPI
 wWinMain(HINSTANCE hInst,
          HINSTANCE hPrevInstance,
@@ -1300,6 +1306,16 @@ wWinMain(HINSTANCE hInst,
 
     /* Устанавливаем для текущего процесса отладочные привилегии */
     SetPrivilege(SE_DEBUG_NAME);
+
+    /* если у нас дебаг билд, то всегда включаем DebugMode */
+#ifdef _DEBUG
+    ParamsInfo.DebugMode = TRUE;
+#else
+    ParamsInfo.DebugMode = IsDebugModeEnabled();
+#endif
+
+    if (ParamsInfo.DebugMode)
+        ParamsInfo.DebugMode = InitDebugLog(L"aspia.log", VER_FILEVERSION_STR);
 
     /* Load settings from .ini file */
     if (!LoadSettings())
@@ -1374,14 +1390,11 @@ wWinMain(HINSTANCE hInst,
        для синхронизации потоков получнеия информации */
     InitializeCriticalSection(&CriticalSection);
 
-    /* если у нас дебаг билд, то всегда включаем DebugMode */
-//#ifdef _DEBUG
-    ParamsInfo.DebugMode = TRUE;
-//#endif
-
-    DebugTrace(L"Start with debug mode");
-
-    if (!LoadLanguage()) goto Exit;
+    if (!LoadLanguage())
+    {
+        DebugTrace(L"LoadLanguage() failed!");
+        goto Exit;
+    }
 
     /* Пытаемся обработать аргументы командной строки */
     if (HandleCommandLine())
@@ -1390,10 +1403,11 @@ wWinMain(HINSTANCE hInst,
         goto Exit;
     }
 
-    if (!LoadIcons()) goto Exit;
-
-    if (ParamsInfo.DebugMode)
-        ParamsInfo.DebugMode = InitDebugLog(L"aspia.log", VER_FILEVERSION_STR);
+    if (!LoadIcons())
+    {
+        DebugTrace(L"LoadIcons() failed!");
+        goto Exit;
+    }
 
     /* Загружаем драйвер режима ядра */
     LoadDriver();
@@ -1428,7 +1442,11 @@ wWinMain(HINSTANCE hInst,
                               SettingsInfo.Bottom - SettingsInfo.Top,
                               NULL, NULL, hInstance, NULL);
 
-    if (!hMainWnd) goto Exit;
+    if (!hMainWnd)
+    {
+        DebugTrace(L"CreateWindowEx() failed!");
+        goto Exit;
+    }
 
     if (SettingsInfo.StayOnTop)
     {

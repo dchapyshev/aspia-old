@@ -41,7 +41,7 @@ DriveTypeToText(UINT DriveType, LPWSTR lpszText, SIZE_T Size)
             break;
     }
 
-    LoadMUIString( uiID, lpszText, Size);
+    LoadMUIString(uiID, lpszText, Size);
 }
 
 static VOID
@@ -55,7 +55,11 @@ HardDrivesInfo(VOID)
     INT Count;
 
     if (!GetLogicalDriveStrings(sizeof(szDrives)/sizeof(WCHAR), szDrives))
+    {
+        DebugTrace(L"GetLogicalDriveStrings() failed. Error code = 0x%x",
+                   GetLastError());
         return;
+    }
 
     for (Count = 0; szDrives[Count] != 0; Count += 4)
     {
@@ -82,6 +86,8 @@ HardDrivesInfo(VOID)
                                   NULL, NULL, NULL,
                                   szFS, sizeof(szFS)/sizeof(WCHAR)))
         {
+            DebugTrace(L"GetVolumeInformation(szDrive = %s) failed! Error code = 0x%x",
+                       szDrive, GetLastError());
             continue;
         }
 
@@ -98,18 +104,24 @@ HardDrivesInfo(VOID)
                            L"%c: (%s)",
                            szDrives[Count], szFS);
         }
-        IoAddItem(1, 2, szResult);
 
         if (GetDiskFreeSpaceEx(szDrive,
                                NULL,
                                &TotalNumberOfBytes,
                                &TotalNumberOfFreeBytes))
         {
+            IoAddItem(1, 2, szResult);
+
             IoSetItemText(L"%.2f GB (%I64d MB) / %.2f GB (%I64d MB)",
                           ((DOUBLE)TotalNumberOfFreeBytes.QuadPart / (DOUBLE)(1024 * 1024 * 1024)),
                           (TotalNumberOfFreeBytes.QuadPart / (1024 * 1024)),
                           ((DOUBLE)TotalNumberOfBytes.QuadPart / (DOUBLE)(1024 * 1024 * 1024)),
                           (TotalNumberOfBytes.QuadPart / (1024 * 1024)));
+        }
+        else
+        {
+            DebugTrace(L"GetDiskFreeSpaceEx(szDrive = %s) failed! Error code = 0x%x",
+                       szDrive, GetLastError());
         }
     }
 }
@@ -210,7 +222,7 @@ ShowMonitorsInfo(VOID)
 
             GetPrivateProfileString(L"devices", szMonitorId, L"",
                                     szText, MAX_STR_LEN, szIniPath);
-            if (szText[0] == L'\0')
+            if (szText[0] == 0)
             {
                 StringCbPrintf(szText, sizeof(szText), L"%s (NoDB)", szDeviceName);
             }
@@ -250,12 +262,19 @@ ShowPrintersInfo(VOID)
     if (!EnumPrinters(dwFlag, 0, 2, 0, 0, &cbNeeded, &cReturned))
     {
         if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
+        {
+            DebugTrace(L"EnumPrinters() failed! Error code = 0x%x",
+                       GetLastError());
             return;
+        }
     }
 
     pPrinterInfo = (PPRINTER_INFO_2)Alloc(cbNeeded);
     if (!pPrinterInfo)
+    {
+        DebugTrace(L"Alloc(%d) failed!", cbNeeded);
         return;
+    }
 
     if (!EnumPrinters(dwFlag,
                       NULL, 2,
@@ -264,21 +283,27 @@ ShowPrintersInfo(VOID)
                       &cbNeeded,
                       &cReturned))
     {
+        DebugTrace(L"EnumPrinters() failed! Error code = 0x%x",
+                   GetLastError());
         Free(pPrinterInfo);
         return;
     }
 
     dwSize = MAX_STR_LEN;
-    GetDefaultPrinter(szDefPrinter, &dwSize);
+    if (!GetDefaultPrinter(szDefPrinter, &dwSize))
+    {
+        DebugTrace(L"GetDefaultPrinter() failed! Error code = 0x%x",
+                   GetLastError());
+    }
 
     for (dwIndex = 0; dwIndex < cReturned; dwIndex++)
     {
-        /* Printer name */
-        IoAddItem(1, 6, pPrinterInfo[dwIndex].pPrinterName);
-
         /* Paper size */
         if (pPrinterInfo[dwIndex].pDevMode)
         {
+            /* Printer name */
+            IoAddItem(1, 6, pPrinterInfo[dwIndex].pPrinterName);
+
             IoSetItemText(L"%ld x %ld mm (%ld x %ld dpi)",
                           pPrinterInfo[dwIndex].pDevMode->dmPaperWidth / 10,
                           pPrinterInfo[dwIndex].pDevMode->dmPaperLength / 10,
@@ -301,7 +326,11 @@ ShowNetAdaptersInfo(VOID)
     MIB_IFROW *pIfRow;
 
     pAdapterInfo = (PIP_ADAPTER_INFO)Alloc(sizeof(IP_ADAPTER_INFO));
-    if (!pAdapterInfo) return;
+    if (!pAdapterInfo)
+    {
+        DebugTrace(L"Alloc(%d) failed!", sizeof(IP_ADAPTER_INFO));
+        return;
+    }
 
     ulOutBufLen = sizeof(IP_ADAPTER_INFO);
 
@@ -310,11 +339,15 @@ ShowNetAdaptersInfo(VOID)
         Free(pAdapterInfo);
         pAdapterInfo = (IP_ADAPTER_INFO*)Alloc(ulOutBufLen);
         if (!pAdapterInfo)
+        {
+            DebugTrace(L"Alloc(%d) failed!", ulOutBufLen);
             return;
+        }
     }
 
     if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) != NOERROR)
     {
+        DebugTrace(L"GetAdaptersInfo() failed!");
         Free(pAdapterInfo);
         return;
     }
@@ -338,6 +371,7 @@ ShowNetAdaptersInfo(VOID)
         pIfRow = (MIB_IFROW*)Alloc(sizeof(MIB_IFROW));
         if (!pIfRow)
         {
+            DebugTrace(L"Alloc(%d) failed!", sizeof(MIB_IFROW));
             Free(pAdapterInfo);
             return;
         }
@@ -345,6 +379,7 @@ ShowNetAdaptersInfo(VOID)
         pIfRow->dwIndex = pAdapter->Index;
         if (GetIfEntry(pIfRow) != NO_ERROR)
         {
+            DebugTrace(L"GetIfEntry() failed!");
             Free(pAdapterInfo);
             Free(pIfRow);
             return;
@@ -393,8 +428,6 @@ ShowSummaryInfo(VOID)
     IoAddHeader(0, 0, IDS_SUMMARY_OS);
 
     /* Product name */
-    IoAddValueName(1, 0, IDS_OS_PRODUCT_NAME);
-
     szText[0] = 0;
     if (GetStringFromRegistry(TRUE,
                               HKEY_LOCAL_MACHINE,
@@ -403,6 +436,7 @@ ShowSummaryInfo(VOID)
                               szText,
                               MAX_STR_LEN))
     {
+        IoAddValueName(1, 0, IDS_OS_PRODUCT_NAME);
         IoSetItemText(szText);
     }
 
@@ -415,12 +449,16 @@ ShowSummaryInfo(VOID)
     dwSize = MAX_STR_LEN;
     if (GetComputerName(szText, &dwSize))
         IoSetItemText(szText);
+    else
+        IoSetItemText(L"-");
 
     /* Current user name */
     IoAddValueName(1, 0, IDS_CURRENT_USERNAME);
     dwSize = MAX_STR_LEN;
     if (GetUserName(szText, &dwSize))
         IoSetItemText(szText);
+    else
+        IoSetItemText(L"-");
 
     /* Uptime information */
     ShowUptimeInformation();
@@ -429,20 +467,20 @@ ShowSummaryInfo(VOID)
     ShowInstallDate();
 
     /* Local date */
-    IoAddValueName(1, 0, IDS_LOCAL_DATE);
     if (GetDateFormat(LOCALE_USER_DEFAULT,
                       0, NULL, NULL, szText,
                       MAX_STR_LEN))
     {
+        IoAddValueName(1, 0, IDS_LOCAL_DATE);
         IoSetItemText(szText);
     }
 
     /* Local time */
-    IoAddValueName(1, 0, IDS_LOCAL_TIME);
     if (GetTimeFormat(LOCALE_USER_DEFAULT,
                       0, NULL, NULL, szText,
                       MAX_STR_LEN))
     {
+        IoAddValueName(1, 0, IDS_LOCAL_TIME);
         IoSetItemText(szText);
     }
 

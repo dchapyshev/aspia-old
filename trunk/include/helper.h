@@ -728,10 +728,17 @@ VOID CloseDebugLog(VOID);
 VOID WriteDebugLog(LPSTR lpFile, UINT iLine, LPSTR lpFunc, LPWSTR lpMsg, ...);
 
 /* DEBUG Defines */
+#ifdef _DEBUG_FUNCTIONS_
 #define DebugTrace(_msg, ...) WriteDebugLog(__FILE__, __LINE__, __FUNCTION__, _msg, ##__VA_ARGS__)
 #define DebugStartReceiving() DebugTrace(L"Start data receiving")
 #define DebugEndReceiving() DebugTrace(L"End data receiving")
 #define DebugAllocFailed() DebugTrace(L"Alloc() failed")
+#else
+#define DebugTrace(_msg, ...)
+#define DebugStartReceiving()
+#define DebugEndReceiving()
+#define DebugAllocFailed()
+#endif
 
 /* Misc Functions */
 INT GetSystemColorDepth(VOID);
