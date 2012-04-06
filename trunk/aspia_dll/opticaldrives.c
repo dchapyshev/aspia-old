@@ -848,7 +848,7 @@ GetReadWriteFeature(LPWSTR lpName, BYTE bRead, BYTE bWrite)
     else
         id = IDS_CPUID_UNSUPPORTED;
     LoadMUIString(id, szText, MAX_STR_LEN);
-    IoSetItemText(ItemIndex, 1, szText);
+    IoSetItemText(ItemIndex, szText);
 }
 
 VOID
@@ -1166,24 +1166,24 @@ HW_CDInfo(VOID)
         IoAddHeaderString(0, 0, L"(%s\\) %S %S", szDrive, szVendor, szProductId);
 
         ItemIndex = IoAddValueName(1, 0, IDS_CDROM_FIRMWARE_REV);
-        IoSetItemText(ItemIndex, 1, L"%S", szProductRev);
+        IoSetItemText(ItemIndex, L"%S", szProductRev);
 
         GetSerialNumber(hHandle, szText, sizeof(szText));
         if (szText[0] != 0)
         {
             ItemIndex = IoAddValueName(1, 0, IDS_CDROM_SERIAL_NUMBER);
-            IoSetItemText(ItemIndex, 1, szText);
+            IoSetItemText(ItemIndex, szText);
         }
 
         ItemIndex = IoAddValueName(1, 0, IDS_CDROM_INTERFACE);
         GetInterfaceType(hHandle, szText, sizeof(szText));
-        IoSetItemText(ItemIndex, 1, szText);
+        IoSetItemText(ItemIndex, szText);
 
         GetScsiVendorById(szVendor, szText, sizeof(szText));
         if (szText[0] != 0)
         {
             ItemIndex = IoAddValueName(1, 0, IDS_CDROM_MANUFACTURER);
-            IoSetItemText(ItemIndex, 1, szText);
+            IoSetItemText(ItemIndex, szText);
         }
 
         if (GetCDCapabilitiesScsi(hHandle, &Capabilities))
@@ -1194,22 +1194,22 @@ HW_CDInfo(VOID)
             *((BYTE*)&Capabilities.BufferSize + 1) = tmp;
 
             ItemIndex = IoAddValueName(1, 0, IDS_CDROM_BUFFER_SIZE);
-            IoSetItemText(ItemIndex, 1, L"%d KB", Capabilities.BufferSize);
+            IoSetItemText(ItemIndex, L"%d KB", Capabilities.BufferSize);
         }
 
         if (GetCDReportKeyScsi(hHandle, &KeyData))
         {
             ItemIndex = IoAddValueName(1, 2, IDS_CDROM_REGION_CODE);
             if (KeyData.TypeCode != 0)
-                IoSetItemText(ItemIndex, 1, L"%d", KeyData.TypeCode);
+                IoSetItemText(ItemIndex, L"%d", KeyData.TypeCode);
             else
-                IoSetItemText(ItemIndex, 1, L"No");
+                IoSetItemText(ItemIndex, L"No");
 
             ItemIndex = IoAddValueName(1, 2, IDS_CDROM_REMAINING_USER_CHANGES);
-            IoSetItemText(ItemIndex, 1, L"%d", KeyData.UserChanges);
+            IoSetItemText(ItemIndex, L"%d", KeyData.UserChanges);
 
             ItemIndex = IoAddValueName(1, 2, IDS_CDROM_REMAINING_VENDOR_CHANGES);
-            IoSetItemText(ItemIndex, 1, L"%d", KeyData.VendorResets);
+            IoSetItemText(ItemIndex, L"%d", KeyData.VendorResets);
         }
 
         IoAddHeader(1, 1, IDS_CDROM_SUP_DISK_TYPES);
@@ -1241,12 +1241,12 @@ HW_CDInfo(VOID)
         /* SMART */
         IsSupported = IsFeatureSupported(hHandle, FEATURE_SMART);
         ItemIndex = IoAddItem(2, 0, L"SMART");
-        IoSetItemText(ItemIndex, 1, IsSupported ? szSupported : szUnsupported);
+        IoSetItemText(ItemIndex, IsSupported ? szSupported : szUnsupported);
 
         /* Power Management */
         IsSupported = IsFeatureSupported(hHandle, FEATURE_POWER_MANAGEMENT);
         ItemIndex = IoAddItem(2, 0, L"Power Management");
-        IoSetItemText(ItemIndex, 1, IsSupported ? szSupported : szUnsupported);
+        IoSetItemText(ItemIndex, IsSupported ? szSupported : szUnsupported);
 
         /* CD-Text */
         ItemIndex = IoAddItem(2, 0, L"CD-Text");
@@ -1259,27 +1259,27 @@ HW_CDInfo(VOID)
                 IsSupported = TRUE;
             }
         }
-        IoSetItemText(ItemIndex, 1, IsSupported ? szSupported : szUnsupported);
+        IoSetItemText(ItemIndex, IsSupported ? szSupported : szUnsupported);
 
         /* CSS */
         IsSupported = IsFeatureSupported(hHandle, FEATURE_DVD_CSS);
         ItemIndex = IoAddItem(2, 0, L"CSS");
-        IoSetItemText(ItemIndex, 1, IsSupported ? szSupported : szUnsupported);
+        IoSetItemText(ItemIndex, IsSupported ? szSupported : szUnsupported);
 
         /* CPRM */
         IsSupported = IsFeatureSupported(hHandle, FEATURE_DVD_CPRM);
         ItemIndex = IoAddItem(2, 0, L"CPRM");
-        IoSetItemText(ItemIndex, 1, IsSupported ? szSupported : szUnsupported);
+        IoSetItemText(ItemIndex, IsSupported ? szSupported : szUnsupported);
 
         /* AACS */
         IsSupported = IsFeatureSupported(hHandle, FEATURE_AACS);
         ItemIndex = IoAddItem(2, 0, L"AACS");
-        IoSetItemText(ItemIndex, 1, IsSupported ? szSupported : szUnsupported);
+        IoSetItemText(ItemIndex, IsSupported ? szSupported : szUnsupported);
 
         /*VCPS */
         IsSupported = IsFeatureSupported(hHandle, FEATURE_VCPS);
         ItemIndex = IoAddItem(2, 0, L"VCPS");
-        IoSetItemText(ItemIndex, 1, IsSupported ? szSupported : szUnsupported);
+        IoSetItemText(ItemIndex, IsSupported ? szSupported : szUnsupported);
 
         CloseScsi(hHandle);
     }

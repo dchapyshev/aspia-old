@@ -105,7 +105,7 @@ HardDrivesInfo(VOID)
                                &TotalNumberOfBytes,
                                &TotalNumberOfFreeBytes))
         {
-            IoSetItemText(Index, 1,
+            IoSetItemText(Index,
                           L"%.2f GB (%I64d MB) / %.2f GB (%I64d MB)",
                           ((DOUBLE)TotalNumberOfFreeBytes.QuadPart / (DOUBLE)(1024 * 1024 * 1024)),
                           (TotalNumberOfFreeBytes.QuadPart / (1024 * 1024)),
@@ -129,7 +129,7 @@ ShowUptimeInformation(VOID)
         ConvertSecondsToString(DllParams.hLangInst,
                                liCount.QuadPart / liFreq.QuadPart,
                                szText, sizeof(szText));
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
 }
 
@@ -227,7 +227,7 @@ ShowMonitorsInfo(VOID)
                 if (EdidBlockType(Block) == DETAILED_TIMING_BLOCK)
                 {
                     /* Max. Resolution */
-                    IoSetItemText(ItemIndex, 1,
+                    IoSetItemText(ItemIndex,
                                   L"%dx%d (%.1f\")",
                                   H_ACTIVE, V_ACTIVE,
                                   GetDiagonalSize(Edid[0x15], Edid[0x16]));
@@ -283,7 +283,7 @@ ShowPrintersInfo(VOID)
         /* Paper size */
         if (pPrinterInfo[dwIndex].pDevMode)
         {
-            IoSetItemText(Index, 1,
+            IoSetItemText(Index,
                           L"%ld x %ld mm (%ld x %ld dpi)",
                           pPrinterInfo[dwIndex].pDevMode->dmPaperWidth / 10,
                           pPrinterInfo[dwIndex].pDevMode->dmPaperLength / 10,
@@ -366,7 +366,7 @@ ShowNetAdaptersInfo(VOID)
                            pAdapter->IpAddressList.IpAddress.String,
                            pIfRow->dwSpeed / (1000 * 1000));
         }
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
 
         pAdapter = pAdapter->Next;
         Free(pIfRow);
@@ -408,24 +408,24 @@ ShowSummaryInfo(VOID)
                               szText,
                               MAX_STR_LEN))
     {
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
 
     /* OS Arch */
     Index = IoAddValueName(1, 0, IDS_OS_ARCH);
-    IoSetItemText(Index, 1, IsWin64System() ? L"AMD64" : L"x86");
+    IoSetItemText(Index, IsWin64System() ? L"AMD64" : L"x86");
 
     /* Computer name */
     Index = IoAddValueName(1, 0, IDS_COMPUTER_NAME);
     dwSize = MAX_STR_LEN;
     if (GetComputerName(szText, &dwSize))
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
 
     /* Current user name */
     Index = IoAddValueName(1, 0, IDS_CURRENT_USERNAME);
     dwSize = MAX_STR_LEN;
     if (GetUserName(szText, &dwSize))
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
 
     /* Uptime information */
     ShowUptimeInformation();
@@ -439,7 +439,7 @@ ShowSummaryInfo(VOID)
                       0, NULL, NULL, szText,
                       MAX_STR_LEN))
     {
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
 
     /* Local time */
@@ -448,7 +448,7 @@ ShowSummaryInfo(VOID)
                       0, NULL, NULL, szText,
                       MAX_STR_LEN))
     {
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
 
     IoAddFooter();
@@ -464,24 +464,24 @@ ShowSummaryInfo(VOID)
     if (GetCPUName(szText, sizeof(szText)))
     {
         Index = IoAddValueName(1, 1, IDS_CPUID_NAME);
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
 
     /* Get CPU Vendor */
     GetCPUVendor(szText, sizeof(szText));
     Index = IoAddValueName(1, 1, IDS_MANUFACTURER);
-    IoSetItemText(Index, 1, szText);
+    IoSetItemText(Index, szText);
 
     /* CPU Architecture */
     Index = IoAddValueName(1, 1, IDS_HW_ARCH);
-    IoSetItemText(Index, 1, Is64BitCpu() ? L"AMD64/EM64T" : L"x86");
+    IoSetItemText(Index, Is64BitCpu() ? L"AMD64/EM64T" : L"x86");
 
     /* Physical processors count */
     Count = GetPhysicalProcessorsCount();
     if (Count > 0)
     {
         Index = IoAddValueName(1, 1, IDS_CPUID_PHYSICAL_COUNT);
-        IoSetItemText(Index, 1, L"%d", Count);
+        IoSetItemText(Index, L"%d", Count);
     }
 
     /* Logical processors count */
@@ -489,7 +489,7 @@ ShowSummaryInfo(VOID)
     if (Count > 0)
     {
         Index = IoAddValueName(1, 1, IDS_CPUID_LOGICAL_COUNT);
-        IoSetItemText(Index, 1, L"%d", Count);
+        IoSetItemText(Index, L"%d", Count);
     }
 
     IoAddFooter();
@@ -518,75 +518,75 @@ ShowSummaryInfo(VOID)
     {
         /* Total physical memory */
         Index = IoAddValueName(1, 3, IDS_ALL_MEMORY);
-        IoSetItemText(Index, 1, L"%I64d MB (%.2f GB)",
+        IoSetItemText(Index, L"%I64d MB (%.2f GB)",
                       (MemStatus.ullTotalPhys / (1024 * 1024)),
                       ((DOUBLE)MemStatus.ullTotalPhys / (DOUBLE)(1024 * 1024 * 1024)));
 
         /* Total physical free memory */
         Index = IoAddValueName(1, 3, IDS_FREE_MEMORY);
-        IoSetItemText(Index, 1, L"%I64d MB (%.2f GB)",
+        IoSetItemText(Index, L"%I64d MB (%.2f GB)",
                       (MemStatus.ullAvailPhys / (1024 * 1024)),
                       ((DOUBLE)MemStatus.ullAvailPhys / (DOUBLE)(1024 * 1024 * 1024)));
 
         /* Total physical used memory */
         Index = IoAddValueName(1, 3, IDS_USED_MEMORY);
-        IoSetItemText(Index, 1, L"%I64d MB (%.2f GB)",
+        IoSetItemText(Index, L"%I64d MB (%.2f GB)",
                       ((MemStatus.ullTotalPhys - MemStatus.ullAvailPhys) / (1024 * 1024)),
                       ((DOUBLE)(MemStatus.ullTotalPhys - MemStatus.ullAvailPhys) / (DOUBLE)(1024 * 1024 * 1024)));
 
         /* Percent used physical memory */
         Index = IoAddValueName(1, 3, IDS_PERCENT_USED);
-        IoSetItemText(Index, 1, L"%d%%",
+        IoSetItemText(Index, L"%d%%",
                        ((MemStatus.ullTotalPhys - MemStatus.ullAvailPhys) * 100)/MemStatus.ullTotalPhys);
 
         IoAddFooter();
 
         /* Total page file */
         Index = IoAddValueName(1, 3, IDS_TOTAL_PAGINGFILE);
-        IoSetItemText(Index, 1, L"%I64d MB (%.2f GB)",
+        IoSetItemText(Index, L"%I64d MB (%.2f GB)",
                       (MemStatus.ullTotalPageFile / (1024 * 1024)),
                       ((DOUBLE)MemStatus.ullTotalPageFile / (DOUBLE)(1024 * 1024 * 1024)));
 
         /* Free page file */
         Index = IoAddValueName(1, 3, IDS_FREE_PAGINGFILE);
-        IoSetItemText(Index, 1, L"%I64d MB (%.2f GB)",
+        IoSetItemText(Index, L"%I64d MB (%.2f GB)",
                       (MemStatus.ullAvailPageFile / (1024 * 1024)),
                       ((DOUBLE)MemStatus.ullAvailPageFile / (DOUBLE)(1024 * 1024 * 1024)));
 
         /* Used page file */
         Index = IoAddValueName(1, 3, IDS_USED_PAGINFILE);
-        IoSetItemText(Index, 1, L"%I64d MB (%.2f GB)",
+        IoSetItemText(Index, L"%I64d MB (%.2f GB)",
                       ((MemStatus.ullTotalPageFile - MemStatus.ullAvailPageFile)/(1024 * 1024)),
                       ((DOUBLE)(MemStatus.ullTotalPageFile - MemStatus.ullAvailPageFile)/(DOUBLE)(1024 * 1024 * 1024)));
 
         /* Percent used page file */
         Index = IoAddValueName(1, 3, IDS_PERCENT_PAGINFILE);
-        IoSetItemText(Index, 1, L"%d%%",
+        IoSetItemText(Index, L"%d%%",
                       ((MemStatus.ullTotalPageFile - MemStatus.ullAvailPageFile) * 100)/MemStatus.ullTotalPageFile);
 
         IoAddFooter();
 
         /* Total virtual memory */
         Index = IoAddValueName(1, 3, IDS_TOTAL_VIRUALMEM);
-        IoSetItemText(Index, 1, L"%I64d MB (%.2f GB)",
+        IoSetItemText(Index, L"%I64d MB (%.2f GB)",
                       (MemStatus.ullTotalVirtual / (1024 * 1024)),
                       ((DOUBLE)MemStatus.ullTotalVirtual / (DOUBLE)(1024 * 1024 * 1024)));
 
         /* Free virtual memory */
         Index = IoAddValueName(1, 3, IDS_FREE_VIRUALMEM);
-        IoSetItemText(Index, 1, L"%I64d MB (%.2f GB)",
+        IoSetItemText(Index, L"%I64d MB (%.2f GB)",
                       (MemStatus.ullAvailVirtual / (1024 * 1024)),
                       ((DOUBLE)MemStatus.ullAvailVirtual / (DOUBLE)(1024 * 1024 * 1024)));
 
         /* Used virtual memory */
         Index = IoAddValueName(1, 3, IDS_USED_VIRTMEM);
-        IoSetItemText(Index, 1, L"%I64d MB (%.2f GB)",
+        IoSetItemText(Index, L"%I64d MB (%.2f GB)",
                       ((MemStatus.ullTotalVirtual - MemStatus.ullAvailVirtual)/(1024 * 1024)),
                       ((DOUBLE)(MemStatus.ullTotalVirtual - MemStatus.ullAvailVirtual)/(DOUBLE)(1024 * 1024 * 1024)));
 
         /* Percent used virtual memory */
         Index = IoAddValueName(1, 3, IDS_PERCENT_VIRTMEM);
-        IoSetItemText(Index, 1, L"%d%%",
+        IoSetItemText(Index, L"%d%%",
                       ((MemStatus.ullTotalVirtual - MemStatus.ullAvailVirtual) * 100)/MemStatus.ullTotalVirtual);
     }
 

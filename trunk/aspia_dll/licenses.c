@@ -42,7 +42,7 @@ GetVMWareWorkstationLicenses(VOID)
                                     &dwSize) == ERROR_SUCCESS)
                 {
                     Index = IoAddItem(0, 0, L"VMWare Workstation");
-                    IoSetItemText(Index, 1, szSerial);
+                    IoSetItemText(Index, szSerial);
                 }
             }
 
@@ -89,7 +89,7 @@ GetVMWareServerLicenses(VOID)
                                     &dwSize) == ERROR_SUCCESS)
                 {
                     Index = IoAddItem(0, 0, L"VMWare Server");
-                    IoSetItemText(Index, 1, szSerial);
+                    IoSetItemText(Index, szSerial);
                 }
             }
 
@@ -137,7 +137,7 @@ Get3PlanesoftKeys(VOID)
                             &dwSize) == ERROR_SUCCESS)
         {
             Index = IoAddItem(0, 0, L"%s (Name)", szKeyName);
-            IoSetItemText(Index, 1, szValue);
+            IoSetItemText(Index, szValue);
         }
 
         dwType = REG_SZ;
@@ -151,7 +151,7 @@ Get3PlanesoftKeys(VOID)
                             &dwSize) == ERROR_SUCCESS)
         {
             Index = IoAddItem(0, 0, L"%s (Key)", szKeyName);
-            IoSetItemText(Index, 1, szValue);
+            IoSetItemText(Index, szValue);
         }
 
         RegCloseKey(hSubKey);
@@ -204,7 +204,7 @@ GetAheadNeroLicensies(VOID)
                 if (wcsncmp(szValueName, L"Serial", 6) == 0)
                 {
                     Index = IoAddItem(0, 0, L"Ahead Nero");
-                    IoSetItemText(Index, 1, szValue);
+                    IoSetItemText(Index, szValue);
                 }
 
                 dwValueSize = MAX_PATH;
@@ -1000,7 +1000,7 @@ GetOtherLicensiesInfo(VOID)
             if (szText[0] != 0)
             {
                 Index = IoAddItem(0, 0, LicensiesInfo[i].lpProductName);
-                IoSetItemText(Index, 1, szText);
+                IoSetItemText(Index, szText);
             }
         }
     }
@@ -1208,7 +1208,7 @@ SOFTWARE_LicensesInfo(VOID)
         if (szText[0] != 0)
         {
             Index = IoAddItem(0, 0, MsLicensies[i].lpProductName);
-            IoSetItemText(Index, 1, szText);
+            IoSetItemText(Index, szText);
         }
     }
     while (MsLicensies[++i].lpProductName != 0);
@@ -1223,7 +1223,7 @@ SOFTWARE_LicensesInfo(VOID)
     {
         InsertKeySep(szTemp, szText);
         Index = IoAddItem(0, 0, L"Microsoft Visual Studio 2010");
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
 
     /* Visual Studio 2008 Key */
@@ -1236,7 +1236,7 @@ SOFTWARE_LicensesInfo(VOID)
     {
         InsertKeySep(szTemp, szText);
         Index = IoAddItem(0, 0, L"Microsoft Visual Studio 2008");
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
 
     /* Visual Studio 2005 Key */
@@ -1249,7 +1249,7 @@ SOFTWARE_LicensesInfo(VOID)
     {
         InsertKeySep(szTemp, szText);
         Index = IoAddItem(0, 0, L"Microsoft Visual Studio 2005");
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
 
     /* Visual Studio for Applications 7.1 Key */
@@ -1262,7 +1262,7 @@ SOFTWARE_LicensesInfo(VOID)
     {
         InsertKeySep(szTemp, szText);
         Index = IoAddItem(0, 0, L"Microsoft Visual Studio for Applications 7.1");
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
 
     /* Visual Studio for Applications 8 Key */
@@ -1275,7 +1275,7 @@ SOFTWARE_LicensesInfo(VOID)
     {
         InsertKeySep(szTemp, szText);
         Index = IoAddItem(0, 0, L"Microsoft Visual Studio for Applications 8");
-        IoSetItemText(Index, 1, szText);
+        IoSetItemText(Index, szText);
     }
 
     /* VMWare Workstation */

@@ -185,7 +185,7 @@ INT IoAddHeaderString(INT, INT, LPWSTR, ...);
 INT IoAddValueName(INT, INT, UINT);
 INT IoAddItem(INT, INT, LPWSTR, ...);
 VOID IoAddFooter(VOID);
-VOID IoSetItemText(INT, INT, LPWSTR, ...);
+VOID IoSetItemText(INT, LPWSTR, ...);
 VOID IoAddColumnsList(COLUMN_LIST*, LPWSTR lpCategoryName, LPWSTR lpIniPath);
 INT IoAddIcon(UINT);
 INT IoGetColumnsCount(VOID);

@@ -228,17 +228,17 @@ HW_DevicesInfo(VOID)
                               ClassName,
                               &dwSize) == ERROR_SUCCESS)
             {
-                IoSetItemText(ItemIndex, 1, ClassName);
+                IoSetItemText(ItemIndex, ClassName);
             }
             else
             {
-                IoSetItemText(ItemIndex, 1, L"-");
+                IoSetItemText(ItemIndex, L"-");
             }
             RegCloseKey(KeyClass);
         }
         else
         {
-            IoSetItemText(ItemIndex, 1, L"Other Devices");
+            IoSetItemText(ItemIndex, L"Other Devices");
         }
 
         if (SetupDiGetDeviceRegistryProperty(hDevInfo,
@@ -258,9 +258,9 @@ HW_DevicesInfo(VOID)
             if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, KeyPath, 0, KEY_ALL_ACCESS, &hKey) !=
                 ERROR_SUCCESS)
             {
-                IoSetItemText(ItemIndex, 2, L"-");
-                IoSetItemText(ItemIndex, 3, L"-");
-                IoSetItemText(ItemIndex, 4, L"-");
+                IoSetItemText(ItemIndex, L"-");
+                IoSetItemText(ItemIndex, L"-");
+                IoSetItemText(ItemIndex, L"-");
             }
             else
             {
@@ -271,11 +271,11 @@ HW_DevicesInfo(VOID)
                                     (LPBYTE)DriverName,
                                     &Size) == ERROR_SUCCESS)
                 {
-                    IoSetItemText(ItemIndex, 2, (DriverName[0] != 0) ? DriverName : L"-");
+                    IoSetItemText(ItemIndex, (DriverName[0] != 0) ? DriverName : L"-");
                 }
                 else
                 {
-                    IoSetItemText(ItemIndex, 2, L"-");
+                    IoSetItemText(ItemIndex, L"-");
                 }
 
                 Size = MAX_STR_LEN;
@@ -285,11 +285,11 @@ HW_DevicesInfo(VOID)
                                     (LPBYTE)DriverName,
                                     &Size) == ERROR_SUCCESS)
                 {
-                    IoSetItemText(ItemIndex, 3, (DriverName[0] != 0) ? DriverName : L"-");
+                    IoSetItemText(ItemIndex, (DriverName[0] != 0) ? DriverName : L"-");
                 }
                 else
                 {
-                    IoSetItemText(ItemIndex, 3, L"-");
+                    IoSetItemText(ItemIndex, L"-");
                 }
 
                 Size = MAX_STR_LEN;
@@ -299,20 +299,20 @@ HW_DevicesInfo(VOID)
                                     (LPBYTE)DriverName,
                                     &Size) == ERROR_SUCCESS)
                 {
-                    IoSetItemText(ItemIndex, 4, (DriverName[0] != 0) ? DriverName : L"-");
+                    IoSetItemText(ItemIndex, (DriverName[0] != 0) ? DriverName : L"-");
                 }
                 else
                 {
-                    IoSetItemText(ItemIndex, 4, L"-");
+                    IoSetItemText(ItemIndex, L"-");
                 }
                 RegCloseKey(hKey);
             }
         }
         else
         {
-            IoSetItemText(ItemIndex, 2, L"-");
-            IoSetItemText(ItemIndex, 3, L"-");
-            IoSetItemText(ItemIndex, 4, L"-");
+            IoSetItemText(ItemIndex, L"-");
+            IoSetItemText(ItemIndex, L"-");
+            IoSetItemText(ItemIndex, L"-");
         }
 
         if (IoGetTarget() == IO_TARGET_LISTVIEW)
@@ -360,9 +360,9 @@ HW_DevicesInfo(VOID)
             StringCbCopy(szVendorName, sizeof(szVendorName), L"-");
             StringCbCopy(szDeviceName, sizeof(szDeviceName), L"-");
         }
-        IoSetItemText(ItemIndex, 5, szVendorID);
-        IoSetItemText(ItemIndex, 6, szVendorName);
-        IoSetItemText(ItemIndex, 7, szDeviceName);
+        IoSetItemText(ItemIndex, szVendorID);
+        IoSetItemText(ItemIndex, szVendorName);
+        IoSetItemText(ItemIndex, szDeviceName);
 
         if (IsCanceled) break;
     }
@@ -488,9 +488,9 @@ HW_UnknownDevicesInfo(VOID)
             StringCbCopy(szVendorName, sizeof(szVendorName), L"-");
             StringCbCopy(szDeviceName, sizeof(szDeviceName), L"-");
         }
-        IoSetItemText(ItemIndex, 1, szVendorID);
-        IoSetItemText(ItemIndex, 2, szVendorName);
-        IoSetItemText(ItemIndex, 3, szDeviceName);
+        IoSetItemText(ItemIndex, szVendorID);
+        IoSetItemText(ItemIndex, szVendorName);
+        IoSetItemText(ItemIndex, szDeviceName);
 
         if (IsCanceled) break;
     }

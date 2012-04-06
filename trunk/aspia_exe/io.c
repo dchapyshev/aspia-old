@@ -19,6 +19,7 @@ VOID ListViewAddColumn(SIZE_T Index, INT Width, LPWSTR lpszText);
 
 static UINT IoTarget = IO_TARGET_LISTVIEW;
 static INT ColumnsCount = 0;
+static INT CurrentColumn = 0;
 static HANDLE hReport = INVALID_HANDLE_VALUE;
 
 
@@ -426,6 +427,8 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR pText, ...)
     StringCbVPrintf(szText, sizeof(szText), pText, args);
     va_end(args);
 
+    CurrentColumn = 0;
+
     if (IoTarget != IO_TARGET_LISTVIEW &&
         IoTarget != IO_TARGET_RTF)
     {
@@ -504,7 +507,7 @@ IoAddValueName(INT Indent, INT IconIndex, UINT ValueID)
 }
 
 VOID
-IoSetItemText(INT Index, INT iSubItem, LPWSTR pText, ...)
+IoSetItemText(INT Index, LPWSTR pText, ...)
 {
     WCHAR szText[MAX_STR_LEN * 20] = {0};
     WCHAR *ptr = NULL;
@@ -515,10 +518,12 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pText, ...)
     StringCbVPrintf(szText, sizeof(szText), pText, args);
     va_end(args);
 
+    CurrentColumn++;
+
     switch (IoTarget)
     {
         case IO_TARGET_LISTVIEW:
-            ListViewSetItemText(Index, iSubItem, szText);
+            ListViewSetItemText(Index, CurrentColumn, szText);
             return;
 
         case IO_TARGET_HTML:
@@ -532,7 +537,7 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pText, ...)
 
             AppendStringToFile(ptr);
 
-            if (IoGetColumnsCount() == iSubItem + 1)
+            if (IoGetColumnsCount() == CurrentColumn + 1)
                 AppendStringToFile(L"</tr>");
 
             Free(ptr);
@@ -547,7 +552,7 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pText, ...)
             if (!ptr) return;
 
             StringCbPrintf(ptr, size,
-                           (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s;", szText);
+                           (IoGetColumnsCount() == CurrentColumn + 1) ? L"%s" : L"%s;", szText);
         }
         break;
 
@@ -558,7 +563,7 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pText, ...)
             if (!ptr) return;
 
             StringCbPrintf(ptr, size,
-                           (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s ", szText);
+                           (IoGetColumnsCount() == CurrentColumn + 1) ? L"%s" : L"%s ", szText);
         }
         break;
 
@@ -569,7 +574,7 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pText, ...)
             if (!ptr) return;
 
             StringCbPrintf(ptr, size,
-                           (IoGetColumnsCount() == iSubItem + 1) ? L"%s" : L"%s,", szText);
+                           (IoGetColumnsCount() == CurrentColumn + 1) ? L"%s" : L"%s,", szText);
         }
         break;
 
@@ -584,7 +589,7 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pText, ...)
                 if (!ptr) return;
 
                 StringCbPrintf(ptr, size,
-                               (IoGetColumnsCount() == iSubItem + 1) ? L"%s\\cell\r\n\\row\r\n" : L"%s\\cell\r\n", text);
+                               (IoGetColumnsCount() == CurrentColumn + 1) ? L"%s\\cell\r\n\\row\r\n" : L"%s\\cell\r\n", text);
 
                 AppendStringToFileA(ptr);
 
@@ -601,7 +606,7 @@ IoSetItemText(INT Index, INT iSubItem, LPWSTR pText, ...)
             if (!ptr) return;
 
             StringCbPrintf(ptr, size,
-                           (IoGetColumnsCount() == iSubItem + 1) ? L"\"%s\"," : L"\"%s\"", szText);
+                           (IoGetColumnsCount() == CurrentColumn + 1) ? L"\"%s\"," : L"\"%s\"", szText);
         }
         break;
 
