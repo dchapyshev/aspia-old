@@ -833,15 +833,19 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     switch (Msg)
     {
         case WM_CREATE:
-            InitControls(hwnd);
-            if (!InitInfoDll())
+        {
+            if (!InitControls(hwnd) ||
+                !InitInfoDll())
             {
+                DebugTrace(L"Initialization failed!");
                 PostQuitMessage(0);
                 break;
             }
+
             ParamsInfo.IsIoInitialized = TRUE;
             _beginthread(GUIInfoThread, 0, (LPVOID)SettingsInfo.StartupCategory);
-            break;
+        }
+        break;
 
         case WM_COMMAND:
             OnCommand(LOWORD(wParam));
@@ -1271,6 +1275,22 @@ IsDebugModeEnabled(VOID)
     return TRUE;
 }
 
+BOOL
+IsPortable(VOID)
+{
+    WCHAR szPath[MAX_PATH];
+
+    if (!GetCurrentPath(szPath, MAX_PATH))
+        return FALSE;
+
+    StringCbCat(szPath, sizeof(szPath), L"\\portable");
+
+    if (GetFileAttributes(szPath) == INVALID_FILE_ATTRIBUTES)
+        return FALSE;
+
+    return TRUE;
+}
+
 INT WINAPI
 wWinMain(HINSTANCE hInst,
          HINSTANCE hPrevInstance,
@@ -1306,6 +1326,8 @@ wWinMain(HINSTANCE hInst,
 
     /* Устанавливаем для текущего процесса отладочные привилегии */
     SetPrivilege(SE_DEBUG_NAME);
+
+    ParamsInfo.IsPortable = IsPortable();
 
     /* если у нас дебаг билд, то всегда включаем DebugMode */
 #ifdef _DEBUG
@@ -1431,6 +1453,22 @@ wWinMain(HINSTANCE hInst,
 
     if (RegisterClassEx(&WndClass) == (ATOM)0) goto Exit;
 
+    if (ParamsInfo.IsPortable)
+    {
+        SettingsInfo.ShowSensorIcons = FALSE;
+    }
+
+    if (ParamsInfo.IsPortable ||
+        !SettingsInfo.SaveWindowPos)
+    {
+        SettingsInfo.Left   = 20;
+        SettingsInfo.Top    = 20;
+        SettingsInfo.Right  = 850;
+        SettingsInfo.Bottom = 640;
+
+        SettingsInfo.SplitterPos = 242;
+    }
+
     /* Создаем главное окно программы */
     hMainWnd = CreateWindowEx(WS_EX_WINDOWEDGE,
                               szWindowClass,
@@ -1456,7 +1494,8 @@ wWinMain(HINSTANCE hInst,
                      SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
     }
 
-    if (SettingsInfo.ShowSensorIcons)
+    if (SettingsInfo.ShowSensorIcons &&
+        !ParamsInfo.IsPortable)
     {
         AddTraySensors();
     }

@@ -11,22 +11,33 @@
 typedef VOID (CALLBACK *APPENUMPROC)(LPWSTR lpName, INST_APP_INFO Info);
 
 static BOOL
-EnumInstalledApplications(BOOL IsUpdates, BOOL IsUserKey, APPENUMPROC lpEnumProc)
+EnumInstalledApplications(BOOL IsX64, BOOL IsUpdates, BOOL IsUserKey, APPENUMPROC lpEnumProc)
 {
     DWORD dwSize = MAX_PATH, dwType, dwValue;
     BOOL bIsSystemComponent, bIsUpdate;
     WCHAR szParentKeyName[MAX_PATH];
     WCHAR szDisplayName[MAX_PATH];
+    WCHAR *pKeyPath;
     HKEY hKey;
     INST_APP_INFO Info = {0};
     LONG ItemIndex = 0;
 
     Info.hRootKey = IsUserKey ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
 
+    if (IsX64)
+    {
+        pKeyPath = L"Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall";
+    }
+    else
+    {
+        pKeyPath = L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall";
+    }
+
     if (RegOpenKey(Info.hRootKey,
-                   L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
+                   pKeyPath,
                    &hKey) != ERROR_SUCCESS)
     {
+        DebugTrace(L"RegOpenKey(%s) failed!", pKeyPath);
         return FALSE;
     }
 
@@ -119,11 +130,15 @@ GetApplicationString(HKEY hKey, LPWSTR lpKeyName, LPWSTR lpString, SIZE_T Size)
 static VOID CALLBACK
 EnumInstalledAppProc(LPWSTR lpName, INST_APP_INFO Info)
 {
-    WCHAR *buf, szText[MAX_PATH];
+    WCHAR szText[MAX_PATH];
     INST_APP_INFO *pInfo;
 
     pInfo = Alloc(sizeof(INST_APP_INFO));
-    if (!pInfo) return;
+    if (!pInfo)
+    {
+        DebugTrace(L"Alloc(%d) failed!", sizeof(INST_APP_INFO));
+        return;
+    }
 
     *pInfo = Info;
 
@@ -149,17 +164,7 @@ EnumInstalledAppProc(LPWSTR lpName, INST_APP_INFO Info)
     GetApplicationString(pInfo->hAppKey,
                          L"HelpLink",
                          szText, sizeof(szText));
-    buf = EscapePercentSymbols(szText);
-
-    if (buf)
-    {
-        IoSetItemText(buf);
-        Free(buf);
-    }
-    else
-    {
-        IoSetItemText(L"-");
-    }
+    IoSetItemText(L"%s", szText);
 
     /* Get help telephone */
     GetApplicationString(pInfo->hAppKey,
@@ -171,33 +176,13 @@ EnumInstalledAppProc(LPWSTR lpName, INST_APP_INFO Info)
     GetApplicationString(pInfo->hAppKey,
                          L"URLUpdateInfo",
                          szText, sizeof(szText));
-    buf = EscapePercentSymbols(szText);
-
-    if (buf)
-    {
-        IoSetItemText(buf);
-        Free(buf);
-    }
-    else
-    {
-        IoSetItemText(L"-");
-    }
+    IoSetItemText(L"%s", szText);
 
     /* Get URL update info */
     GetApplicationString(pInfo->hAppKey,
                          L"URLInfoAbout",
                          szText, sizeof(szText));
-    buf = EscapePercentSymbols(szText);
-
-    if (buf)
-    {
-        IoSetItemText(buf);
-        Free(buf);
-    }
-    else
-    {
-        IoSetItemText(L"-");
-    }
+    IoSetItemText(L"%s", szText);
 
     /* Get install date */
     GetApplicationString(pInfo->hAppKey,
@@ -233,11 +218,15 @@ EnumInstalledAppProc(LPWSTR lpName, INST_APP_INFO Info)
 static VOID CALLBACK
 EnumInstalledUpdProc(LPWSTR lpName, INST_APP_INFO Info)
 {
-    WCHAR *buf, szText[MAX_PATH];
+    WCHAR szText[MAX_PATH];
     INST_APP_INFO *pInfo;
 
     pInfo = Alloc(sizeof(INST_APP_INFO));
-    if (!pInfo) return;
+    if (!pInfo)
+    {
+        DebugTrace(L"Alloc(%d) failed!", sizeof(INST_APP_INFO));
+        return;
+    }
 
     *pInfo = Info;
 
@@ -252,17 +241,7 @@ EnumInstalledUpdProc(LPWSTR lpName, INST_APP_INFO Info)
     GetApplicationString(pInfo->hAppKey,
                          L"URLInfoAbout",
                          szText, sizeof(szText));
-    buf = EscapePercentSymbols(szText);
-
-    if (buf)
-    {
-        IoSetItemText(buf);
-        Free(buf);
-    }
-    else
-    {
-        IoSetItemText(L"-");
-    }
+    IoSetItemText(L"%s", szText);
 
     /* Get URL update info */
     GetApplicationString(pInfo->hAppKey,
@@ -301,8 +280,13 @@ SOFTWARE_InstalledUpdInfo(VOID)
     DebugStartReceiving();
 
     IoAddIcon(IDI_UPDATES);
-    EnumInstalledApplications(TRUE, TRUE, EnumInstalledUpdProc);
-    EnumInstalledApplications(TRUE, FALSE, EnumInstalledUpdProc);
+    EnumInstalledApplications(FALSE, TRUE, TRUE, EnumInstalledUpdProc);
+    EnumInstalledApplications(FALSE, TRUE, FALSE, EnumInstalledUpdProc);
+
+#ifndef _M_IX86
+    EnumInstalledApplications(TRUE, TRUE, TRUE, EnumInstalledUpdProc);
+    EnumInstalledApplications(TRUE, TRUE, FALSE, EnumInstalledUpdProc);
+#endif
 
     DebugEndReceiving();
 }
@@ -313,8 +297,13 @@ SOFTWARE_InstalledAppInfo(VOID)
     DebugStartReceiving();
 
     IoAddIcon(IDI_SOFTWARE);
-    EnumInstalledApplications(FALSE, TRUE, EnumInstalledAppProc);
-    EnumInstalledApplications(FALSE, FALSE, EnumInstalledAppProc);
+    EnumInstalledApplications(FALSE, FALSE, TRUE, EnumInstalledAppProc);
+    EnumInstalledApplications(FALSE, FALSE, FALSE, EnumInstalledAppProc);
+
+#ifndef _M_IX86
+    EnumInstalledApplications(TRUE, FALSE, TRUE, EnumInstalledAppProc);
+    EnumInstalledApplications(TRUE, FALSE, FALSE, EnumInstalledAppProc);
+#endif
 
     DebugEndReceiving();
 }

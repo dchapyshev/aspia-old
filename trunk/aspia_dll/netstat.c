@@ -173,6 +173,7 @@ GetExtTcpTableVista(VOID)
     TcpTable = (PVOID)Alloc(dwSize);
     if (!TcpTable)
     {
+        DebugTrace(L"Alloc(%d) failed!", dwSize);
         FreeLibrary(hDLL);
         return NULL;
     }
@@ -189,6 +190,7 @@ GetExtTcpTableVista(VOID)
         TcpTable = (PVOID)Alloc(dwSize);
         if (!TcpTable)
         {
+            DebugTrace(L"Alloc(%d) failed!", dwSize);
             FreeLibrary(hDLL);
             return NULL;
         }
@@ -244,6 +246,7 @@ GetExtUdpTableVista(VOID)
     UdpTable = (PVOID)Alloc(dwSize);
     if (!UdpTable)
     {
+        DebugTrace(L"Alloc(%d) failed!", dwSize);
         FreeLibrary(hDLL);
         return NULL;
     }
@@ -260,6 +263,7 @@ GetExtUdpTableVista(VOID)
         UdpTable = (PVOID)Alloc(dwSize);
         if (!UdpTable)
         {
+            DebugTrace(L"Alloc(%d) failed!", dwSize);
             FreeLibrary(hDLL);
             return NULL;
         }
@@ -298,11 +302,16 @@ GetTcpTableOld(VOID)
         return NULL;
 
     TcpTable = (PMIB_TCPTABLE)Alloc(dwSize);
-    if (!TcpTable) return NULL;
+    if (!TcpTable)
+    {
+        DebugTrace(L"Alloc(%d) failed!", dwSize);
+        return NULL;
+    }
 
     dwError = GetTcpTable(TcpTable, &dwSize, TRUE);
     if (dwError != NO_ERROR)
     {
+        DebugTrace(L"GetTcpTable() failed! Error code = 0x%x", dwError);
         Free(TcpTable);
         return NULL;
     }
@@ -321,11 +330,16 @@ GetUdpTableOld(VOID)
         return NULL;
 
     UdpTable = (PMIB_UDPTABLE)Alloc(dwSize);
-    if (!UdpTable) return NULL;
+    if (!UdpTable)
+    {
+        DebugTrace(L"Alloc(%d) failed!", dwSize);
+        return NULL;
+    }
 
     dwError = GetUdpTable(UdpTable, &dwSize, TRUE);
     if (dwError != NO_ERROR)
     {
+        DebugTrace(L"GetUdpTable() failed! Error code = 0x%x", dwError);
         Free(UdpTable);
         return NULL;
     }
@@ -446,11 +460,18 @@ NETWORK_NetStatInfo(VOID)
     LoadMUIString(IDS_UNKNOWN, szUnknown, MAX_STR_LEN);
 
     if (WSAStartup(MAKEWORD(2, 2), &WsaData) != 0)
+    {
+        DebugTrace(L"WSAStartup() failed!");
         return;
+    }
 
     hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if (hProcessSnap == INVALID_HANDLE_VALUE)
+    {
+        DebugTrace(L"CreateToolhelp32Snapshot() failed! Error code = 0x%x",
+                   GetLastError());
         return;
+    }
 
     /* Try to get extended TCP table */
     TcpTableEx = GetExtTcpTableXP();
