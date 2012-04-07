@@ -48,6 +48,7 @@ typedef struct
     BOOL DebugMode;
 
     BOOL IsIoInitialized;
+    BOOL IsPortable;
 
     INT SxSmIcon;
     INT SySmIcon;
@@ -116,7 +117,7 @@ extern HIMAGELIST hImageTreeView;
 INT_PTR CALLBACK AboutDlgProc(HWND, UINT, WPARAM, LPARAM);
 VOID MainWndOnSize(LPARAM);
 VOID ToolBarOnGetDispInfo(LPTOOLTIPTEXT);
-VOID InitControls(HWND);
+BOOL InitControls(HWND);
 VOID ReInitControls(VOID);
 
 __inline VOID

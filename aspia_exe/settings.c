@@ -29,27 +29,11 @@ HICON hHddIcon = NULL;
 
 
 BOOL
-IsPortable(VOID)
-{
-    WCHAR szPath[MAX_PATH];
-
-    if (!GetCurrentPath(szPath, MAX_PATH))
-        return FALSE;
-
-    StringCbCat(szPath, sizeof(szPath), L"\\portable");
-
-    if (GetFileAttributes(szPath) == INVALID_FILE_ATTRIBUTES)
-        return FALSE;
-
-    return TRUE;
-}
-
-BOOL
 GetIniFilePath(OUT LPWSTR lpszPath, IN SIZE_T PathLen)
 {
     WCHAR szPath[MAX_PATH];
 
-    if (!IsPortable())
+    if (ParamsInfo.IsPortable)
     {
         if (!SHGetSpecialFolderPath(hMainWnd, szPath, CSIDL_APPDATA, FALSE))
             return FALSE;

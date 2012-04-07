@@ -285,7 +285,7 @@ InitCategoriesList(CATEGORY_LIST *List, HTREEITEM hRoot)
     return hSelected;
 }
 
-VOID
+static VOID
 ExpandCategoriesList(CATEGORY_LIST *List)
 {
     SIZE_T Index = 0;
@@ -301,7 +301,7 @@ ExpandCategoriesList(CATEGORY_LIST *List)
     while (List[++Index].StringID != 0);
 }
 
-VOID
+static BOOL
 InitToolBar(HWND hwnd)
 {
     SIZE_T NumButtons = sizeof(Buttons) / sizeof(Buttons[0]);
@@ -324,7 +324,11 @@ InitToolBar(HWND hwnd)
                               NULL,
                               hInstance,
                               NULL);
-    if (!hToolBar) return;
+    if (!hToolBar)
+    {
+        DebugTrace(L"CreateWindowEx() failed!");
+        return FALSE;
+    }
 
     SendMessage(hToolBar,
                 TB_BUTTONSTRUCTSIZE,
@@ -337,7 +341,10 @@ InitToolBar(HWND hwnd)
                                   ILC_MASK | ParamsInfo.SysColorDepth,
                                   1, 1);
     if (!hImageList)
-        return;
+    {
+        DebugTrace(L"ImageList_Create() failed!");
+        return FALSE;
+    }
 
     /* Add images to ImageList */
     AddIconToImageList(hIconsInst, hImageList, IDI_SAVE);
@@ -353,6 +360,8 @@ InitToolBar(HWND hwnd)
                                               (LPARAM)hImageList));
 
     SendMessage(hToolBar, TB_ADDBUTTONS, NumButtons, (LPARAM)Buttons);
+
+    return TRUE;
 }
 
 VOID
@@ -434,14 +443,15 @@ InitInfoDll(VOID)
     return AspiaDllInitialize(&DllParams);
 }
 
-VOID
+BOOL
 InitControls(HWND hwnd)
 {
     WCHAR szSplitWndClass[] = L"SplitterWindowClass";
     WNDCLASSEX SplitWndClass = {0};
     HTREEITEM hSelectedItem;
 
-    InitToolBar(hwnd);
+    if (!InitToolBar(hwnd))
+        return FALSE;
 
     hTreeView = CreateWindowEx(WS_EX_CLIENTEDGE,
                                WC_TREEVIEW,
@@ -454,7 +464,11 @@ InitControls(HWND hwnd)
                                hInstance,
                                NULL);
 
-    if (!hTreeView) return;
+    if (!hTreeView)
+    {
+        DebugTrace(L"CreateWindowEx() failed!");
+        return FALSE;
+    }
 
     SendMessage(hTreeView, TVM_SETEXTENDEDSTYLE, (WPARAM)hTreeView, TVS_EX_DOUBLEBUFFER);
 
@@ -463,6 +477,12 @@ InitControls(HWND hwnd)
                                       ParamsInfo.SySmIcon,
                                       ParamsInfo.SysColorDepth | ILC_MASK,
                                       0, 1);
+    if (!hImageTreeView)
+    {
+        DebugTrace(L"ImageList_Create() failed!");
+        return FALSE;
+    }
+
     hSelectedItem = InitCategoriesList(RootCategoryList, TVI_ROOT);
     ExpandCategoriesList(RootCategoryList);
     TreeView_SelectItem(hTreeView, hSelectedItem);
@@ -479,7 +499,11 @@ InitControls(HWND hwnd)
                                hInstance,
                                NULL);
 
-    if (!hListView) return;
+    if (!hListView)
+    {
+        DebugTrace(L"CreateWindowEx() failed!");
+        return FALSE;
+    }
 
     ListView_SetExtendedListViewStyle(hListView,
                                       LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
@@ -488,6 +512,11 @@ InitControls(HWND hwnd)
                                           ParamsInfo.SySmIcon,
                                           ILC_MASK | ParamsInfo.SysColorDepth,
                                           1, 1);
+    if (!hListViewImageList)
+    {
+        DebugTrace(L"ImageList_Create() failed!");
+        return FALSE;
+    }
 
     ListView_SetImageList(hListView,
                           hListViewImageList,
@@ -503,7 +532,10 @@ InitControls(HWND hwnd)
     SplitWndClass.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
 
     if (RegisterClassEx(&SplitWndClass) == (ATOM)0)
-        return;
+    {
+        DebugTrace(L"RegisterClassEx() failed!");
+        return FALSE;
+    }
 
     hSplitter = CreateWindowEx(WS_EX_TRANSPARENT,
                                szSplitWndClass,
@@ -515,7 +547,11 @@ InitControls(HWND hwnd)
                                hInstance,
                                NULL);
 
-    if (!hSplitter) return;
+    if (!hSplitter)
+    {
+        DebugTrace(L"CreateWindowEx() failed!");
+        return FALSE;
+    }
 
     ShowWindow(hSplitter, SW_SHOW);
     UpdateWindow(hSplitter);
@@ -524,6 +560,8 @@ InitControls(HWND hwnd)
     IntSetWindowTheme(hListView);
 
     SetFocus(hListView);
+
+    return TRUE;
 }
 
 INT_PTR CALLBACK
@@ -555,8 +593,10 @@ AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                                      MAKEINTRESOURCE(IDI_MAINICON),
                                      IMAGE_ICON, 48, 48,
                                      LR_DEFAULTCOLOR);
-            DebugTrace(L"hIcon = %x, hInstance = %x, Error code = %d", hIcon, hInstance, GetLastError());
-            SendMessage(GetDlgItem(hDlg, IDC_ABOUT_ICON), STM_SETICON, (WPARAM)hIcon, 0);
+            if (hIcon)
+            {
+                SendMessage(GetDlgItem(hDlg, IDC_ABOUT_ICON), STM_SETICON, (WPARAM)hIcon, 0);
+            }
 
             SetFocus(GetDlgItem(hDlg, IDC_DONATE_BTN));
         }

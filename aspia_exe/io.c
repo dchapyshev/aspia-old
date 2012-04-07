@@ -769,10 +769,13 @@ IoAddColumnsList(COLUMN_LIST *List, LPWSTR lpCategoryName, LPWSTR lpIniPath)
             case IO_TARGET_LISTVIEW:
             {
                 WCHAR szCol[3];
-                INT Width;
+                INT Width = 0;
 
-                StringCbPrintf(szCol, sizeof(szCol), L"%d", Index);
-                Width = GetPrivateProfileInt(lpCategoryName, szCol, 0, lpIniPath);
+                if (!ParamsInfo.IsPortable)
+                {
+                    StringCbPrintf(szCol, sizeof(szCol), L"%d", Index);
+                    Width = GetPrivateProfileInt(lpCategoryName, szCol, 0, lpIniPath);
+                }
 
                 ListViewAddColumn(Index + 1, (Width > 0) ? Width : List[Index].Width, szText);
             }

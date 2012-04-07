@@ -1351,7 +1351,7 @@ DMI_BIOSInfo(VOID)
 {
     SIZE_T NumberOptionalBytes;
     DWORD bValue;
-	BYTE Buf[MAX_DATA] = {0};
+    BYTE Buf[MAX_DATA] = {0};
     BYTE* pBuf = Buf;
     SIZE_T Len = MAX_DATA;
     WCHAR szText[MAX_STR_LEN];

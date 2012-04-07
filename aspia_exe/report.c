@@ -1230,13 +1230,6 @@ ReportWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
                 SettingsInfo.ReportBottom = wp.rcNormalPosition.bottom;
             }
 
-            DebugTrace(L"Report window position: left = %d, top = %d, right = %d, bottom = %d, maximized = %s",
-                       SettingsInfo.ReportLeft,
-                       SettingsInfo.ReportTop,
-                       SettingsInfo.ReportRight,
-                       SettingsInfo.ReportBottom,
-                       SettingsInfo.ReportIsMaximized ? L"TRUE" : L"FALSE");
-
             PostQuitMessage(0);
 
             ShowWindow(hMainWnd, SW_SHOW);
@@ -1273,6 +1266,14 @@ CreateReportWindow(VOID)
 
     LoadMUIStringF(hLangInst, IDS_REPORTWND_TITLE,
                    szWindowName, MAX_STR_LEN);
+
+    if (!SettingsInfo.SaveWindowPos)
+    {
+        SettingsInfo.Left   = 20;
+        SettingsInfo.Top    = 20;
+        SettingsInfo.Right  = 400;
+        SettingsInfo.Bottom = 500;
+    }
 
     /* Создаем главное окно программы */
     hReportWnd = CreateWindowEx(WS_EX_WINDOWEDGE,
