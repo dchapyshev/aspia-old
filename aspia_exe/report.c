@@ -1262,7 +1262,10 @@ CreateReportWindow(VOID)
     WndClass.lpszMenuName  = NULL;
 
     if (RegisterClassEx(&WndClass) == (ATOM)0)
+    {
+        DebugTrace(L"RegisterClassEx() failed!");
         return;
+    }
 
     LoadMUIStringF(hLangInst, IDS_REPORTWND_TITLE,
                    szWindowName, MAX_STR_LEN);
@@ -1288,6 +1291,7 @@ CreateReportWindow(VOID)
 
     if (!hReportWnd)
     {
+        DebugTrace(L"CreateWindowEx() failed!");
         UnregisterClass(szWindowClass, hInstance);
         return;
     }

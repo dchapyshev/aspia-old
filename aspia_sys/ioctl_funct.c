@@ -114,8 +114,8 @@ IOCTL_GetSMBIOS(IN PIRP Irp,
                 if (MapAddr)
                 {
                     /* Copy SMBIOS data */
-                    memcpy((PVOID)((ULONG_PTR)Irp->AssociatedIrp.SystemBuffer + sizeof(SMBIOS_ENTRY)), 
-                            MapAddr, 
+                    memcpy((PVOID)((ULONG_PTR)Irp->AssociatedIrp.SystemBuffer + sizeof(SMBIOS_ENTRY)),
+                            MapAddr,
                             SmbiosEntry->StructureTableLength);
                     /* Unmap SMBIOS data */
                     MmUnmapIoSpace(MapAddr, SmbiosEntry->StructureTableLength);

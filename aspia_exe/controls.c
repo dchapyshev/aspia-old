@@ -470,7 +470,8 @@ InitControls(HWND hwnd)
         return FALSE;
     }
 
-    SendMessage(hTreeView, TVM_SETEXTENDEDSTYLE, (WPARAM)hTreeView, TVS_EX_DOUBLEBUFFER);
+    SendMessage(hTreeView, TVM_SETEXTENDEDSTYLE,
+                (WPARAM)hTreeView, TVS_EX_DOUBLEBUFFER);
 
     /* Create image list */
     hImageTreeView = ImageList_Create(ParamsInfo.SxSmIcon,
@@ -492,7 +493,8 @@ InitControls(HWND hwnd)
     hListView = CreateWindowEx(WS_EX_CLIENTEDGE,
                                WC_LISTVIEW,
                                L"",
-                               WS_CHILD | WS_VISIBLE | LVS_REPORT | WS_TABSTOP | LVS_SHOWSELALWAYS,
+                               WS_CHILD | WS_VISIBLE | LVS_REPORT |
+                                   WS_TABSTOP | LVS_SHOWSELALWAYS,
                                205, 28, 465, 350,
                                hwnd,
                                NULL,
@@ -523,12 +525,12 @@ InitControls(HWND hwnd)
                           LVSIL_SMALL);
 
     /* Create vertical splitter bar */
-    SplitWndClass.cbSize = sizeof(WNDCLASSEX);
+    SplitWndClass.cbSize        = sizeof(WNDCLASSEX);
     SplitWndClass.lpszClassName = szSplitWndClass;
-    SplitWndClass.lpfnWndProc = SplitterWindowProc;
-    SplitWndClass.hInstance = hInstance;
-    SplitWndClass.style = CS_HREDRAW | CS_VREDRAW;
-    SplitWndClass.hCursor = LoadCursor(0, IDC_SIZEWE);
+    SplitWndClass.lpfnWndProc   = SplitterWindowProc;
+    SplitWndClass.hInstance     = hInstance;
+    SplitWndClass.style         = CS_HREDRAW | CS_VREDRAW;
+    SplitWndClass.hCursor       = LoadCursor(0, IDC_SIZEWE);
     SplitWndClass.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
 
     if (RegisterClassEx(&SplitWndClass) == (ATOM)0)
@@ -578,7 +580,8 @@ AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
         {
             WCHAR szFormat[MAX_STR_LEN], szInfo[MAX_STR_LEN * 5];
 
-            LoadMUIStringF(hLangInst, IDS_ABOUT_STRING, szInfo, sizeof(szInfo)/sizeof(WCHAR));
+            LoadMUIStringF(hLangInst, IDS_ABOUT_STRING,
+                           szInfo, sizeof(szInfo)/sizeof(WCHAR));
             SetWindowText(GetDlgItem(hDlg, IDC_ABOUT_EDIT), szInfo);
 
             if (GetWindowText(GetDlgItem(hDlg, IDC_VERSION_TEXT),
@@ -595,7 +598,8 @@ AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                                      LR_DEFAULTCOLOR);
             if (hIcon)
             {
-                SendMessage(GetDlgItem(hDlg, IDC_ABOUT_ICON), STM_SETICON, (WPARAM)hIcon, 0);
+                SendMessage(GetDlgItem(hDlg, IDC_ABOUT_ICON),
+                            STM_SETICON, (WPARAM)hIcon, 0);
             }
 
             SetFocus(GetDlgItem(hDlg, IDC_DONATE_BTN));
@@ -613,7 +617,8 @@ AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             {
                 case IDC_SITE_BTN:
                 {
-                    LoadMUIStringF(hLangInst, IDS_SITE_LINK, szText, MAX_STR_LEN);
+                    LoadMUIStringF(hLangInst, IDS_SITE_LINK,
+                                   szText, MAX_STR_LEN);
                     ShellExecute(NULL, L"open", szText,
                                  NULL, NULL, SW_SHOWNORMAL);
                 }
@@ -621,7 +626,8 @@ AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 
                 case IDC_DONATE_BTN:
                 {
-                    LoadMUIStringF(hLangInst, IDS_SITE_DONATE_LINK, szText, MAX_STR_LEN);
+                    LoadMUIStringF(hLangInst, IDS_SITE_DONATE_LINK,
+                                   szText, MAX_STR_LEN);
                     ShellExecute(NULL, L"open", szText,
                                  NULL, NULL, SW_SHOWNORMAL);
                 }
