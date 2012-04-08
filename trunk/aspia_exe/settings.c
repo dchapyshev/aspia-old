@@ -116,6 +116,7 @@ GetAutostartState(VOID)
                      KEY_READ,
                      &hKey) != ERROR_SUCCESS)
     {
+        DebugTrace(L"RegOpenKeyEx() failed!");
         return FALSE;
     }
 
@@ -146,6 +147,7 @@ SaveAutostartState(BOOL IsAutostart)
                      KEY_READ | KEY_WRITE | KEY_WOW64_64KEY,
                      &hKey) != ERROR_SUCCESS)
     {
+        DebugTrace(L"RegOpenKeyEx() failed!");
         return;
     }
 
@@ -173,7 +175,10 @@ LoadSettings(VOID)
     BOOL Result;
 
     if (!GetIniFilePath(szIniPath, MAX_PATH))
+    {
+        DebugTrace(L"GetIniFilePath() failed!");
         return FALSE;
+    }
 
     Result = GetPrivateProfileStruct(L"general",
                                      L"settings",
@@ -209,7 +214,10 @@ SaveSettings(VOID)
     WINDOWPLACEMENT wp;
 
     if (!GetIniFilePath(szIniPath, MAX_PATH))
+    {
+        DebugTrace(L"GetIniFilePath() failed!");
         return FALSE;
+    }
 
     wp.length = sizeof(WINDOWPLACEMENT);
     GetWindowPlacement(hMainWnd, &wp);
@@ -357,7 +365,11 @@ FreeIconsCombo(HWND hCombo)
     INT Count = SendMessage(hCombo, CB_GETCOUNT, 0, 0) - 1;
     WCHAR *FileName;
 
-    if (Count == CB_ERR) return;
+    if (Count == CB_ERR)
+    {
+        DebugTrace(L"SendMessage(CB_GETCOUNT) failed!");
+        return;
+    }
 
     while (Count >= 0)
     {
@@ -437,7 +449,11 @@ FreeLangCombo(HWND hCombo)
     INT Count = SendMessage(hCombo, CB_GETCOUNT, 0, 0) - 1;
     WCHAR *FileName;
 
-    if (Count == CB_ERR) return;
+    if (Count == CB_ERR)
+    {
+        DebugTrace(L"SendMessage(CB_GETCOUNT) failed!");
+        return;
+    }
 
     while (Count > 0)
     {
@@ -457,7 +473,10 @@ ShowSensorsList(HWND hList)
     INT ItemIndex;
 
     if (!GetIniFilePath(szIniPath, MAX_PATH))
+    {
+        DebugTrace(L"GetIniFilePath() failed!");
         return;
+    }
 
     AddColumn(hList, 0, 250, L"");
     ListView_SetExtendedListViewStyle(hList, LVS_EX_CHECKBOXES);
@@ -507,7 +526,10 @@ SaveSensorsState(HWND hList)
     WCHAR szText[MAX_STR_LEN], szIniPath[MAX_PATH];
 
     if (!GetIniFilePath(szIniPath, MAX_PATH))
+    {
+        DebugTrace(L"GetIniFilePath() failed!");
         return;
+    }
 
     while (Count >= 0)
     {

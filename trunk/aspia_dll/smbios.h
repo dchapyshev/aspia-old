@@ -137,6 +137,8 @@ extern BOOL IsSmBIOSInitialized;
 #define BIOS_FUNC_KEY_INIT_NET_BOOT_SUPPORTED 0x02
 #define BIOS_TARGET_CONTENT_DIST_SUPPORTED    0x04
 
+typedef VOID (CALLBACK *SMBIOS_TABLE_ENUMPROC)(BYTE *pBuf, BYTE Length);
+
 /* System Information */
 typedef struct
 {
@@ -163,6 +165,14 @@ typedef struct
 
 typedef struct
 {
+    BYTE Type;
+    BYTE Length;
+    WORD Handle;
+    BYTE *Data;
+} DMI_HEADER;
+
+typedef struct
+{
     UCHAR dwValue;
     LPWSTR lpszString;
 } INFO_STRUCT;
@@ -172,8 +182,6 @@ typedef struct
     USHORT dwValue;
     LPWSTR lpszString;
 } INFO_STRUCT2;
-
-UCHAR SmbiosTableData[MAX_DATA];
 
 #define CPU_STATUS_MASK 0x07
 

@@ -5,6 +5,11 @@
  * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
  */
 
+/*
+   This file partialy based on DmiDecode for Windows project
+   http://gnuwin32.sourceforge.net/packages/dmidecode.htm
+ */
+
 /* System Management BIOS Specification:
    http://dmtf.org/standards/smbios
    Last version: 2.7.1
@@ -16,6 +21,10 @@
 #include "smbios.h"
 
 #pragma warning(disable: 4996)
+
+#define WORD(x) (WORD)(*(const WORD *)(x))
+#define DWORD64(x) (*(const DWORD64 *)(x))
+#define DWORD(x) (DWORD)(*(const DWORD *)(x))
 
 
 /* 7.2.2 System Information - Wake-up Type */
@@ -634,7 +643,12 @@ const INFO_STRUCT BatteryDeviceChemistryList[] =
 /* Definition for the GetSystemFirmwareTable function */
 typedef BOOL (WINAPI *PGSFT)(DWORD, DWORD, PVOID, DWORD);
 
+RAWSMBIOSDATA SmbiosRawData;
 BOOL IsSmBIOSInitialized = FALSE;
+INT StructuresCount = 0;
+
+BYTE SMBIOSMajorVersion = 0;
+BYTE SMBIOSMinorVersion = 0;
 
 
 BOOL
@@ -647,12 +661,11 @@ IsSmBiosWorks(VOID)
 }
 
 BOOL
-InitSmBIOSDataFromFirmwareTable(VOID)
+InitSmBIOSDataFromFirmwareTable(RAWSMBIOSDATA *RawData, DWORD dwSize)
 {
     PGSFT GetSystemFirmwareTable;
     RAWSMBIOSDATA Data = {0};
     HINSTANCE hDLL;
-    DWORD dwSize;
     UINT Ret;
 
     hDLL = LoadLibrary(L"KERNEL32.DLL");
@@ -661,25 +674,87 @@ InitSmBIOSDataFromFirmwareTable(VOID)
     GetSystemFirmwareTable = (PGSFT)GetProcAddress(hDLL, "GetSystemFirmwareTable");
     if (!GetSystemFirmwareTable)
     {
+        DebugTrace(L"GetProcAddress(GetSystemFirmwareTable) failed!");
         FreeLibrary(hDLL);
         return FALSE;
     }
-
-    ZeroMemory(&SmbiosTableData, sizeof(SmbiosTableData));
 
     dwSize = sizeof(Data);
 
-    Ret = GetSystemFirmwareTable('RSMB', 'PCAF', &Data, dwSize);
+    Ret = GetSystemFirmwareTable('RSMB', 'PCAF', RawData, dwSize);
     if (!Ret)
     {
+        DebugTrace(L"GetSystemFirmwareTable() failed!");
         FreeLibrary(hDLL);
         return FALSE;
     }
 
-    CopyMemory(SmbiosTableData, Data.SMBIOSTableData, sizeof(SmbiosTableData));
     FreeLibrary(hDLL);
 
     return TRUE;
+}
+
+/*BOOL
+GetSmbiosDataFromRegistry(RAWSMBIOSDATA *RawData, DWORD dwSize)
+{
+    DWORD dwType = REG_BINARY;
+    HKEY hKey;
+
+    //if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\services\\mssmbios\\Data", 0, KEY_READ, &hKey) ==
+    //    ERROR_SUCCESS)
+    if (RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\mssmbios\\Data", 0, KEY_READ, &hKey) ==
+        ERROR_SUCCESS)
+    {
+        if (RegQueryValueEx(hKey,
+                            L"SMBiosData",
+                            NULL,
+                            &dwType,
+                            (LPBYTE)RawData,
+                            &dwSize) == ERROR_SUCCESS)
+        {
+            RegCloseKey(hKey);
+            return TRUE;
+        }
+
+        RegCloseKey(hKey);
+    }
+
+    return FALSE;
+}*/
+
+static INT
+GetSmbiosStructuresCount(const BYTE *Buffer, DWORD Length)
+{
+    INT Count = 0; /* counts the strutures */
+    BYTE *Offset = (BYTE *)Buffer; /* points to the actual address in the buff that's been checked */
+    DMI_HEADER *Header = NULL; /* header of the struct been read to get the length to increase the offset */
+
+    /* searches structures on the whole SMBIOS Table */
+    while (Offset  < (Buffer + Length))
+    {
+        /* get the header to read te length and to increase the offset */
+        Header = (DMI_HEADER*)Offset;
+        Offset += Header->Length;
+
+        Count++;
+
+        /*
+         * increses the offset to point to the next header that's
+         * after the strings at the end of the structure.
+         */
+        while((*(WORD *)Offset != 0)  &&  (Offset < (Buffer + Length)))
+        {
+            Offset++;
+        }
+
+        /*
+         * Points to the next stucture thas after two null BYTEs
+         * at the end of the strings.
+         */
+        Offset += 2;
+    }
+
+    return Count;
 }
 
 BOOL
@@ -689,145 +764,171 @@ InitSmBIOSData(VOID)
     char *buf;
     DWORD dwSize;
 
-    if (InitSmBIOSDataFromFirmwareTable())
+    /* For testing only */
+    /*if (GetSmbiosDataFromRegistry(&SmbiosRawData, sizeof(RAWSMBIOSDATA)))
+    {
+        StructuresCount = GetSmbiosStructuresCount(&SmbiosRawData.SMBIOSTableData[0],
+                                                   SmbiosRawData.Length);
+        goto Success;
+    }*/
+
+    buf = GetSmbiosData(&dwSize);
+    if (buf)
+    {
+        Entry = (PSMBIOS_ENTRY)buf;
+
+        CopyMemory(&SmbiosRawData.SMBIOSTableData, buf + sizeof(SMBIOS_ENTRY), Entry->StructureTableLength);
+        SmbiosRawData.Length = Entry->StructureTableLength;
+        SmbiosRawData.SMBIOSMajorVersion = Entry->MajorVer;
+        SmbiosRawData.SMBIOSMinorVersion = Entry->MinorVer;
+        StructuresCount = Entry->NumberOfSMBIOSStructures;
+
+        VirtualFree(buf, 0, MEM_RELEASE);
+
+        goto Success;
+    }
+
+    if (InitSmBIOSDataFromFirmwareTable(&SmbiosRawData, sizeof(RAWSMBIOSDATA)))
+    {
+        StructuresCount = GetSmbiosStructuresCount(&SmbiosRawData.SMBIOSTableData[0],
+                                                   SmbiosRawData.Length);
+        goto Success;
+    }
+
+    goto Failed;
+
+Success:
+    if (StructuresCount > 0)
     {
         IsSmBIOSInitialized = TRUE;
         return TRUE;
     }
-
-    buf = GetSmbiosData(&dwSize);
-    if (!buf)
-    {
-        return FALSE;
-    }
-    Entry = (PSMBIOS_ENTRY)buf;
-
-    CopyMemory(SmbiosTableData, buf + sizeof(SMBIOS_ENTRY), Entry->StructureTableLength);
-
-    VirtualFree(buf, 0, MEM_RELEASE);
-
-    IsSmBIOSInitialized = TRUE;
-    return TRUE;
-}
-
-static SIZE_T
-GetFormattedSectionLength(SIZE_T Index)
-{
-    if (SmbiosTableData[Index] > 127)
-        return 0;
-
-    return SmbiosTableData[Index + 1];
-}
-
-static SIZE_T
-GetUnformattedSectionLength(SIZE_T Index)
-{
-    SIZE_T UnformattedSectionLength = SmbiosTableData[Index + 1];
-    SIZE_T StartPoint = Index;
-
-    Index += UnformattedSectionLength;
-
-    while (Index < MAX_DATA - 1)
-    {
-        if ((SmbiosTableData[Index] == 0) && (SmbiosTableData[Index + 1] == 0))
-        {
-            return Index - UnformattedSectionLength + 2 - StartPoint;
-        }
-        ++Index;
-    }
-
-    return 0;
-}
-
-static BOOL
-GetNextDataByType(SIZE_T Type, LPVOID lpBuffer, SIZE_T *Length, BOOL Reset)
-{
-    SIZE_T FormattedSectionLength = 0;
-    SIZE_T UnformattedSectionLength = 0;
-    SIZE_T CurrentTableLength = 0;
-    static SIZE_T Index;
-
-    if (Reset) Index = 0;
-
-    for (;;)
-    {
-        FormattedSectionLength = GetFormattedSectionLength(Index);
-        UnformattedSectionLength = GetUnformattedSectionLength(Index);
-        CurrentTableLength = FormattedSectionLength + UnformattedSectionLength;
-
-        if (SmbiosTableData[Index] == Type)
-        {
-            if (CurrentTableLength < *Length)
-            {
-                CopyMemory(lpBuffer, &(SmbiosTableData[Index]), CurrentTableLength);
-                *Length = CurrentTableLength;
-            }
-            else break;
-
-            Index += CurrentTableLength;
-            return TRUE;
-        }
-        
-        Index += CurrentTableLength;
-
-        if (CurrentTableLength == 0) break;
-    }
-    *Length = 0;
-
+Failed:
+    IsSmBIOSInitialized = FALSE;
     return FALSE;
 }
 
 static VOID
-GetStringResourceByID(SIZE_T TargetId, BYTE *InBuf, WCHAR *OutString)
+ToDmiHeader(DMI_HEADER *Header, BYTE *Data)
 {
-    CHAR ArrayStringEntries[MAX_STRING_TABLE][MAX_STRING];
-    SIZE_T Index = (SIZE_T)*(InBuf + 1);
-    SIZE_T StillMoreData = *(InBuf + Index) + *(InBuf + Index + 1);
-    SIZE_T StartThisString;
-    SIZE_T Id = 0;
-    SIZE_T Len;
+    Header->Type = Data[0];
+    Header->Length = Data[1];
+    Header->Handle = WORD(Data + 2);
+    Header->Data = Data;
+}
 
-    while (StillMoreData)
+static BOOL
+GetDmiString(BYTE *pData, BYTE s, BYTE Length,
+             WCHAR *pString, SIZE_T Size)
+{
+    CHAR *bp = (CHAR *)pData;
+
+    if (s == 0)
+        return FALSE;
+
+    bp += Length;
+    while (s > 1 && *bp)
     {
-        StartThisString = Index;
+        bp += strlen(bp);
+        bp++;
+        s--;
+    }
 
-        while (*(InBuf + Index) != 0) ++Index;
+    if (!*bp)
+        return FALSE;
 
-        Len = Index - StartThisString;
-        ++Index;
+    StringCbPrintf(pString, Size, L"%S", bp);
+    ChopSpaces(pString, Size);
 
-        if (Len > 0)
+    if (pString[0] == 0)
+        return FALSE;
+
+    return TRUE;
+}
+
+BOOL
+EnumDMITablesByType(BYTE Type, SMBIOS_TABLE_ENUMPROC lpEnumProc)
+{
+    BYTE *Buffer = (BYTE *)(&SmbiosRawData.SMBIOSTableData[0]);
+    DWORD Length = SmbiosRawData.Length;
+    BYTE *Data = Buffer;
+    BOOL Result = FALSE;
+    INT i = 0;
+
+    DebugTrace(L"EnumDMITablesByType(Type = %d)", Type);
+
+    /* 4 is the length of an SMBIOS structure header */
+    while (i < StructuresCount && Data + 4 <= Buffer + Length)
+    {
+        DMI_HEADER Header;
+        BYTE *Next;
+
+        ToDmiHeader(&Header, Data);
+
+        /*
+         * If a short entry is found (less than 4 bytes), not only it
+         * is invalid, but we cannot reliably locate the next entry
+         * Better stop at this point, and let the user know his/her
+         * table is broken.
+         */
+        if (Header.Length < 4)
         {
-            CopyMemory(ArrayStringEntries[Id], InBuf + StartThisString, Len + 1);
+            DebugTrace(L"Invalid entry length (%u). DMI table is broken!",
+                       Header.Length);
+            break;
         }
-        ++Id;
-        StillMoreData = *(InBuf + Index) + *(InBuf + Index + 1);
+
+        /* In quiet mode, stop decoding at end of table marker */
+        if (Header.Type == 127)
+            break;
+
+        /* look for the next handle */
+        Next = Data + Header.Length;
+        while (Next - Buffer + 1 < Length && (Next[0] != 0 || Next[1] != 0))
+            Next++;
+        Next += 2;
+
+        if (Next - Buffer <= Length && Header.Type == Type)
+        {
+            DebugTrace(L"SMBIOS table: Type = %d, Length = %d, Handle = 0x04X",
+                       Header.Type, Header.Length, Header.Handle);
+            lpEnumProc(Header.Data, Header.Length);
+            Result = TRUE;
+        }
+
+        Data = Next;
+        i++;
     }
 
-    TargetId -= 1;
-
-    if (TargetId > Id) *(OutString) = 0;
-    else
+    if (i != StructuresCount)
     {
-        mbstowcs(OutString,
-                 ArrayStringEntries[TargetId],
-                 MAX_STRING * sizeof(WCHAR));
+        DebugTrace(L"Wrong DMI structures count: %d announced, only %d decoded",
+                   StructuresCount, i);
     }
+
+    if (Data - Buffer != Length)
+    {
+        DebugTrace(L"Wrong DMI structures length: %d bytes announced, structures occupy %d bytes",
+                   Length, (unsigned int)(Data - Buffer));
+    }
+
+    return Result;
 }
 
 VOID
 AddDMIFooter(VOID)
 {
     WCHAR szText[MAX_STR_LEN];
+    INT IconIndex;
 
     if (IoGetTarget() != IO_TARGET_LISTVIEW ||
         ListView_GetItemCount(DllParams.hListView) == 0)
         return;
 
-    IoAddIcon(IDI_BANG);
+    IconIndex = IoAddIcon(IDI_BANG);
     IoAddFooter();
 
-    IoAddValueName(0, 1, IDS_DMI_HEADER_TITLE);
+    IoAddValueName(0, IconIndex, IDS_DMI_HEADER_TITLE);
 
     LoadMUIString(IDS_DMI_HEADER, szText, MAX_STR_LEN);
     IoSetItemText(szText);
@@ -867,111 +968,108 @@ SMBIOS_MemoryDeviceToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
     while (MemDevicesList[++Index].dwValue != 0);
 }
 
+VOID CALLBACK
+RAMInfoEnumProc(BYTE *pBuf, BYTE Length)
+{
+    WCHAR szText[MAX_STR_LEN];
+
+    /* Device Locator */
+    if (GetDmiString(pBuf, pBuf[0x10], Length, szText, sizeof(szText)))
+    {
+        IoAddHeaderString(0, 0, szText);
+    }
+    else
+    {
+        IoAddHeaderString(0, 0, L"Unknown");
+    }
+
+    /* Size */
+    if ((WORD(pBuf + 0x0C) & MEM_SIZE_MASK) > 0)
+    {
+        IoAddValueName(1, 0, IDS_MEM_SIZE);
+        IoSetItemText(L"%d MB", (WORD(pBuf + 0x0C) & MEM_SIZE_MASK));
+    }
+
+    /* Type */
+    if (pBuf[0x12] != 0x02)
+    {
+        SMBIOS_MemoryDeviceToText(pBuf[0x12], szText, sizeof(szText));
+        if (szText[0] != 0)
+        {
+            IoAddValueName(1, 0, IDS_TYPE);
+            IoSetItemText(szText);
+        }
+    }
+
+    /* Speed */
+    if (WORD(pBuf + 0x15) > 0)
+    {
+        IoAddValueName(1, 0, IDS_MEM_SPEED);
+        IoSetItemText(L"%d MHz", WORD(pBuf + 0x15));
+    }
+
+    /* Form factor */
+    SMBIOS_FormFactorToText(pBuf[0x0E], szText, sizeof(szText));
+    if (szText[0] != 0)
+    {
+        IoAddValueName(1, 0, IDS_MEM_FORMFACTOR);
+        IoSetItemText(szText);
+    }
+
+    /* Serial number */
+    if (GetDmiString(pBuf, pBuf[0x18], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_SERIAL_NUMBER);
+        IoSetItemText(szText);
+    }
+
+    /* Part Number */
+    if (GetDmiString(pBuf, pBuf[0x1A], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_MEM_PARTNUMBER);
+        IoSetItemText(szText);
+    }
+
+    /* Manufacturer */
+    if (GetDmiString(pBuf, pBuf[0x17], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_MANUFACTURER);
+        IoSetItemText(szText);
+    }
+
+    /* Bank */
+    if (GetDmiString(pBuf, pBuf[0x11], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_MEM_BANK);
+        IoSetItemText(szText);
+    }
+
+    /* Total width */
+    if (WORD(pBuf + 0x08) > 0)
+    {
+        IoAddValueName(1, 0, IDS_MEM_TOTALWIDTH);
+        IoSetItemText(L"%d bit", WORD(pBuf + 0x08));
+    }
+
+    /* Data width */
+    if (WORD(pBuf + 0x0A))
+    {
+        IoAddValueName(1, 0, IDS_MEM_DATAWIDTH);
+        IoSetItemText(L"%d bit", WORD(pBuf + 0x0A));
+    }
+}
+
 VOID
 DMI_RAMInfo(VOID)
 {
-    WCHAR szText[MAX_STR_LEN];
-    BYTE Buf[MAX_DATA] = {0};
-    BYTE* pBuf = Buf;
-    SIZE_T Count = 0;
-    WORD wValue;
-    BOOL IsFound;
-    SIZE_T Len;
-
     DebugStartReceiving();
 
-    if (!IsSmBiosWorks()) return;
     IoAddIcon(IDI_HW);
 
-    do
-    {
-        Len = MAX_DATA;
-        IsFound = FALSE;
+    if (!IsSmBiosWorks()) return;
 
-        if (GetNextDataByType(MEMORY_DEVICES_INFO, &Buf, &Len, ((Count < 1) ? TRUE : FALSE)))
-        {
-            IsFound = TRUE;
-            ++Count;
-        }
-
-        if (IsFound)
-        {
-            /* Device Locator */
-            GetStringResourceByID(Buf[0x10], pBuf, szText);
-            IoAddHeaderString(0, 0, szText);
-
-            /* Size */
-            IoAddValueName(1, 0, IDS_MEM_SIZE);
-            CopyMemory(&wValue, pBuf + 0x0C, 2);
-            IoSetItemText(L"%d MB", (wValue & MEM_SIZE_MASK));
-
-            /* Type */
-            if (Buf[0x12] != 0x02)
-            {
-                IoAddValueName(1, 0, IDS_TYPE);
-                SMBIOS_MemoryDeviceToText(Buf[0x12], szText, sizeof(szText));
-                IoSetItemText(szText);
-            }
-
-            /* Speed */
-            CopyMemory(&wValue, pBuf + 0x15, 2);
-            if (wValue > 0)
-            {
-                IoAddValueName(1, 0, IDS_MEM_SPEED);
-                IoSetItemText(L"%d MHz", wValue);
-            }
-
-            /* Form factor */
-            IoAddValueName(1, 0, IDS_MEM_FORMFACTOR);
-            SMBIOS_FormFactorToText(Buf[0x0E], szText, sizeof(szText));
-            IoSetItemText(szText);
-
-            /* Serial number */
-            GetStringResourceByID(Buf[0x18], pBuf, szText);
-            ChopSpaces(szText, sizeof(szText));
-            if (szText[0] != 0)
-            {
-                IoAddValueName(1, 0, IDS_SERIAL_NUMBER);
-                IoSetItemText(szText);
-            }
-
-            /* Part Number */
-            GetStringResourceByID(Buf[0x1A], pBuf, szText);
-            ChopSpaces(szText, sizeof(szText));
-            if (szText[0] != 0)
-            {
-                IoAddValueName(1, 0, IDS_MEM_PARTNUMBER);
-                IoSetItemText(szText);
-            }
-
-            /* Manufacturer */
-            GetStringResourceByID(Buf[0x17], pBuf, szText);
-            ChopSpaces(szText, sizeof(szText));
-            if (szText[0] != 0)
-            {
-                IoAddValueName(1, 0, IDS_MANUFACTURER);
-                IoSetItemText(szText);
-            }
-
-            /* Bank */
-            IoAddValueName(1, 0, IDS_MEM_BANK);
-            GetStringResourceByID(Buf[0x11], pBuf, szText);
-            IoSetItemText(szText);
-
-            /* Total width */
-            IoAddValueName(1, 0, IDS_MEM_TOTALWIDTH);
-            CopyMemory(&wValue, pBuf + 0x08, 2);
-            IoSetItemText(L"%d bit", wValue);
-
-            /* Data width */
-            IoAddValueName(1, 0, IDS_MEM_DATAWIDTH);
-            CopyMemory(&wValue, pBuf + 0x0A, 2);
-            IoSetItemText(L"%d bit", wValue);
-        }
-    }
-    while (IsFound);
-
-    AddDMIFooter();
+    if (EnumDMITablesByType(MEMORY_DEVICES_INFO, RAMInfoEnumProc))
+        AddDMIFooter();
 
     DebugEndReceiving();
 }
@@ -993,145 +1091,142 @@ SMBIOS_SramToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
     while (SramTypeList[++Index].dwValue != 0);
 }
 
+VOID CALLBACK
+CacheInfoEnumProc(BYTE *pBuf, BYTE Length)
+{
+    WCHAR *p, szText[MAX_STR_LEN];
+    WORD Config = 0;
+    BYTE SramType;
+
+    if (GetDmiString(pBuf, pBuf[0x04], Length, szText, sizeof(szText)))
+    {
+        IoAddHeaderString(0, 0, szText);
+    }
+    else
+    {
+        IoAddHeaderString(0, 0, L"Unknown");
+    }
+
+    /* Cache type */
+    p = NULL;
+    Config = (WORD(pBuf + 0x05) & CACHE_LOCATION_MASK) >> 5;
+    if (Config == CACHE_INTERNAL)
+        p = L"Internal";
+    if (Config == CACHE_EXTERNAL)
+        p = L"External";
+    if (Config == CACHE_RESERVED)
+        p = L"Reserved";
+    if (Config == CACHE_UNKNOWN4)
+        p = L"Unknown type";
+    if (p)
+    {
+        IoAddValueName(1, 0, IDS_TYPE);
+        IoSetItemText(p);
+    }
+
+    /* Cache status */
+    p = NULL;
+    Config = (WORD(pBuf + 0x05) & CACHE_ENABLED_MASK) >> 7;
+    if (Config == CACHE_ENABLED)
+        p = L"Enabled";
+    if (Config == CACHE_NOT_ENABLED)
+        p = L"Disabled";
+    if (p)
+    {
+        IoAddValueName(1, 0, IDS_STATUS);
+        IoSetItemText(p);
+    }
+
+    /* Cache mode */
+    p = NULL;
+    Config = (WORD(pBuf + 0x05) & CACHE_OPERATIONAL_MODE_MASK) >> 8;
+    if (Config == CACHE_WRITE_THRU)
+        p = L"Write Thru";
+    if (Config == CACHE_WRITE_BACK)
+        p = L"Write Back";
+    if (Config == CACHE_PER_ADDRESS)
+        p = L"Write varies w/ address";
+    if (Config == CACHE_UNKNOWN4)
+        p = L"Unknown write capability";
+    if (p)
+    {
+        IoAddValueName(1, 0, IDS_DMI_CACHE_MODE);
+        IoSetItemText(p);
+    }
+
+    /* Cache level */
+    p = NULL;
+    Config = WORD(pBuf + 0x05) & CACHE_LEVEL_MASK;
+    if (Config == CACHE_L1)
+        p = L"L1";
+    if (Config == CACHE_L2)
+        p = L"L2";
+    if (Config == CACHE_L3)
+        p = L"L3";
+    if (p)
+    {
+        IoAddValueName(1, 0, IDS_DMI_CACHE_LEVEL);
+        IoSetItemText(p);
+    }
+
+    /* Max cache size */
+    if ((WORD(pBuf + 0x07) & CACHE_SIZE_MASK) > 0)
+    {
+        IoAddValueName(1, 0, IDS_DMI_CACHE_MAX_SIZE);
+        IoSetItemText(L"%d KB",
+                      WORD(pBuf + 0x07) & CACHE_SIZE_MASK);
+    }
+
+    /* Max cache size */
+    if ((WORD(pBuf + 0x09) & CACHE_SIZE_MASK) > 0)
+    {
+        IoAddValueName(1, 0, IDS_DMI_CACHE_CURRENT_SIZE);
+        IoSetItemText(L"%d KB",
+                      WORD(pBuf + 0x09) & CACHE_SIZE_MASK);
+    }
+
+    /* Supported SRAM type */
+    SramType = WORD(pBuf + 0x0B) & SRAM_TYPE_MASK;
+    IoAddValueName(1, 0, IDS_DMI_CACHE_SRAM_TYPES);
+
+    szText[0] = 0;
+    if (SramType & CACHE_OTHER)
+        StringCbCat(szText, sizeof(szText), L"Other, ");
+    if (SramType & CACHE_UNKNOWN2)
+        StringCbCat(szText, sizeof(szText), L"Unknown, ");
+    if (SramType & CACHE_NON_BURST)
+        StringCbCat(szText, sizeof(szText), L"Non-burst, ");
+    if (SramType & CACHE_BURST)
+        StringCbCat(szText, sizeof(szText), L"Burst, ");
+    if (SramType & CACHE_PIPELINE)
+        StringCbCat(szText, sizeof(szText), L"Pipeline brust, ");
+    if (SramType & CACHE_SYNCHRONOUS)
+        StringCbCat(szText, sizeof(szText), L"Synchronous, ");
+    if (SramType & CACHE_ASYNCHRONOUS)
+        StringCbCat(szText, sizeof(szText), L"Asynchronous, ");
+    szText[wcslen(szText) - 2] = 0;
+    IoSetItemText(szText);
+
+    /* Current SRAM type */
+    SMBIOS_SramToText(WORD(pBuf + 0x0D) & SRAM_TYPE_MASK,
+                      szText, sizeof(szText));
+    if (szText[0] != 0)
+    {
+        IoAddValueName(1, 0, IDS_DMI_CACHE_SRAM_CURRENT);
+        IoSetItemText(szText);
+    }
+}
+
 VOID
 DMI_CacheInfo(VOID)
 {
-    WCHAR szText[MAX_STR_LEN];
-    WORD wValue, Config = 0;
-    BYTE SramType, Buf[MAX_DATA] = {0};
-    BYTE* pBuf = Buf;
-    SIZE_T Count = 0;
-    BOOL IsFound;
-    SIZE_T Len;
-
     DebugStartReceiving();
 
     if (!IsSmBiosWorks()) return;
     IoAddIcon(IDI_SENSOR);
 
-    do
-    {
-        Len = MAX_DATA;
-        IsFound = FALSE;
-
-        if (GetNextDataByType(CACHE_INFO, &Buf, &Len, (Count < 1) ? TRUE : FALSE))
-        {
-            IsFound = TRUE;
-            ++Count;
-        }
-
-        if (IsFound)
-        {
-            GetStringResourceByID(Buf[0x04], pBuf, szText);
-            IoAddHeaderString(0, 0, szText);
-
-            /* Cache type */
-            IoAddValueName(1, 0, IDS_TYPE);
-
-            CopyMemory(&wValue, pBuf + 0x05, 2);
-            Config = (wValue & CACHE_LOCATION_MASK) >> 5;
-            if (Config == CACHE_INTERNAL)
-                StringCbCopy(szText, sizeof(szText), L"Internal");
-            if (Config == CACHE_EXTERNAL)
-                StringCbCopy(szText, sizeof(szText), L"External");
-            if (Config == CACHE_RESERVED)
-                StringCbCopy(szText, sizeof(szText), L"Reserved");
-            if (Config == CACHE_UNKNOWN4)
-                StringCbCopy(szText, sizeof(szText), L"Unknown type");
-            IoSetItemText(szText);
-
-            /* Cache status */
-            IoAddValueName(1, 0, IDS_STATUS);
-
-            Config = (wValue & CACHE_ENABLED_MASK) >> 7;
-            if (Config == CACHE_ENABLED)
-                StringCbCopy(szText, sizeof(szText), L"Enabled");
-            if (Config == CACHE_NOT_ENABLED)
-                StringCbCopy(szText, sizeof(szText), L"Disabled");
-            IoSetItemText(szText);
-
-            /* Cache mode */
-            IoAddValueName(1, 0, IDS_DMI_CACHE_MODE);
-
-            Config = (wValue & CACHE_OPERATIONAL_MODE_MASK) >> 8;
-            if (Config == CACHE_WRITE_THRU)
-                StringCbCopy(szText, sizeof(szText), L"Write Thru");
-            if (Config == CACHE_WRITE_BACK)
-                StringCbCopy(szText, sizeof(szText), L"Write Back");
-            if (Config == CACHE_PER_ADDRESS)
-                StringCbCopy(szText, sizeof(szText), L"Write varies w/ address");
-            if (Config == CACHE_UNKNOWN4)
-                StringCbCopy(szText, sizeof(szText), L"Unknown write capability");
-            IoSetItemText(szText);
-
-            /* Cache level */
-            IoAddValueName(1, 0, IDS_DMI_CACHE_LEVEL);
-
-            Config = wValue & CACHE_LEVEL_MASK;
-            if (Config == CACHE_L1)
-                StringCbCopy(szText, sizeof(szText), L"L1");
-            if (Config == CACHE_L2)
-                StringCbCopy(szText, sizeof(szText), L"L2");
-            if (Config == CACHE_L3)
-                StringCbCopy(szText, sizeof(szText), L"L3");
-            IoSetItemText(szText);
-
-            /* Max cache size */
-            CopyMemory(&wValue, pBuf + 0x07, 2);
-            if ((wValue & CACHE_SIZE_MASK) > 0)
-            {
-                IoAddValueName(1, 0, IDS_DMI_CACHE_MAX_SIZE);
-                IoSetItemText(L"%d KB",
-                              wValue & CACHE_SIZE_MASK);
-            }
-
-            /* Max cache size */
-            CopyMemory(&wValue, pBuf + 0x09, 2);
-            if ((wValue & CACHE_SIZE_MASK) > 0)
-            {
-                IoAddValueName(1, 0, IDS_DMI_CACHE_CURRENT_SIZE);
-                IoSetItemText(L"%d KB",
-                              wValue & CACHE_SIZE_MASK);
-            }
-
-            /* Supported SRAM type */
-            CopyMemory(&wValue, pBuf + 0x0B, 2);
-            SramType = wValue & SRAM_TYPE_MASK;
-            IoAddValueName(1, 0, IDS_DMI_CACHE_SRAM_TYPES);
-
-            szText[0] = 0;
-            if (SramType & CACHE_OTHER)
-                StringCbCat(szText, sizeof(szText), L"Other, ");
-            if (SramType & CACHE_UNKNOWN2)
-                StringCbCat(szText, sizeof(szText), L"Unknown, ");
-            if (SramType & CACHE_NON_BURST)
-                StringCbCat(szText, sizeof(szText), L"Non-burst, ");
-            if (SramType & CACHE_BURST)
-                StringCbCat(szText, sizeof(szText), L"Burst, ");
-            if (SramType & CACHE_PIPELINE)
-                StringCbCat(szText, sizeof(szText), L"Pipeline brust, ");
-            if (SramType & CACHE_SYNCHRONOUS)
-                StringCbCat(szText, sizeof(szText), L"Synchronous, ");
-            if (SramType & CACHE_ASYNCHRONOUS)
-                StringCbCat(szText, sizeof(szText), L"Asynchronous, ");
-            szText[wcslen(szText) - 2] = 0;
-            IoSetItemText(szText);
-
-            /* Current SRAM type */
-            CopyMemory(&wValue, pBuf + 0x0D, 2);
-            SMBIOS_SramToText(wValue & SRAM_TYPE_MASK,
-                              szText, sizeof(szText));
-            ChopSpaces(szText, sizeof(szText));
-            if (szText[0] != 0)
-            {
-                IoAddValueName(1, 0, IDS_DMI_CACHE_SRAM_CURRENT);
-                IoSetItemText(szText);
-            }
-        }
-    }
-    while (IsFound);
-
-    AddDMIFooter();
+    if (EnumDMITablesByType(CACHE_INFO, CacheInfoEnumProc))
+        AddDMIFooter();
 
     DebugEndReceiving();
 }
@@ -1205,264 +1300,309 @@ SMBIOS_ProcessorUpgradeToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
     while (ProcessorUpgradeList[++Index].dwValue != 0);
 }
 
+VOID CALLBACK
+CPUInfoEnumProc(BYTE *pBuf, BYTE Length)
+{
+    WCHAR szText[MAX_STR_LEN];
+    FLOAT Voltage;
+
+    /* Version */
+    if (GetDmiString(pBuf, pBuf[0x10], Length, szText, sizeof(szText)))
+    {
+        IoAddHeaderString(0, 0, szText);
+    }
+    else
+    {
+        IoAddHeaderString(0, 0, L"Not installed");
+    }
+
+    /* Manufacturer */
+    if (GetDmiString(pBuf, pBuf[0x07], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_MANUFACTURER);
+        IoSetItemText(szText);
+    }
+
+    /* Family */
+    SMBIOS_ProcessorFamilyToText(pBuf[0x06], szText, sizeof(szText));
+    if (szText[0] != 0)
+    {
+        IoAddValueName(1, 0, IDS_CPU_FAMILY);
+        IoSetItemText(szText);
+    }
+
+    /* Type */
+    SMBIOS_ProcessorTypeToText(pBuf[0x05], szText, sizeof(szText));
+    if (szText[0] != 0)
+    {
+        IoAddValueName(1, 0, IDS_TYPE);
+        IoSetItemText(szText);
+    }
+
+    /* Status */
+    SMBIOS_ProcessorStatusToText(pBuf[0x18], szText, sizeof(szText));
+    if (szText[0] != 0)
+    {
+        IoAddValueName(1, 0, IDS_STATUS);
+        IoSetItemText(szText);
+    }
+
+    /* Socket */
+    if (GetDmiString(pBuf, pBuf[0x04], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_CPU_SOCKET);
+        IoSetItemText(szText);
+    }
+
+    /* Upgrade */
+    SMBIOS_ProcessorUpgradeToText(pBuf[0x19], szText, sizeof(szText));
+    if (szText[0] != 0)
+    {
+        IoAddValueName(1, 0, IDS_CPU_UPGRADE);
+        IoSetItemText(szText);
+    }
+
+    /* External clock */
+    if (WORD(pBuf + 0x12) > 0)
+    {
+        IoAddValueName(1, 0, IDS_CPU_EXTCLOCK);
+        IoSetItemText(L"%d MHz", WORD(pBuf + 0x12));
+    }
+
+    /* Current speed */
+    if (WORD(pBuf + 0x16) > 0)
+    {
+        IoAddValueName(1, 0, IDS_CPU_CURRENTSPEED);
+        IoSetItemText(L"%d MHz", WORD(pBuf + 0x16));
+    }
+
+    /* Max speed */
+    if (WORD(pBuf + 0x14) > 0)
+    {
+        IoAddValueName(1, 0, IDS_CPU_MAXSPEED);
+        IoSetItemText(L"%d MHz", WORD(pBuf + 0x14));
+    }
+
+    if ((pBuf[0x11] & USE_LEGACY_VOLTAGE_MASK))
+    {
+        Voltage = (FLOAT) (pBuf[0x11] & LEGACY_VOLTAGE_MASK);
+        Voltage = (FLOAT) Voltage / (FLOAT) 10;
+    }
+    else
+    {
+        UCHAR tmp = pBuf[0x11] & VOLTAGE_MASK;
+        if (tmp & _5_VOLTS) 
+        {
+            Voltage = 5.00;
+        }
+        else if (tmp & _3_3_VOLTS)
+        {
+            Voltage = (FLOAT)3.03;
+        }
+        else if (tmp & _2_9_VOLTS)
+        {
+            Voltage = (FLOAT)2.09;
+        }
+        else
+        {
+            Voltage = (FLOAT)0.00;
+        }
+    }
+
+    /* Voltage */
+    if (Voltage > 0.0f)
+    {
+        IoAddValueName(1, 0, IDS_CPU_VOLTAGE);
+        IoSetItemText(L"%2.2f Volts", (FLOAT)Voltage);
+    }
+}
+
 VOID
 DMI_CPUInfo(VOID)
 {
-    WORD wValue;
-    WCHAR szText[MAX_STR_LEN];
-    BYTE Buf[MAX_DATA] = {0};
-    BYTE* pBuf = Buf;
-    SIZE_T Count = 0;
-    FLOAT Voltage;
-    BOOL IsFound;
-    SIZE_T Len;
-
     DebugStartReceiving();
 
     if (!IsSmBiosWorks()) return;
 
     IoAddIcon(IDI_CPU);
 
-    do
-    {
-        Len = MAX_DATA;
-        IsFound = FALSE;
-
-        if (GetNextDataByType(PROCESSOR_INFO, &Buf, &Len, (Count < 1) ? TRUE : FALSE))
-        {
-            IsFound = TRUE;
-            ++Count;
-        }
-
-        if (IsFound)
-        {
-            /* Version */
-            GetStringResourceByID(Buf[0x10], pBuf, szText);
-            ChopSpaces(szText, sizeof(szText));
-            IoAddHeaderString(0, 0, (szText[0] != 0) ? szText : L"Not installed");
-
-            /* Manufacturer */
-            GetStringResourceByID(Buf[0x07], pBuf, szText);
-            if (szText[0] != 0)
-            {
-                IoAddValueName(1, 0, IDS_MANUFACTURER);
-                IoSetItemText(szText);
-            }
-
-            /* Family */
-            SMBIOS_ProcessorFamilyToText(Buf[0x06], szText, sizeof(szText));
-            if (szText[0] != 0)
-            {
-                IoAddValueName(1, 0, IDS_CPU_FAMILY);
-                IoSetItemText(szText);
-            }
-
-            /* Type */
-            IoAddValueName(1, 0, IDS_TYPE);
-            SMBIOS_ProcessorTypeToText(Buf[0x05], szText, sizeof(szText));
-            IoSetItemText(szText);
-
-            /* Status */
-            IoAddValueName(1, 0, IDS_STATUS);
-            SMBIOS_ProcessorStatusToText(Buf[0x18], szText, sizeof(szText));
-            if (szText[0] == 0)
-            {
-                LoadMUIString(IDS_UNKNOWN, szText, MAX_STR_LEN);
-            }
-            IoSetItemText(szText);
-
-            /* Socket */
-            IoAddValueName(1, 0, IDS_CPU_SOCKET);
-            GetStringResourceByID(Buf[0x04], pBuf, szText);
-            IoSetItemText(szText);
-
-            /* Upgrade */
-            IoAddValueName(1, 0, IDS_CPU_UPGRADE);
-            SMBIOS_ProcessorUpgradeToText(Buf[0x19], szText, sizeof(szText));
-            IoSetItemText(szText);
-
-            /* External clock */
-            CopyMemory(&wValue, pBuf + 0x12, 2);
-            if (wValue > 0)
-            {
-                IoAddValueName(1, 0, IDS_CPU_EXTCLOCK);
-                IoSetItemText(L"%d MHz", wValue);
-            }
-
-            /* Current speed */
-            CopyMemory(&wValue, pBuf + 0x16, 2);
-            if (wValue > 0)
-            {
-                IoAddValueName(1, 0, IDS_CPU_CURRENTSPEED);
-                IoSetItemText(L"%d MHz", wValue);
-            }
-
-            /* Max speed */
-            CopyMemory(&wValue, pBuf + 0x14, 2);
-            if (wValue > 0)
-            {
-                IoAddValueName(1, 0, IDS_CPU_MAXSPEED);
-                IoSetItemText(L"%d MHz", wValue);
-            }
-
-            if ((Buf[0x11] & USE_LEGACY_VOLTAGE_MASK))
-            {
-                Voltage = (FLOAT) (Buf[0x11] & LEGACY_VOLTAGE_MASK);
-                Voltage = (FLOAT) Voltage / (FLOAT) 10;
-            }
-            else
-            {
-                UCHAR tmp = Buf[0x11] & VOLTAGE_MASK;
-                if (tmp & _5_VOLTS) 
-                {
-                    Voltage = 5.00;
-                }
-                else if (tmp & _3_3_VOLTS)
-                {
-                    Voltage = (FLOAT)3.03;
-                }
-                else if (tmp & _2_9_VOLTS)
-                {
-                    Voltage = (FLOAT)2.09;
-                }
-                else
-                {
-                    Voltage = (FLOAT)0.00;
-                }
-            }
-
-            /* Voltage */
-            if (Voltage > 0.0f)
-            {
-                IoAddValueName(1, 0, IDS_CPU_VOLTAGE);
-                IoSetItemText(L"%2.2f Volts", (FLOAT)Voltage);
-            }
-        }
-    }
-    while (IsFound);
-
-    AddDMIFooter();
+    if (EnumDMITablesByType(PROCESSOR_INFO, CPUInfoEnumProc))
+        AddDMIFooter();
 
     DebugEndReceiving();
 }
 
 VOID
+BiosCharacteristics(DWORD64 Characteristics)
+{
+    WCHAR szSupported[MAX_STR_LEN], szUnsupported[MAX_STR_LEN];
+    WCHAR *szCharacteristics[] =
+    {
+        L"BIOS characteristics not supported", /* 3 */
+        L"ISA", /* 4 */
+        L"MCA",
+        L"EISA",
+        L"PCI",
+        L"PC Card (PCMCIA)",
+        L"PNP",
+        L"APM",
+        L"BIOS is upgradeable",
+        L"BIOS shadowing",
+        L"VLB",
+        L"ESCD",
+        L"Boot from CD",
+        L"Selectable boot",
+        L"BIOS ROM is socketed",
+        L"Boot from PC Card (PCMCIA)",
+        L"EDD",
+        L"Japanese floppy for NEC 9800 1.2 MB (int 13h)",
+        L"Japanese floppy for Toshiba 1.2 MB (int 13h)",
+        L"5.25\"/360 kB floppy (int 13h)",
+        L"5.25\"/1.2 MB floppy (int 13h)",
+        L"3.5\"/720 kB floppy (int 13h)",
+        L"3.5\"/2.88 MB floppy (int 13h)",
+        L"Print screen (int 5h)",
+        L"8042 keyboard (int 9h)",
+        L"Serial (int 14h)",
+        L"Printer (int 17h)",
+        L"CGA/mono video (int 10h)",
+        L"NEC PC-98" /* 31 */
+    };
+    INT i;
+
+    if (Characteristics & (1 << 3))
+        return;
+
+    LoadMUIString(IDS_CPUID_SUPPORTED, szSupported, MAX_STR_LEN);
+    LoadMUIString(IDS_CPUID_UNSUPPORTED, szUnsupported, MAX_STR_LEN);
+
+    for (i = 4; i <= 31; i++)
+    {
+        BOOL IsSupported = (Characteristics & (1 << i)) ? TRUE : FALSE;
+
+        IoAddItem(2, IsSupported ? 1 : 2, szCharacteristics[i - 3]);
+        IoSetItemText(IsSupported ? szSupported : szUnsupported);
+    }
+}
+
+VOID
+BiosCharacteristics1(BYTE Characteristics)
+{
+    WCHAR szSupported[MAX_STR_LEN], szUnsupported[MAX_STR_LEN];
+    WCHAR *szCharacteristics[] =
+    {
+        L"ACPI is supported", /* 0 */
+        L"USB legacy is supported",
+        L"AGP is supported",
+        L"I2O boot is supported",
+        L"LS-120 boot is supported",
+        L"ATAPI Zip drive boot is supported",
+        L"IEEE 1394 boot is supported",
+        L"Smart battery is supported" /* 7 */
+    };
+    INT i;
+
+    LoadMUIString(IDS_CPUID_SUPPORTED, szSupported, MAX_STR_LEN);
+    LoadMUIString(IDS_CPUID_UNSUPPORTED, szUnsupported, MAX_STR_LEN);
+
+    for (i = 0; i <= 7; i++)
+    {
+        BOOL IsSupported = (Characteristics & (1 << i)) ? TRUE : FALSE;
+
+        IoAddItem(2, IsSupported ? 1 : 2, szCharacteristics[i]);
+        IoSetItemText(IsSupported ? szSupported : szUnsupported);
+    }
+}
+
+VOID
+BiosCharacteristics2(BYTE Characteristics)
+{
+    WCHAR szSupported[MAX_STR_LEN], szUnsupported[MAX_STR_LEN];
+    WCHAR *szCharacteristics[] =
+    {
+        L"BIOS boot specification is supported", /* 0 */
+        L"Function key-initiated network boot is supported",
+        L"Targeted content distribution is supported" /* 2 */
+    };
+    INT i;
+
+    LoadMUIString(IDS_CPUID_SUPPORTED, szSupported, MAX_STR_LEN);
+    LoadMUIString(IDS_CPUID_UNSUPPORTED, szUnsupported, MAX_STR_LEN);
+
+    for (i = 0; i <= 2; i++)
+    {
+        BOOL IsSupported = (Characteristics & (1 << i)) ? TRUE : FALSE;
+
+        IoAddItem(2, IsSupported ? 1 : 2, szCharacteristics[i]);
+        IoSetItemText(IsSupported ? szSupported : szUnsupported);
+    }
+}
+
+VOID CALLBACK
+BiosInfoEnumProc(BYTE *pBuf, BYTE Length)
+{
+    WCHAR szText[MAX_STR_LEN];
+
+    IoAddHeader(0, 0, IDS_CAT_HW_DMI_BIOS);
+
+    /* Manufacturer */
+    if (GetDmiString(pBuf, pBuf[0x04], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_MANUFACTURER);
+        IoSetItemText(szText);
+    }
+
+    /* Version */
+    if (GetDmiString(pBuf, pBuf[0x05], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_VERSION);
+        IoSetItemText(szText);
+    }
+
+    /* Date */
+    if (GetDmiString(pBuf, pBuf[0x08], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_BIOS_DATE);
+        IoSetItemText(szText);
+    }
+
+    /* Size */
+    if (((pBuf[0x09] + 1) << 6) > 0)
+    {
+        IoAddValueName(1, 0, IDS_BIOS_SIZE);
+        StringCbPrintf(szText, sizeof(szText), L"%u KB", ((pBuf[0x09] + 1) << 6));
+        IoSetItemText(szText);
+    }
+
+    /* Fatures */
+    IoAddHeader(1, 0, IDS_BIOS_FATURES);
+
+    BiosCharacteristics(DWORD64(pBuf + 0x0A));
+
+    if (Length >= 0x13)
+    {
+        BiosCharacteristics1(pBuf[0x12]);
+    }
+
+    if (Length >= 14)
+    {
+        BiosCharacteristics2(pBuf[0x13]);
+    }
+}
+
+VOID
 DMI_BIOSInfo(VOID)
 {
-    SIZE_T NumberOptionalBytes;
-    DWORD bValue;
-    BYTE Buf[MAX_DATA] = {0};
-    BYTE* pBuf = Buf;
-    SIZE_T Len = MAX_DATA;
-    WCHAR szText[MAX_STR_LEN];
-    DWORD dwValue;
-
     DebugStartReceiving();
 
     if (!IsSmBiosWorks()) return;
 
     IoAddIcon(IDI_CPU);
+    IoAddIcon(IDI_CHECKED);
+    IoAddIcon(IDI_UNCHECKED);
 
-    if (GetNextDataByType(BIOS_INFO, &Buf, &Len, TRUE))
-    {
-        IoAddHeader(0, 0, IDS_CAT_HW_DMI_BIOS);
-
-        /* Manufacturer */
-        IoAddValueName(1, 0, IDS_MANUFACTURER);
-        GetStringResourceByID(Buf[0x04], pBuf, szText);
-        IoSetItemText(szText);
-
-        /* Version */
-        IoAddValueName(1, 0, IDS_VERSION);
-        GetStringResourceByID(Buf[0x05], pBuf, szText);
-        IoSetItemText(szText);
-
-        /* Date */
-        IoAddValueName(1, 0, IDS_BIOS_DATE);
-        GetStringResourceByID(Buf[0x08], pBuf, szText);
-        IoSetItemText(szText);
-
-        /* Size */
-        IoAddValueName(1, 0, IDS_BIOS_SIZE);
-        StringCbPrintf(szText, sizeof(szText), L"0x%02x", Buf[0x09]);
-        IoSetItemText(szText);
-
-        CopyMemory(&dwValue, &Buf[0x0A], 4);
-        NumberOptionalBytes = Buf[0x01] - 0x12;
-        CopyMemory(&bValue, &Buf[0x12], NumberOptionalBytes);
-
-        /* Boot devices */
-        szText[0] = 0;
-        if (dwValue & BIOS_CD_BOOT_SUPPORTED)
-            StringCbCat(szText, sizeof(szText), L"CD-ROM, ");
-        if (dwValue & BIOS_PCCARD_BOOT_SUPPORTED)
-            StringCbCat(szText, sizeof(szText), L"PCCARD, ");
-        if (bValue & BIOS_ATAPI_ZIP_BOOT_SUPPORTED)
-            StringCbCat(szText, sizeof(szText), L"ATAPI ZIP, ");
-        if (bValue & BIOS_BOOT_1394_SUPPORTED)
-            StringCbCat(szText, sizeof(szText), L"IEEE1394, ");
-        szText[wcslen(szText) - 2] = L'\0';
-        if (szText[0] != 0)
-        {
-            IoAddValueName(1, 0, IDS_BIOS_BOOT_DEVICES);
-            IoSetItemText(szText);
-        }
-
-        /* Fatures */
-        IoAddValueName(1, 0, IDS_BIOS_FATURES);
-
-        szText[0] = 0;
-        if (dwValue & BIOS_FLASHABLE)
-            StringCbCat(szText, sizeof(szText), L"Flash BIOS, ");
-        if (dwValue & BIOS_SHADOW_SUPPORTED)
-            StringCbCat(szText, sizeof(szText), L"Shadow BIOS, ");
-        if (dwValue & BIOS_SELECT_BOOT_SUPPORTED)
-            StringCbCat(szText, sizeof(szText), L"Select boot device, ");
-        if (dwValue & BIOS_ROM_SOCKETED)
-            StringCbCat(szText, sizeof(szText), L"Socketed BIOS, ");
-        //if (Info.BiosExtension2 & BIOS_BOOT_SPEC_SUPPORTED)
-        //    StringCbCat(szText, sizeof(szText), L"BBS, ");
-        szText[wcslen(szText) - 2] = L'\0';
-        IoSetItemText(szText);
-
-        /* Supported standards */
-        IoAddValueName(1, 0, IDS_BIOS_STANDATDS);
-
-        szText[0] = 0;
-        if (dwValue & BIOS_APM_SUPPORTED)
-            StringCbCat(szText, sizeof(szText), L"APM, ");
-        if (dwValue & BIOS_PNP_SUPPORTED)
-            StringCbCat(szText, sizeof(szText), L"PnP, ");
-        if (dwValue & BIOS_ESCD_SUPPORTED)
-            StringCbCat(szText, sizeof(szText), L"ESCD, ");
-        if (bValue & BIOS_ACPI_SUPPORTED)
-            StringCbCat(szText, sizeof(szText), L"ACPI, ");
-        szText[wcslen(szText) - 2] = L'\0';
-        IoSetItemText(szText);
-
-        /* Slots */
-        IoAddValueName(1, 0, IDS_BIOS_SLOTS);
-
-        szText[0] = 0;
-        if (dwValue & BIOS_ISA_SUPPORTED)
-            StringCbCat(szText, sizeof(szText), L"ISA, ");
-        if (dwValue & BIOS_MCS_SUPPORTED)
-            StringCbCat(szText, sizeof(szText), L"MCS, ");
-        if (dwValue & BIOS_ESIA_SUPPORTED)
-            StringCbCat(szText, sizeof(szText), L"ESIA, ");
-        if (dwValue & BIOS_PCI_SUPPORTED)
-            StringCbCat(szText, sizeof(szText), L"PCI, ");
-        if (dwValue & BIOS_PCMCIA_SUPPORTED)
-            StringCbCat(szText, sizeof(szText), L"PCMCIA, ");
-        if (bValue & BIOS_AGP_SUPPORTED)
-            StringCbCat(szText, sizeof(szText), L"AGP, ");
-        if (bValue & BIOS_USB_LEGACY_SUPPORTED)
-            StringCbCat(szText, sizeof(szText), L"USB, ");
-        szText[wcslen(szText) - 2] = L'\0';
-        IoSetItemText(szText);
-    }
-
-    AddDMIFooter();
+    if (EnumDMITablesByType(BIOS_INFO, BiosInfoEnumProc))
+        AddDMIFooter();
 
     DebugEndReceiving();
 }
@@ -1484,88 +1624,115 @@ SMBIOS_WakeupTypeToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
     while (WakeupTypeList[++Index].dwValue != 0);
 }
 
+BOOL
+DmiSystemUuid(const BYTE *p, WCHAR *pUuid, SIZE_T Size)
+{
+    INT only0xFF = 1, only0x00 = 1;
+    INT i;
+
+    for (i = 0; i < 16 && (only0x00 || only0xFF); i++)
+    {
+        if (p[i] != 0x00) only0x00 = 0;
+        if (p[i] != 0xFF) only0xFF = 0;
+    }
+
+    if (only0xFF || only0x00)
+    {
+        return FALSE;
+    }
+
+    /*
+     * As off version 2.6 of the SMBIOS specification, the first 3
+     * fields of the UUID are supposed to be encoded on little-endian.
+     * The specification says that this is the defacto standard,
+     * however I've seen systems following RFC 4122 instead and use
+     * network byte order, so I am reluctant to apply the byte-swapping
+     * for older versions.
+     */
+
+    if ((SmbiosRawData.SMBIOSMajorVersion << 8) + SmbiosRawData.SMBIOSMinorVersion >= 0x0206)
+    {
+        StringCbPrintf(pUuid, Size,
+            L"%02X%02X%02X%02X-%02X%02X-%02X%02X-%02X%02X-%02X%02X%02X%02X%02X%02X",
+            p[3], p[2], p[1], p[0], p[5], p[4], p[7], p[6],
+            p[8], p[9], p[10], p[11], p[12], p[13], p[14], p[15]);
+    }
+    else
+    {
+        StringCbPrintf(pUuid, Size,
+            L"%02X%02X%02X%02X-%02X%02X-%02X%02X-%02X%02X-%02X%02X%02X%02X%02X%02X",
+            p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7],
+            p[8], p[9], p[10], p[11], p[12], p[13], p[14], p[15]);
+    }
+
+    return TRUE;
+}
+
+VOID CALLBACK
+SystemInfoEnumProc(BYTE *pBuf, BYTE Length)
+{
+    WCHAR szText[MAX_STR_LEN];
+
+    IoAddHeader(0, 0, IDS_CAT_HW_DMI_SYSTEM);
+
+    /* Vendor */
+    if (GetDmiString(pBuf, pBuf[0x04], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_MANUFACTURER);
+        IoSetItemText(szText);
+    }
+
+    /* Product */
+    if (GetDmiString(pBuf, pBuf[0x05], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_PRODUCT);
+        IoSetItemText(szText);
+    }
+
+    /* Version */
+    if (GetDmiString(pBuf, pBuf[0x06], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_VERSION);
+        IoSetItemText(szText);
+    }
+
+    /* Serial number */
+    if (GetDmiString(pBuf, pBuf[0x07], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_SERIAL_NUMBER);
+        IoSetItemText(szText);
+    }
+
+    if (Length >= 0x19)
+    {
+        /* UUID */
+        if (DmiSystemUuid(pBuf + 0x08, szText, sizeof(szText)))
+        {
+            IoAddValueName(1, 0, IDS_SYS_ID);
+            IoSetItemText(szText);
+        }
+
+        /* Wakeup type */
+        SMBIOS_WakeupTypeToText(pBuf[0x18], szText, sizeof(szText));
+        if (szText[0] != 0)
+        {
+            IoAddValueName(1, 0, IDS_SYS_WAKEUP);
+            IoSetItemText(szText);
+        }
+    }
+}
+
 VOID
 DMI_SystemInfo(VOID)
 {
-    BYTE Buf[MAX_DATA] = {0};
-    BYTE* pBuf = Buf;
-    SIZE_T Len = MAX_DATA;
-    WCHAR szText[MAX_STR_LEN];
-    SystemUuid Uuid;
-
     DebugStartReceiving();
 
     if (!IsSmBiosWorks()) return;
 
     IoAddIcon(IDI_COMPUTER);
 
-    if (GetNextDataByType(SYSTEM_INFO, &Buf, &Len, TRUE))
-    {
-        IoAddHeader(0, 0, IDS_CAT_HW_DMI_SYSTEM);
-
-        /* Vendor */
-        GetStringResourceByID(Buf[0x04], pBuf, szText);
-        ChopSpaces(szText, sizeof(szText));
-        if (szText[0] != 0)
-        {
-            IoAddValueName(1, 0, IDS_MANUFACTURER);
-            IoSetItemText(szText);
-        }
-
-        /* Product */
-        GetStringResourceByID(Buf[0x05], pBuf, szText);
-        ChopSpaces(szText, sizeof(szText));
-        if (szText[0] != 0)
-        {
-            IoAddValueName(1, 0, IDS_PRODUCT);
-            IoSetItemText(szText);
-        }
-
-        /* Version */
-        GetStringResourceByID(Buf[0x06], pBuf, szText);
-        ChopSpaces(szText, sizeof(szText));
-        if (szText[0] != 0)
-        {
-            IoAddValueName(1, 0, IDS_VERSION);
-            IoSetItemText(szText);
-        }
-
-        /* Serial number */
-        GetStringResourceByID(Buf[0x07], pBuf, szText);
-        ChopSpaces(szText, sizeof(szText));
-        if (szText[0] != 0)
-        {
-            IoAddValueName(1, 0, IDS_SERIAL_NUMBER);
-            IoSetItemText(szText);
-        }
-
-        /* ID */
-        CopyMemory(&Uuid, &Buf[0x08], 16);
-        if (Uuid.TimeLow != 0xFFFFFFFF && Uuid.TimeHiAndVersion != 0xFFFF &&
-            Uuid.TimeMid != 0xFFFF)
-        {
-            IoAddValueName(1, 0, IDS_SYS_ID);
-            IoSetItemText(L"%08x-%04x%04x-%02x%02x%02x%02x-%02x%02x%02x%02x",
-                          Uuid.TimeLow, 
-                          Uuid.TimeHiAndVersion, 
-                          Uuid.TimeMid, 
-                          Uuid.Node[0x01],
-                          Uuid.Node[0x00],
-                          Uuid.ClockLowSeq,
-                          Uuid.ClockSeqHiAndReserved,
-                          Uuid.Node[0x05],
-                          Uuid.Node[0x04],
-                          Uuid.Node[0x03],
-                          Uuid.Node[0x02]);
-        }
-
-        /* Wakeup type */
-        IoAddValueName(1, 0, IDS_SYS_WAKEUP);
-        SMBIOS_WakeupTypeToText(Buf[0x18], szText, sizeof(szText));
-        IoSetItemText(szText);
-    }
-
-    AddDMIFooter();
+    if (EnumDMITablesByType(SYSTEM_INFO, SystemInfoEnumProc))
+        AddDMIFooter();
 
     DebugEndReceiving();
 }
@@ -1621,160 +1788,148 @@ SMBIOS_EnclSecStatusToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
     while (EnclSecStatusList[++Index].dwValue != 0);
 }
 
+VOID CALLBACK
+EnclosureInfoEnumProc(BYTE *pBuf, BYTE Length)
+{
+    WCHAR szText[MAX_STR_LEN];
+
+    IoAddHeader(0, 0, IDS_ENCL_ID);
+
+    /* Vendor */
+    if (GetDmiString(pBuf, pBuf[0x04], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_MANUFACTURER);
+        IoSetItemText(szText);
+    }
+
+    /* Version */
+    if (GetDmiString(pBuf, pBuf[0x06], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_VERSION);
+        IoSetItemText(szText);
+    }
+
+    /* Serial number */
+    if (GetDmiString(pBuf, pBuf[0x07], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_SERIAL_NUMBER);
+        IoSetItemText(szText);
+    }
+
+    /* Type */
+    SMBIOS_EnclTypeToText(pBuf[0x05], szText, sizeof(szText));
+    if (szText[0] != 0)
+    {
+        IoAddValueName(1, 0, IDS_ENCL_TYPE);
+        IoSetItemText(szText);
+    }
+
+    /* OS Load status */
+    if (pBuf[0x09] != 0x02)
+    {
+        SMBIOS_EnclStateToText(pBuf[0x09], szText, sizeof(szText));
+        if (szText[0] != 0)
+        {
+            IoAddValueName(1, 0, IDS_ENCL_OSLOAD_STATUS);
+            IoSetItemText(szText);
+        }
+    }
+
+    /* Power source status */
+    if (pBuf[0x0a] != 0x02)
+    {
+        SMBIOS_EnclStateToText(pBuf[0x0a], szText, sizeof(szText));
+        if (szText[0] != 0)
+        {
+            IoAddValueName(1, 0, IDS_ENCL_POWER_STATUS);
+            IoSetItemText(szText);
+        }
+    }
+
+    /* Temperature status */
+    if (pBuf[0x0b] != 0x02)
+    {
+        SMBIOS_EnclStateToText(pBuf[0x0b], szText, sizeof(szText));
+        if (szText[0] != 0)
+        {
+            IoAddValueName(1, 0, IDS_ENCL_TEMPERATURE_STATUS);
+            IoSetItemText(szText);
+        }
+    }
+
+    /* Security status */
+    if (pBuf[0x0c] != 0x02)
+    {
+        SMBIOS_EnclSecStatusToText(pBuf[0x0c], szText, sizeof(szText));
+        if (szText[0] != 0)
+        {
+            IoAddValueName(1, 0, IDS_ENCL_SECURITY_STATUS);
+            IoSetItemText(szText);
+        }
+    }
+}
+
 VOID
 DMI_EnclosureInfo(VOID)
 {
-    WCHAR szText[MAX_STR_LEN];
-    BYTE Buf[MAX_DATA] = {0};
-    BYTE* pBuf = Buf;
-    SIZE_T Count = 0;
-    BOOL IsFound;
-    SIZE_T Len;
-
     DebugStartReceiving();
 
     if (!IsSmBiosWorks()) return;
     IoAddIcon(IDI_ENCLOSURE);
 
-    do
-    {
-        Len = MAX_DATA;
-        IsFound = FALSE;
-
-        if (GetNextDataByType(ENCLOSURE_INFO, &Buf, &Len, (Count < 1) ? TRUE : FALSE))
-        {
-            IsFound = TRUE;
-            ++Count;
-        }
-
-        if (IsFound)
-        {
-            IoAddHeader(0, 0, IDS_ENCL_ID);
-
-            /* Vendor */
-            GetStringResourceByID(Buf[0x04], pBuf, szText);
-            ChopSpaces(szText, sizeof(szText));
-            if (szText[0] != 0)
-            {
-                IoAddValueName(1, 0, IDS_MANUFACTURER);
-                IoSetItemText(szText);
-            }
-
-            /* Version */
-            GetStringResourceByID(Buf[0x06], pBuf, szText);
-            ChopSpaces(szText, sizeof(szText));
-            if (szText[0] != 0)
-            {
-                IoAddValueName(1, 0, IDS_VERSION);
-                IoSetItemText(szText);
-            }
-
-            /* Serial number */
-            GetStringResourceByID(Buf[0x07], pBuf, szText);
-            ChopSpaces(szText, sizeof(szText));
-            if (szText[0] != 0)
-            {
-                IoAddValueName(1, 0, IDS_SERIAL_NUMBER);
-                IoSetItemText(szText);
-            }
-
-            /* Type */
-            IoAddValueName(1, 0, IDS_ENCL_TYPE);
-            SMBIOS_EnclTypeToText(Buf[0x05], szText, sizeof(szText));
-            if (szText[0] != 0)
-            {
-                LoadMUIString(IDS_UNKNOWN, szText, MAX_STR_LEN);
-            }
-            IoSetItemText(szText);
-
-            /* OS Load status */
-            if (Buf[0x09] != 0x02)
-            {
-                IoAddValueName(1, 0, IDS_ENCL_OSLOAD_STATUS);
-                SMBIOS_EnclStateToText(Buf[0x09], szText, sizeof(szText));
-                IoSetItemText(szText);
-            }
-
-            /* Power source status */
-            if (Buf[0x0a] != 0x02)
-            {
-                IoAddValueName(1, 0, IDS_ENCL_POWER_STATUS);
-                SMBIOS_EnclStateToText(Buf[0x0a], szText, sizeof(szText));
-                IoSetItemText(szText);
-            }
-
-            /* Temperature status */
-            if (Buf[0x0b] != 0x02)
-            {
-                IoAddValueName(1, 0, IDS_ENCL_TEMPERATURE_STATUS);
-                SMBIOS_EnclStateToText(Buf[0x0b], szText, sizeof(szText));
-                IoSetItemText(szText);
-            }
-
-            /* Security status */
-            if (Buf[0x0c] != 0x02)
-            {
-                IoAddValueName(1, 0, IDS_ENCL_SECURITY_STATUS);
-                SMBIOS_EnclSecStatusToText(Buf[0x0c], szText, sizeof(szText));
-                IoSetItemText(szText);
-            }
-        }
-    }
-    while (IsFound);
-
-    AddDMIFooter();
+    if (EnumDMITablesByType(ENCLOSURE_INFO, EnclosureInfoEnumProc))
+        AddDMIFooter();
 
     DebugEndReceiving();
+}
+
+VOID CALLBACK
+BoardInfoEnumProc(BYTE *pBuf, BYTE Length)
+{
+    WCHAR szText[MAX_STR_LEN];
+
+    IoAddHeader(0, 0, IDS_CAT_HW_DMI_BOARD);
+
+    /* Vendor */
+    if (GetDmiString(pBuf, pBuf[0x04], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_MANUFACTURER);
+        IoSetItemText(szText);
+    }
+
+    /* Product */
+    if (GetDmiString(pBuf, pBuf[0x05], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_PRODUCT);
+        IoSetItemText(szText);
+    }
+
+    /* Version */
+    if (GetDmiString(pBuf, pBuf[0x06], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_VERSION);
+        IoSetItemText(szText);
+    }
+
+    /* Serial number */
+    if (GetDmiString(pBuf, pBuf[0x07], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_SERIAL_NUMBER);
+        IoSetItemText(szText);
+    }
 }
 
 VOID
 DMI_BoardInfo(VOID)
 {
-    BYTE Buf[MAX_DATA] = {0};
-    BYTE* pBuf = Buf;
-    SIZE_T Len = MAX_DATA;
-    WCHAR szText[MAX_STR_LEN];
-
     DebugStartReceiving();
 
     if (!IsSmBiosWorks()) return;
 
     IoAddIcon(IDI_HW);
 
-    if (GetNextDataByType(BOARD_INFO, &Buf, &Len, TRUE))
-    {
-        IoAddHeader(0, 0, IDS_CAT_HW_DMI_BOARD);
-
-        /* Vendor */
-        IoAddValueName(1, 0, IDS_MANUFACTURER);
-        GetStringResourceByID(Buf[0x04], pBuf, szText);
-        IoSetItemText(szText);
-
-        /* Product */
-        IoAddValueName(1, 0, IDS_PRODUCT);
-        GetStringResourceByID(Buf[0x05], pBuf, szText);
-        IoSetItemText(szText);
-
-        /* Version */
-        GetStringResourceByID(Buf[0x06], pBuf, szText);
-        ChopSpaces(szText, sizeof(szText));
-        if (szText[0] != 0)
-        {
-            IoAddValueName(1, 0, IDS_VERSION);
-            IoSetItemText(szText);
-        }
-
-        /* Serial number */
-        GetStringResourceByID(Buf[0x07], pBuf, szText);
-        ChopSpaces(szText, sizeof(szText));
-        if (szText[0] != 0)
-        {
-            IoAddValueName(1, 0, IDS_SERIAL_NUMBER);
-            IoSetItemText(szText);
-        }
-    }
-
-    AddDMIFooter();
+    if (EnumDMITablesByType(BOARD_INFO, BoardInfoEnumProc))
+        AddDMIFooter();
 
     DebugEndReceiving();
 }
@@ -1830,56 +1985,51 @@ SMBIOS_SlotLengthToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
     while (SlotLengthList[++Index].dwValue != 0);
 }
 
+VOID CALLBACK
+SlotInfoEnumProc(BYTE *pBuf, BYTE Length)
+{
+    WCHAR szText[MAX_STR_LEN];
+
+    if (GetDmiString(pBuf, pBuf[0x04], Length, szText, sizeof(szText)))
+        IoAddHeaderString(0, 0, szText);
+    else
+        IoAddHeaderString(0, 0, L"Unknown");
+
+    /* Type */
+    SMBIOS_SlotTypeToText(pBuf[0x05], szText, sizeof(szText));
+    if (szText[0] != 0)
+    {
+        IoAddValueName(1, 0, IDS_TYPE);
+        IoSetItemText(szText);
+    }
+
+    /* Bus width */
+    SMBIOS_BusWidthToText(pBuf[0x06], szText, sizeof(szText));
+    if (szText[0] != 0)
+    {
+        IoAddValueName(1, 0, IDS_SLOT_BUS_WIDTH);
+        IoSetItemText(szText);
+    }
+
+    /* Length */
+    SMBIOS_SlotLengthToText(pBuf[0x08], szText, sizeof(szText));
+    if (szText[0] != 0)
+    {
+        IoAddValueName(1, 0, IDS_SLOT_LENGTH);
+        IoSetItemText(szText);
+    }
+}
+
 VOID
 DMI_SlotInfo(VOID)
 {
-    WCHAR szText[MAX_STR_LEN];
-    BYTE Buf[MAX_DATA] = {0};
-    BYTE *pBuf = Buf;
-    SIZE_T Count = 0;
-    BOOL IsFound;
-    SIZE_T Len;
-
     DebugStartReceiving();
 
     if (!IsSmBiosWorks()) return;
     IoAddIcon(IDI_PORT);
 
-    do
-    {
-        Len = MAX_DATA;
-        IsFound = FALSE;
-
-        if (GetNextDataByType(SLOTS_INFO, &Buf, &Len, (Count < 1) ? TRUE : FALSE))
-        {
-            IsFound = TRUE;
-            ++Count;
-        }
-
-        if (IsFound)
-        {
-            GetStringResourceByID(Buf[0x04], pBuf, szText);
-            IoAddHeaderString(0, 0, szText);
-
-            /* Type */
-            IoAddValueName(1, 0, IDS_TYPE);
-            SMBIOS_SlotTypeToText(Buf[0x05], szText, sizeof(szText));
-            IoSetItemText(szText);
-
-            /* Bus width */
-            IoAddValueName(1, 0, IDS_SLOT_BUS_WIDTH);
-            SMBIOS_BusWidthToText(Buf[0x06], szText, sizeof(szText));
-            IoSetItemText(szText);
-
-            /* Length */
-            IoAddValueName(1, 0, IDS_SLOT_LENGTH);
-            SMBIOS_SlotLengthToText(Buf[0x08], szText, sizeof(szText));
-            IoSetItemText(szText);
-        }
-    }
-    while (IsFound);
-
-    AddDMIFooter();
+    if (EnumDMITablesByType(SLOTS_INFO, SlotInfoEnumProc))
+        AddDMIFooter();
 
     DebugEndReceiving();
 }
@@ -1918,83 +2068,64 @@ SMBIOS_PortConnectorToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
     while (PortConnectorList[++Index].dwValue != 0);
 }
 
+VOID CALLBACK
+PortsInfoEnumProc(BYTE *pBuf, BYTE Length)
+{
+    WCHAR szText[MAX_STR_LEN], szText2[MAX_STR_LEN];
+
+    GetDmiString(pBuf, pBuf[0x04], Length, szText, sizeof(szText));
+    GetDmiString(pBuf, pBuf[0x06], Length, szText2, sizeof(szText2));
+
+    if (szText2[0] != 0)
+        IoAddHeaderString(0, 0, szText2);
+    else
+        IoAddHeaderString(0, 0, szText);
+
+    /* Internal designation */
+    IoAddValueName(1, 0, IDS_PORT_INT_DESIGNATION);
+    if (szText[0] == 0)
+        LoadMUIString(IDS_NO, szText, MAX_STR_LEN);
+    IoSetItemText(szText);
+
+    /* External designation */
+    IoAddValueName(1, 0, IDS_PORT_EXT_DESIGNATION);
+    if (szText2[0] == 0)
+        LoadMUIString(IDS_NO, szText2, MAX_STR_LEN);
+    IoSetItemText( szText2);
+
+    /* Type */
+    IoAddValueName(1, 0, IDS_PORT_TYPE);
+    SMBIOS_PortTypesToText(pBuf[0x08], szText, sizeof(szText));
+    if (szText[0] == 0)
+        LoadMUIString(IDS_NO, szText, MAX_STR_LEN);
+    IoSetItemText(szText);
+
+    /* Internal connector type */
+    IoAddValueName(1, 0, IDS_PORT_INT_CONNECTOR);
+    SMBIOS_PortConnectorToText(pBuf[0x05], szText, sizeof(szText));
+    if (szText[0] == 0)
+        LoadMUIString(IDS_NO, szText, MAX_STR_LEN);
+    IoSetItemText(szText);
+
+    /* External connector type */
+    IoAddValueName(1, 0, IDS_PORT_EXT_CONNECTOR);
+
+    SMBIOS_PortConnectorToText(pBuf[0x07], szText, sizeof(szText));
+    if (szText[0] == 0)
+        LoadMUIString(IDS_NO, szText, MAX_STR_LEN);
+    IoSetItemText(szText);
+}
+
 VOID
 DMI_PortsInfo(VOID)
 {
-    WCHAR szText[MAX_STR_LEN], szText2[MAX_STR_LEN];
-    BYTE Buf[MAX_DATA] = {0};
-    BYTE *pBuf = Buf;
-    SIZE_T Count = 0;
-    BOOL IsFound;
-    SIZE_T Len;
-
     DebugStartReceiving();
 
     if (!IsSmBiosWorks()) return;
     IoAddIcon(IDI_PORT);
 
-    do
-    {
-        Len = MAX_DATA;
-        IsFound = FALSE;
-
-        if (GetNextDataByType(PORTS_INFO, &Buf, &Len, (Count < 1) ? TRUE : FALSE))
-        {
-            IsFound = TRUE;
-            ++Count;
-        }
-
-        if (IsFound)
-        {
-            GetStringResourceByID(Buf[0x04], pBuf,
-                                  szText);
-            GetStringResourceByID(Buf[0x06], pBuf,
-                                  szText2);
-
-            ChopSpaces(szText2, sizeof(szText2));
-            if (szText2[0] != 0)
-                IoAddHeaderString(0, 0, szText2);
-            else
-                IoAddHeaderString(0, 0, szText);
-
-            /* Internal designation */
-            IoAddValueName(1, 0, IDS_PORT_INT_DESIGNATION);
-            if (szText[0] == 0)
-                LoadMUIString(IDS_NO, szText, MAX_STR_LEN);
-            IoSetItemText(szText);
-
-            /* External designation */
-            IoAddValueName(1, 0, IDS_PORT_EXT_DESIGNATION);
-            if (szText2[0] == 0)
-                LoadMUIString(IDS_NO, szText2, MAX_STR_LEN);
-            IoSetItemText( szText2);
-
-            /* Type */
-            IoAddValueName(1, 0, IDS_PORT_TYPE);
-            SMBIOS_PortTypesToText(Buf[0x08], szText, sizeof(szText));
-            if (szText[0] == 0)
-                LoadMUIString(IDS_NO, szText, MAX_STR_LEN);
-            IoSetItemText(szText);
-
-            /* Internal connector type */
-            IoAddValueName(1, 0, IDS_PORT_INT_CONNECTOR);
-            SMBIOS_PortConnectorToText(Buf[0x05], szText, sizeof(szText));
-            if (szText[0] == 0)
-                LoadMUIString(IDS_NO, szText, MAX_STR_LEN);
-            IoSetItemText(szText);
-
-            /* External connector type */
-            IoAddValueName(1, 0, IDS_PORT_EXT_CONNECTOR);
-
-            SMBIOS_PortConnectorToText(Buf[0x07], szText, sizeof(szText));
-            if (szText[0] == 0)
-                LoadMUIString(IDS_NO, szText, MAX_STR_LEN);
-            IoSetItemText(szText);
-        }
-    }
-    while (IsFound);
-
-    AddDMIFooter();
+    if (EnumDMITablesByType(PORTS_INFO, PortsInfoEnumProc))
+        AddDMIFooter();
 
     DebugEndReceiving();
 }
@@ -2016,56 +2147,61 @@ SMBIOS_OnboardDeviceTypeToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
     while (OnboardDeviceTypesList[++Index].dwValue != 0);
 }
 
+VOID CALLBACK
+OnboardInfoEnumProc(BYTE *pBuf, BYTE Length)
+{
+    WCHAR szText[MAX_STR_LEN];
+    BYTE Count, Type, DeviceType, DeviceStatus;
+    BYTE *p;
+    INT i;
+
+    Count = (Length - 0x04) / 2;
+    p = pBuf + 4;
+
+    if (Count == 0) return;
+
+    for (i = 0; i < Count; i++)
+    {
+        GetDmiString(pBuf, p[2 * i + 1], Length, szText, sizeof(szText));
+
+        IoAddHeaderString(0, 0, (szText[0] != 0) ? szText : L"Unknown");
+
+        Type = p[2 * i];
+
+        DeviceStatus = GetBitsBYTE(Type, 7, 7); /* Bit 7 */
+        DeviceType = GetBitsBYTE(Type, 0, 6);
+
+        /* Desc */
+        if (szText[0] != 0)
+        {
+            IoAddValueName(1, 0, IDS_DMI_ONBOARD_DESC);
+            IoSetItemText(szText);
+        }
+
+        /* Type */
+        SMBIOS_OnboardDeviceTypeToText(DeviceType, szText, sizeof(szText));
+        if (szText[0] != 0)
+        {
+            IoAddValueName(1, 0, IDS_DMI_ONBOARD_TYPE);
+            IoSetItemText(szText);
+        }
+
+        /* Status */
+        IoAddValueName(1, 0, IDS_DMI_ONBOARD_STATUS);
+        IoSetItemText(DeviceStatus ? L"Enabled" : L"Disabled");
+    }
+}
+
 VOID
 DMI_OnboardInfo(VOID)
 {
-    WCHAR szText[MAX_STR_LEN];
-    BYTE Buf[MAX_DATA] = {0};
-    BYTE* pBuf = Buf;
-    SIZE_T Len = MAX_DATA;
-    CHAR Count;
-    BYTE Type, DeviceType, DeviceStatus;
-
     DebugStartReceiving();
 
     if (!IsSmBiosWorks()) return;
     IoAddIcon(IDI_HW);
 
-    if (GetNextDataByType(ONBOARD_INFO, &Buf, &Len, TRUE))
-    {
-        Count = (Buf[0x01] - 4) / 2;
-
-        do
-        {
-            GetStringResourceByID(Buf[5 + 2 * (Count - 1)], pBuf, szText);
-            ChopSpaces(szText, sizeof(szText));
-            IoAddHeaderString(0, 0, (szText[0] != 0) ? szText : L"Unknown");
-
-            Type = Buf[4 + 2 * (Count - 1)];
-
-            DeviceStatus = GetBitsBYTE(Type, 7, 7); /* Bit 7 */
-            DeviceType = GetBitsBYTE(Type, 0, 6); /* Bits 6:0 */
-
-            /* Desc */
-            if (szText[0] != 0)
-            {
-                IoAddValueName(1, 0, IDS_DMI_ONBOARD_DESC);
-                IoSetItemText(szText);
-            }
-
-            /* Type */
-            IoAddValueName(1, 0, IDS_DMI_ONBOARD_TYPE);
-            SMBIOS_OnboardDeviceTypeToText(DeviceType, szText, sizeof(szText));
-            IoSetItemText(szText);
-
-            /* Status */
-            IoAddValueName(1, 0, IDS_DMI_ONBOARD_STATUS);
-            IoSetItemText(DeviceStatus ? L"Enabled" : L"Disabled");
-        }
-        while (--Count < 0);
-    }
-
-    AddDMIFooter();
+    if (EnumDMITablesByType(ONBOARD_INFO, OnboardInfoEnumProc))
+        AddDMIFooter();
 
     DebugEndReceiving();
 }
@@ -2087,110 +2223,108 @@ SMBIOS_BatteryChemistryToText(BYTE Form, LPWSTR lpszText, SIZE_T Size)
     while (BatteryDeviceChemistryList[++Index].dwValue != 0);
 }
 
+VOID CALLBACK
+BatteryInfoEnumProc(BYTE *pBuf, BYTE Length)
+{
+    WCHAR szText[MAX_STR_LEN];
+
+    IoAddHeader(0, 0, IDS_BAT_BATTERYS);
+
+    /* Location */
+    if (GetDmiString(pBuf, pBuf[0x04], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_DMI_BATTERY_LOCATION);
+        IoSetItemText(szText);
+    }
+
+    /* Manufacturer */
+    if (GetDmiString(pBuf, pBuf[0x05], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_DMI_BATTERY_MANUFACTURER);
+        IoSetItemText(szText);
+    }
+
+    /* Manufacture Date */
+    if (GetDmiString(pBuf, pBuf[0x06], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_DMI_BATTERY_MANUFDATE);
+        IoSetItemText(szText);
+    }
+
+    /* Serial Number */
+    if (GetDmiString(pBuf, pBuf[0x07], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_DMI_BATTERY_SERIAL);
+        IoSetItemText(szText);
+    }
+
+    /* Device Name */
+    if (GetDmiString(pBuf, pBuf[0x08], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_DMI_BATTERY_DEVICE_NAME);
+        IoSetItemText(szText);
+    }
+
+    /* Device Chemistry */
+    SMBIOS_BatteryChemistryToText(pBuf[0x09], szText, sizeof(szText));
+    if (szText[0] != 0)
+    {
+        IoAddValueName(1, 0, IDS_DMI_BATTERY_DEVICE_CHEMISTRY);
+        IoSetItemText(szText);
+    }
+
+    /* Design Capacity */
+    IoAddValueName(1, 0, IDS_DMI_BATTERY_DESIGN_CAPACITY);
+    IoSetItemText(L"%u mWh",
+                  pBuf[0x15] ? pBuf[0x0A] * pBuf[0x15] : pBuf[0x0A]);
+
+    /* Design Voltage */
+    if (pBuf[0x0C] > 0)
+    {
+        IoAddValueName(1, 0, IDS_DMI_BATTERY_DESIGN_VOLTAGE);
+        IoSetItemText(L"%u mV", pBuf[0x0C]);
+    }
+
+    /* SBDS Version Number */
+    if (GetDmiString(pBuf, pBuf[0x0E], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_DMI_BATTERY_SBDS_VERSION);
+        IoSetItemText(szText);
+    }
+
+    /* Max. Error in Battery Data */
+    IoAddValueName(1, 0, IDS_DMI_BATTERY_MAXERROR_IN_DATA);
+    IoSetItemText(L"%u", pBuf[0x0F]);
+
+    /* SBDS Serial Number */
+    IoAddValueName(1, 0, IDS_DMI_BATTERY_SBDS_SERIAL);
+    IoSetItemText(L"%u", pBuf[0x10]);
+
+    /* SBDS Manufacture Date */
+    IoAddValueName(1, 0, IDS_DMI_BATTERY_SBDS_MANUFDATE);
+    IoSetItemText(L"%02u/%02u/%u",
+                  GetBitsWORD(WORD(pBuf + 0x12), 0, 4), /* Bits 4:0 */
+                  GetBitsWORD(WORD(pBuf + 0x12), 5, 8), /* Bits 8:5 */
+                  GetBitsWORD(WORD(pBuf + 0x12), 9, 15) + 1980 /* Bits 15:9 */);
+
+    /* SBDS Device Chemistry */
+    if (GetDmiString(pBuf, pBuf[0x14], Length, szText, sizeof(szText)))
+    {
+        IoAddValueName(1, 0, IDS_DMI_BATTERY_SBDS_DEV_CHEMIST);
+        IoSetItemText(szText);
+    }
+}
+
 VOID
 DMI_BatteryInfo(VOID)
 {
-    WCHAR szText[MAX_STR_LEN];
-    BYTE Buf[MAX_DATA] = {0};
-    BYTE *pBuf = Buf;
-    SIZE_T Count = 0;
-    BOOL IsFound;
-    SIZE_T Len;
-
     DebugStartReceiving();
 
     if (!IsSmBiosWorks()) return;
     IoAddIcon(IDI_BATTERY);
 
-    do
-    {
-        Len = MAX_DATA;
-        IsFound = FALSE;
-
-        if (GetNextDataByType(BATTERY_INFO, &Buf, &Len, (Count < 1) ? TRUE : FALSE))
-        {
-            IsFound = TRUE;
-            ++Count;
-        }
-
-        if (IsFound)
-        {
-            if (Count == 1) IoAddHeader(0, 0, IDS_BAT_BATTERYS);
-
-            /* Location */
-            IoAddValueName(1, 0, IDS_DMI_BATTERY_LOCATION);
-            GetStringResourceByID(Buf[0x04], pBuf, szText);
-            IoSetItemText(szText);
-
-            /* Manufacturer */
-            IoAddValueName(1, 0, IDS_DMI_BATTERY_MANUFACTURER);
-            GetStringResourceByID(Buf[0x05], pBuf, szText);
-            IoSetItemText(szText);
-
-            /* Manufacture Date */
-            GetStringResourceByID(Buf[0x06], pBuf, szText);
-            if (szText[0] != 0)
-            {
-                IoAddValueName(1, 0, IDS_DMI_BATTERY_MANUFDATE);
-                IoSetItemText(szText);
-            }
-
-            /* Serial Number */
-            GetStringResourceByID(Buf[0x07], pBuf, szText);
-            if (szText[0] != 0)
-            {
-                IoAddValueName(1, 0, IDS_DMI_BATTERY_SERIAL);
-                IoSetItemText(szText);
-            }
-
-            /* Device Name */
-            IoAddValueName(1, 0, IDS_DMI_BATTERY_DEVICE_NAME);
-            GetStringResourceByID(Buf[0x08], pBuf, szText);
-            IoSetItemText(szText);
-
-            /* Device Chemistry */
-            IoAddValueName(1, 0, IDS_DMI_BATTERY_DEVICE_CHEMISTRY);
-            SMBIOS_BatteryChemistryToText(Buf[0x09], szText, sizeof(szText));
-            IoSetItemText(szText);
-
-            /* Design Capacity */
-            IoAddValueName(1, 0, IDS_DMI_BATTERY_DESIGN_CAPACITY);
-            IoSetItemText(L"%u mWh",
-                          Buf[0x15] ? Buf[0x0A] * Buf[0x15] : Buf[0x0A]);
-
-            /* Design Voltage */
-            IoAddValueName(1, 0, IDS_DMI_BATTERY_DESIGN_VOLTAGE);
-            IoSetItemText(L"%u mV", Buf[0x0C]);
-
-            /* SBDS Version Number */
-            IoAddValueName(1, 0, IDS_DMI_BATTERY_SBDS_VERSION);
-            GetStringResourceByID(Buf[0x0E], pBuf, szText);
-            IoSetItemText(szText);
-
-            /* Max. Error in Battery Data */
-            IoAddValueName(1, 0, IDS_DMI_BATTERY_MAXERROR_IN_DATA);
-            IoSetItemText(L"%u", Buf[0x0F]);
-
-            /* SBDS Serial Number */
-            IoAddValueName(1, 0, IDS_DMI_BATTERY_SBDS_SERIAL);
-            IoSetItemText(L"%u", Buf[0x10]);
-
-            /* SBDS Manufacture Date */
-            IoAddValueName(1, 0, IDS_DMI_BATTERY_SBDS_MANUFDATE);
-            IoSetItemText(L"%d/%d/%d",
-                          (Buf[0x12] & 0x10), /* Bits 4:0 */
-                          (Buf[0x12] & 0x100) >> 0x4, /* Bits 8:5 */
-                          ((Buf[0x12] & 0x8000) >> 0x8) + 1980 /* Bits 15:9 */);
-
-            /* SBDS Device Chemistry */
-            IoAddValueName(1, 0, IDS_DMI_BATTERY_SBDS_DEV_CHEMIST);
-            GetStringResourceByID(Buf[0x14], pBuf, szText);
-            IoSetItemText(szText);
-        }
-    }
-    while (IsFound);
-
-    if (Count) AddDMIFooter();
+    if (EnumDMITablesByType(BATTERY_INFO, BatteryInfoEnumProc))
+        AddDMIFooter();
 
     DebugEndReceiving();
 }
@@ -2259,84 +2393,74 @@ PointingInterfaceToText(BYTE Interface, LPWSTR lpText, SIZE_T Size)
     while (PointingInterfaceList[++Index].dwValue != 0);
 }
 
+VOID CALLBACK
+PointingInfoEnumProc(BYTE *pBuf, BYTE Length)
+{
+    WCHAR szText[MAX_STR_LEN];
+
+    IoAddHeader(0, 0, IDS_DMI_POINTING_DEVICE);
+
+    PointingDevicesTypeToText(pBuf[0x04], szText, sizeof(szText));
+    if (szText[0] != 0)
+    {
+        IoAddValueName(1, 0, IDS_DMI_POINTING_TYPE);
+        IoSetItemText(szText);
+    }
+
+    PointingInterfaceToText(pBuf[0x05], szText, sizeof(szText));
+    if (szText[0] != 0)
+    {
+        IoAddValueName(1, 0, IDS_DMI_POINTING_INTERFACE);
+        IoSetItemText(szText);
+    }
+
+    IoAddValueName(1, 0, IDS_DMI_POINTING_BUTTONS);
+    IoSetItemText(L"%d", pBuf[0x06]);
+}
+
 VOID
 DMI_PointingInfo(VOID)
 {
-    WCHAR szText[MAX_STR_LEN];
-    BYTE Buf[MAX_DATA] = {0};
-    SIZE_T Count = 0;
-    BOOL IsFound;
-    SIZE_T Len;
-
     DebugStartReceiving();
 
     if (!IsSmBiosWorks()) return;
     IoAddIcon(IDI_MOUSE);
 
-    do
-    {
-        Len = MAX_DATA;
-        IsFound = FALSE;
-
-        if (GetNextDataByType(BUILDIN_POINT_DEV_INF0, &Buf, &Len, (Count < 1) ? TRUE : FALSE))
-        {
-            IsFound = TRUE;
-            ++Count;
-        }
-
-        if (IsFound)
-        {
-            if (Count == 1) IoAddHeader(0, 0, IDS_DMI_POINTING_DEVICE);
-
-            PointingDevicesTypeToText(Buf[0x04], szText, sizeof(szText));
-            if (szText[0] != 0)
-            {
-                IoAddValueName(1, 0, IDS_DMI_POINTING_TYPE);
-                IoSetItemText(szText);
-            }
-
-            PointingInterfaceToText(Buf[0x05], szText, sizeof(szText));
-            if (szText[0] != 0)
-            {
-                IoAddValueName(1, 0, IDS_DMI_POINTING_INTERFACE);
-                IoSetItemText(szText);
-            }
-
-            IoAddValueName(1, 0, IDS_DMI_POINTING_BUTTONS);
-            IoSetItemText(L"%d", Buf[0x06]);
-        }
-    }
-    while (IsFound);
-
-    if (Count) AddDMIFooter();
+    if (EnumDMITablesByType(BUILDIN_POINT_DEV_INF0, PointingInfoEnumProc))
+        AddDMIFooter();
 
     DebugEndReceiving();
+}
+
+WCHAR szMainboardName[MAX_STR_LEN];
+WCHAR szMainboardVendor[MAX_STR_LEN];
+
+VOID CALLBACK
+BoardNameInfoEnumProc(BYTE *pBuf, BYTE Length)
+{
+    WCHAR szText[MAX_STR_LEN];
+
+    /* Product */
+    GetDmiString(pBuf, pBuf[0x05], Length, szText, sizeof(szText));
+    StringCbCopy(szMainboardName, sizeof(szMainboardName), szText);
+
+    /* Vendor */
+    GetDmiString(pBuf, pBuf[0x04], Length, szText, sizeof(szText));
+    StringCbCopy(szMainboardVendor, sizeof(szMainboardVendor), szText);
 }
 
 BOOL
 SMBIOS_GetMainboardName(LPWSTR lpName, SIZE_T NameSize,
                         LPWSTR lpManuf, SIZE_T ManufSize)
 {
-    BYTE Buf[MAX_DATA] = {0};
-    BYTE* pBuf = Buf;
-    SIZE_T Len = MAX_DATA;
-    WCHAR szText[MAX_STR_LEN];
-
     if (!IsSmBiosWorks()) return FALSE;
 
-    if (GetNextDataByType(BOARD_INFO, &Buf, &Len, TRUE))
+    if (EnumDMITablesByType(BOARD_INFO, BoardNameInfoEnumProc))
     {
-        /* Product */
-        GetStringResourceByID(Buf[0x05], pBuf, szText);
-        ChopSpaces(szText, sizeof(szText));
-        StringCbCopy(lpName, NameSize, szText);
-
-        /* Vendor */
-        GetStringResourceByID(Buf[0x04], pBuf, szText);
-        ChopSpaces(szText, sizeof(szText));
-        StringCbCopy(lpManuf, ManufSize, szText);
-
+        StringCbCopy(lpName, NameSize, szMainboardName);
+        StringCbCopy(lpManuf, ManufSize, szMainboardVendor);
         return TRUE;
     }
+
     return FALSE;
 }
