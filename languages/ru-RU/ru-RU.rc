@@ -354,9 +354,6 @@ BEGIN
 
     IDS_BIOS_DATE, "Дата выпуска"
     IDS_BIOS_SIZE, "Размер"
-    IDS_BIOS_BOOT_DEVICES, "Загрузочные устройства"
-    IDS_BIOS_STANDATDS, "Поддерживаемые стандарты"
-    IDS_BIOS_SLOTS, "Возможности расширения"
     IDS_BIOS_FATURES, "Возможности"
 
     IDS_SYS_ID, "Универсальный уникальный ID"

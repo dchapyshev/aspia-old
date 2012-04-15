@@ -354,9 +354,6 @@ BEGIN
 
     IDS_BIOS_DATE, "Date"
     IDS_BIOS_SIZE, "Size"
-    IDS_BIOS_BOOT_DEVICES, "Boot Devices"
-    IDS_BIOS_STANDATDS, "Supported Standards"
-    IDS_BIOS_SLOTS, "Expansion Capabilities"
     IDS_BIOS_FATURES, "Features"
 
     IDS_SYS_ID, "Universal Unique ID"

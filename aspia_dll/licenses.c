@@ -1067,7 +1067,9 @@ BOOL
 GetMSProductKey(BOOL is64, LPSTR lpszKeyPath, LPWSTR lpszKey, INT iSize)
 {
     REGSAM samDesired = KEY_QUERY_VALUE;
-    const CHAR *KeyChars[25];
+    const CHAR *KeyChars[] = {"B","C","D","F","G","H","J","K","M",
+                              "P","Q","R","T","V","W","X","Y","2",
+                              "3","4","6","7","8","9",NULL};
     CHAR *wsResult, *pch, sCDKey[30];
     BYTE *DigitalProductID;
     SIZE_T DataLength;
@@ -1078,35 +1080,8 @@ GetMSProductKey(BOOL is64, LPSTR lpszKeyPath, LPWSTR lpszKey, INT iSize)
     DebugTrace(L"is64 = %d, lpszKeyPath = %S, lpszKey = %s, iSize = %d",
                is64, lpszKeyPath, lpszKey, iSize);
 
-    KeyChars[0] = "B"; KeyChars[1] = "C";
-    KeyChars[2] = "D"; KeyChars[3] = "F";
-    KeyChars[4] = "G"; KeyChars[5] = "H";
-    KeyChars[6] = "J"; KeyChars[7] = "K";
-    KeyChars[8] = "M"; KeyChars[9] = "P";
-    KeyChars[10] = "Q"; KeyChars[11] = "R";
-    KeyChars[12] = "T"; KeyChars[13] = "V";
-    KeyChars[14] = "W"; KeyChars[15] = "X";
-    KeyChars[16] = "Y"; KeyChars[17] = "2";
-    KeyChars[18] = "3"; KeyChars[19] = "4";
-    KeyChars[20] = "6"; KeyChars[21] = "7";
-    KeyChars[22] = "8"; KeyChars[23] = "9";
-    KeyChars[24] = NULL;
-    /*KeyChars[25] = {"B","C","D","F","G","H","J","K","M",
-                              "P","Q","R","T","V","W","X","Y","2",
-                              "3","4","6","7","8","9",NULL};*/
-
     DigitalProductID = 0;
 
-    if (is64)
-    {
-#define WIN64KEY
-    }
-
-#ifdef WIN64KEY
-#ifdef KEY_WOW64_64KEY
-#else
-#define KEY_WOW64_64KEY 0x0100
-#endif
     /* Check Win2000 (KEY_WOW64_64KEY - not supported) */
     if (!IsWindows2000() && is64)
     {
@@ -1117,13 +1092,6 @@ GetMSProductKey(BOOL is64, LPSTR lpszKeyPath, LPWSTR lpszKey, INT iSize)
                       REG_OPTION_NON_VOLATILE,
                       samDesired,
                       &hKey) == ERROR_SUCCESS)
-#else
-    if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, lpszKeyPath,
-                      REG_OPTION_NON_VOLATILE,
-                      KEY_ALL_ACCESS,
-                      &hKey) == ERROR_SUCCESS)
-#endif
-
     {
         DataLength = 164;
         DigitalProductID = (BYTE*)Alloc(DataLength);
@@ -1178,9 +1146,6 @@ GetMSProductKey(BOOL is64, LPSTR lpszKeyPath, LPWSTR lpszKey, INT iSize)
          GetMSProductKey(TRUE, lpszKeyPath, NULL, 0);
     }
 
-#ifdef WIN64KEY
-#undef WIN64KEY
-#endif
     return TRUE;
 }
 

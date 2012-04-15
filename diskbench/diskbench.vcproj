@@ -188,6 +188,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_X86_;_UNICODE;UNICODE"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -271,6 +272,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_AMD64_;_UNICODE;UNICODE"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"

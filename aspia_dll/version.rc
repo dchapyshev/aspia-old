@@ -8,6 +8,16 @@
 #include <windows.h>
 #include "..\include\version.h"
 
+#if defined (_X86_)
+    #define VER_FILEDESCRIPTION_STR_ASPIA_DLL  "Aspia Info Helper DLL\0"
+    #define VER_ORIGINALFILENAME_STR_ASPIA_DLL "aspia.dll\0"
+#elif defined (_AMD64_)
+    #define VER_FILEDESCRIPTION_STR_ASPIA_DLL  "Aspia Info Helper DLL (x64)\0"
+    #define VER_ORIGINALFILENAME_STR_ASPIA_DLL "aspia64.dll\0"
+#else
+    #error Unknown arch
+#endif
+
 VS_VERSION_INFO VERSIONINFO
 FILEVERSION     VER_FILEVERSION
 PRODUCTVERSION  VER_PRODUCTVERSION

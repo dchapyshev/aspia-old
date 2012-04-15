@@ -21,8 +21,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)\Win32"
-			IntermediateDirectory="$(OutDir)\obj\$(ProjectName)"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(OutDir)\obj\x86\$(ProjectName)"
 			ConfigurationType="2"
 			CharacterSet="1"
 			>
@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;DLL_EXPORTS"
+				PreprocessorDefinitions="_X86_;WIN32;_DEBUG;_WINDOWS;_USRDLL;DLL_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
@@ -60,6 +60,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_X86_;_UNICODE;UNICODE"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -103,6 +104,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
+			OutputDirectory="$(SolutionDir)\$(ConfigurationName)"
+			IntermediateDirectory="$(OutDir)\obj\x64\$(ProjectName)"
 			ConfigurationType="1"
 			>
 			<Tool
@@ -122,18 +125,35 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)include&quot;"
+				PreprocessorDefinitions="_AMD64_"
+				RuntimeLibrary="3"
+				BufferSecurityCheck="false"
+				EnableFunctionLevelLinking="true"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_AMD64_"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="msvcrt_win2003.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib winmm.lib"
+				OutputFile="$(OutDir)\helper64.dll"
+				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\amd64\&quot;;&quot;$(OutDir)\&quot;;&quot;$(DDK)\lib\wlh\amd64\&quot;"
+				GenerateManifest="false"
+				ModuleDefinitionFile="helper64_dll.def"
+				SubSystem="2"
+				OptimizeReferences="1"
+				EntryPointSymbol="DllMain"
+				ImportLibrary="$(TargetDir)helper64.lib"
+				TargetMachine="17"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -200,6 +220,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_X86_;_UNICODE;UNICODE"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -283,6 +304,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_AMD64_;_UNICODE;UNICODE"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
