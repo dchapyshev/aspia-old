@@ -8,13 +8,23 @@
 #include <windows.h>
 #include "..\include\version.h"
 
+#if defined (_X86_)
+    #define VER_FILEDESCRIPTION_STR_ASPIA_EXE  "Aspia\0"
+    #define VER_ORIGINALFILENAME_STR_ASPIA_EXE "aspia.exe\0"
+#elif defined (_AMD64_)
+    #define VER_FILEDESCRIPTION_STR_ASPIA_EXE  "Aspia (x64)\0"
+    #define VER_ORIGINALFILENAME_STR_ASPIA_EXE "aspia64.exe\0"
+#else
+    #error Unknown arch
+#endif
+
 VS_VERSION_INFO VERSIONINFO
 FILEVERSION     VER_FILEVERSION
 PRODUCTVERSION  VER_PRODUCTVERSION
 FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
 FILEFLAGS       0x0L
 FILEOS          VOS__WINDOWS32
-FILETYPE        VFT_DLL
+FILETYPE        VFT_APP
 FILESUBTYPE     VFT2_UNKNOWN
 BEGIN
     BLOCK "StringFileInfo"

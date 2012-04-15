@@ -21,8 +21,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)\$(PlatformName)"
-			IntermediateDirectory="$(OutDir)\obj\$(ProjectName)"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(OutDir)\obj\x86\$(ProjectName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			>
@@ -45,28 +45,31 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)/include/&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
+				PreprocessorDefinitions="_X86_;WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
 				BufferSecurityCheck="false"
 				WarningLevel="3"
 				DebugInformationFormat="4"
+				CompileAs="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_X86_;_UNICODE;UNICODE"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib winmm.lib aspia.lib opengl32.lib"
+				AdditionalDependencies="msvcrt_win2000.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib winmm.lib helper.lib aspia.lib opengl32.lib"
+				OutputFile="$(OutDir)\aspia.exe"
 				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\i386\&quot;;&quot;$(OutDir)\&quot;;&quot;$(DDK)\lib\wlh\i386\&quot;"
-				GenerateManifest="true"
+				GenerateManifest="false"
 				EnableUAC="true"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -96,8 +99,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)\$(PlatformName)"
-			IntermediateDirectory="$(OutDir)\obj\$(ProjectName)"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(OutDir)\obj\x64\$(ProjectName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			>
@@ -120,27 +123,33 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)/include/&quot;"
+				PreprocessorDefinitions="_AMD64_;WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
+				BufferSecurityCheck="false"
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				CompileAs="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_AMD64_;_UNICODE;UNICODE"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib"
-				OutputFile="$(OutDir)\$(ProjectName)x64.exe"
+				AdditionalDependencies="msvcrt_win2003.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib aspia64.lib helper64.lib"
+				OutputFile="$(OutDir)\aspia64.exe"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\amd64\&quot;;&quot;$(DDK)\lib\wlh\amd64\&quot;;&quot;$(OutDir)\&quot;"
+				GenerateManifest="false"
 				EnableUAC="false"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -198,7 +207,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)/include/&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
+				PreprocessorDefinitions="_X86_;WIN32;NDEBUG;_WINDOWS"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="false"
@@ -210,6 +219,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_X86_;_UNICODE;UNICODE"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -280,7 +290,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)/include/&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
+				PreprocessorDefinitions="_AMD64_;WIN32;NDEBUG;_WINDOWS"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="false"
@@ -292,6 +302,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_AMD64_;_UNICODE;UNICODE"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"

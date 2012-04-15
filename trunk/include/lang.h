@@ -244,9 +244,6 @@
 #define IDS_DMI_CACHE_LEVEL         265
 #define IDS_BIOS_DATE               266
 #define IDS_BIOS_SIZE               267
-#define IDS_BIOS_BOOT_DEVICES       268
-#define IDS_BIOS_STANDATDS          269
-#define IDS_BIOS_SLOTS              270
 #define IDS_BIOS_FATURES            271
 #define IDS_SYS_ID                  272
 #define IDS_SYS_WAKEUP              273

@@ -355,9 +355,6 @@ BEGIN
 
     IDS_BIOS_DATE, "Дата випуску"
     IDS_BIOS_SIZE, "Розмір"
-    IDS_BIOS_BOOT_DEVICES, "Завантажувальні пристрої"
-    IDS_BIOS_STANDATDS, "Підтримувані стандарти"
-    IDS_BIOS_SLOTS, "Можливості розширення"
     IDS_BIOS_FATURES, "Можливості"
 
     IDS_SYS_ID, "Універсальний унікальний ID"
