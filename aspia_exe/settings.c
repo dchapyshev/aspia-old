@@ -36,16 +36,28 @@ GetIniFilePath(OUT LPWSTR lpszPath, IN SIZE_T PathLen)
     if (ParamsInfo.IsPortable)
     {
         if (!SHGetSpecialFolderPath(hMainWnd, szPath, CSIDL_APPDATA, FALSE))
+        {
             return FALSE;
-        StringCbCat(szPath, sizeof(szPath), L"\\");
+        }
+        StringCchPrintf(lpszPath, PathLen, L"%s\\aspia.ini", szPath);
+
+        if (GetFileAttributes(lpszPath) == INVALID_FILE_ATTRIBUTES)
+        {
+            if (!SHGetSpecialFolderPath(hMainWnd, szPath, CSIDL_COMMON_APPDATA, FALSE))
+            {
+                return FALSE;
+            }
+
+            StringCchPrintf(lpszPath, PathLen, L"%s\\aspia.ini", szPath);
+        }
     }
     else
     {
         if (!GetCurrentPath(szPath, MAX_PATH))
             return FALSE;
-    }
 
-    StringCchPrintf(lpszPath, PathLen, L"%saspia.ini", szPath);
+        StringCchPrintf(lpszPath, PathLen, L"%s\\aspia.ini", szPath);
+    }
 
     return TRUE;
 }
