@@ -51,7 +51,7 @@ FunctionEnd
 ;Code for choosing install method (standard / portable)
 LangString TEXT_STD_INSTALLATION ${LANG_ENGLISH} "&Standard installation"
 LangString TEXT_STD_INSTALLATION ${LANG_RUSSIAN} "&Стандартная установка"
-LangString TEXT_STD_INSTALLATION ${LANG_UKRAINIAN} "&Стандартна установка"
+LangString TEXT_STD_INSTALLATION ${LANG_UKRAINIAN} "&Стандартне встановлення"
 
 LangString TEXT_STD_INST_LABEL ${LANG_ENGLISH} "Install Aspia for all users of this machine."
 LangString TEXT_STD_INST_LABEL ${LANG_RUSSIAN} "Aspia будет установлена для всех пользователей этого компьютера."
@@ -59,19 +59,19 @@ LangString TEXT_STD_INST_LABEL ${LANG_UKRAINIAN} "Aspia буде встановлена для всі
 
 LangString TEXT_PORTABLE_INST ${LANG_ENGLISH} "&Portable installation"
 LangString TEXT_PORTABLE_INST ${LANG_RUSSIAN} "Портативная установка"
-LangString TEXT_PORTABLE_INST ${LANG_UKRAINIAN} "Портативна установка"
+LangString TEXT_PORTABLE_INST ${LANG_UKRAINIAN} "Портативне встановлення"
 
 LangString TEXT_PORTABLE_INST_LABEL ${LANG_ENGLISH} "In portable mode all configuration data is stored in the application folder and no information is written to the registry."
 LangString TEXT_PORTABLE_INST_LABEL ${LANG_RUSSIAN} "В портативном режиме все конфигурационных данные будут сохраненяться в папке с программой и никаких данных в реестр записано не будет."
-LangString TEXT_PORTABLE_INST_LABEL ${LANG_UKRAINIAN} "У портативному режимі всі конфігураційних дані будуть сохраненяться в папці з програмою і ніяких даних до реєстру записано не буде."
+LangString TEXT_PORTABLE_INST_LABEL ${LANG_UKRAINIAN} "У портативному режимі всі конфігураційні дані будуть зберігатись в теці з програмою і ніяких даних до реєстру записано не буде."
 
 LangString TEXT_INST_METHOD_TITLE ${LANG_ENGLISH} "Installation Method"
 LangString TEXT_INST_METHOD_TITLE ${LANG_RUSSIAN} "Способ установки"
-LangString TEXT_INST_METHOD_TITLE ${LANG_UKRAINIAN} "Спосіб установки"
+LangString TEXT_INST_METHOD_TITLE ${LANG_UKRAINIAN} "Спосіб встановлення"
 
 LangString TEXT_INST_METHOD_SUBTITLE ${LANG_ENGLISH} "Choose installation method."
 LangString TEXT_INST_METHOD_SUBTITLE ${LANG_RUSSIAN} "Выбирите способ установки."
-LangString TEXT_INST_METHOD_SUBTITLE ${LANG_UKRAINIAN} "Оберіть спосіб установки."
+LangString TEXT_INST_METHOD_SUBTITLE ${LANG_UKRAINIAN} "Оберіть спосіб встановлення."
 
 Var InstallMethodDialog
 Var StandardRadioButton
@@ -133,13 +133,13 @@ LangString TEXT_ICONS_LABEL ${LANG_ENGLISH} "Select where you want to create sho
 LangString TEXT_ICONS_LABEL ${LANG_RUSSIAN} "Выберите, где нужно создать ярлыки:"
 LangString TEXT_ICONS_LABEL ${LANG_UKRAINIAN} "Виберіть, де потрібно створити ярлики:"
 
-LangString TEXT_STARTMENU_ICONS ${LANG_ENGLISH} "Create &start menu shortcuts"
-LangString TEXT_STARTMENU_ICONS ${LANG_RUSSIAN} "Создать яклыки в меню пуск"
-LangString TEXT_STARTMENU_ICONS ${LANG_UKRAINIAN} "Створити якликі в меню пуск"
+LangString TEXT_STARTMENU_ICONS ${LANG_ENGLISH} "Create &Start menu shortcuts"
+LangString TEXT_STARTMENU_ICONS ${LANG_RUSSIAN} "Создать ярлыки в меню Пуск"
+LangString TEXT_STARTMENU_ICONS ${LANG_UKRAINIAN} "Створити ярлики в меню Пуск"
 
 LangString TEXT_DESKTOP_ICONS ${LANG_ENGLISH} "Create &desktop shortcuts"
-LangString TEXT_DESKTOP_ICONS ${LANG_RUSSIAN} "Создать яклыки на рабочем столе"
-LangString TEXT_DESKTOP_ICONS ${LANG_UKRAINIAN} "Створити якликі на робочому столі"
+LangString TEXT_DESKTOP_ICONS ${LANG_RUSSIAN} "Создать ярлыки на рабочем столе"
+LangString TEXT_DESKTOP_ICONS ${LANG_UKRAINIAN} "Створити ярлики на робочому столі"
 
 LangString TEXT_USERS_LABEL ${LANG_ENGLISH} "Aspia will be installed for:"
 LangString TEXT_USERS_LABEL ${LANG_RUSSIAN} "Aspia будет установлена для:"
@@ -155,11 +155,11 @@ LangString TEXT_CURRENT_USER ${LANG_UKRAINIAN} "Поточного користувача"
 
 LangString TEXT_INST_SETTINGS_TITLE ${LANG_ENGLISH} "Installation Settings"
 LangString TEXT_INST_SETTINGS_TITLE ${LANG_RUSSIAN} "Параметры установки"
-LangString TEXT_INST_SETTINGS_TITLE ${LANG_UKRAINIAN} "Параметри установки"
+LangString TEXT_INST_SETTINGS_TITLE ${LANG_UKRAINIAN} "Параметри встановлення"
 
 LangString TEXT_INST_SETTINGS_SUBTITLE ${LANG_ENGLISH} "Choose installation settings."
 LangString TEXT_INST_SETTINGS_SUBTITLE ${LANG_RUSSIAN} "Выбирите параметры установки."
-LangString TEXT_INST_SETTINGS_SUBTITLE ${LANG_UKRAINIAN} "Оберіть параметри установки."
+LangString TEXT_INST_SETTINGS_SUBTITLE ${LANG_UKRAINIAN} "Оберіть параметри встановлення."
 
 Var InstallSettingsDialog
 Var IconsLabel
