@@ -872,11 +872,13 @@ GetSerialNumber(HANDLE hHandle, LPWSTR lpSerial, SIZE_T SerialSize)
     }
 }
 
-VOID
+BOOL
 GetInterfaceType(HANDLE hHandle, LPWSTR lpInterface, SIZE_T Size)
 {
     SCSI_GET_CONFIG Config;
     WCHAR *pText;
+
+    lpInterface[0] = 0;
 
     if (GetConfinurationScsi(hHandle,
                              0x01,
@@ -887,14 +889,14 @@ GetInterfaceType(HANDLE hHandle, LPWSTR lpInterface, SIZE_T Size)
         {
             switch (Config.Feature.additionalData[3])
             {
-                case 0: pText = L"Unspecified"; break;
-                case 1: pText = L"SCSI"; break;
-                case 2: pText = L"ATAPI"; break;
+                case 0: pText = L"Unspecified";      break;
+                case 1: pText = L"SCSI";             break;
+                case 2: pText = L"ATAPI";            break;
                 case 3: pText = L"IEEE 1394 - 1995"; break;
-                case 4: pText = L"IEEE 1394A"; break;
-                case 5: pText = L"Fibre Channel"; break;
-                case 6: pText = L"IEEE 1394B"; break;
-                case 7: pText = L"Serial ATAPI"; break;
+                case 4: pText = L"IEEE 1394A";       break;
+                case 5: pText = L"Fibre Channel";    break;
+                case 6: pText = L"IEEE 1394B";       break;
+                case 7: pText = L"Serial ATAPI";     break;
                 case 8: pText = L"USB (1.1 or 2.0)"; break;
                 default:
                 {
@@ -905,8 +907,11 @@ GetInterfaceType(HANDLE hHandle, LPWSTR lpInterface, SIZE_T Size)
                 }
             }
             StringCbCopy(lpInterface, Size, pText);
+            return TRUE;
         }
     }
+
+    return FALSE;
 }
 
 BOOL
@@ -1176,9 +1181,11 @@ HW_CDInfo(VOID)
             IoSetItemText(szText);
         }
 
-        IoAddValueName(1, 0, IDS_CDROM_INTERFACE);
-        GetInterfaceType(hHandle, szText, sizeof(szText));
-        IoSetItemText(szText);
+        if (GetInterfaceType(hHandle, szText, sizeof(szText)))
+        {
+            IoAddValueName(1, 0, IDS_CDROM_INTERFACE);
+            IoSetItemText(szText);
+        }
 
         GetScsiVendorById(szVendor, szText, sizeof(szText));
         if (szText[0] != 0)

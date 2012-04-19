@@ -33,7 +33,7 @@ GetIniFilePath(OUT LPWSTR lpszPath, IN SIZE_T PathLen)
 {
     WCHAR szPath[MAX_PATH];
 
-    if (ParamsInfo.IsPortable)
+    if (!ParamsInfo.IsPortable)
     {
         if (!SHGetSpecialFolderPath(hMainWnd, szPath, CSIDL_APPDATA, FALSE))
         {
@@ -56,7 +56,7 @@ GetIniFilePath(OUT LPWSTR lpszPath, IN SIZE_T PathLen)
         if (!GetCurrentPath(szPath, MAX_PATH))
             return FALSE;
 
-        StringCchPrintf(lpszPath, PathLen, L"%s\\aspia.ini", szPath);
+        StringCchPrintf(lpszPath, PathLen, L"%saspia.ini", szPath);
     }
 
     return TRUE;

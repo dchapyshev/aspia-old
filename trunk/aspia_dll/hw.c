@@ -300,23 +300,32 @@ HW_HDDATAInfo(VOID)
         StringCbPrintf(szText, sizeof(szText),
                        L"%S", DriveInfo.sModelNumber);
         ChopSpaces(szText, sizeof(szText));
-        IoAddHeaderString(0, 0, szText);
+        IoAddHeaderString(0, 0, (szText[0] != 0) ? szText : L"Unknown Hard Drive");
 
-        IoAddValueName(1, 0, IDS_HDD_ID);
-        IoSetItemText(szText);
+        if (szText[0] != 0)
+        {
+            IoAddValueName(1, 0, IDS_HDD_ID);
+            IoSetItemText(szText);
+        }
 
-        IoAddValueName(1, 0, IDS_SERIAL_NUMBER);
         ChangeByteOrder((PCHAR)DriveInfo.sSerialNumber,
                         sizeof(DriveInfo.sSerialNumber));
         StringCbPrintf(szText, sizeof(szText),
                        L"%S", DriveInfo.sSerialNumber);
         ChopSpaces(szText, sizeof(szText));
-        IoSetItemText(szText);
+        if (szText[0] != 0)
+        {
+            IoAddValueName(1, 0, IDS_SERIAL_NUMBER);
+            IoSetItemText(szText);
+        }
 
-        IoAddValueName(1, 0, IDS_VERSION);
         ChangeByteOrder((PCHAR)DriveInfo.sFirmwareRev,
                         sizeof(DriveInfo.sFirmwareRev));
-        IoSetItemText(L"%S", DriveInfo.sFirmwareRev);
+        if (DriveInfo.sFirmwareRev[0] != 0)
+        {
+            IoAddValueName(1, 0, IDS_VERSION);
+            IoSetItemText(L"%S", DriveInfo.sFirmwareRev);
+        }
 
         IoAddValueName(1, 0, IDS_HDD_INTERFACE);
         if (IsSATADrive(DriveInfo))
@@ -359,21 +368,28 @@ HW_HDDATAInfo(VOID)
         {
             ULONGLONG DiskSize;
 
-            IoAddValueName(1, 0, IDS_HDD_PARAMS);
-            LoadMUIString(IDS_HDD_PARAMS_FORMAT, szFormat, MAX_STR_LEN);
-            IoSetItemText(szFormat,
-                          (ULONG)DiskGeometry.Cylinders.QuadPart * (ULONG)DriveInfo.wNumHeads,
-                          (ULONG)DriveInfo.wNumHeads,
-                          (ULONG)DiskGeometry.SectorsPerTrack,
-                          (ULONG)DiskGeometry.BytesPerSector);
+            if ((DiskGeometry.Cylinders.QuadPart * (ULONG)DriveInfo.wNumHeads) > 0 &&
+                DriveInfo.wNumHeads > 0)
+            {
+                IoAddValueName(1, 0, IDS_HDD_PARAMS);
+                LoadMUIString(IDS_HDD_PARAMS_FORMAT, szFormat, MAX_STR_LEN);
+                IoSetItemText(szFormat,
+                              (ULONG)DiskGeometry.Cylinders.QuadPart * (ULONG)DriveInfo.wNumHeads,
+                              (ULONG)DriveInfo.wNumHeads,
+                              (ULONG)DiskGeometry.SectorsPerTrack,
+                              (ULONG)DiskGeometry.BytesPerSector);
+            }
 
             DiskSize = DiskGeometry.Cylinders.QuadPart * (ULONG)DiskGeometry.TracksPerCylinder *
                        (ULONG)DiskGeometry.SectorsPerTrack * (ULONG)DiskGeometry.BytesPerSector;
 
-            IoAddValueName(1, 0, IDS_HDD_SIZE);
-            IoSetItemText(L"%I64d MB (%I64d GB)",
-                          DiskSize / (1024 * 1024),
-                          DiskSize / (1024 * 1024 * 1024));
+            if (DiskSize > 0)
+            {
+                IoAddValueName(1, 0, IDS_HDD_SIZE);
+                IoSetItemText(L"%I64d MB (%I64d GB)",
+                              DiskSize / (1024 * 1024),
+                              DiskSize / (1024 * 1024 * 1024));
+            }
         }
 
         if (DriveInfo.wBufferSize > 0)
@@ -383,20 +399,28 @@ HW_HDDATAInfo(VOID)
                           (DriveInfo.wBufferSize * 512)/(1024 * 1024));
         }
 
-        IoAddValueName(1, 0, IDS_HDD_MULTISECTORS);
-        IoSetItemText(L"%d", DriveInfo.wMultSectorStuff);
+        if (DriveInfo.wMultSectorStuff > 0)
+        {
+            IoAddValueName(1, 0, IDS_HDD_MULTISECTORS);
+            IoSetItemText(L"%d", DriveInfo.wMultSectorStuff);
+        }
 
-        IoAddValueName(1, 0, IDS_HDD_ECC_BYTES);
-        IoSetItemText(L"%d", DriveInfo.wECCSize);
+        if (DriveInfo.wECCSize > 0)
+        {
+            IoAddValueName(1, 0, IDS_HDD_ECC_BYTES);
+            IoSetItemText(L"%d", DriveInfo.wECCSize);
+        }
 
-        IoAddValueName(1, 0, IDS_TYPE);
+        szText[0] = 0;
         if (DriveInfo.wGenConfig & 0x80)
             StringCbCopy(szText, sizeof(szText), L"Removable");
         else if (DriveInfo.wGenConfig & 0x40)
             StringCbCopy(szText, sizeof(szText), L"Fixed");
-        else
-            StringCbCopy(szText, sizeof(szText), L"Unknown");
-        IoSetItemText(szText);
+        if (szText[0] != 0)
+        {
+            IoAddValueName(1, 0, IDS_TYPE);
+            IoSetItemText(szText);
+        }
 
         wMajorVersion = GetMajorVersion(DriveInfo);
 
@@ -585,12 +609,20 @@ HW_HDDSMARTInfo(VOID)
             }
         }
 
-        IoAddItem(0, 0, L"-\0");
         ChangeByteOrder((PCHAR)DriveInfo.sModelNumber,
                         sizeof(DriveInfo.sModelNumber));
         StringCbPrintf(szText, sizeof(szText),
                        L"%S", DriveInfo.sModelNumber);
         ChopSpaces(szText, sizeof(szText));
+
+        if (szText[0] == 0)
+        {
+            CloseSmart(hHandle);
+            continue;
+        }
+
+        IoAddItem(0, 0, L"-\0");
+
         IoSetItemText(szText);
         IoSetItemText(L"-\0");
         IoSetItemText(L"-\0");
