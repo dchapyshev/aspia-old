@@ -1,0 +1,1059 @@
+/*
+ * PROJECT:         Aspia
+ * FILE:            aspia/lang/en-US.rc
+ * LICENSE:         LGPL (GNU Lesser General Public License)
+ * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
+ */
+
+/* English resource file */
+
+#include "../../include/lang.h"
+#include "../../include/icons.h"
+
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+
+IDR_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "Copy String\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Copy Value", ID_COPY_VALUE
+        MENUITEM "Copy Name", ID_COPY_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Refresh\tF5", ID_RELOAD
+    END
+END
+
+IDR_TASKMGR MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "Kill Process", ID_KILL_PROCESS
+        MENUITEM "Kill Process Tree", ID_KILL_PROCESS_TREE
+        POPUP "Priority"
+        BEGIN
+            MENUITEM "Real Time", ID_REALTIME_PRIORITY
+            MENUITEM "High", ID_HIGH_PRIORITY
+            MENUITEM "Above Normal", ID_ABOVE_NORMAL_PRIORITY
+            MENUITEM "Normal", ID_NORMAL_PRIORITY
+            MENUITEM "Below Normal", ID_BELOW_NORMAL_PRIORITY
+            MENUITEM "Low", ID_LOW_PRIORITY
+        END
+        MENUITEM "Open Folder...", ID_PROCESS_OPEN_FOLDER
+        MENUITEM "Properties", ID_PROCESS_PROPERTIES
+        MENUITEM SEPARATOR
+        MENUITEM "Copy String\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Copy Value", ID_COPY_VALUE
+        MENUITEM "Copy Name", ID_COPY_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Refresh\tF5", ID_RELOAD
+    END
+END
+
+IDR_INSTALLED_SOFTWARE MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "Remove", ID_APP_REMOVE
+        MENUITEM "Modify", ID_APP_MODIFY
+        MENUITEM "Remove from registry", ID_APP_REMOVE_REG
+        MENUITEM SEPARATOR
+        MENUITEM "Copy String\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Copy Value", ID_COPY_VALUE
+        MENUITEM "Copy Name", ID_COPY_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Refresh\tF5", ID_RELOAD
+    END
+END
+
+IDR_DEVICES MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "Drivers Search...", ID_DRIVERS_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM "Copy String\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Copy Value", ID_COPY_VALUE
+        MENUITEM "Copy Name", ID_COPY_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Refresh\tF5", ID_RELOAD
+    END
+END
+
+IDR_COPY_ALL_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Copy Selected\tCtrl+C", ID_COPY_ALL
+    END
+END
+
+IDR_SAVE_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Current Page\tCtrl+S", ID_SAVE_CURRENT
+        MENUITEM "&All Categories", ID_SAVE_ALL
+        MENUITEM "&Selected Categories...", ID_SAVE_REPORT
+    END
+END
+
+IDR_HELP_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Contents...\tF1", ID_HELP
+        MENUITEM SEPARATOR
+        MENUITEM "&About Aspia...", ID_ABOUT
+    END
+END
+
+IDR_SHOW_TRAY_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Show Window", ID_SHOW_WINDOW
+        MENUITEM SEPARATOR
+        MENUITEM "System Monitor", ID_SYSMON
+        MENUITEM "Disk Benchmark", ID_BENCH
+        MENUITEM SEPARATOR
+        MENUITEM "Report: &All Categories", ID_SAVE_ALL
+        MENUITEM "Report: Se&lected...", ID_SAVE_REPORT
+        MENUITEM SEPARATOR
+        MENUITEM "&Exit", ID_EXIT
+    END
+END
+
+IDR_HIDE_TRAY_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Hide Window", ID_HIDE_WINDOW
+        MENUITEM SEPARATOR
+        MENUITEM "System Monitor", ID_SYSMON
+        MENUITEM "Disk Benchmark", ID_BENCH
+        MENUITEM SEPARATOR
+        MENUITEM "&All Categories", ID_SAVE_ALL
+        MENUITEM "&Selected Categories...", ID_SAVE_REPORT
+        MENUITEM SEPARATOR
+        MENUITEM "&Exit", ID_EXIT
+    END
+END
+
+IDD_ABOUT_DIALOG DIALOGEX 100, 100, 198, 187
+STYLE DS_SHELLFONT | WS_BORDER | WS_DLGFRAME | WS_SYSMENU | DS_MODALFRAME | DS_CENTER
+CAPTION "About"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CONTROL -1, IDC_ABOUT_ICON, "STATIC", SS_ICON | SS_CENTERIMAGE | SS_REALSIZEIMAGE, 15, 10, 30, 30
+    LTEXT "Aspia (version %s)", IDC_VERSION_TEXT, 67, 15, 73, 11
+    LTEXT "© 2011-2012 Aspia Software", -1, 66, 27, 100, 10
+    EDITTEXT IDC_ABOUT_EDIT, 5, 45, 188, 87, WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_GROUP | WS_TABSTOP | ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL
+    CONTROL "", -1, "STATIC", SS_ETCHEDFRAME, 5, 136, 188, 27
+    PUSHBUTTON "&Donate!", IDC_DONATE_BTN, 75, 143, 110, 14
+    PUSHBUTTON "&Site", IDC_SITE_BTN, 13, 143, 55, 14
+
+    PUSHBUTTON "&Close", IDOK, 140, 168, 50, 14
+END
+
+IDD_REPORT_STATUS_DIALOG DIALOGEX 22, 16, 253, 68
+STYLE DS_SHELLFONT | WS_BORDER | WS_DLGFRAME | WS_SYSMENU | DS_MODALFRAME | DS_CENTER
+CAPTION "Save Report"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CONTROL -1, IDC_STATUS_ICON, "STATIC", SS_ICON | SS_CENTERIMAGE | SS_REALSIZEIMAGE, 10, 3, 18, 15
+    LTEXT "", IDC_STATUS_MSG, 33, 6, 212, 10
+    CONTROL "", IDC_REPORT_PROGRESS, PROGRESS_CLASS, WS_BORDER | WS_TABSTOP | PBS_MARQUEE, 9, 19, 235, 17
+    LTEXT "* Save the report may take a long time", -1, 13, 39, 233, 10
+    PUSHBUTTON "&Cancel", IDCANCEL, 183, 49, 60, 14
+END
+
+IDD_SETTINGS_DIALOG DIALOGEX 20, 16, 329, 243
+STYLE DS_SHELLFONT | WS_BORDER | WS_DLGFRAME | WS_SYSMENU | DS_MODALFRAME | DS_CENTER
+CAPTION "Settings"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CONTROL "Tree", IDC_SETTINGS_TREE, "SysTreeView32",
+        WS_BORDER | WS_GROUP | WS_TABSTOP | TVS_HASLINES | TVS_SHOWSELALWAYS, 2, 2, 100, 217
+
+    PUSHBUTTON "&Save", IDOK, 196, 224, 60, 14
+    PUSHBUTTON "&Close", IDCANCEL, 262, 224, 60, 14
+END
+
+IDD_SETTINGS_GENERAL DIALOGEX DISCARDABLE 103, 0, 273, 200
+STYLE DS_SHELLFONT | DS_CONTROL | WS_CHILD | WS_CLIPCHILDREN
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT "Language:", -1, 13, 16, 33, 10
+    COMBOBOX IDC_LANGUAGE_COMBO, 95, 12, 110, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
+    LTEXT "Icons Theme:", -1, 13, 33, 59, 10
+    COMBOBOX IDC_ICONS_COMBO, 95, 29, 110, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
+    LTEXT "Startup Category:", -1, 13, 48, 190, 10
+    COMBOBOX IDC_STARTUP_CAT_COMBO, 13, 58, 192, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
+    AUTOCHECKBOX "Start with Windows", IDC_START_WITH_WINDOWS, 20, 79, 110, 8
+    AUTOCHECKBOX "Save windows position", IDC_SAVE_WINDOW_POS, 20, 94, 109, 8
+    AUTOCHECKBOX "Stay on top", IDC_STAY_ON_TOP, 20, 110, 109, 8
+    AUTOCHECKBOX "Use styles for information windows", IDC_STYLES_WNDS, 20, 126, 163, 8
+    AUTOCHECKBOX "Show alternating rows in the information window", IDC_ALT_ROWS, 20, 142, 187, 8
+    AUTOCHECKBOX "Allow kernel-mode driver", IDC_ALLOW_KM_DRIVER, 20, 158, 109, 8
+END
+
+IDD_SETTINGS_FILTER DIALOGEX DISCARDABLE 103, 0, 273, 200
+STYLE DS_SHELLFONT | DS_CONTROL | WS_CHILD | WS_CLIPCHILDREN
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT "Event Logs Filtering:", -1, 8, 10, 77, 10
+    AUTOCHECKBOX "Show ""Error""", IDC_FILTER_ELOG_ERROR, 8, 24, 119, 8
+    AUTOCHECKBOX "Show ""Warning""", IDC_FILTER_ELOG_WARNING, 8, 39, 119, 8
+    AUTOCHECKBOX "Show ""Information""", IDC_FILTER_ELOG_INFO, 8, 54, 119, 8
+    LTEXT "IE History Filtering:", -1, 129, 10, 77, 10
+    AUTOCHECKBOX "Show ""file://""", IDC_FILTER_IE_FILE, 129, 24, 90, 8
+    AUTOCHECKBOX "Show ""http://""", IDC_FILTER_IE_HTTP, 129, 39, 90, 8
+    AUTOCHECKBOX "Show ""ftp://""", IDC_FILTER_IE_FTP, 129, 54, 90, 8
+END
+
+IDD_SETTINGS_SYSTRAY DIALOGEX DISCARDABLE 103, 0, 273, 200
+STYLE DS_SHELLFONT | DS_CONTROL | WS_CHILD | WS_CLIPCHILDREN
+FONT 8, "MS Shell Dlg"
+BEGIN
+    AUTOCHECKBOX "Start minimized to tray", IDC_START_MINIMIZED, 20, 8, 119, 8
+    AUTOCHECKBOX "Show program icon in tray", IDC_SHOW_PROG_ICON, 20, 23, 127, 8
+    AUTOCHECKBOX "Show sensor icons in tray:", IDC_SHOW_SENSOR_ICON, 20, 38, 123, 8
+    CONTROL "", IDC_SENSOR_ICON_LIST, "SysListView32", LVS_REPORT | LVS_SORTASCENDING | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP, 11, 55, 199, 64
+
+    LTEXT "Processor Icons:", -1, 11, 148, 93, 10
+    CONTROL -1, IDC_CPU_ICON, "STATIC", SS_ICON | SS_CENTERIMAGE | SS_REALSIZEIMAGE | WS_BORDER, 16, 165, 18, 15
+    PUSHBUTTON "&Font Color", IDC_CPU_FONT_COLOR, 44, 158, 60, 14
+    PUSHBUTTON "&Background", IDC_CPU_BACKGROUND, 44, 175, 60, 14
+
+    LTEXT "Hard Drive Icons:", -1, 117, 148, 96, 10
+    CONTROL -1, IDC_HDD_ICON, "STATIC", SS_ICON | SS_CENTERIMAGE | SS_REALSIZEIMAGE | WS_BORDER, 122, 165, 18, 15
+    PUSHBUTTON "&Font Color", IDC_HDD_FONT_COLOR, 150, 158, 60, 14
+    PUSHBUTTON "&Background", IDC_HDD_BACKGROUND, 150, 174, 60, 14
+
+    LTEXT "Refresh rate (in seconds):", -1, 20, 129, 120, 10
+    EDITTEXT IDC_REFRESH_RATE_EDIT, 143, 127, 37, 12, WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP | ES_NUMBER
+    CONTROL "", IDC_REF_RATE_UPDOWN, "msctls_updown32", UDS_NOTHOUSANDS | UDS_WRAP | UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS | WS_CHILD | WS_VISIBLE | UDS_ALIGNRIGHT, 178, 128, 9, 11
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_SAVE, "Save report"
+    IDS_RELOAD, "Refresh"
+    IDS_HELP, "Help"
+    IDS_PARAM, "Parameter"
+    IDS_VALUE, "Value"
+    IDS_PRODUCT_KEY, "Product Key"
+    IDS_PRODUCT_ID, "Product ID"
+    IDS_KERNEL_TYPE, "OS Kernel Type"
+    IDS_SYSTEM_ROOT, "OS System Root"
+    IDS_OS_VERSION, "OS Version"
+    IDS_OS_BUILD, "OS Build"
+    IDS_OS_REG_USER, "Registered User"
+    IDS_OS_REG_ORG, "Registered Organisation"
+    IDS_OS_PRODUCT_NAME, "OS Name"
+    IDS_USER_NAME, "User Name"
+    IDS_FULL_USER_NAME, "Full Name"
+    IDS_USER_DESC, "Description"
+    IDS_USER_GROUP_NAME, "Group Name"
+    IDS_USER_GROUP_DESC, "Description"
+
+    IDS_FONT_NAME, "Font Name"
+    IDS_FONT_SIZE, "Size"
+    IDS_FONT_FILENAME, "File Name"
+
+    IDS_ELOG_ERROR_TYPE, "Error"
+    IDS_ELOG_WARNING_TYPE, "Warning"
+    IDS_ELOG_INFO_TYPE, "Information"
+    IDS_ELOG_AUDIT_SUCCESS, "Audit Success"
+    IDS_ELOG_AUDIT_FAILURE, "Audit Failure"
+    IDS_ELOG_SUCCESS, "Success"
+    IDS_ELOG_UNKNOWN_TYPE, "Unknown"
+    IDS_ELOG_SOURCE, "Source"
+    IDS_ELOG_CATEGORY, "Caregory"
+    IDS_ELOG_EVENT, "Event"
+    IDS_ELOG_USER, "User"
+    IDS_ELOG_COMPUTER, "Computer"
+    IDS_ELOG_APPLICATIONS, "Applications"
+    IDS_ELOG_SECURITY, "Security"
+    IDS_ELOG_SYSTEM, "System"
+
+    IDS_FOLDER_NAME, "Folder Name"
+    IDS_FOLDER_PATH, "Folder Path"
+
+    IDS_COMPUTER_NAME, "Computer Name"
+    IDS_CURRENT_USERNAME, "Current User Name"
+
+    IDS_ALL_MEMORY, "Total Memory"
+    IDS_FREE_MEMORY, "Free Memory"
+    IDS_TOTAL_PAGINGFILE, "Total Page File"
+    IDS_FREE_PAGINGFILE, "Free Page File"
+    IDS_TOTAL_VIRUALMEM, "Total Virtual Memory"
+    IDS_FREE_VIRUALMEM, "Free Virtual Memory"
+
+    IDS_APP_PUBLISHER, "Publisher"
+    IDS_APP_HELPLINK, "Help Link"
+    IDS_APP_HELPPHONE, "Help Telephone"
+    IDS_APP_URL_UPDATEINFO, "Update Info"
+    IDS_APP_URL_INFOABOUT, "About Info"
+    IDS_APP_INSTALLDATE, "Install Date"
+    IDS_APP_INSTALLLOCATION, "Install Location"
+    IDS_APP_UNINSTALL_STR, "Uninstall String"
+    IDS_APP_MODIFY_PATH, "Modify String"
+
+    IDS_TIME, "Time"
+    IDS_DATE, "Date"
+    IDS_COLUMN_CATEGORIES, "Categories"
+
+    IDS_MEM_SIZE, "Size"
+    IDS_MEM_FORMFACTOR, "Form Factor"
+    IDS_MEM_SPEED, "Speed"
+    IDS_MEM_PARTNUMBER, "Part Number"
+    IDS_MEM_BANK, "Bank"
+    IDS_MEM_TOTALWIDTH, "Total Width"
+    IDS_MEM_DATAWIDTH, "Data Width"
+
+    IDS_CPU_SOCKET, "Socket"
+    IDS_CPU_VOLTAGE, "Voltage"
+    IDS_CPU_EXTCLOCK, "External Clock"
+    IDS_CPU_CURRENTSPEED, "Current Speed"
+    IDS_CPU_UPGRADE, "Upgrade"
+    IDS_CPU_FAMILY, "Family"
+
+    IDS_SUMMARY_MEM, "Memory"
+    IDS_SUMMARY_CPU, "Central Processor"
+    IDS_SUMMARY_OS, "Operating System"
+    IDS_SUMMARY_HDD, "Hard Drives"
+    IDS_CPU_MAXSPEED, "Maximum Speed"
+
+    IDS_ROUTE_DEST_IP, "Net Destination"
+    IDS_ROUTE_SUBNET_MASK, "Netmask"
+    IDS_ROUTE_GATEWAY, "Gateway"
+    IDS_ROUTE_METRIC, "Metric"
+
+    IDS_IE_HISTORY_TIME, "Time"
+    IDS_IE_HISTORY_DATE, "Date"
+    IDS_IE_HISTORY_URL, "URL"
+    IDS_IE_HISTORY_TITLE, "Title"
+    IDS_IE_STARTPAGE, "Start Page"
+    IDS_IE_SEARCHPAGE, "Search Page"
+    IDS_IE_LOCALPAGE, "Local Page"
+    IDS_IE_DOWNLOADDIR, "Download Directory"
+    IDS_IE_USE_PROXY, "Use Proxy"
+    IDS_IE_PROXY_ADDR, "Proxy Address"
+
+    IDS_YES, "Yes"
+    IDS_NO, "No"
+
+    IDS_DMI_CACHE_SRAM_TYPES, "Supported SRAM Type"
+    IDS_DMI_CACHE_SRAM_CURRENT, "Current SRAM Type"
+    IDS_DMI_CACHE_MAX_SIZE, "Maximum Size"
+    IDS_DMI_CACHE_CURRENT_SIZE, "Installed Size"
+    IDS_DMI_CACHE_MODE, "Mode"
+    IDS_DMI_CACHE_LEVEL, "Chache Level"
+
+    IDS_BIOS_DATE, "Date"
+    IDS_BIOS_SIZE, "Size"
+    IDS_BIOS_FATURES, "Features"
+
+    IDS_SYS_ID, "Universal Unique ID"
+    IDS_SYS_WAKEUP, "Wakeup Type"
+
+    IDS_DMI_HEADER_TITLE, "Warning!"
+    IDS_DMI_HEADER, "DMI data may be unreliable!"
+
+    IDS_SLOT_BUS_WIDTH, "Bus Width"
+    IDS_SLOT_LENGTH, "Length"
+
+    IDS_PORT_TYPE, "Port Type"
+    IDS_PORT_INT_DESIGNATION, "Internal Designation"
+    IDS_PORT_EXT_DESIGNATION, "External Designation"
+    IDS_PORT_INT_CONNECTOR, "Internal Connector"
+    IDS_PORT_EXT_CONNECTOR, "External Connector"
+
+    IDS_ENCL_OSLOAD_STATUS, "OS Load Status"
+    IDS_ENCL_POWER_STATUS, "Power Supply State"
+    IDS_ENCL_TEMPERATURE_STATUS, "Thermal State"
+    IDS_ENCL_SECURITY_STATUS, "Security State"
+    IDS_ENCL_ID, "Chassis"
+    IDS_ENCL_TYPE, "Type"
+
+    IDS_NIC_NAME, "Connection Name"
+    IDS_NIC_IP, "IP Address"
+    IDS_NIC_MAC, "MAC Address"
+    IDS_NIC_SUBNET_MASK, "Subnet Mask"
+    IDS_NIC_DHCP_ADDR, "DHCP Server Address"
+    IDS_NIC_DHCP_OBTAINED, "DHCP Lease Obtained"
+    IDS_NIC_DHCP_EXPIRES, "DHCP Lease Expires"
+    IDS_NIC_MTU, "MTU"
+    IDS_NIC_GETEWAY, "Gateway"
+    IDS_NIC_TYPE, "Interface Type"
+    IDS_NIC_SPEED, "Connection Speed"
+    IDS_NIC_SENT, "Bytes Sent"
+    IDS_NIC_RECEIVED, "Bytes Received"
+    IDS_NIC_DHCP_STATUS, "DHCP Enabled"
+    IDS_NIC_WINS_STATUS, "WINS Enabled"
+
+    IDS_NONE, "None"
+
+    IDS_MONITOR_DAC_TYPE, "DAC Type"
+    IDS_MONITOR_CHIP_TYPE, "Chip Type"
+    IDS_MONITOR_MODE, "Current Mode"
+    IDS_MONITOR_MEM_SIZE, "Memory Size"
+    IDS_MONITOR_ADAPTER, "Adapter"
+    IDS_MONITOR_DRIVER_VENDOR, "Driver Provider"
+
+    IDS_SMART_ATTR_ID, "ID"
+    IDS_SMART_ATTR_WORST, "Worst"
+    IDS_SMART_ATTR_NAME, "Attribute Description"
+    IDS_SMART_ATTR_VALUE, "Value"
+    IDS_SMART_THRESHOLD, "Threshold"
+    IDS_SMART_DATA, "Data"
+
+    IDS_HDD_ID, "Model ID"
+    IDS_HDD_ECC_BYTES, "ECC Bytes"
+    IDS_HDD_BUFFER_SIZE, "Buffer Size"
+    IDS_HDD_MULTISECTORS, "Multisectors"
+    IDS_HDD_PARAMS, "Parameters"
+    IDS_HDD_PARAMS_FORMAT, "%ld cylinders, %ld heads, %ld sectors per track, %ld bytes per sector"
+    IDS_HDD_SIZE, "Unformatted Capacity"
+
+    IDS_SERVICE_DISP_NAME, "Display Name"
+    IDS_SERVICE_START_TYPE, "Startup Type"
+    IDS_SERVICE_USER_NAME, "Account"
+    IDS_SERVICE_EX_FILE, "Executable File"
+    IDS_SERVICE_RUNNING, "Running"
+    IDS_SERVICE_PAUSED, "Paused"
+    IDS_SERVICE_STOPPED, "Stopped"
+    IDS_SERVICE_START_PENDING, "Start Pending"
+    IDS_SERVICE_STOP_PENDING, "Stop Pending"
+    IDS_SERVICE_PAUSE_PENDING, "Pause Pending"
+    IDS_SERVICE_CONT_PENDING, "Continue Pending"
+    IDS_SERVICE_AUTO, "Auto"
+    IDS_SERVICE_MANUAL, "Manual"
+    IDS_SERVICE_DISABLED, "Disabled"
+    IDS_SERVICE_BOOT_START, "Boot Start"
+    IDS_SERVICE_SYSTEM_START, "System Start"
+
+    IDS_USED_MEMORY, "Used Memory"
+    IDS_PERCENT_USED, "Utilization"
+    IDS_USED_PAGINFILE, "Used Page File"
+    IDS_PERCENT_PAGINFILE, "Utilization"
+    IDS_USED_VIRTMEM, "Used Virtual Memory"
+    IDS_PERCENT_VIRTMEM, "Utilization"
+
+    IDS_DRIVE_UNKNOWN, "Unknown"
+    IDS_DRIVE_NO_ROOT_DIR, "No Root Directory"
+    IDS_DRIVE_REMOVABLE, "Removable"
+    IDS_DRIVE_FIXED, "Fixed"
+    IDS_DRIVE_REMOTE, "Remote"
+    IDS_DRIVE_CDROM, "CDROM"
+    IDS_DRIVE_RAMDISK, "RAM Disk"
+
+    IDS_SHARE_PATH, "Local Path"
+    IDS_SHARE_DISKTREE, "Disk"
+    IDS_SHARE_PRINTQ, "Printer"
+    IDS_SHARE_DEVICE, "Device"
+    IDS_SHARE_IPC, "IPC"
+    IDS_SHARE_SPECIAL, "System folder"
+    IDS_SHARE_TEMPORARY, "Temporary"
+
+    IDS_TASK_NAME, "Process Name"
+    IDS_TASK_FILEPATH, "File Path"
+    IDS_TASK_USED_MEM, "Used Memory"
+    IDS_TASK_USED_PAGEFILE, "Used Swap"
+    IDS_TASK_DESC, "Description"
+
+    IDS_CATEGORY_COLUMN, "Category"
+
+    IDS_CPUID_FEATURES, "Features"
+    IDS_CPUID_SUPPORTED, "Supported"
+    IDS_CPUID_UNSUPPORTED, "Unsupported"
+    IDS_CPUID_LOGICAL_COUNT, "Logical Processors Count"
+    IDS_CPUID_NAME, "Name"
+    IDS_CPUID_MODEL, "Model"
+    IDS_CPUID_FAMILY, "Family"
+    IDS_CPUID_STEPPINGID, "Stepping ID"
+
+    IDS_BAT_ID, "Battery ID"
+    IDS_BAT_TYPE, "Battery Type"
+    IDS_BAT_CAPACITY, "Designed Capacity"
+    IDS_BAT_FULL_CAPACITY, "Fully Charged Capacity"
+    IDS_BAT_CURRENT_CAPACITY, "Current Capacity"
+    IDS_BAT_VOLTAGE, "Voltage"
+    IDS_BAT_DEPRECIATION, "Wear Level"
+    IDS_BAT_MANUFACTUREDATE, "Manufacture Date"
+    IDS_BAT_TEMPERATURE, "Temperature"
+    IDS_BAT_RECHARGEABLE, "Rechargeable"
+    IDS_BAT_NONRECHARGEABLE, "Non rechargeable"
+    IDS_BAT_CHARGING, "Charging"
+    IDS_BAT_CRITICAL, "Critical"
+    IDS_BAT_DISCHARGING, "Discharging"
+    IDS_BAT_POWERONLINE, "Power On Line"
+    IDS_BAT_BATTERYS, "Battery Properties"
+
+    IDS_PRINTER_PORT, "Port"
+    IDS_PRINTER_DRIVER, "Driver"
+    IDS_PRINTER_LOCATION, "Location"
+    IDS_PRINTER_COMMENT, "Comment"
+    IDS_PRINTER_SHARENAME, "Share Point"
+    IDS_PRINTER_SERVER, "Server"
+    IDS_PRINTER_PROCESSOR, "Print Processor"
+    IDS_PRINTER_SHARED, "Shared Printer"
+    IDS_PRINTER_DATATYPE, "Data Type"
+    IDS_PRINTER_JOBS_COUNT, "Print Jobs Queued"
+    IDS_PRINTER_DEFAULT, "Default Printer"
+    IDS_PRINTER_DEVICENAME, "Device Name"
+    IDS_PRINTER_PAPER_SIZE, "Paper Size"
+    IDS_PRINTER_QUALITY, "Print Quality"
+    IDS_PRINTER_ORIENTATION, "Orientation"
+    IDS_PRINTER_PORTRAIT, "Portrait"
+    IDS_PRINTER_LANDSCAPE, "Landscape"
+
+    IDS_RAS_COUNTRY_CODE, "Country Code"
+    IDS_RAS_AREA_CODE, "Area Code"
+    IDS_RAS_PHONE_NUMBER, "Phone Number"
+    IDS_RAS_IP, "IP Address"
+    IDS_RAS_DEVICE_TYPE, "Device Type"
+    IDS_RAS_DEVICE_NAME, "Device Name"
+    IDS_RAS_DINAMIC_ADDR, "Dinamic"
+    IDS_RAS_SCRIPT, "Login Script File"
+    IDS_RAS_FRAMING_PROTOCOL, "Framing Protocol"
+    IDS_RAS_USERNAME, "User Name"
+    IDS_RAS_DOMAIN, "Domain"
+    IDS_SYS_UPTIME, "System Uptime"
+    IDS_SYS_UPTIME_FORMAT, "%I64u days, %I64u hours, %I64u minutes, %.2I64u seconds"
+    IDS_TASK_COMMENT, "Comment"
+    IDS_TASK_NEXT_RUN_TIME, "Next Run"
+    IDS_TASK_LAST_RUN_TIME, "Last Run"
+    IDS_TASK_ACCAUNT, "Account Name"
+    IDS_TASK_APP_NAME, "Application Name"
+    IDS_TASK_WORK_DIR, "Working Folder"
+    IDS_TASK_APP_PARAMS, "Application Parameters"
+    IDS_TASK_CREATOR, "Creator"
+    IDS_TASK_READY, "Ready"
+    IDS_TASK_RUNNING, "Running"
+    IDS_TASK_DISABLED, "Disabled"
+    IDS_TASK_HAS_NOT_RUN, "Has not run"
+    IDS_TASK_NOT_SCHEDULED, "Not scheduled"
+    IDS_TASK_NO_MORE_RUNS, "No more runs"
+    IDS_TASK_NO_VALID_TRIGGERS, "No valid Triggers"
+    IDS_TASK_TRIGGER_FORMAT, "Trigger #%ld"
+
+    IDS_MANUFACTURER, "Manufacturer"
+    IDS_SERIAL_NUMBER, "Serial Number"
+    IDS_NAME, "Name"
+    IDS_TYPE, "Type"
+    IDS_DESC, "Description"
+    IDS_STATUS, "Status"
+    IDS_PROP, "Properties"
+    IDS_PRODUCT, "Product"
+    IDS_VERSION, "Version"
+
+    /* Desktop */
+    IDS_DESK_DESKTOP, "Desktop"
+    IDS_DESK_WALLPAPER, "Wallpaper"
+    IDS_DESK_COLOR_DEPTH, "Color Depth"
+    IDS_DESK_RESOLUTION, "Resolution"
+    IDS_DESK_REFRESH_RATE, "Refresh Rate"
+    IDS_DESK_FONT_SMOOTHING, "Font Smoothing"
+    IDS_DESK_FONT_SMOOTHING_TYPE, "Font Smoothing Type"
+    /* Mouse */
+    IDS_DESK_MOUSE, "Mouse"
+    IDS_DESK_MOUSE_SPEED, "Mouse Speed"
+    IDS_DESK_MOUSE_TRAILS, "Mouse Trails"
+    IDS_DESK_WHELL_SCROLL_LINES, "Whell Scroll Lines"
+    /* Keyboard */
+    IDS_DESK_KEYBOARD, "Keyboard"
+    IDS_DESK_KEYBOARD_SPEED, "Keyboard Speed"
+    IDS_DESK_KEYBOARD_DELAY, "Keyboard Delay"
+    /* Menu */
+    IDS_DESK_MENU, "Menu"
+    IDS_DESK_MENU_FADE_ANIMATION, "Menu Animation"
+    IDS_DESK_MENU_SHOW_DELAY, "Menu Show Delay"
+    IDS_DESK_FLAT_MENU, "Flat Menu"
+    /* Screen saver */
+    IDS_DESK_SS, "Screensaver"
+    IDS_DESK_SS_ACTIVE, "Enabled"
+    IDS_DESK_SS_TIMEOUT, "Timeout"
+    /* UI effects */
+    IDS_DESK_UI_EFFECTS, "Effects"
+    IDS_DESK_COMBOBOX_ANIMATION, "Combo Box Animation"
+    IDS_DESK_CURSOR_SHADOW, "Cursor Shadow"
+    IDS_DESK_GRADIENT_CAPTIONS, "Gradient Captions"
+    IDS_DESK_LISTBOXSMOOTHSCROLLING, "List Box Smooth Scrolling"
+    IDS_DESK_MENUANIMATION, "Menu Animation"
+    IDS_DESK_TOOLTIPANIMATION, "Tool Tip Animation"
+    /* Window */
+    IDS_DESK_WINDOW, "Window"
+    IDS_DESK_WND_ANIMATION, "Window Animation"
+    IDS_DESK_WND_BORDER, "Border"
+    IDS_DESK_WND_DRAG_FULL, "Drag Full Window"
+    IDS_DESK_DROPS_SHADOW, "Drips Shadow"
+
+    IDS_SMOOTHING_CLEARTYPE, "ClearType"
+    IDS_SMOOTHING_STANDARD, "Standard"
+
+    IDS_RAS_IP_HEADER_COMPRES, "IP Header Compression"
+    IDS_RAS_PPP_LCP_EXTENSIONS, "PPP LCP Extensions"
+    IDS_RAS_SW_COMPRESSION, "SW Compression"
+    IDS_RAS_REQURE_ENCRYPT_PASS, "Requre Encrypted Password"
+    IDS_RAS_REQURE_MS_ENCRYPT_PASS, "Requre MS-encrypted Password"
+    IDS_RAS_REQURE_DATA_ENCRYPT, "Requre Data Encryption"
+    IDS_RAS_REQURE_EAP, "Requre EAP"
+    IDS_RAS_REQURE_PAP, "Requre PAP"
+    IDS_RAS_REQURE_SPAP, "Requre SPAP"
+    IDS_RAS_REQURE_CHAP, "Requre CHAP"
+    IDS_RAS_REQURE_MSCHAP, "Requre MSCHAP"
+    IDS_RAS_REQURE_MSCHAP2, "Requre MSCHAP v.2"
+
+    IDS_IE_COOKIE_URL_NAME, "URL"
+    IDS_IE_COOKIE_FILE_NAME, "File Name"
+    IDS_IE_COOKIE_LAST_MODIFY, "Last modify"
+    IDS_IE_COOKIE_LAST_ACCESS, "Last Access"
+    IDS_IE_COOKIE_LAST_SYNC, "Last Sync"
+    IDS_IE_COOKIE_EXPIRE, "Expire"
+    IDS_IE_COOKIE_USE_COUNT, "Use count"
+
+    IDS_INFORMATION, "Information"
+
+    IDS_OS_ARCH, "OS Architecture"
+    IDS_HW_ARCH, "CPU Architecture"
+
+    IDS_SITE_LINK, "http://www.aspia.ru"
+    IDS_SITE_DONATE_LINK, "http://www.aspia.ru/donate"
+
+    IDS_REGION_TIME_ZONE, "Time Zone"
+    IDS_REGION_LANGUAGE, "Language"
+    IDS_REGION_COUNTRY, "Country/Region"
+    IDS_REGION_CURRENCY, "Currency"
+    IDS_REGION_FORMATTING, "Formatting"
+    IDS_REGION_DAYS_OF_WEEK, "Days Of Week"
+    IDS_REGION_MONTHS, "Months"
+    IDS_REGION_MISCELLANEOUS, "Miscellaneous"
+    IDS_REGION_CUR_TIMEZONE, "Current Time Zone"
+    IDS_REGION_CUR_TIMEZONE_DESK, "Current Time Zone Description"
+    IDS_REGION_CHANGE_TO_STD_TIME, "Change To Standatd Time"
+    IDS_REGION_CHANGE_TO_DL_TIME, "Change To Daylight Saving Time"
+    IDS_REGION_LANG_NAME_NATIVE, "Language Name (Native)"
+    IDS_REGION_LANG_NAME_ENGLISH, "Language Name (English)"
+    IDS_REGION_LANG_NAME_ISO639, "Language Name (ISO 639)"
+    IDS_REGION_COUNTRY_NAME_NATIVE, "Country Name (Native)"
+    IDS_REGION_COUNTRY_NAME_ENGLISH, "Country Name (English)"
+    IDS_REGION_COUNTRY_NAME_ISO3166, "Country Name (ISO 3166)"
+    IDS_REGION_COUNTRY_CODE, "Country Code"
+    IDS_REGION_CUR_NAME_NATIVE, "Currency Name (Native)"
+    IDS_REGION_CUR_NAME_ENGLISH, "Currency Name (English)"
+    IDS_REGION_CUR_SYMBOL_NATIVE, "Currency Symbol (Native)"
+    IDS_REGION_CUR_SYMBOL_ISO4217, "Currency Symbol (ISO 4217)"
+    IDS_REGION_CUR_FORMAT, "Currency Format"
+    IDS_REGION_CUR_NEG_FORMAT, "Negative Currency Format"
+    IDS_REGION_FRMT_TIME_FORMAT, "Time Format"
+    IDS_REGION_FRMT_SDATE_FORMAT, "Short Date Format"
+    IDS_REGION_FRMT_LDATE_FORMAT, "Long Date Format"
+    IDS_REGION_FRMT_NUMBER_FORMAT, "Number Format"
+    IDS_REGION_FRMT_NEG_NUM_FORMAT, "Negative Number Format"
+    IDS_REGION_FRMT_LIST_FORMAT, "List Format"
+    IDS_REGION_FRMT_NATIVE_DIGITS, "Native Digits"
+    IDS_REGION_DOW_MONDAY, "Native Name for Monday"
+    IDS_REGION_DOW_TUESDAY, "Native Name for Tuesday"
+    IDS_REGION_DOW_WEDNESDAY, "Native Name for Wednesday"
+    IDS_REGION_DOW_THURSDAY, "Native Name for Thursday"
+    IDS_REGION_DOW_FRIDAY, "Native Name for Friday"
+    IDS_REGION_DOW_SATURDAY, "Native Name for Saturday"
+    IDS_REGION_DOW_SUNDAY, "Native Name for Sunday"
+    IDS_REGION_MNS_JANUARY, "Native Name for January"
+    IDS_REGION_MNS_FEBRUARY, "Native Name for February"
+    IDS_REGION_MNS_MARCH, "Native Name for March"
+    IDS_REGION_MNS_APRIL, "Native Name for April"
+    IDS_REGION_MNS_MAY, "Native Name for May"
+    IDS_REGION_MNS_JUNE, "Native Name for June"
+    IDS_REGION_MNS_JULE, "Native Name for Jule"
+    IDS_REGION_MNS_AUGUST, "Native Name for August"
+    IDS_REGION_MNS_SEPTEMBER, "Native Name for September"
+    IDS_REGION_MNS_OCTOBER, "Native Name for October"
+    IDS_REGION_MNS_NOVEMBER, "Native Name for November"
+    IDS_REGION_MNS_DECEMBER, "Native Name for December"
+    IDS_REGION_CALENDAR_TYPE, "Calendar Type"
+    IDS_REGION_MEASUREMENT_SYSTEM, "Measurement System"
+    IDS_REGION_PAPER_SIZE, "Default Paper Size"
+
+    IDS_LOCAL_TIME, "Local Time"
+    IDS_LOCAL_DATE, "Local Date"
+
+    IDS_POWER_MANAGMT_PROP, "Power Management Properties"
+    IDS_CURRENT_POWER_SOURCE, "Current Power Source"
+    IDS_BATTERY_STATUS, "Battery Status"
+    IDS_FULL_BATTERY_LIFETIME, "Full Battery Lifetime"
+    IDS_REMAINING_BAT_LIFETIME, "Remaining Battery Lifetime"
+    IDS_POWER_ON_AC_LINE, "AC Line"
+    IDS_POWER_ON_DC_BATTERY, "Battery"
+    IDS_POWER_HIGH_BATTERY, "High Level"
+    IDS_POWER_LOW_BATTERY, "Low Level"
+    IDS_POWER_CRITICAL_BATTERY, "Critical Level"
+    IDS_POWER_CHARGING, "Charging"
+    IDS_POWER_NO_BATTERY, "No Battery"
+
+    IDS_UNKNOWN, "Unknown"
+
+    IDS_USER_ACCOUNT_DISABLED, "Disabled"
+    IDS_USER_PASSWD_CANT_CHANGE, "Password Can't Change"
+    IDS_USER_PASSWORD_EXPIRED, "Password Expired"
+    IDS_USER_DONT_EXPIRE_PASSWD, "Don't Expire Password"
+    IDS_USER_LOCKOUT, "Lookout"
+
+    IDS_REPORT_TITLE, "Content"
+    IDS_REPORT_TOP, "Top"
+    IDS_CMD_HELP, "ASPIA [-nonav] [-help] file_path\n\
+                  -nonav\tAdd navigation menu to report file\n\
+                  -help\tHelp message\n\
+                  file_path\tPath to file\n\
+                  \nExamples\n\
+                  Create report file with navigation menu:\n\
+                  ASPIA c:\\report.htm\t\n\
+                  Create report file without navigation menu:\n\
+                  ASPIA -nonav c:\\report.htm\n\
+                  Show this message:\n\
+                  ASPIA -help"
+
+    IDS_NETSTAT_PROC_NAME, "Process Name"
+    IDS_NETSTAT_PROTOCOL, "Protocol"
+    IDS_NETSTAT_LOCAL_ADDRESS, "Local Address"
+    IDS_NETSTAT_REMOTE_ADDRESS, "Remote Address"
+    IDS_NETSTAT_STATE, "State"
+
+    IDS_SHARE_MAX_USES, "Maximum Uses"
+    IDS_SHARE_CURRENT_USES, "Current Uses"
+    IDS_SHARE_UNLIMITED, "Unlimited"
+
+    IDS_ACTUSERS_DOMAIN, "Domain"
+    IDS_ACTUSERS_USERID, "ID"
+    IDS_ACTUSERS_STATE, "State"
+    IDS_ACTUSERS_CLIENTNAME, "Client Name"
+    IDS_ACTUSERS_LOGON_TYPE, "Logon Type"
+
+    IDS_OPENFILE_ID, "ID"
+    IDS_OPENFILE_PATH, "File Path"
+    IDS_OPENFILE_COUNT, "Locks Count"
+
+    IDS_USER_LAST_LOGON, "Last Logon"
+    IDS_USER_NUM_LOGONS, "Number Logons"
+    IDS_USER_BAD_PW_COUNT, "Bad Password Count"
+
+    IDS_NEVER, "Never"
+
+    IDS_DEVICE_NAME, "Device Name"
+    IDS_DEVICE_DRIVER_DATE, "Drive Date"
+    IDS_DEVICE_DRIVER_VENDOR, "Driver Vendor"
+    IDS_DEVICE_VENDOR_ID, "VenId-DevId"
+    IDS_DEVICE_CLASS_NAME, "Class Name"
+    IDS_DEVICE_ESTIMATED, "Estimated Device"
+    IDS_DEVICE_VERSION, "Driver Version"
+    IDS_DEVICE_ESTIMATED_VENDOR, "Device Vendor"
+    IDS_DEVICE_UNKNOWN_DEVICE, "Unknown Device"
+    IDS_DEVICE_INSTANCE_ID, "Instance Id"
+
+    IDS_LICENSE_APP_NAME, "Product Name"
+    IDS_LICENSE_PRODUCT_KEY, "Product Key"
+
+    IDS_SENSOR_TEMPERATURE, "Temperature"
+    IDS_SENSOR_CORE_TEMPERATURE, "Temperature (Core %ld)"
+
+    IDS_SPD_PRODUCT_DATE, "Manufacture Date"
+    IDS_SPD_MODULE_SIZE, "Module Size"
+    IDS_SPD_FREQUENT, "Module Frequent"
+    IDS_SPD_MEMORY_TYPE, "Memory Type"
+    IDS_SPD_MODULE_TYPE, "Module Type"
+    IDS_SPD_VOLTAGE, "Module Voltage"
+    IDS_SPD_MODULE_WIDTH, "Module Width"
+    IDS_SPD_REFRESH_RATE, "Refresh Rate"
+    IDS_SPD_MEMORY_TIMINGS, "Memory Timings"
+    IDS_SPD_ERROR_DETECTION, "Error Detection Method"
+    IDS_SPD_SUPPORTED_CAS_LATENCIES, "Supported CAS Latencies"
+    IDS_SPD_DIMM_TYPE, "DIMM Type"
+    IDS_SPD_ANALYSIS_PROBE, "Analysis Probe"
+    IDS_SPD_FET_SWITCH_EXT, "FET Switch External"
+    IDS_SPD_WEAK_DRIVER, "Weak Driver"
+    IDS_SPD_BURST_LENGTHS, "Supported Burst Lengths"
+    IDS_SPD_TIMING_FORMAT, "Supported Timing at %.1f MHz"
+
+    IDS_SENSOR_VOLTAGE, "Voltage"
+
+    IDS_SETTINGS, "Settings"
+
+    IDS_OS_INSTALL_DATE, "Install Date"
+
+    IDS_PREV_TOOLS, "System Tools"
+    IDS_PREV_TASKMGR, "Task Manager"
+    IDS_PREV_REGEDIT, "Registry Editor"
+    IDS_PREV_EXPLORER, "Explorer"
+    IDS_PREV_DESKTOP_ITEMS, "Desktop Items"
+    IDS_PREV_EXPLORER_CONTEXT_MENU, "Explorer Context Menu"
+    IDS_PREV_TASKBAR_CONTEXT_MENU, "Taskbar Context Menu"
+    IDS_PREV_HIDE_TRAY, "System Tray on Taskbar"
+    IDS_PREV_HIDE_CLOCK, "Clock on Taskbar"
+    IDS_PREV_TOOLBARS_ON_TASKBAR, "Toolbars on Taskbar"
+    IDS_PREV_AUTORUN, "Autorun"
+    IDS_PREV_HKLM_RUN, "HKLM - Run"
+    IDS_PREV_HKLM_RUNONCE, "HKLM - RunOnce"
+    IDS_PREV_HKCU_RUN, "HKCU - Run"
+    IDS_PREV_HKCU_RUNONCE, "HKCU - RunOnce"
+    IDS_PREV_OTHER, "Other"
+    IDS_PREV_DISABLE_GPO, "Using Group Policies"
+    IDS_PREV_ALLOWED, "Allowed"
+    IDS_PREV_NOT_ALLOWED, "Not Allowed"
+    IDS_PREV_DISABLE_CMD, "Command Prompt"
+    IDS_PREV_RECENT_DOCS, "Recent Documents in Start Menu"
+    IDS_PREV_LOG_OFF, "Log Off in Start Menu"
+    IDS_PREV_RUN_COMMAND, "Run command in Start Menu"
+    IDS_PREV_FIND_COMMAND, "Find in Start Menu"
+    IDS_PREV_FAVORITES, "Favorites in Start Menu"
+    IDS_PREV_SHUTDOWN, "Shutdown in Start Menu"
+    IDS_FIREWALL_ACTION, "Action"
+    IDS_FIREWALL_STATE, "State"
+    IDS_FIREWALL_DIR, "Destination"
+    IDS_FIREWALL_PROTO, "Protocol"
+    IDS_FIREWALL_APP, "Application"
+    IDS_FIREWALL_NAME, "Name"
+    IDS_FIREWALL_SCOPE, "Scope"
+    IDS_DMI_ONBOARD_DESC, "Description"
+    IDS_DMI_ONBOARD_TYPE, "Type"
+    IDS_DMI_ONBOARD_STATUS, "Status"
+    IDS_DMI_BATTERY_LOCATION, "Location"
+    IDS_DMI_BATTERY_MANUFACTURER, "Manufacturer"
+    IDS_DMI_BATTERY_MANUFDATE, "Manufacture Date"
+    IDS_DMI_BATTERY_SERIAL, "Serial Number"
+    IDS_DMI_BATTERY_DEVICE_NAME, "Device Name"
+    IDS_DMI_BATTERY_DEVICE_CHEMISTRY, "Device Chemistry"
+    IDS_DMI_BATTERY_DESIGN_CAPACITY, "Design Capacity"
+    IDS_DMI_BATTERY_DESIGN_VOLTAGE, "Design Voltage"
+    IDS_DMI_BATTERY_SBDS_VERSION, "SBDS Version Number"
+    IDS_DMI_BATTERY_SBDS_SERIAL, "SBDS Serial Number"
+    IDS_DMI_BATTERY_SBDS_MANUFDATE, "SBDS Manufacture Date"
+    IDS_DMI_BATTERY_SBDS_DEV_CHEMIST, "SBDS Device Chemistry"
+    IDS_DMI_BATTERY_MAXERROR_IN_DATA, "Max. Error in Battery Data"
+    IDS_NETWORK_RAS_SERVER, "Server Address"
+    IDS_SETTINGS_GENERAL, "General"
+    IDS_SETTINGS_FILTER, "Data Filter"
+    IDS_SETTINGS_SYSTRAY, "System Tray"
+    IDS_DISPLAY_ID, "Monitor ID"
+    IDS_DISPLAY_MANUFACTURER, "Manufacturer"
+    IDS_DISPLAY_MANUFACTURE_DATE, "Manufacture Date"
+    IDS_DISPLAY_TYPE, "Monitor Type"
+    IDS_DISPLAY_MAX_VISIBLE_SIZE, "Max. Visible Display Size"
+    IDS_DISPLAY_SERIAL_NUMBER, "Serial Number"
+    IDS_DISPLAY_ASPECT_RATIO, "Picture Aspect Ratio"
+    IDS_DISPLAY_HORIZ_FREQ, "Horizontal Frequency"
+    IDS_DISPLAY_VERT_FREQ, "Vertical Frequency"
+    IDS_DISPLAY_MAX_RESOLUTION, "Max. Resulution"
+    IDS_DISPLAY_GAMMA, "Gamma"
+    IDS_DISPLAY_DPMS_MODE, "DPMS Mode Support"
+    IDS_DISPLAY_SUPPORTED_MODES, "Supported Video Modes"
+    IDS_DISPLAY_MODEL, "Model"
+    IDS_DISPLAY_EDID_VERSION, "EDID Version"
+    IDS_TYPE_HTML, "HTML File (*.htm)"
+    IDS_TYPE_TEXT, "Plain Text File (*.txt)"
+    IDS_TYPE_CSV, "CSV File (*.csv)"
+    IDS_TYPE_JSON, "JSON File (*.jsn)"
+    IDS_TYPE_INI, "INI File (*.ini)"
+    IDS_TYPE_RTF, "RTF File (*.rtf)"
+    IDS_REGION_ANSI_CODEPAGE, "ANSI Codepage"
+    IDS_REGION_OEM_CODEPAGE, "OEM Codepage"
+    IDS_REGION_MAC_CODEPAGE, "MAC Codepage"
+    IDS_REGION_LANG_CODE, "Language Code"
+    IDS_SYSFILES_NAME, "Name"
+    IDS_SYSFILES_SIZE, "Size"
+    IDS_SYSFILES_VERSION, "Version"
+    IDS_SYSFILES_DESC, "Description"
+    IDS_SYSFILES_MANUF, "Manufacturer"
+    IDS_FILETYPES_EXT, "Extension"
+    IDS_FILETYPES_DESC, "Description"
+    IDS_FILETYPES_TYPE, "Content Type"
+    IDS_SYSMON, "System Monitor"
+    IDS_ASPIA_SYSMON, "Aspia System Monitor"
+    IDS_SYSMON_START, "Start"
+    IDS_SYSMON_STOP, "Stop"
+    IDS_SYSMON_TEST, "Stress Test"
+    IDS_SYSMON_SENSOR, "Sensor"
+    IDS_SYSMON_CURRENT, "Current"
+    IDS_SYSMON_MIN, "Minimum"
+    IDS_SYSMON_MAX, "Maximum"
+    IDS_REPORTWND_TITLE, "Save Report"
+    IDS_ADD_CONTENT_TABLE, "Add a table of contents"
+    IDS_CLOSE_BTN, "Close"
+    IDS_SAVE_BTN, "Save"
+    IDS_FILE_TYPE_TEXT, "File Type:"
+    IDS_SPD_DEVICE_WIDTH, "Device Width"
+    IDS_SPD_BUS_WIDTH, "Bus Width"
+    IDS_SPD_MODULE_NORM_VOLTAGE, "Module Normal Voltage (VDD)"
+    IDS_SPD_COLUMN_ADDR_BITS, "Column Address Bits"
+    IDS_SPD_ROW_ADDRESS_BITS, "Row Address Bits"
+    IDS_NOT_CONNECTED, "Not Connected"
+    IDS_HWBENCH, "Hardware Benchmarks"
+    IDS_SYSMON_BTN, "Sensors"
+    IDS_BENCH_BTN, "Benchmarks"
+    IDS_NVIDIA_BOARD_TEMP, "Board Temperature"
+    IDS_NVIDIA_CORE_TEMP, "Core Temperature"
+    IDS_NVIDIA_MEMORY_TEMP, "Memory Temperature"
+    IDS_NVIDIA_POWER_SUPPLY_TEMP, "Power Supply Temperature"
+    IDS_NVIDIA_VCD_BOARD_TEMP, "VCD Board Temperature"
+    IDS_NVIDIA_VCD_INLET_TEMP, "VCD Inlet Temperature"
+    IDS_NVIDIA_VCD_OUTLET_TEMP, "VCD Outlet Temperature"
+    IDS_NVIDIA_FAN_SPEED, "Fan Speed"
+    IDS_OPENGL_PROP, "OpenGL Properties"
+    IDS_OPENGL_VENDOR, "Vendor"
+    IDS_OPENGL_VERSION, "Version"
+    IDS_OPENGL_EXTENSIONS, "OpenGL Extensions"
+    IDS_DMI_POINTING_DEVICE, "Build-in Pointing Device"
+    IDS_DMI_POINTING_TYPE, "Device Type"
+    IDS_DMI_POINTING_INTERFACE, "Device Interface"
+    IDS_DMI_POINTING_BUTTONS, "Buttons Count"
+    IDS_MMDEV_NAME, "Name"
+    IDS_MMDEV_ID, "Identifier"
+    IDS_MMDEV_FORMATS, "Formats"
+    IDS_MMDEV_CHANNELS, "Channels"
+    IDS_MMDEV_SUPPORTS, "Supports"
+    IDS_CPL_NAME, "Name"
+    IDS_CPL_DESC, "Description"
+    IDS_REPORT_SAVE_ERROR1, "Error while trying to save the report. File a report with the specified name already exists and is open in another program."
+    IDS_REPORT_SAVE_ERROR2, "Error while trying to save the report. Invalid path or file name."
+    IDS_REPORT_SAVE_ERROR3, "Error while trying to save the report. For more information, run the program in debug mode."
+    IDS_SIGNED_FILE, "Signed"
+    IDS_DRIVER_SEARCH_URL, "http://devid.drp.su/?l=en&dev=%s"
+    IDS_CPUID_PHYSICAL_COUNT, "Physical Cores"
+    IDS_SUPPORTED_ENABLED, "Supported, Enabled"
+    IDS_SUPPORTED_DISABLED, "Supported, Disabled"
+    IDS_HDD_INTERFACE, "Interface"
+    IDS_HDD_CURRENT_TRANSFER_MODE, "Current Transfer Mode"
+    IDS_HDD_MAX_TRANSFER_MODE, "Max Transfer Mode"
+    IDS_HDD_ROTATION_RATE, "Rotation Rate"
+    IDS_HDD_ATA_FEATURES, "ATA Device Features"
+    IDS_CDROM_READ, "Read"
+    IDS_CDROM_WRITE, "Write"
+    IDS_CDROM_READ_WRITE, "Read, Write"
+    IDS_CDROM_FIRMWARE_REV, "Firmware Revision"
+    IDS_CDROM_SERIAL_NUMBER, "Serial Number"
+    IDS_CDROM_INTERFACE, "Interface"
+    IDS_CDROM_MANUFACTURER, "Manufacturer"
+    IDS_CDROM_BUFFER_SIZE, "Buffer Size"
+    IDS_CDROM_SUP_DISK_TYPES, "Supported Disk Types"
+    IDS_CDROM_DRIVE_FEATURES, "Optical Drive Features"
+    IDS_CDROM_REGION_CODE, "Region Code"
+    IDS_CDROM_REMAINING_USER_CHANGES, "Remaining User Changes"
+    IDS_CDROM_REMAINING_VENDOR_CHANGES, "Remaining Vendor Changes"
+
+    IDS_CAT_SUMMARY, "Summary Information"
+
+    IDS_CAT_HW, "Hardware"
+    IDS_CAT_HW_SENSOR, "Sensors"
+    IDS_CAT_HW_CPU, "Central Processor"
+    IDS_CAT_HW_POWER, "Power Options"
+    IDS_CAT_HW_PRINTERS, "Printers"
+    IDS_CAT_HW_SPD, "SPD"
+
+    IDS_CAT_HW_DEVICES, "Windows Devices"
+    IDS_CAT_HW_ALL_DEVICES, "All Devices"
+    IDS_CAT_HW_UNKNOWN_DEVICES, "Unknown Devices"
+
+    IDS_CAT_HW_DISPLAY, "Display"
+    IDS_CAT_HW_MONITOR, "Monitor"
+    IDS_CAT_HW_WIN_VIDEO, "Windows Video"
+    IDS_CAT_HW_OPENGL, "OpenGL"
+
+    IDS_CAT_HW_MMEDIA, "Multimedia"
+    IDS_CAT_HW_MMEDIA_DEV, "Windows Audio"
+    IDS_CAT_HW_MMEDIA_MCI, "MCI"
+    IDS_CAT_HW_MMEDIA_ACODEC, "Audio Codecs"
+    IDS_CAT_HW_MMEDIA_VCODEC, "Video Codecs"
+
+    IDS_CAT_HW_DATA, "Storage"
+    IDS_CAT_HW_DATA_CD, "Optical Drives"
+    IDS_CAT_HW_DATA_SCSI, "SCSI"
+    IDS_CAT_HW_DATA_ATA, "ATA"
+    IDS_CAT_HW_DATA_SMART, "S.M.A.R.T."
+
+    IDS_CAT_HW_DMI, "DMI"
+    IDS_CAT_HW_DMI_BIOS, "BIOS"
+    IDS_CAT_HW_DMI_SYSTEM, "System"
+    IDS_CAT_HW_DMI_BOARD, "Motherboard"
+    IDS_CAT_HW_DMI_CACHE, "Caches"
+    IDS_CAT_HW_DMI_PROCESSOR, "Processors"
+    IDS_CAT_HW_DMI_MEM, "Memory Devices"
+    IDS_CAT_HW_DMI_SLOT, "System Slots"
+    IDS_CAT_HW_DMI_PORTS, "Port Connectors"
+    IDS_CAT_HW_DMI_ENCLOSURE, "Chassis"
+    IDS_CAT_HW_DMI_ONBOARD, "Onboard Devices"
+    IDS_CAT_HW_DMI_BATTERY, "Portable Battery"
+    IDS_CAT_HW_DMI_POINTING, "Build-in Pointing"
+
+    IDS_CAT_SOFTWARE, "Software"
+    IDS_CAT_SOFTWARE_UPD_SFT, "Programs And Updates"
+    IDS_CAT_SOFTWARE_UPDATES, "Updates"
+    IDS_CAT_SOFTWARE_PROGRAMS, "Programs"
+    IDS_CAT_SOFTWARE_TASKMGR, "Processes"
+    IDS_CAT_SOFTWARE_SERVICES, "Services"
+    IDS_CAT_SOFTWARE_DRIVERS, "Drivers"
+    IDS_CAT_SOFTWARE_LICENSES, "Licenses"
+    IDS_CAT_SOFTWARE_FILETYPES, "File Types"
+
+    IDS_CAT_NETWORK, "Network"
+    IDS_CAT_NETWORK_CARDS, "Network Cards"
+    IDS_CAT_NETWORK_RAS, "RAS Connections"
+    IDS_CAT_NETWORK_NETSTAT, "Open Connections"
+    IDS_CAT_NETWORK_SHARED, "Shared Resources"
+    IDS_CAT_NETWORK_FILES, "Open Files"
+    IDS_CAT_NETWORK_ROUTE, "Routes"
+    IDS_CAT_NETWORK_FIREWALL, "Windows Firewall"
+    IDS_CAT_NETWORK_IE, "Internet Explorer"
+    IDS_CAT_NETWORK_IE_HISTORY, "History"
+    IDS_CAT_NETWORK_IE_COOKIE, "Cookie"
+    IDS_CAT_NETWORK_IE_PARAMS, "Settings"
+
+    IDS_CAT_OS, "Operating System"
+    IDS_CAT_OS_REGDATA, "Registration Information"
+    IDS_CAT_OS_DESKTOP, "Desktop"
+    IDS_CAT_OS_USERS_GROUPS, "Users And Groups"
+    IDS_CAT_OS_USERS, "Users"
+    IDS_CAT_OS_USERGROUP, "User Groups"
+    IDS_CAT_OS_ACTIVEUSERS, "Active Sessions"
+    IDS_CAT_OS_PREVENTS, "Prevents"
+    IDS_CAT_OS_REGPARAM, "Regional Settings"
+    IDS_CAT_OS_TASKSCHED, "Task Scheduler"
+    IDS_CAT_OS_FONTS, "Fonts"
+    IDS_CAT_OS_EVENTVIEW, "Event Logs"
+    IDS_CAT_OS_SYSFILES, "System Files"
+    IDS_CAT_SYSFILES_DLL, "DLL Files"
+    IDS_CAT_SYSFILES_AX, "AX Files"
+    IDS_CAT_SYSFILES_EXE, "EXE Files"
+    IDS_CAT_SYSFILES_SYS, "SYS Files"
+    IDS_CAT_SYSFILES_KNOWN, "Known DLLs"
+    IDS_CAT_OS_AUTORUN, "Startup"
+    IDS_CAT_OS_ENVIRON, "Environment Variables"
+    IDS_CAT_OS_SYSFOLDERS, "System Folders"
+    IDS_CAT_OS_CPL_APPLETS, "Control Panel"
+
+    IDS_ABOUT_STRING, "Aspia is free software released under GNU LGPL license.\r\n\
+                       You can get a copy of GNU LGPL license here:\r\n\
+                       http://www.gnu.org/licenses/lgpl.html\r\n\r\n\
+                       You can also get a translation of GNU LGPL license here:\r\n\
+                       http://www.gnu.org/licenses/translations.html\r\n\r\n\
+                       Developers:\r\n\
+                       • Dmitry Chapyshev (dmitry@aspia.ru) (Main program, driver)\r\n\
+                       • Maksim Shevchuk (maksim.shevchuk@gmail.com) (Driver)\r\n\r\n\
+                       Translators:\r\n\
+                       • Igor Paliychuk (mansonigor@gmail.com) (Ukrainian)\r\n\
+                       • Sakara Eugene (vzov@yandex.ua) (Ukrainian)\r\n\r\n\
+                       The digital signature for the drivers provided by ReactOS Foundation.\r\n\r\n\
+                       In the development we used the following projects:\r\n\
+                       • ReactOS (http://reactos.org)\r\n\
+                       • Wine (http://winehq.org)\r\n\
+                       • Open Hardware Monitor (http://openhardwaremonitor.org)\r\n\
+                       • Tango Project (http://tango.freedesktop.org)"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_LANGUAGE_NAME, "English"
+END
+
+/* EOF */

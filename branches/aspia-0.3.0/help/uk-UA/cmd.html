@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru-ru" lang="ru-ru" dir="ltr" >
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=windows-1251" />
+	<title>Робота з командного рядка</title>
+	<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+	<table border="0" cellspacing="0" cellpadding="4" class="htop">
+		<tr>
+			<td class="logo">
+				<a href="index.html">
+					<img border="0" src="images/logo.png" alt="Aspia Software" />
+				</a>
+			</td>
+			<td id="topmenu">
+Робота з командного рядка
+			</td>
+		</tr>
+	</table>
+	
+	<table border="0" cellspacing="0" cellpadding="0" id="main">
+		<tr>
+			<td id="content">
+
+<p><strong>Aspia</strong> може працювати з командного рядка. Ця можливість дозволяє зберегти звіт в вказаному форматі та у вказану користувачем 
+теку без запуску графічного інтерфейсу.<br /><br />
+
+<strong>aspia.exe [file_path].[file_ext] [-nonav] [-help]</strong><br /><br />
+<strong>file_path</strong> - шлях до файлу та назва файлу. Наприклад, C:\Temp\report.htm<br />
+<strong>file_ext</strong> - розширення файлу. Необхідно правильно вказати розширення, оскільки згідно нього визначається формат файлу, в який буде 
+збережено звіт. Підтримуються наступні розширення (формати):<br />
+<ul>
+<li><strong>htm</strong> - HTML-файл</li>
+<li><strong>txt</strong> - Текстовий файл</li>
+<li><strong>csv</strong> - Таблиця с раздільником ";"</li>
+<li><strong>rtf</strong> - Текст в форматі Rich Text Format</li>
+<li><strong>ini</strong> - INI-файл</li>
+</ul>
+<strong>-nonav</strong> - параметр вимикає додавання змісту в файл звіту.<br />
+<strong>-help</strong> - показує довідку з використання Aspia в командному рядку.<br />
+<br />
+
+<strong>Приклади використання:</strong><br />
+<ul>
+<li>Показ довідки:<br />
+<strong>aspia.exe -help</strong></li>
+<li>Збереження звіту без змісту в теку C:\Temp з назвою файлу test в форматі HTML:<br />
+<strong>aspia.exe C:\Temp\test.htm -nonav</strong></li>
+<li>Збереження звіту зі змістом в теку C:\Temp з назвою файлу test2 в форматі RTF:<br />
+<strong>aspia.exe C:\Temp\test2.rtf</strong></li>
+</ul>
+</p>
+
+			</td>
+		</tr>
+	</table>
+
+	<table border="0" cellspacing="0" cellpadding="0" class="footer">
+		<tr>
+			<td id="copyright">&copy; 2011-2012 <a href="http://aspia.ru">Aspia Software</a></td>
+		</tr>
+	</table>
+
+</body>
+</html>

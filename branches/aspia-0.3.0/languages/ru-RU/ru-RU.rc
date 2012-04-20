@@ -1,0 +1,1060 @@
+/*
+ * PROJECT:         Aspia
+ * FILE:            aspia/lang/ru-RU.rc
+ * LICENSE:         LGPL (GNU Lesser General Public License)
+ * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
+ */
+
+/* Russian resource file */
+
+#include "../../include/lang.h"
+#include "../../include/icons.h"
+
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+
+IDR_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "Копировать строку\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Копировать значения", ID_COPY_VALUE
+        MENUITEM "Копировать название", ID_COPY_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Обновить\tF5", ID_RELOAD
+    END
+END
+
+IDR_TASKMGR MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "Завершить процесс", ID_KILL_PROCESS
+        MENUITEM "Завершить дерево процессов", ID_KILL_PROCESS_TREE
+        POPUP "Приоритет"
+        BEGIN
+            MENUITEM "Реального времени", ID_REALTIME_PRIORITY
+            MENUITEM "Высокий", ID_HIGH_PRIORITY
+            MENUITEM "Выше среднего", ID_ABOVE_NORMAL_PRIORITY
+            MENUITEM "Средний", ID_NORMAL_PRIORITY
+            MENUITEM "Ниже среднего", ID_BELOW_NORMAL_PRIORITY
+            MENUITEM "Низкий", ID_LOW_PRIORITY
+        END
+        MENUITEM "Открыть папку...", ID_PROCESS_OPEN_FOLDER
+        MENUITEM "Свойства", ID_PROCESS_PROPERTIES
+        MENUITEM SEPARATOR
+        MENUITEM "Копировать строку\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Копировать значения", ID_COPY_VALUE
+        MENUITEM "Копировать название", ID_COPY_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Обновить\tF5", ID_RELOAD
+    END
+END
+
+IDR_INSTALLED_SOFTWARE MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "Удалить", ID_APP_REMOVE
+        MENUITEM "Изменить", ID_APP_MODIFY
+        MENUITEM "Удалить из реестра", ID_APP_REMOVE_REG
+        MENUITEM SEPARATOR
+        MENUITEM "Копировать строку\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Копировать значения", ID_COPY_VALUE
+        MENUITEM "Копировать название", ID_COPY_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Обновить\tF5", ID_RELOAD
+    END
+END
+
+IDR_DEVICES MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "Поиск драйверов...", ID_DRIVERS_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM "Копировать строку\tCtrl+C", ID_COPY_ALL
+        MENUITEM "Копировать значения", ID_COPY_VALUE
+        MENUITEM "Копировать название", ID_COPY_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Обновить\tF5", ID_RELOAD
+    END
+END
+
+IDR_COPY_ALL_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Копировать выделенное\tCtrl+C", ID_COPY_ALL
+    END
+END
+
+IDR_SAVE_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Текущая страница\tCtrl+S", ID_SAVE_CURRENT
+        MENUITEM "&Все категории", ID_SAVE_ALL
+        MENUITEM "В&ыборочно...", ID_SAVE_REPORT
+    END
+END
+
+IDR_HELP_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Содержание...\tF1", ID_HELP
+        MENUITEM SEPARATOR
+        MENUITEM "&О программе...", ID_ABOUT
+    END
+END
+
+IDR_SHOW_TRAY_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Показать окно", ID_SHOW_WINDOW
+        MENUITEM SEPARATOR
+        MENUITEM "Системный монитор", ID_SYSMON
+        MENUITEM "Disk Benchmark", ID_BENCH
+        MENUITEM SEPARATOR
+        MENUITEM "Отчет: &все категории", ID_SAVE_ALL
+        MENUITEM "Отчет: &выбранные...", ID_SAVE_REPORT
+        MENUITEM SEPARATOR
+        MENUITEM "&Выход", ID_EXIT
+    END
+END
+
+IDR_HIDE_TRAY_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Спрятать окно", ID_HIDE_WINDOW
+        MENUITEM SEPARATOR
+        MENUITEM "Системный монитор", ID_SYSMON
+        MENUITEM "Disk Benchmark", ID_BENCH
+        MENUITEM SEPARATOR
+        MENUITEM "Отчет: &все категории", ID_SAVE_ALL
+        MENUITEM "Отчет: &выбранные...", ID_SAVE_REPORT
+        MENUITEM SEPARATOR
+        MENUITEM "&Выход", ID_EXIT
+    END
+END
+
+IDD_ABOUT_DIALOG DIALOGEX 100, 100, 198, 187
+STYLE DS_SHELLFONT | WS_BORDER | WS_DLGFRAME | WS_SYSMENU | DS_MODALFRAME | DS_CENTER
+CAPTION "О программе"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CONTROL -1, IDC_ABOUT_ICON, "STATIC", SS_ICON | SS_CENTERIMAGE | SS_REALSIZEIMAGE, 15, 10, 30, 30
+    LTEXT "Aspia (версия %s)", IDC_VERSION_TEXT, 67, 15, 73, 11
+    LTEXT "© 2011-2012 Aspia Software", -1, 66, 27, 100, 10
+    EDITTEXT IDC_ABOUT_EDIT, 5, 45, 188, 87, WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_GROUP | WS_TABSTOP | ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL
+    CONTROL "", -1, "STATIC", SS_ETCHEDFRAME, 5, 136, 188, 27
+    PUSHBUTTON "&Поддержать материально!", IDC_DONATE_BTN, 75, 143, 110, 14
+    PUSHBUTTON "&Сайт", IDC_SITE_BTN, 13, 143, 55, 14
+
+    PUSHBUTTON "&Закрыть", IDOK, 140, 168, 50, 14
+END
+
+IDD_REPORT_STATUS_DIALOG DIALOGEX 22, 16, 253, 68
+STYLE DS_SHELLFONT | WS_BORDER | WS_DLGFRAME | WS_SYSMENU | DS_MODALFRAME | DS_CENTER
+CAPTION "Сохранение отчета"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CONTROL -1, IDC_STATUS_ICON, "STATIC", SS_ICON | SS_CENTERIMAGE | SS_REALSIZEIMAGE, 10, 3, 18, 15
+    LTEXT "", IDC_STATUS_MSG, 33, 6, 212, 10
+    CONTROL "", IDC_REPORT_PROGRESS, PROGRESS_CLASS, WS_BORDER | WS_TABSTOP | PBS_MARQUEE, 9, 19, 235, 17
+    LTEXT "* Сохранение отчета может занять продолжительное время", -1, 13, 39, 233, 10
+    PUSHBUTTON "&Отмена", IDCANCEL, 183, 49, 60, 14
+END
+
+IDD_SETTINGS_DIALOG DIALOGEX 20, 16, 329, 243
+STYLE DS_SHELLFONT | WS_BORDER | WS_DLGFRAME | WS_SYSMENU | DS_MODALFRAME | DS_CENTER
+CAPTION "Параметры"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CONTROL "", IDC_SETTINGS_TREE, "SysTreeView32",
+        WS_BORDER | WS_GROUP | WS_TABSTOP | TVS_HASLINES | TVS_SHOWSELALWAYS, 2, 2, 100, 217
+
+    PUSHBUTTON "&Сохранить", IDOK, 196, 224, 60, 14
+    PUSHBUTTON "&Закрыть", IDCANCEL, 262, 224, 60, 14
+END
+
+IDD_SETTINGS_GENERAL DIALOGEX DISCARDABLE 103, 0, 273, 200
+STYLE DS_SHELLFONT | DS_CONTROL | WS_CHILD | WS_CLIPCHILDREN
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT "Язык:", -1, 13, 16, 33, 10
+    COMBOBOX IDC_LANGUAGE_COMBO, 95, 12, 110, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
+    LTEXT "Тема иконок:", -1, 13, 33, 59, 10
+    COMBOBOX IDC_ICONS_COMBO, 95, 29, 110, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
+    LTEXT "Категория открываемая при запуске:", -1, 13, 48, 190, 10
+    COMBOBOX IDC_STARTUP_CAT_COMBO, 13, 58, 192, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
+    AUTOCHECKBOX "Запускать вместе с Windows", IDC_START_WITH_WINDOWS, 20, 79, 110, 8
+    AUTOCHECKBOX "Сохранять положение окон", IDC_SAVE_WINDOW_POS, 20, 94, 109, 8
+    AUTOCHECKBOX "Поверх всех окон", IDC_STAY_ON_TOP, 20, 110, 109, 8
+    AUTOCHECKBOX "Использовать стили для информационных окон", IDC_STYLES_WNDS, 20, 126, 175, 8
+    AUTOCHECKBOX "Чередующиеся строки в окне информации", IDC_ALT_ROWS, 20, 142, 187, 8
+    AUTOCHECKBOX "Разрешить драйвер режима ядра", IDC_ALLOW_KM_DRIVER, 20, 158, 130, 8
+END
+
+IDD_SETTINGS_FILTER DIALOGEX DISCARDABLE 103, 0, 273, 200
+STYLE DS_SHELLFONT | DS_CONTROL | WS_CHILD | WS_CLIPCHILDREN
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT "Системные события:", -1, 8, 10, 77, 10
+    AUTOCHECKBOX "Показывать ""Ошибка""", IDC_FILTER_ELOG_ERROR, 8, 24, 119, 8
+    AUTOCHECKBOX "Показывать ""Предупреждение""", IDC_FILTER_ELOG_WARNING, 8, 39, 119, 8
+    AUTOCHECKBOX "Показывать ""Информация""", IDC_FILTER_ELOG_INFO, 8, 54, 119, 8
+    LTEXT "История IE:", -1, 129, 10, 77, 10
+    AUTOCHECKBOX "Показывать ""file://""", IDC_FILTER_IE_FILE, 129, 24, 90, 8
+    AUTOCHECKBOX "Показывать ""http://""", IDC_FILTER_IE_HTTP, 129, 39, 90, 8
+    AUTOCHECKBOX "Показывать ""ftp://""", IDC_FILTER_IE_FTP, 129, 54, 90, 8
+END
+
+IDD_SETTINGS_SYSTRAY DIALOGEX DISCARDABLE 103, 0, 273, 200
+STYLE DS_SHELLFONT | DS_CONTROL | WS_CHILD | WS_CLIPCHILDREN
+FONT 8, "MS Shell Dlg"
+BEGIN
+    AUTOCHECKBOX "Запускать свернутой в трей", IDC_START_MINIMIZED, 20, 8, 119, 8
+    AUTOCHECKBOX "Показывать иконку программы", IDC_SHOW_PROG_ICON, 20, 23, 127, 8
+    AUTOCHECKBOX "Показывать иконки датчиков:", IDC_SHOW_SENSOR_ICON, 20, 38, 123, 8
+    CONTROL "", IDC_SENSOR_ICON_LIST, "SysListView32", LVS_REPORT | LVS_SORTASCENDING | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP, 11, 55, 199, 64
+
+    LTEXT "Иконки процессоров:", -1, 11, 148, 93, 10
+    CONTROL -1, IDC_CPU_ICON, "STATIC", SS_ICON | SS_CENTERIMAGE | SS_REALSIZEIMAGE | WS_BORDER, 16, 165, 18, 15
+    PUSHBUTTON "&Цвет шрифта", IDC_CPU_FONT_COLOR, 44, 158, 60, 14
+    PUSHBUTTON "&Фон", IDC_CPU_BACKGROUND, 44, 175, 60, 14
+
+    LTEXT "Иконки жестких дисков:", -1, 117, 148, 96, 10
+    CONTROL -1, IDC_HDD_ICON, "STATIC", SS_ICON | SS_CENTERIMAGE | SS_REALSIZEIMAGE | WS_BORDER, 122, 165, 18, 15
+    PUSHBUTTON "&Цвет шрифта", IDC_HDD_FONT_COLOR, 150, 158, 60, 14
+    PUSHBUTTON "&Фон", IDC_HDD_BACKGROUND, 150, 174, 60, 14
+
+    LTEXT "Частота обновления (в секундах):", -1, 20, 129, 120, 10
+    EDITTEXT IDC_REFRESH_RATE_EDIT, 143, 127, 37, 12, WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP | ES_NUMBER
+    CONTROL "", IDC_REF_RATE_UPDOWN, "msctls_updown32", UDS_NOTHOUSANDS | UDS_WRAP | UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS | WS_CHILD | WS_VISIBLE | UDS_ALIGNRIGHT, 178, 128, 9, 11
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_SAVE, "Сохранить отчет"
+    IDS_RELOAD, "Обновить"
+    IDS_HELP, "Помощь"
+    IDS_PARAM, "Параметр"
+    IDS_VALUE, "Значение"
+    IDS_PRODUCT_KEY, "Ключ продукта"
+    IDS_PRODUCT_ID, "ID продукта"
+    IDS_KERNEL_TYPE, "Тип ядра ОС"
+    IDS_SYSTEM_ROOT, "Корневая папка ОС"
+    IDS_OS_VERSION, "Версия ОС"
+    IDS_OS_BUILD, "Сборка ОС"
+    IDS_OS_REG_USER, "Зарегистрированный пользователь"
+    IDS_OS_REG_ORG, "Зарегистрированная организация"
+    IDS_OS_PRODUCT_NAME, "Название ОС"
+    IDS_USER_NAME, "Имя пользователя"
+    IDS_FULL_USER_NAME, "Полное имя"
+    IDS_USER_DESC, "Описание"
+    IDS_USER_GROUP_NAME, "Имя группы"
+    IDS_USER_GROUP_DESC, "Описание"
+
+    IDS_FONT_NAME, "Название шрифта"
+    IDS_FONT_SIZE, "Размер"
+    IDS_FONT_FILENAME, "Имя файла"
+
+    IDS_ELOG_ERROR_TYPE, "Ошибка"
+    IDS_ELOG_WARNING_TYPE, "Предупреждение"
+    IDS_ELOG_INFO_TYPE, "Уведомление"
+    IDS_ELOG_AUDIT_SUCCESS, "Аудит успехов"
+    IDS_ELOG_AUDIT_FAILURE, "Аудит отказов"
+    IDS_ELOG_SUCCESS, "Успех"
+    IDS_ELOG_UNKNOWN_TYPE, "Неизвестное событие"
+    IDS_ELOG_SOURCE, "Источник"
+    IDS_ELOG_CATEGORY, "Категория"
+    IDS_ELOG_EVENT, "Событие"
+    IDS_ELOG_USER, "Пользователь"
+    IDS_ELOG_COMPUTER, "Компьютер"
+    IDS_ELOG_APPLICATIONS, "Приложения"
+    IDS_ELOG_SECURITY, "Безопасность"
+    IDS_ELOG_SYSTEM, "Система"
+
+    IDS_FOLDER_NAME, "Имя папки"
+    IDS_FOLDER_PATH, "Путь к папке"
+
+    IDS_COMPUTER_NAME, "Имя компьютера"
+    IDS_CURRENT_USERNAME, "Имя текущего пользователя"
+
+    IDS_ALL_MEMORY, "Всего оперативной памяти"
+    IDS_FREE_MEMORY, "Свободно оперативной памяти"
+    IDS_TOTAL_PAGINGFILE, "Размер файла подкачки"
+    IDS_FREE_PAGINGFILE, "Свободно в файле подкачки"
+    IDS_TOTAL_VIRUALMEM, "Всего виртуальной памяти"
+    IDS_FREE_VIRUALMEM, "Свободно виртуальной памяти"
+
+    IDS_APP_PUBLISHER, "Производитель"
+    IDS_APP_HELPLINK, "Ссылка на справку"
+    IDS_APP_HELPPHONE, "Телефон поддержки"
+    IDS_APP_URL_UPDATEINFO, "Информация об обновлениях"
+    IDS_APP_URL_INFOABOUT, "Информация о программе"
+    IDS_APP_INSTALLDATE, "Дата установки"
+    IDS_APP_INSTALLLOCATION, "Путь установки"
+    IDS_APP_UNINSTALL_STR, "Строка для удаления"
+    IDS_APP_MODIFY_PATH, "Строка для изменения"
+
+    IDS_TIME, "Время"
+    IDS_DATE, "Дата"
+    IDS_COLUMN_CATEGORIES, "Категории"
+
+    IDS_MEM_SIZE, "Размер"
+    IDS_MEM_FORMFACTOR, "Форм-фактор"
+    IDS_MEM_SPEED, "Частота"
+    IDS_MEM_PARTNUMBER, "Шифр компонента"
+    IDS_MEM_BANK, "Банк"
+    IDS_MEM_TOTALWIDTH, "Общая ширина"
+    IDS_MEM_DATAWIDTH, "Ширина данных"
+
+    IDS_CPU_SOCKET, "Тип разъема"
+    IDS_CPU_VOLTAGE, "Напряжение питания"
+    IDS_CPU_EXTCLOCK, "Внешняя частота"
+    IDS_CPU_CURRENTSPEED, "Текущая частота"
+    IDS_CPU_UPGRADE, "Установка"
+    IDS_CPU_FAMILY, "Семейство"
+
+    IDS_SUMMARY_MEM, "Память"
+    IDS_SUMMARY_CPU, "Центральный процессор"
+    IDS_SUMMARY_OS, "Операционная система"
+    IDS_SUMMARY_HDD, "Жесткие диски"
+    IDS_CPU_MAXSPEED, "Максимальная частота"
+
+    IDS_ROUTE_DEST_IP, "Сетевое назначение"
+    IDS_ROUTE_SUBNET_MASK, "Маска сети"
+    IDS_ROUTE_GATEWAY, "Шлюз"
+    IDS_ROUTE_METRIC, "Метрика"
+
+    IDS_IE_HISTORY_TIME, "Время"
+    IDS_IE_HISTORY_DATE, "Дата"
+    IDS_IE_HISTORY_URL, "Ссылка"
+    IDS_IE_HISTORY_TITLE, "Заголовок"
+    IDS_IE_STARTPAGE, "Стартовая страница"
+    IDS_IE_SEARCHPAGE, "Страница поиска"
+    IDS_IE_LOCALPAGE, "Пустая страница"
+    IDS_IE_DOWNLOADDIR, "Папка для загружаемых файлов"
+    IDS_IE_USE_PROXY, "Прокси включен"
+    IDS_IE_PROXY_ADDR, "Адрес прокси"
+
+    IDS_YES, "Да"
+    IDS_NO, "Нет"
+
+    IDS_DMI_CACHE_SRAM_TYPES, "Поддерживаемый тип SRAM"
+    IDS_DMI_CACHE_SRAM_CURRENT, "Текущий тип SRAM"
+    IDS_DMI_CACHE_MAX_SIZE, "Максимальный объем"
+    IDS_DMI_CACHE_CURRENT_SIZE, "Текущий объем"
+    IDS_DMI_CACHE_MODE, "Режим работы"
+    IDS_DMI_CACHE_LEVEL, "Уровень кеша"
+
+    IDS_BIOS_DATE, "Дата выпуска"
+    IDS_BIOS_SIZE, "Размер"
+    IDS_BIOS_FATURES, "Возможности"
+
+    IDS_SYS_ID, "Универсальный уникальный ID"
+    IDS_SYS_WAKEUP, "Тип пробуждения"
+
+    IDS_DMI_HEADER_TITLE, "Внимание!"
+    IDS_DMI_HEADER, "Данные DMI могут быть недостоверны!"
+
+    IDS_SLOT_BUS_WIDTH, "Ширина шины данных"
+    IDS_SLOT_LENGTH, "Длинна"
+
+    IDS_PORT_TYPE, "Тип порта"
+    IDS_PORT_INT_DESIGNATION, "Внутреннее обозначение"
+    IDS_PORT_EXT_DESIGNATION, "Внешнее обозначение"
+    IDS_PORT_INT_CONNECTOR, "Внутренний тип разъема"
+    IDS_PORT_EXT_CONNECTOR, "Внешний тип разъема"
+
+    IDS_ENCL_OSLOAD_STATUS, "Состояние загрузки ОС"
+    IDS_ENCL_POWER_STATUS, "Состояние источника питания"
+    IDS_ENCL_TEMPERATURE_STATUS, "Температурное состояние"
+    IDS_ENCL_SECURITY_STATUS, "Состояние безопасности"
+    IDS_ENCL_ID, "Шасси"
+    IDS_ENCL_TYPE, "Тип шасси"
+
+    IDS_NIC_NAME, "Имя подключения"
+    IDS_NIC_IP, "IP адрес"
+    IDS_NIC_MAC, "MAC адрес"
+    IDS_NIC_SUBNET_MASK, "Маска подсети"
+    IDS_NIC_DHCP_ADDR, "Адрес DHCP сервера"
+    IDS_NIC_DHCP_OBTAINED, "DHCP-аренда получена"
+    IDS_NIC_DHCP_EXPIRES, "DHCP-аренда истекает"
+    IDS_NIC_MTU, "MTU"
+    IDS_NIC_GETEWAY, "Шлюз"
+    IDS_NIC_TYPE, "Тип интерфейса"
+    IDS_NIC_SPEED, "Скорость соединения"
+    IDS_NIC_SENT, "Отправлено"
+    IDS_NIC_RECEIVED, "Получено"
+    IDS_NIC_DHCP_STATUS, "DHCP включен"
+    IDS_NIC_WINS_STATUS, "WINS включен"
+
+    IDS_NONE, "Пусто"
+
+    IDS_MONITOR_DAC_TYPE, "Тип DAC"
+    IDS_MONITOR_CHIP_TYPE, "Тип видеопроцессора"
+    IDS_MONITOR_MODE, "Текущий режим"
+    IDS_MONITOR_MEM_SIZE, "Объем видео ОЗУ"
+    IDS_MONITOR_ADAPTER, "Адаптер"
+    IDS_MONITOR_DRIVER_VENDOR, "Производитель драйвера"
+
+    IDS_SMART_ATTR_ID, "ID"
+    IDS_SMART_ATTR_WORST, "Наихудшее"
+    IDS_SMART_ATTR_NAME, "Описание атрибута"
+    IDS_SMART_ATTR_VALUE, "Значение"
+    IDS_SMART_THRESHOLD, "Порог"
+    IDS_SMART_DATA, "Данные"
+
+    IDS_HDD_ID, "ID модели"
+    IDS_HDD_ECC_BYTES, "Байты ECC"
+    IDS_HDD_BUFFER_SIZE, "Буфер"
+    IDS_HDD_MULTISECTORS, "Мультисекторы"
+    IDS_HDD_PARAMS, "Параметры"
+    IDS_HDD_PARAMS_FORMAT, "цилиндров: %ld, головок: %ld, секторов в треке: %ld, байт в секторе: %ld"
+    IDS_HDD_SIZE, "Неформатированная емкость"
+
+    IDS_SERVICE_DISP_NAME, "Отображаемое имя"
+    IDS_SERVICE_START_TYPE, "Тип запуска"
+    IDS_SERVICE_USER_NAME, "Вход от имени"
+    IDS_SERVICE_EX_FILE, "Исполняемый файл"
+    IDS_SERVICE_RUNNING, "Запущен"
+    IDS_SERVICE_PAUSED, "Приостановлен"
+    IDS_SERVICE_STOPPED, "Остановлен"
+    IDS_SERVICE_START_PENDING, "Запуск"
+    IDS_SERVICE_STOP_PENDING, "Остановка"
+    IDS_SERVICE_PAUSE_PENDING, "Приостановка"
+    IDS_SERVICE_CONT_PENDING, "Продолжение"
+    IDS_SERVICE_AUTO, "Автоматически"
+    IDS_SERVICE_MANUAL, "Вручную"
+    IDS_SERVICE_DISABLED, "Отключена"
+    IDS_SERVICE_BOOT_START, "Запускается загрузчиком"
+    IDS_SERVICE_SYSTEM_START, "Запускается ядром"
+
+    IDS_USED_MEMORY, "Используется памяти"
+    IDS_PERCENT_USED, "Загрузка памяти"
+    IDS_USED_PAGINFILE, "Используется в файле подкачки"
+    IDS_PERCENT_PAGINFILE, "Загрузка файла подкачки"
+    IDS_USED_VIRTMEM, "Используется виртуальной памяти"
+    IDS_PERCENT_VIRTMEM, "Загрузка виртуальной памяти"
+
+    IDS_DRIVE_UNKNOWN, "Неизвестный"
+    IDS_DRIVE_NO_ROOT_DIR, "Неверный путь"
+    IDS_DRIVE_REMOVABLE, "Внешний"
+    IDS_DRIVE_FIXED, "Внутренний"
+    IDS_DRIVE_REMOTE, "Удаленный"
+    IDS_DRIVE_CDROM, "CDROM"
+    IDS_DRIVE_RAMDISK, "RAM-диск"
+
+    IDS_SHARE_PATH, "Локальный путь"
+    IDS_SHARE_DISKTREE, "Диск"
+    IDS_SHARE_PRINTQ, "Принтер"
+    IDS_SHARE_DEVICE, "Устройство"
+    IDS_SHARE_IPC, "IPC"
+    IDS_SHARE_SPECIAL, "Системная папка"
+    IDS_SHARE_TEMPORARY, "Временное"
+
+    IDS_TASK_NAME, "Имя процесса"
+    IDS_TASK_FILEPATH, "Путь к файлу"
+    IDS_TASK_USED_MEM, "Занято памяти"
+    IDS_TASK_USED_PAGEFILE, "Занято подкачкой"
+    IDS_TASK_DESC, "Описание"
+
+    IDS_CATEGORY_COLUMN, "Категория"
+
+    IDS_CPUID_FEATURES, "Возможности"
+    IDS_CPUID_SUPPORTED, "Поддерживается"
+    IDS_CPUID_UNSUPPORTED, "Не поддерживается"
+    IDS_CPUID_LOGICAL_COUNT, "Логических процессоров"
+    IDS_CPUID_NAME, "Имя процессора"
+    IDS_CPUID_MODEL, "Модель"
+    IDS_CPUID_FAMILY, "Семейство"
+    IDS_CPUID_STEPPINGID, "Степпинг"
+
+    IDS_BAT_ID, "Идентификатор"
+    IDS_BAT_TYPE, "Тип батареи"
+    IDS_BAT_CAPACITY, "Паспортная емкость"
+    IDS_BAT_FULL_CAPACITY, "Емкость при полном заряде"
+    IDS_BAT_CURRENT_CAPACITY, "Текущая емкость"
+    IDS_BAT_VOLTAGE, "Напряжение питания"
+    IDS_BAT_DEPRECIATION, "Степень изношенности"
+    IDS_BAT_MANUFACTUREDATE, "Дата производства"
+    IDS_BAT_TEMPERATURE, "Температура"
+    IDS_BAT_RECHARGEABLE, "Перезаряжаемая"
+    IDS_BAT_NONRECHARGEABLE, "Неперезаряжаемая"
+    IDS_BAT_CHARGING, "Зарядка"
+    IDS_BAT_CRITICAL, "Критическое"
+    IDS_BAT_DISCHARGING, "Разрядка"
+    IDS_BAT_POWERONLINE, "Питание от сети"
+    IDS_BAT_BATTERYS, "Свойства батарей"
+
+    IDS_PRINTER_PORT, "Порт"
+    IDS_PRINTER_DRIVER, "Драйвер"
+    IDS_PRINTER_LOCATION, "Расположение"
+    IDS_PRINTER_COMMENT, "Коментарий"
+    IDS_PRINTER_SHARENAME, "Имя общего ресурса"
+    IDS_PRINTER_SERVER, "Сервер"
+    IDS_PRINTER_PROCESSOR, "Процессор печати"
+    IDS_PRINTER_SHARED, "Общий доступ"
+    IDS_PRINTER_DATATYPE, "Тип данных"
+    IDS_PRINTER_JOBS_COUNT, "Заданий на печать"
+    IDS_PRINTER_DEFAULT, "По умолчанию"
+    IDS_PRINTER_DEVICENAME, "Имя устройства"
+    IDS_PRINTER_PAPER_SIZE, "Размер бумаги"
+    IDS_PRINTER_QUALITY, "Качество печати"
+    IDS_PRINTER_ORIENTATION, "Ориентация бумаги"
+    IDS_PRINTER_PORTRAIT, "Книжная"
+    IDS_PRINTER_LANDSCAPE, "Альбомная"
+
+    IDS_RAS_COUNTRY_CODE, "Код страны"
+    IDS_RAS_AREA_CODE, "Код региона"
+    IDS_RAS_PHONE_NUMBER, "Номер телефона"
+    IDS_RAS_IP, "IP адрес"
+    IDS_RAS_DEVICE_TYPE, "Тип устройства"
+    IDS_RAS_DEVICE_NAME, "Имя устройства"
+    IDS_RAS_DINAMIC_ADDR, "Динамический"
+    IDS_RAS_SCRIPT, "Сценарий входа в систему"
+    IDS_RAS_FRAMING_PROTOCOL, "Протокол кадрирования"
+    IDS_RAS_USERNAME, "Имя пользователя"
+    IDS_RAS_DOMAIN, "Домен"
+    IDS_SYS_UPTIME, "Время работы системы"
+    IDS_SYS_UPTIME_FORMAT, "%I64u дней, %I64u часов, %I64u минут, %.2I64u секунд"
+    IDS_TASK_COMMENT, "Коментарий"
+    IDS_TASK_NEXT_RUN_TIME, "Время следующего запуска"
+    IDS_TASK_LAST_RUN_TIME, "Время предыдущего запуска"
+    IDS_TASK_ACCAUNT, "Имя учетной записи"
+    IDS_TASK_APP_NAME, "Имя приложения"
+    IDS_TASK_WORK_DIR, "Рабочая папка"
+    IDS_TASK_APP_PARAMS, "Параметры приложения"
+    IDS_TASK_CREATOR, "Создатель"
+    IDS_TASK_READY, "Разрешено"
+    IDS_TASK_RUNNING, "Запущено"
+    IDS_TASK_DISABLED, "Отключено"
+    IDS_TASK_HAS_NOT_RUN, "Не работает"
+    IDS_TASK_NOT_SCHEDULED, "Не запланировано"
+    IDS_TASK_NO_MORE_RUNS, "Нет последующих запусков"
+    IDS_TASK_NO_VALID_TRIGGERS, "Нет корректных триггеров"
+    IDS_TASK_TRIGGER_FORMAT, "Триггер #%ld"
+
+    IDS_MANUFACTURER, "Производитель"
+    IDS_SERIAL_NUMBER, "Серийный номер"
+    IDS_NAME, "Имя"
+    IDS_TYPE, "Тип"
+    IDS_DESC, "Описание"
+    IDS_STATUS, "Состояние"
+    IDS_PROP, "Свойства"
+    IDS_PRODUCT, "Продукт"
+    IDS_VERSION, "Версия"
+
+    /* Desktop */
+    IDS_DESK_DESKTOP, "Рабочий стол"
+    IDS_DESK_WALLPAPER, "Рисунок рабочего стола"
+    IDS_DESK_COLOR_DEPTH, "Глубина цвета"
+    IDS_DESK_RESOLUTION, "Разрешение"
+    IDS_DESK_REFRESH_RATE, "Частота обновления"
+    IDS_DESK_FONT_SMOOTHING, "Сглаживание шрифтов"
+    IDS_DESK_FONT_SMOOTHING_TYPE, "Тип сглаживания шрифтов"
+    /* Mouse */
+    IDS_DESK_MOUSE, "Мышь"
+    IDS_DESK_MOUSE_SPEED, "Скорость мыши"
+    IDS_DESK_MOUSE_TRAILS, "След указателя мыши"
+    IDS_DESK_WHELL_SCROLL_LINES, "Количество прокручиваемых строк"
+    /* Keyboard */
+    IDS_DESK_KEYBOARD, "Клавиатура"
+    IDS_DESK_KEYBOARD_SPEED, "Скорость повтора"
+    IDS_DESK_KEYBOARD_DELAY, "Задержка перед началом повтора"
+    /* Menu */
+    IDS_DESK_MENU, "Меню"
+    IDS_DESK_MENU_FADE_ANIMATION, "Анимация меню"
+    IDS_DESK_MENU_SHOW_DELAY, "Задержка показа меню"
+    IDS_DESK_FLAT_MENU, "Плоское меню"
+    /* Screen saver */
+    IDS_DESK_SS, "Заставка"
+    IDS_DESK_SS_ACTIVE, "Включена"
+    IDS_DESK_SS_TIMEOUT, "Задержка включения"
+    /* UI effects */
+    IDS_DESK_UI_EFFECTS, "Эффекты"
+    IDS_DESK_COMBOBOX_ANIMATION, "Скольжение при открытии списков"
+    IDS_DESK_CURSOR_SHADOW, "Тень под указателем мыши"
+    IDS_DESK_GRADIENT_CAPTIONS, "Градиент заголовка окна"
+    IDS_DESK_LISTBOXSMOOTHSCROLLING, "Плавная прокрутка списков"
+    IDS_DESK_MENUANIMATION, "Анимация меню"
+    IDS_DESK_TOOLTIPANIMATION, "Анимация подсказок"
+    /* Window */
+    IDS_DESK_WINDOW, "Окна"
+    IDS_DESK_WND_ANIMATION, "Анимация окон"
+    IDS_DESK_WND_BORDER, "Ширина обрамления"
+    IDS_DESK_WND_DRAG_FULL, "Перемещать окно полностью"
+    IDS_DESK_DROPS_SHADOW, "Тень при перетаскивании"
+
+    IDS_SMOOTHING_CLEARTYPE, "ClearType"
+    IDS_SMOOTHING_STANDARD, "Стандартное"
+
+    IDS_RAS_IP_HEADER_COMPRES, "Сжатие IP-заголовка"
+    IDS_RAS_PPP_LCP_EXTENSIONS, "Расширения PPP LCP"
+    IDS_RAS_SW_COMPRESSION, "Программное сжатие"
+    IDS_RAS_REQURE_ENCRYPT_PASS, "Требуется зашифрованный пароль"
+    IDS_RAS_REQURE_MS_ENCRYPT_PASS, "Требуется MS-зашифрованный пароль"
+    IDS_RAS_REQURE_DATA_ENCRYPT, "Требуется шифрование данных"
+    IDS_RAS_REQURE_EAP, "Требуется EAP"
+    IDS_RAS_REQURE_PAP, "Требуется PAP"
+    IDS_RAS_REQURE_SPAP, "Требуется SPAP"
+    IDS_RAS_REQURE_CHAP, "Требуется CHAP"
+    IDS_RAS_REQURE_MSCHAP, "Требуется MSCHAP"
+    IDS_RAS_REQURE_MSCHAP2, "Требуется MSCHAP v.2"
+
+    IDS_IE_COOKIE_URL_NAME, "URL"
+    IDS_IE_COOKIE_FILE_NAME, "Имя файла"
+    IDS_IE_COOKIE_LAST_MODIFY, "Последнее изменение"
+    IDS_IE_COOKIE_LAST_ACCESS, "Последнее обращение"
+    IDS_IE_COOKIE_LAST_SYNC, "Последняя синхронизация"
+    IDS_IE_COOKIE_EXPIRE, "Время окончания действия"
+    IDS_IE_COOKIE_USE_COUNT, "Количество обращений"
+
+    IDS_INFORMATION, "Информация"
+
+    IDS_OS_ARCH, "Архитектура ОС"
+    IDS_HW_ARCH, "Архитектура процессора"
+
+    IDS_SITE_LINK, "http://www.aspia.ru"
+    IDS_SITE_DONATE_LINK, "http://www.aspia.ru/donate"
+
+    IDS_REGION_TIME_ZONE, "Временная зона"
+    IDS_REGION_LANGUAGE, "Язык"
+    IDS_REGION_COUNTRY, "Страна/регион"
+    IDS_REGION_CURRENCY, "Денежная единица"
+    IDS_REGION_FORMATTING, "Форматирование"
+    IDS_REGION_DAYS_OF_WEEK, "Дни недели"
+    IDS_REGION_MONTHS, "Месяцы"
+    IDS_REGION_MISCELLANEOUS, "Разное"
+    IDS_REGION_CUR_TIMEZONE, "Текущая временная зона"
+    IDS_REGION_CUR_TIMEZONE_DESK, "Описание текущей временной зоны"
+    IDS_REGION_CHANGE_TO_STD_TIME, "Переход на стандартное время"
+    IDS_REGION_CHANGE_TO_DL_TIME, "Переход на летнее время"
+    IDS_REGION_LANG_NAME_NATIVE, "Язык (система)"
+    IDS_REGION_LANG_NAME_ENGLISH, "Язык (английский)"
+    IDS_REGION_LANG_NAME_ISO639, "Язык (ISO 639)"
+    IDS_REGION_COUNTRY_NAME_NATIVE, "Страна (система)"
+    IDS_REGION_COUNTRY_NAME_ENGLISH, "Страна (английский)"
+    IDS_REGION_COUNTRY_NAME_ISO3166, "Страна (ISO 3166)"
+    IDS_REGION_COUNTRY_CODE, "Код страны"
+    IDS_REGION_CUR_NAME_NATIVE, "Денежная единица (система)"
+    IDS_REGION_CUR_NAME_ENGLISH, "Денежная единица (английский)"
+    IDS_REGION_CUR_SYMBOL_NATIVE, "Символ денежной единицы (система)"
+    IDS_REGION_CUR_SYMBOL_ISO4217, "Символ денежной единицы (ISO 4217)"
+    IDS_REGION_CUR_FORMAT, "Формат денежных сумм"
+    IDS_REGION_CUR_NEG_FORMAT, "Формат отрицательных денежных сумм"
+    IDS_REGION_FRMT_TIME_FORMAT, "Формат времени"
+    IDS_REGION_FRMT_SDATE_FORMAT, "Краткий формат даты"
+    IDS_REGION_FRMT_LDATE_FORMAT, "Полный формат даты"
+    IDS_REGION_FRMT_NUMBER_FORMAT, "Формат вывода чисел"
+    IDS_REGION_FRMT_NEG_NUM_FORMAT, "Формат вывода отрицательных чисел"
+    IDS_REGION_FRMT_LIST_FORMAT, "Формат списка"
+    IDS_REGION_FRMT_NATIVE_DIGITS, "Набор цифр"
+    IDS_REGION_DOW_MONDAY, "Имя для понедельника"
+    IDS_REGION_DOW_TUESDAY, "Имя для вторника"
+    IDS_REGION_DOW_WEDNESDAY, "Имя для среды"
+    IDS_REGION_DOW_THURSDAY, "Имя для четверга"
+    IDS_REGION_DOW_FRIDAY, "Имя для пятницы"
+    IDS_REGION_DOW_SATURDAY, "Имя для субботы"
+    IDS_REGION_DOW_SUNDAY, "Имя для воскресенья"
+    IDS_REGION_MNS_JANUARY, "Имя для января"
+    IDS_REGION_MNS_FEBRUARY, "Имя для февраля"
+    IDS_REGION_MNS_MARCH, "Имя для марта"
+    IDS_REGION_MNS_APRIL, "Имя для апреля"
+    IDS_REGION_MNS_MAY, "Имя для мая"
+    IDS_REGION_MNS_JUNE, "Имя для июня"
+    IDS_REGION_MNS_JULE, "Имя для июля"
+    IDS_REGION_MNS_AUGUST, "Имя для августа"
+    IDS_REGION_MNS_SEPTEMBER, "Имя для сентября"
+    IDS_REGION_MNS_OCTOBER, "Имя для октября"
+    IDS_REGION_MNS_NOVEMBER, "Имя для ноября"
+    IDS_REGION_MNS_DECEMBER, "Имя для декабря"
+    IDS_REGION_CALENDAR_TYPE, "Тип календаря"
+    IDS_REGION_MEASUREMENT_SYSTEM, "Система счисления"
+    IDS_REGION_PAPER_SIZE, "Размер бумаги по умолчанию"
+
+    IDS_LOCAL_TIME, "Локальное время"
+    IDS_LOCAL_DATE, "Локальная дата"
+
+    IDS_POWER_MANAGMT_PROP, "Свойства электропитания"
+    IDS_CURRENT_POWER_SOURCE, "Текущий источник питания"
+    IDS_BATTERY_STATUS, "Состояние батарей"
+    IDS_FULL_BATTERY_LIFETIME, "Полное время работы от батарей"
+    IDS_REMAINING_BAT_LIFETIME, "Оставшееся время работы от батарей"
+    IDS_POWER_ON_AC_LINE, "Электросеть"
+    IDS_POWER_ON_DC_BATTERY, "Батарея"
+    IDS_POWER_HIGH_BATTERY, "Высокий уровень"
+    IDS_POWER_LOW_BATTERY, "Низкий уровень"
+    IDS_POWER_CRITICAL_BATTERY, "Критический уровень"
+    IDS_POWER_CHARGING, "Зарядка"
+    IDS_POWER_NO_BATTERY, "Нет батарей"
+
+    IDS_UNKNOWN, "Неизвестно"
+
+    IDS_USER_ACCOUNT_DISABLED, "Отключен"
+    IDS_USER_PASSWD_CANT_CHANGE, "Не может изменить пароль"
+    IDS_USER_PASSWORD_EXPIRED, "Срок действия пароля истек"
+    IDS_USER_DONT_EXPIRE_PASSWD, "Срок действия пароля не ограничен"
+    IDS_USER_LOCKOUT, "Заблокирован"
+
+    IDS_REPORT_TITLE, "Содержание"
+    IDS_REPORT_TOP, "Наверх"
+
+    IDS_CMD_HELP, "ASPIA [-nonav] [-help] file_path\n\
+                  -nonav\tНе добавлять меню навигации в файл отчета\n\
+                  -help\tСправка по использованию программы из командной строки\n\
+                  file_path\tПуть к файлу отчета\n\
+                  \nПримеры использования\n\
+                  Создать файл отчета с оглавлением:\n\
+                  ASPIA c:\\report.htm\t\n\
+                  Создать файл отчета без оглавления:\n\
+                  ASPIA -nonav c:\\report.htm\n\
+                  Показать это сообщение:\n\
+                  ASPIA -help"
+
+    IDS_NETSTAT_PROC_NAME, "Имя процесса"
+    IDS_NETSTAT_PROTOCOL, "Протокол"
+    IDS_NETSTAT_LOCAL_ADDRESS, "Локальный адрес"
+    IDS_NETSTAT_REMOTE_ADDRESS, "Удаленный адрес"
+    IDS_NETSTAT_STATE, "Состояние"
+
+    IDS_SHARE_MAX_USES, "Макс. подключений"
+    IDS_SHARE_CURRENT_USES, "Текущих подключений"
+    IDS_SHARE_UNLIMITED, "Не ограничено"
+
+    IDS_ACTUSERS_DOMAIN, "Домен"
+    IDS_ACTUSERS_USERID, "ID"
+    IDS_ACTUSERS_STATE, "Состояние"
+    IDS_ACTUSERS_CLIENTNAME, "Имя клиента"
+    IDS_ACTUSERS_LOGON_TYPE, "Тип входа"
+
+    IDS_OPENFILE_ID, "ID"
+    IDS_OPENFILE_PATH, "Путь"
+    IDS_OPENFILE_COUNT, "Блокировок"
+
+    IDS_USER_LAST_LOGON, "Последний вход"
+    IDS_USER_NUM_LOGONS, "Количество входов"
+    IDS_USER_BAD_PW_COUNT, "Ошибочных вводов пароля"
+
+    IDS_NEVER, "Никогда"
+
+    IDS_DEVICE_NAME, "Имя устройства"
+    IDS_DEVICE_DRIVER_DATE, "Дата драйвера"
+    IDS_DEVICE_DRIVER_VENDOR, "Производитель драйвера"
+    IDS_DEVICE_VENDOR_ID, "VenId-DevId"
+    IDS_DEVICE_CLASS_NAME, "Класс устройства"
+    IDS_DEVICE_ESTIMATED, "Предполагаемое устройство"
+    IDS_DEVICE_VERSION, "Версия драйвера"
+    IDS_DEVICE_ESTIMATED_VENDOR, "Производитель устройства"
+    IDS_DEVICE_UNKNOWN_DEVICE, "Неизвестное устройство"
+    IDS_DEVICE_INSTANCE_ID, "Instance Id"
+
+    IDS_LICENSE_APP_NAME, "Название продукта"
+    IDS_LICENSE_PRODUCT_KEY, "Ключ продукта"
+
+    IDS_SENSOR_TEMPERATURE, "Температура"
+    IDS_SENSOR_CORE_TEMPERATURE, "Температура (ядро %ld)"
+
+    IDS_SPD_PRODUCT_DATE, "Дата производства"
+    IDS_SPD_MODULE_SIZE, "Размер модуля"
+    IDS_SPD_FREQUENT, "Частота модуля"
+    IDS_SPD_MEMORY_TYPE, "Тип памяти"
+    IDS_SPD_MODULE_TYPE, "Тип модуля"
+    IDS_SPD_VOLTAGE, "Напряжение модуля"
+    IDS_SPD_MODULE_WIDTH, "Ширина модуля"
+    IDS_SPD_REFRESH_RATE, "Частота регенерации"
+    IDS_SPD_MEMORY_TIMINGS, "Тайминги памяти"
+    IDS_SPD_ERROR_DETECTION, "Метод обнаружения ошибок"
+    IDS_SPD_SUPPORTED_CAS_LATENCIES, "Поддерживаемые задержки CAS"
+    IDS_SPD_DIMM_TYPE, "Тип модуля"
+    IDS_SPD_ANALYSIS_PROBE, "Analysis Probe"
+    IDS_SPD_FET_SWITCH_EXT, "FET Switch External"
+    IDS_SPD_WEAK_DRIVER, "Weak Driver"
+    IDS_SPD_BURST_LENGTHS, "Поддерживаемые размеры пакетов"
+    IDS_SPD_TIMING_FORMAT, "Поддерживаемые тайминги при %.1f MHz"
+
+    IDS_SENSOR_VOLTAGE, "Напряжение"
+
+    IDS_SETTINGS, "Параметры"
+
+    IDS_OS_INSTALL_DATE, "Дата установки"
+
+    IDS_PREV_TOOLS, "Системные утилиты"
+    IDS_PREV_TASKMGR, "Диспетчер задач"
+    IDS_PREV_REGEDIT, "Редактор реестра"
+    IDS_PREV_EXPLORER, "Проводник"
+    IDS_PREV_DESKTOP_ITEMS, "Элементы рабочего стола"
+    IDS_PREV_EXPLORER_CONTEXT_MENU, "Контекстное меню проводника"
+    IDS_PREV_TASKBAR_CONTEXT_MENU, "Контекстное меню панели задач"
+    IDS_PREV_HIDE_TRAY, "Область уведомлений на панели задач"
+    IDS_PREV_HIDE_CLOCK, "Часы на панели задач"
+    IDS_PREV_TOOLBARS_ON_TASKBAR, "Панели инструментов на панели задач"
+    IDS_PREV_AUTORUN, "Автозапуск"
+    IDS_PREV_HKLM_RUN, "HKLM - Run"
+    IDS_PREV_HKLM_RUNONCE, "HKLM - RunOnce"
+    IDS_PREV_HKCU_RUN, "HKCU - Run"
+    IDS_PREV_HKCU_RUNONCE, "HKCU - RunOnce"
+    IDS_PREV_OTHER, "Разное"
+    IDS_PREV_DISABLE_GPO, "Использование групповых политик"
+    IDS_PREV_ALLOWED, "Разрешено"
+    IDS_PREV_NOT_ALLOWED, "Запрещено"
+    IDS_PREV_DISABLE_CMD, "Командная строка"
+    IDS_PREV_RECENT_DOCS, "Пункт ""Недавние документы"" в меню ""Пуск"""
+    IDS_PREV_LOG_OFF, "Пункт ""Завершение сеанса"" в меню ""Пуск"""
+    IDS_PREV_RUN_COMMAND, "Пункт ""Выполнить..."" в меню ""Пуск"""
+    IDS_PREV_FIND_COMMAND, "Пункт ""Поиск"" в меню ""Пуск"""
+    IDS_PREV_FAVORITES, "Пункт ""Избранное"" в меню ""Пуск"""
+    IDS_PREV_SHUTDOWN, "Пункт ""Завершение работы"" в меню ""Пуск"""
+    IDS_FIREWALL_ACTION, "Действие"
+    IDS_FIREWALL_STATE, "Состояние"
+    IDS_FIREWALL_DIR, "Удаленный адрес"
+    IDS_FIREWALL_PROTO, "Протокол"
+    IDS_FIREWALL_APP, "Приложение"
+    IDS_FIREWALL_NAME, "Имя"
+    IDS_FIREWALL_SCOPE, "Область действия"
+    IDS_DMI_ONBOARD_DESC, "Описание"
+    IDS_DMI_ONBOARD_TYPE, "Тип"
+    IDS_DMI_ONBOARD_STATUS, "Состояние"
+    IDS_DMI_BATTERY_LOCATION, "Расположение"
+    IDS_DMI_BATTERY_MANUFACTURER, "Производитель"
+    IDS_DMI_BATTERY_MANUFDATE, "Дата производства"
+    IDS_DMI_BATTERY_SERIAL, "Серийный номер"
+    IDS_DMI_BATTERY_DEVICE_NAME, "Имя устройства"
+    IDS_DMI_BATTERY_DEVICE_CHEMISTRY, "Тип батареи"
+    IDS_DMI_BATTERY_DESIGN_CAPACITY, "Емкость батареи"
+    IDS_DMI_BATTERY_DESIGN_VOLTAGE, "Напраяжение батареи"
+    IDS_DMI_BATTERY_SBDS_VERSION, "Номер версии SBDS"
+    IDS_DMI_BATTERY_SBDS_SERIAL, "Серийный номер SBDS"
+    IDS_DMI_BATTERY_SBDS_MANUFDATE, "Дата производства SBDS"
+    IDS_DMI_BATTERY_SBDS_DEV_CHEMIST, "Тип батареи SBDS"
+    IDS_DMI_BATTERY_MAXERROR_IN_DATA, "Макс. ошибка в данных батареи"
+    IDS_NETWORK_RAS_SERVER, "Адрес сервера"
+    IDS_SETTINGS_GENERAL, "Основные"
+    IDS_SETTINGS_FILTER, "Фильтр данных"
+    IDS_SETTINGS_SYSTRAY, "Системный трей"
+    IDS_DISPLAY_ID, "ID монитора"
+    IDS_DISPLAY_MANUFACTURER, "Производитель"
+    IDS_DISPLAY_MANUFACTURE_DATE, "Дата выпуска"
+    IDS_DISPLAY_TYPE, "Тип монитора"
+    IDS_DISPLAY_MAX_VISIBLE_SIZE, "Макс. видимая область экрана"
+    IDS_DISPLAY_SERIAL_NUMBER, "Серийный номер"
+    IDS_DISPLAY_ASPECT_RATIO, "Соотношение сторон"
+    IDS_DISPLAY_HORIZ_FREQ, "Частота строк"
+    IDS_DISPLAY_VERT_FREQ, "Частота кадров"
+    IDS_DISPLAY_MAX_RESOLUTION, "Макс. разрешение"
+    IDS_DISPLAY_GAMMA, "Гамма"
+    IDS_DISPLAY_DPMS_MODE, "Поддерживаемые режимы DPMS"
+    IDS_DISPLAY_SUPPORTED_MODES, "Поддерживаемые видеорежимы"
+    IDS_DISPLAY_MODEL, "Модель"
+    IDS_DISPLAY_EDID_VERSION, "Верия EDID"
+    IDS_TYPE_HTML, "HTML-файл (*.htm)"
+    IDS_TYPE_TEXT, "Текстовый файл (*.txt)"
+    IDS_TYPE_CSV, "CSV-файл (*.csv)"
+    IDS_TYPE_JSON, "JSON-файл (*.jsn)"
+    IDS_TYPE_INI, "INI-файл (*.ini)"
+    IDS_TYPE_RTF, "RTF-файл (*.rtf)"
+    IDS_REGION_ANSI_CODEPAGE, "Кодировка ANSI"
+    IDS_REGION_OEM_CODEPAGE, "Кодировка OEM"
+    IDS_REGION_MAC_CODEPAGE, "Кодировка MAC"
+    IDS_REGION_LANG_CODE, "Код языка"
+    IDS_SYSFILES_NAME, "Имя"
+    IDS_SYSFILES_SIZE, "Размер"
+    IDS_SYSFILES_VERSION, "Версия"
+    IDS_SYSFILES_DESC, "Описание"
+    IDS_SYSFILES_MANUF, "Производитель"
+    IDS_FILETYPES_EXT, "Расширение"
+    IDS_FILETYPES_DESC, "Описание"
+    IDS_FILETYPES_TYPE, "Тип содержимого"
+    IDS_SYSMON, "Системный монитор"
+    IDS_ASPIA_SYSMON, "Системный монитор Aspia"
+    IDS_SYSMON_START, "Старт"
+    IDS_SYSMON_STOP, "Стоп"
+    IDS_SYSMON_TEST, "Стресс-тест"
+    IDS_SYSMON_SENSOR, "Датчик"
+    IDS_SYSMON_CURRENT, "Текущее"
+    IDS_SYSMON_MIN, "Минимальное"
+    IDS_SYSMON_MAX, "Максимальное"
+    IDS_REPORTWND_TITLE, "Сохранение отчета"
+    IDS_ADD_CONTENT_TABLE, "Добавлять оглавление в отчет"
+    IDS_CLOSE_BTN, "Закрыть"
+    IDS_SAVE_BTN, "Сохранить"
+    IDS_FILE_TYPE_TEXT, "Тип файла:"
+    IDS_SPD_DEVICE_WIDTH, "Device Width"
+    IDS_SPD_BUS_WIDTH, "Bus Width"
+    IDS_SPD_MODULE_NORM_VOLTAGE, "Module Normal Voltage (VDD)"
+    IDS_SPD_COLUMN_ADDR_BITS, "Column Address Bits"
+    IDS_SPD_ROW_ADDRESS_BITS, "Row Address Bits"
+    IDS_NOT_CONNECTED, "Не подключен"
+    IDS_HWBENCH, "Тесты быстродействия"
+    IDS_SYSMON_BTN, "Датчики"
+    IDS_BENCH_BTN, "Тесты"
+    IDS_NVIDIA_BOARD_TEMP, "Температура платы"
+    IDS_NVIDIA_CORE_TEMP, "Температура процессора"
+    IDS_NVIDIA_MEMORY_TEMP, "Температура памяти"
+    IDS_NVIDIA_POWER_SUPPLY_TEMP, "Температура питания"
+    IDS_NVIDIA_VCD_BOARD_TEMP, "VCD Board Temperature"
+    IDS_NVIDIA_VCD_INLET_TEMP, "VCD Inlet Temperature"
+    IDS_NVIDIA_VCD_OUTLET_TEMP, "VCD Outlet Temperature"
+    IDS_NVIDIA_FAN_SPEED, "Скорость кулера"
+    IDS_OPENGL_PROP, "Свойства OpenGL"
+    IDS_OPENGL_VENDOR, "Производитель"
+    IDS_OPENGL_VERSION, "Версия"
+    IDS_OPENGL_EXTENSIONS, "Расширения OpenGL"
+    IDS_DMI_POINTING_DEVICE, "Интегрированное указывающее устройство"
+    IDS_DMI_POINTING_TYPE, "Тип устройства"
+    IDS_DMI_POINTING_INTERFACE, "Интерфейс"
+    IDS_DMI_POINTING_BUTTONS, "Количество кнопок"
+    IDS_MMDEV_NAME, "Имя"
+    IDS_MMDEV_ID, "Идентификатор"
+    IDS_MMDEV_FORMATS, "Форматы"
+    IDS_MMDEV_CHANNELS, "Каналы"
+    IDS_MMDEV_SUPPORTS, "Поддержка"
+    IDS_CPL_NAME, "Имя"
+    IDS_CPL_DESC, "Описание"
+    IDS_REPORT_SAVE_ERROR1, "Ошибка при попытке сохранения отчета. Файл отчета с указанным именем уже существует и открыт в другой программе."
+    IDS_REPORT_SAVE_ERROR2, "Ошибка при попытке сохранения отчета. Неверный путь к файлу или имя файла."
+    IDS_REPORT_SAVE_ERROR3, "Ошибка при попытке сохранения отчета. Для получения подробных сведений запустите программу в отладочном режиме."
+    IDS_SIGNED_FILE, "Подписан"
+    IDS_DRIVER_SEARCH_URL, "http://devid.drp.su/?l=ru&dev=%s"
+    IDS_CPUID_PHYSICAL_COUNT, "Физических ядер"
+    IDS_SUPPORTED_ENABLED, "Поддерживается, включено"
+    IDS_SUPPORTED_DISABLED, "Поддерживается, выключено"
+    IDS_HDD_INTERFACE, "Интерфейс"
+    IDS_HDD_CURRENT_TRANSFER_MODE, "Текущий режим передачи"
+    IDS_HDD_MAX_TRANSFER_MODE, "Макс. режим передачи"
+    IDS_HDD_ROTATION_RATE, "Скорость вращения"
+    IDS_HDD_ATA_FEATURES, "Возможности устройства ATA"
+    IDS_CDROM_READ, "Чтение"
+    IDS_CDROM_WRITE, "Запись"
+    IDS_CDROM_READ_WRITE, "Чтение и запись"
+    IDS_CDROM_FIRMWARE_REV, "Версия прошивки"
+    IDS_CDROM_SERIAL_NUMBER, "Серийный номер"
+    IDS_CDROM_INTERFACE, "Интерфейс"
+    IDS_CDROM_MANUFACTURER, "Производитель"
+    IDS_CDROM_BUFFER_SIZE, "Размер буфера"
+    IDS_CDROM_SUP_DISK_TYPES, "Поддерживаемые типы дисков"
+    IDS_CDROM_DRIVE_FEATURES, "Возможности оптического накопителя"
+    IDS_CDROM_REGION_CODE, "Код региона"
+    IDS_CDROM_REMAINING_USER_CHANGES, "Осталось смен пользователем"
+    IDS_CDROM_REMAINING_VENDOR_CHANGES, "Осталось смен фирмой"
+
+    IDS_CAT_SUMMARY, "Общая информация"
+
+    IDS_CAT_HW, "Оборудование"
+    IDS_CAT_HW_SENSOR, "Показания датчиков"
+    IDS_CAT_HW_CPU, "Центральный процессор"
+    IDS_CAT_HW_POWER, "Электропитание"
+    IDS_CAT_HW_PRINTERS, "Принтеры"
+    IDS_CAT_HW_SPD, "SPD"
+
+    IDS_CAT_HW_DEVICES, "Устройства Windows"
+    IDS_CAT_HW_ALL_DEVICES, "Все устройства"
+    IDS_CAT_HW_UNKNOWN_DEVICES, "Неизвестные устройства"
+
+    IDS_CAT_HW_DISPLAY, "Отображение"
+    IDS_CAT_HW_MONITOR, "Монитор"
+    IDS_CAT_HW_WIN_VIDEO, "Видео Windows"
+    IDS_CAT_HW_OPENGL, "OpenGL"
+
+    IDS_CAT_HW_MMEDIA, "Мультимедиа"
+    IDS_CAT_HW_MMEDIA_DEV, "Звук Windows"
+    IDS_CAT_HW_MMEDIA_MCI, "MCI"
+    IDS_CAT_HW_MMEDIA_ACODEC, "Аудио кодеки"
+    IDS_CAT_HW_MMEDIA_VCODEC, "Видео кодеки"
+
+    IDS_CAT_HW_DATA, "Хранение данных"
+    IDS_CAT_HW_DATA_CD, "Оптические накопители"
+    IDS_CAT_HW_DATA_SCSI, "SCSI"
+    IDS_CAT_HW_DATA_ATA, "ATA"
+    IDS_CAT_HW_DATA_SMART, "S.M.A.R.T."
+
+    IDS_CAT_HW_DMI, "DMI"
+    IDS_CAT_HW_DMI_BIOS, "BIOS"
+    IDS_CAT_HW_DMI_SYSTEM, "Система"
+    IDS_CAT_HW_DMI_BOARD, "Системная плата"
+    IDS_CAT_HW_DMI_CACHE, "Кеш-память"
+    IDS_CAT_HW_DMI_PROCESSOR, "Процессоры"
+    IDS_CAT_HW_DMI_MEM, "Устройства памяти"
+    IDS_CAT_HW_DMI_SLOT, "Системные разъемы"
+    IDS_CAT_HW_DMI_PORTS, "Разъемы портов"
+    IDS_CAT_HW_DMI_ENCLOSURE, "Шасси"
+    IDS_CAT_HW_DMI_ONBOARD, "Встроенные устройства"
+    IDS_CAT_HW_DMI_BATTERY, "Батареи"
+    IDS_CAT_HW_DMI_POINTING, "Указывающее устройство"
+
+    IDS_CAT_SOFTWARE, "Программное обеспечение"
+    IDS_CAT_SOFTWARE_UPD_SFT, "Программы и обновления"
+    IDS_CAT_SOFTWARE_UPDATES, "Установленные обновления"
+    IDS_CAT_SOFTWARE_PROGRAMS, "Установленные программы"
+    IDS_CAT_SOFTWARE_TASKMGR, "Процессы"
+    IDS_CAT_SOFTWARE_SERVICES, "Системные службы"
+    IDS_CAT_SOFTWARE_DRIVERS, "Драйверы устройств"
+    IDS_CAT_SOFTWARE_LICENSES, "Лицензии"
+    IDS_CAT_SOFTWARE_FILETYPES, "Типы файлов"
+
+    IDS_CAT_NETWORK, "Сеть"
+    IDS_CAT_NETWORK_CARDS, "Сетевые адаптеры"
+    IDS_CAT_NETWORK_RAS, "Соединения RAS"
+    IDS_CAT_NETWORK_NETSTAT, "Открытые подключения"
+    IDS_CAT_NETWORK_SHARED, "Сетевые ресурсы"
+    IDS_CAT_NETWORK_FILES, "Открытые файлы"
+    IDS_CAT_NETWORK_ROUTE, "Маршруты"
+    IDS_CAT_NETWORK_FIREWALL, "Брандмауэр Windows"
+    IDS_CAT_NETWORK_IE, "Internet Explorer"
+    IDS_CAT_NETWORK_IE_HISTORY, "История"
+    IDS_CAT_NETWORK_IE_COOKIE, "Cookie"
+    IDS_CAT_NETWORK_IE_PARAMS, "Параметры"
+
+    IDS_CAT_OS, "Операционная система"
+    IDS_CAT_OS_REGDATA, "Регистрационная информация"
+    IDS_CAT_OS_DESKTOP, "Рабочий стол"
+    IDS_CAT_OS_USERS_GROUPS, "Пользователи и группы"
+    IDS_CAT_OS_USERS, "Пользователи"
+    IDS_CAT_OS_USERGROUP, "Группы пользователей"
+    IDS_CAT_OS_ACTIVEUSERS, "Активные сессии"
+    IDS_CAT_OS_PREVENTS, "Запреты"
+    IDS_CAT_OS_REGPARAM, "Региональные параметры"
+    IDS_CAT_OS_TASKSCHED, "Планировщик заданий"
+    IDS_CAT_OS_FONTS, "Шрифты"
+    IDS_CAT_OS_EVENTVIEW, "Системные события"
+    IDS_CAT_OS_SYSFILES, "Системные файлы"
+    IDS_CAT_SYSFILES_DLL, "Файлы DLL"
+    IDS_CAT_SYSFILES_AX, "Файлы AX"
+    IDS_CAT_SYSFILES_EXE, "Файлы EXE"
+    IDS_CAT_SYSFILES_SYS, "Файлы SYS"
+    IDS_CAT_SYSFILES_KNOWN, "Известные DLL"
+    IDS_CAT_OS_AUTORUN, "Автозагрузка"
+    IDS_CAT_OS_ENVIRON, "Переменные среды"
+    IDS_CAT_OS_SYSFOLDERS, "Системные папки"
+    IDS_CAT_OS_CPL_APPLETS, "Панель управления"
+
+    IDS_ABOUT_STRING, "Aspia - свободное программное обеспечение, распространяющееся по лицензии GNU LGPL.\r\n\
+                       Вы можете получить копию лицензии GNU LGPL по адресу:\r\n\
+                       http://www.gnu.org/licenses/lgpl.html\r\n\r\n\
+                       Ознакомиться с переводом GNU LGPL на ваш язык можно по адресу:\r\n\
+                       http://www.gnu.org/licenses/translations.html\r\n\r\n\
+                       Разработчики:\r\n\
+                       • Dmitry Chapyshev (dmitry@aspia.ru) (основная программа, драйвер)\r\n\
+                       • Maksim Shevchuk (maksim.shevchuk@gmail.com) (драйвер)\r\n\r\n\
+                       Переводчики:\r\n\
+                       • Igor Paliychuk (mansonigor@gmail.com) (Украинский)\r\n\
+                       • Sakara Eugene (vzov@yandex.ua) (Украинский)\r\n\r\n\
+                       Цифровая подпись для драйверов предоставлена ReactOS Foundation.\r\n\r\n\
+                       При разрабоке были использованы наработки следующих проектов:\r\n\
+                       • ReactOS (http://reactos.org)\r\n\
+                       • Wine (http://winehq.org)\r\n\
+                       • Open Hardware Monitor (http://openhardwaremonitor.org)\r\n\
+                       • Tango Project (http://tango.freedesktop.org)"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_LANGUAGE_NAME, "Russian (Русский)"
+END
+
+/* EOF */

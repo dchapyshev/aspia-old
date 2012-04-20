@@ -1,0 +1,23 @@
+/*
+ * PROJECT:         Aspia
+ * FILE:            aspia/main.rc
+ * LICENSE:         LGPL (GNU Lesser General Public License)
+ * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
+ */
+
+#include "../include/lang.h"
+#include "resource.h"
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+IDI_MAINICON ICON DISCARDABLE "res/main.ico"
+
+IDC_ACCELERATORS ACCELERATORS
+BEGIN
+    VK_F1, ID_HELP, VIRTKEY   /* F1 */
+    "^Q",  ID_EXIT            /* Ctrl + Q */
+    VK_F5, ID_RELOAD, VIRTKEY /* F5 */
+    "^S",  ID_SAVE_CURRENT    /* Ctrl + S */
+    "^C",  ID_COPY_ALL        /* Ctrl + C */
+    "^A",  ID_SELECT_ALL      /* Ctrl + A */
+END

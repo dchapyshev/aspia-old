@@ -1,0 +1,66 @@
+/*
+ * PROJECT:         Aspia Disk Benchmark
+ * FILE:            diskbench/lang/ru-RU.rc
+ * LICENSE:         LGPL (GNU Lesser General Public License)
+ * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
+ */
+
+#include "resource.h"
+
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+
+IDD_DISK_BENCH_DIALOG DIALOGEX 20, 16, 488, 302
+STYLE DS_SHELLFONT | WS_BORDER | WS_MINIMIZEBOX | WS_SYSMENU
+CAPTION "Aspia Disk Benchmark"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT "Тип теста:", -1, 5, 8, 51, 11
+    COMBOBOX IDC_TEST_TYPE, 59, 5, 133, 160, CBS_DROPDOWNLIST | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
+
+    LTEXT "Размер файла:", -1, 198, 8, 59, 11
+    COMBOBOX IDC_TEST_FILE_SIZE, 270, 5, 110, 160, CBS_DROPDOWNLIST | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
+
+    LTEXT "Размер блока:", -1, 389, 251, 73, 11
+    COMBOBOX IDC_BLOCK_SIZE, 385, 262, 98, 160, CBS_DROPDOWNLIST | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
+
+    LTEXT "Текущая:", -1, 386, 25, 73, 11
+    EDITTEXT IDC_DISK_CURRENT, 385, 36, 98, 14, WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP | ES_READONLY | ES_AUTOVSCROLL
+
+    LTEXT "Минимальная:", -1, 386, 54, 73, 11
+    EDITTEXT IDC_DISK_MINIMUM, 385, 65, 98, 14, WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP | ES_READONLY | ES_AUTOVSCROLL
+
+    LTEXT "Максимальная:", -1, 386, 82, 73, 11
+    EDITTEXT IDC_DISK_MAXIMUM, 385, 93, 98, 14, WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP | ES_READONLY | ES_AUTOVSCROLL
+
+    LTEXT "ЦП текущая:", -1, 386, 111, 73, 11
+    EDITTEXT IDC_CPU_CURRENT, 385, 122, 98, 14, WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP | ES_READONLY | ES_AUTOVSCROLL
+
+    LTEXT "ЦП минимальная:", -1, 386, 139, 73, 11
+    EDITTEXT IDC_CPU_MINIMUM, 385, 150, 98, 14, WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP | ES_READONLY | ES_AUTOVSCROLL
+
+    LTEXT "ЦП максимальная:", -1, 386, 167, 73, 11
+    EDITTEXT IDC_CPU_MAXIMUM, 385, 178, 98, 14, WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP | ES_READONLY | ES_AUTOVSCROLL
+
+    LTEXT "Время:", -1, 386, 194, 73, 11
+    EDITTEXT IDC_DISK_TIME, 385, 205, 98, 14, WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP | ES_READONLY | ES_AUTOVSCROLL
+
+    CONTROL "", IDC_GRAPH_WND, "STATIC", SS_ETCHEDFRAME, 3, 23, 378, 253
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_ASPIA_DISK_BENCH, "Aspia Disk Benchmark"
+    IDS_DISK_SAVE, "Сохранить"
+    IDS_DISK_CLEAR, "Очистить"
+    IDS_DISK_START, "Старт"
+    IDS_DISK_STOP, "Стоп"
+    IDS_DISK_RANDOM_READ, "Случайное чтение"
+    IDS_DISK_SEQ_READ, "Последовательное чтение"
+    IDS_DISK_RANDOM_WRITE, "Случайная запись"
+    IDS_DISK_SEQ_WRITE, "Последовательная запись"
+    IDS_DISK_READONLY, "Выбранный диск не доступен для записи."
+    IDS_DISK_NO_FREE_SPACE, "Недостаточно свободного места на диске для проведения теста!"
+    IDS_DISK_FILECREATE, "Создание файла для тестирования..."
+    IDS_DISK_TESTING, "Тестирование..."
+    IDS_DISK_TEST_COMPLETE, "Тестирование завершено"
+END

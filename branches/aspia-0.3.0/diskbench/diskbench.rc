@@ -1,0 +1,16 @@
+/*
+ * PROJECT:         Aspia
+ * FILE:            diskbench/diskbench.rc
+ * LICENSE:         LGPL (GNU Lesser General Public License)
+ * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
+ */
+
+#include "resource.h"
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+IDI_MAIN  ICON DISCARDABLE "res/main.ico"
+IDI_CLEAR ICON DISCARDABLE "res/clear.ico"
+IDI_SAVE  ICON DISCARDABLE "res/save.ico"
+IDI_START ICON DISCARDABLE "res/start.ico"
+IDI_STOP  ICON DISCARDABLE "res/stop.ico"

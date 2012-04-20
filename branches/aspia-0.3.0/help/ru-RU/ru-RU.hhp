@@ -1,0 +1,25 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=ru-RU.chm
+Contents file=ru-RU.hhc
+Default topic=index.html
+Display compile progress=No
+Full-text search=Yes
+Language=0x419 Русский (Россия)
+Title=Справка Aspia
+
+
+[FILES]
+cmd.html
+contacts.html
+donate.html
+faq.html
+index.html
+license.html
+report.html
+settings.html
+hotkeys.html
+systemreq.html
+
+[INFOTYPES]
+
