@@ -880,6 +880,14 @@ WCHAR* EscapePercentSymbols(WCHAR *pIn);
 
 #define LoadMUIString(a, b, c) LoadMUIStringF(DllParams.hLangInst, a, b, c)
 
+__inline DWORD64
+GetBitsDWORD64(DWORD64 val, CHAR from, CHAR to)
+{
+    DWORD64 mask = (1 << (to + 1)) - 1;
+
+    return ((to > 60) ? (val >> from) : ((val & mask) >> from));
+}
+
 __inline DWORD
 GetBitsDWORD(DWORD val, CHAR from, CHAR to)
 {
