@@ -12,10 +12,11 @@
 SETTINGS_STRUCT SettingsInfo = {0};
 THEMES_STRUCT ThemesInfo = {0};
 
-#define DIALOGS_COUNT   3
-#define GENERAL_DIALOG  0
-#define FILTER_DIALOG   1
-#define SYSTRAY_DIALOG  2
+#define DIALOGS_COUNT     4
+#define GENERAL_DIALOG    0
+#define APPEARANCE_DIALOG 1
+#define FILTER_DIALOG     2
+#define SYSTRAY_DIALOG    3
 
 HIMAGELIST hSettingsImageList;
 HWND hDialogs[DIALOGS_COUNT];
@@ -24,8 +25,12 @@ COLORREF CpuFontColor = 0;
 COLORREF CpuBackground = 0;
 COLORREF HddFontColor = 0;
 COLORREF HddBackground = 0;
+COLORREF EvenLinesColor = 0;
+COLORREF OddLinesColor = 0;
 HICON hCpuIcon = NULL;
 HICON hHddIcon = NULL;
+HICON hEvenLinesIcon = NULL;
+HICON hOddLinesIcon = NULL;
 
 
 BOOL
@@ -580,7 +585,6 @@ INT_PTR CALLBACK
 GeneralPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
     HWND hCatList = GetDlgItem(hDlg, IDC_STARTUP_CAT_COMBO);
-    HWND hIconsList = GetDlgItem(hDlg, IDC_ICONS_COMBO);
     HWND hLangList = GetDlgItem(hDlg, IDC_LANGUAGE_COMBO);
 
     UNREFERENCED_PARAMETER(lParam);
@@ -596,10 +600,6 @@ GeneralPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                            SettingsInfo.Autorun ? BST_CHECKED : BST_UNCHECKED);
             CheckDlgButton(hDlg, IDC_STAY_ON_TOP,
                            SettingsInfo.StayOnTop ? BST_CHECKED : BST_UNCHECKED);
-            CheckDlgButton(hDlg, IDC_STYLES_WNDS,
-                           SettingsInfo.ShowWindowStyles ? BST_CHECKED : BST_UNCHECKED);
-            CheckDlgButton(hDlg, IDC_ALT_ROWS,
-                           SettingsInfo.ShowAltRows ? BST_CHECKED : BST_UNCHECKED);
             CheckDlgButton(hDlg, IDC_ALLOW_KM_DRIVER,
                            SettingsInfo.AllowKmDriver ? BST_CHECKED : BST_UNCHECKED);
 
@@ -607,16 +607,12 @@ GeneralPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             InitLangCombo(hLangList);
 
             InitCategoriesCombo(hCatList, NULL, RootCategoryList);
-            InitIconsCombo(hIconsList);
         }
         break;
 
         case WM_CLOSE:
-        {
-            FreeIconsCombo(hIconsList);
             FreeLangCombo(hLangList);
-        }
-        break;
+            break;
     }
 
     return FALSE;
@@ -657,7 +653,6 @@ SysTrayPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
     HWND hSensorsList = GetDlgItem(hDlg, IDC_SENSOR_ICON_LIST);
 
     UNREFERENCED_PARAMETER(lParam);
-    UNREFERENCED_PARAMETER(wParam);
 
     switch (Msg)
     {
@@ -765,6 +760,75 @@ SysTrayPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
     return FALSE;
 }
 
+INT_PTR CALLBACK
+AppearancePageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
+{
+    HWND hIconsList = GetDlgItem(hDlg, IDC_ICONS_COMBO);
+    UNREFERENCED_PARAMETER(lParam);
+
+    switch (Msg)
+    {
+        case WM_INITDIALOG:
+        {
+            CheckDlgButton(hDlg, IDC_STYLES_WNDS,
+                           SettingsInfo.ShowWindowStyles ? BST_CHECKED : BST_UNCHECKED);
+            CheckDlgButton(hDlg, IDC_ALT_ROWS,
+                           SettingsInfo.ShowAltRows ? BST_CHECKED : BST_UNCHECKED);
+
+            InitIconsCombo(hIconsList);
+
+            EvenLinesColor = SettingsInfo.EvenLines;
+            OddLinesColor = SettingsInfo.OddLines;
+
+            hEvenLinesIcon = CreateTrayIcon(L"00", EvenLinesColor, EvenLinesColor);
+            SendMessage(GetDlgItem(hDlg, IDC_EVEN_LINES_ICON),
+                        STM_SETICON, (WPARAM)hEvenLinesIcon, 0);
+
+            hOddLinesIcon = CreateTrayIcon(L"00", OddLinesColor, OddLinesColor);
+            SendMessage(GetDlgItem(hDlg, IDC_ODD_LINES_ICON),
+                        STM_SETICON, (WPARAM)hOddLinesIcon, 0);
+        }
+        break;
+
+        case WM_COMMAND:
+        {
+            switch (LOWORD(wParam))
+            {
+                case IDC_EVEN_LINES_COLOR:
+                {
+                    if (ChooseColorDialog(GetParent(hDlg), EvenLinesColor, &EvenLinesColor))
+                    {
+                        if (hEvenLinesIcon) DestroyIcon(hEvenLinesIcon);
+                        hEvenLinesIcon = CreateTrayIcon(L"00", EvenLinesColor, EvenLinesColor);
+                        SendMessage(GetDlgItem(hDlg, IDC_EVEN_LINES_ICON),
+                                    STM_SETICON, (WPARAM)hEvenLinesIcon, 0);
+                    }
+                }
+                break;
+
+                case IDC_ODD_LINES_COLOR:
+                {
+                    if (ChooseColorDialog(GetParent(hDlg), OddLinesColor, &OddLinesColor))
+                    {
+                        if (hOddLinesIcon) DestroyIcon(hOddLinesIcon);
+                        hOddLinesIcon = CreateTrayIcon(L"00", OddLinesColor, OddLinesColor);
+                        SendMessage(GetDlgItem(hDlg, IDC_ODD_LINES_ICON),
+                                    STM_SETICON, (WPARAM)hOddLinesIcon, 0);
+                    }
+                }
+                break;
+            }
+        }
+        break;
+
+        case WM_CLOSE:
+            FreeIconsCombo(hIconsList);
+            break;
+    }
+
+    return FALSE;
+}
+
 VOID
 OnSelCategoryChange(INT CurSel)
 {
@@ -827,8 +891,9 @@ InitSettingsControls(HWND hDlg, HWND hTree)
 
     TreeView_SelectItem(hTree,
                         AddSettingsCategory(hTree, IDS_SETTINGS_GENERAL, IDI_COMPUTER, 0));
-    AddSettingsCategory(hTree, IDS_SETTINGS_FILTER, IDI_APPS, 1);
-    AddSettingsCategory(hTree, IDS_SETTINGS_SYSTRAY, IDI_SERVICES, 2);
+    AddSettingsCategory(hTree, IDS_SETTINGS_APPEARANCE, IDI_EFFECTS, 1);
+    AddSettingsCategory(hTree, IDS_SETTINGS_FILTER, IDI_APPS, 2);
+    AddSettingsCategory(hTree, IDS_SETTINGS_SYSTRAY, IDI_SERVICES, 3);
 
     TreeView_SetImageList(hTree, hSettingsImageList, TVSIL_NORMAL);
 
@@ -837,6 +902,11 @@ InitSettingsControls(HWND hDlg, HWND hTree)
                      MAKEINTRESOURCE(IDD_SETTINGS_GENERAL),
                      hDlg,
                      GeneralPageWndProc);
+    hDialogs[APPEARANCE_DIALOG] =
+        CreateDialog(hLangInst,
+                     MAKEINTRESOURCE(IDD_SETTINGS_APPEARANCE),
+                     hDlg,
+                     AppearancePageWndProc);
     hDialogs[FILTER_DIALOG] =
         CreateDialog(hLangInst,
                      MAKEINTRESOURCE(IDD_SETTINGS_FILTER),
@@ -859,7 +929,7 @@ SaveSettingsFromDialog(HWND hDlg)
     HWND hCatList = GetDlgItem(hDialogs[GENERAL_DIALOG], IDC_STARTUP_CAT_COMBO);
     HWND hLangList = GetDlgItem(hDialogs[GENERAL_DIALOG], IDC_LANGUAGE_COMBO);
     HWND hSensorsList = GetDlgItem(hDialogs[SYSTRAY_DIALOG], IDC_SENSOR_ICON_LIST);
-    HWND hIconsList = GetDlgItem(hDialogs[GENERAL_DIALOG], IDC_ICONS_COMBO);
+    HWND hIconsList = GetDlgItem(hDialogs[APPEARANCE_DIALOG], IDC_ICONS_COMBO);
     WCHAR *IconFile, *LangFile, szText[MAX_STR_LEN];
     INT Selected;
     BOOL KmDriverNew, ReInitCtrls = FALSE;
@@ -882,7 +952,7 @@ SaveSettingsFromDialog(HWND hDlg)
     SettingsInfo.StayOnTop =
         (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_STAY_ON_TOP) == BST_CHECKED) ? TRUE : FALSE;
 
-    State = (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_STYLES_WNDS) == BST_CHECKED) ? TRUE : FALSE;
+    State = (IsDlgButtonChecked(hDialogs[APPEARANCE_DIALOG], IDC_STYLES_WNDS) == BST_CHECKED) ? TRUE : FALSE;
     if (SettingsInfo.ShowWindowStyles != State)
     {
         SettingsInfo.ShowWindowStyles = State;
@@ -891,9 +961,14 @@ SaveSettingsFromDialog(HWND hDlg)
         IntSetWindowTheme(hListView);
     }
 
-    State = (IsDlgButtonChecked(hDialogs[GENERAL_DIALOG], IDC_ALT_ROWS) == BST_CHECKED) ? TRUE : FALSE;
-    if (SettingsInfo.ShowAltRows != State)
+    State = (IsDlgButtonChecked(hDialogs[APPEARANCE_DIALOG], IDC_ALT_ROWS) == BST_CHECKED) ? TRUE : FALSE;
+    if (SettingsInfo.ShowAltRows != State ||
+        SettingsInfo.EvenLines != EvenLinesColor ||
+        SettingsInfo.OddLines != OddLinesColor)
     {
+        SettingsInfo.EvenLines = EvenLinesColor;
+        SettingsInfo.OddLines = OddLinesColor;
+
         SettingsInfo.ShowAltRows = State;
 
         /* Update ListView */
@@ -1038,6 +1113,8 @@ SettingsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
             while (Index < DIALOGS_COUNT)
                 DestroyWindow(hDialogs[Index++]);
 
+            DestroyIcon(hEvenLinesIcon);
+            DestroyIcon(hOddLinesIcon);
             DestroyIcon(hCpuIcon);
             DestroyIcon(hHddIcon);
             EndDialog(hDlg, LOWORD(wParam));

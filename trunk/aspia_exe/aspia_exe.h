@@ -246,6 +246,9 @@ typedef struct
     BOOL ShowAltRows;
     BOOL ShowWindowStyles;
 
+    COLORREF EvenLines;
+    COLORREF OddLines;
+
     /* Startup Settings */
     BOOL Autorun;
     BOOL HideToTray;

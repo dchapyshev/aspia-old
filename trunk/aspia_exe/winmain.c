@@ -872,12 +872,12 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
                     {
                         if (nmlvcd->nmcd.dwItemSpec & 1)
                         {
-                            nmlvcd->clrTextBk = 0xF3F3F3;
+                            nmlvcd->clrTextBk = SettingsInfo.OddLines;
                             return CDRF_NEWFONT;
                         }
                         else
                         {
-                            nmlvcd->clrTextBk = 0xFFFFFF;
+                            nmlvcd->clrTextBk = SettingsInfo.EvenLines;
                             return CDRF_NEWFONT;
                         }
                     }
@@ -1353,6 +1353,9 @@ wWinMain(HINSTANCE hInst,
         SettingsInfo.StayOnTop = FALSE;
         SettingsInfo.ShowAltRows = TRUE;
         SettingsInfo.ShowWindowStyles = TRUE;
+
+        SettingsInfo.EvenLines = 0xFFFFFF;
+        SettingsInfo.OddLines = 0xF3F3F3;
 
         SettingsInfo.Bottom = 660;
         SettingsInfo.Left = 20;
