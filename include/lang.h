@@ -17,6 +17,7 @@
 #define IDD_SETTINGS_GENERAL     5003
 #define IDD_SETTINGS_FILTER      5004
 #define IDD_SETTINGS_SYSTRAY     5005
+#define IDD_SETTINGS_APPEARANCE  5006
 
 /* Menu */
 #define IDR_POPUP                500
@@ -106,6 +107,10 @@
 #define IDC_FILETYPE_TITLE      145
 #define IDC_ALT_ROWS            146
 #define IDC_STYLES_WNDS         147
+#define IDC_EVEN_LINES_COLOR    148
+#define IDC_EVEN_LINES_ICON     149
+#define IDC_ODD_LINES_COLOR     150
+#define IDC_ODD_LINES_ICON      151
 
 /* Strings */
 #define IDS_SAVE                    101
@@ -914,6 +919,7 @@
 #define IDS_DMI_IPMI_INTERRUPT_POLARITY      939
 #define IDS_DMI_IPMI_INTERRUPT_TRIGGER_MODE  940
 #define IDS_DMI_IPMI_INTERRUPT_NUMBER        941
+#define IDS_SETTINGS_APPEARANCE              942
 
 #define IDS_CAT_SUMMARY           1000
 
