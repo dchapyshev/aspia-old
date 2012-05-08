@@ -111,6 +111,7 @@
 #define IDC_EVEN_LINES_ICON     149
 #define IDC_ODD_LINES_COLOR     150
 #define IDC_ODD_LINES_ICON      151
+#define IDC_ICONS_SIZE_COMBO    152
 
 /* Strings */
 #define IDS_SAVE                    101
@@ -920,6 +921,8 @@
 #define IDS_DMI_IPMI_INTERRUPT_TRIGGER_MODE  940
 #define IDS_DMI_IPMI_INTERRUPT_NUMBER        941
 #define IDS_SETTINGS_APPEARANCE              942
+#define IDS_SYSMON_TEMPERATURE               943
+#define IDS_SYSMON_BATTERY                   944
 
 #define IDS_CAT_SUMMARY           1000
 

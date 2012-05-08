@@ -115,7 +115,7 @@ extern UINT ColumnCount;
 extern HIMAGELIST hImageTreeView;
 
 INT_PTR CALLBACK AboutDlgProc(HWND, UINT, WPARAM, LPARAM);
-VOID MainWndOnSize(LPARAM);
+VOID MainWndOnSize(INT Width, INT Height);
 VOID ToolBarOnGetDispInfo(LPTOOLTIPTEXT);
 BOOL InitControls(HWND);
 VOID ReInitControls(VOID);
@@ -245,6 +245,8 @@ typedef struct
     BOOL StayOnTop;
     BOOL ShowAltRows;
     BOOL ShowWindowStyles;
+
+    INT ToolBarIconsSize;
 
     COLORREF EvenLines;
     COLORREF OddLines;

@@ -78,6 +78,7 @@ HardDrivesInfo(VOID)
                        szDrives[Count]);
 
         uiDriveType = GetDriveType(szDrive);
+
         if (uiDriveType != DRIVE_FIXED && uiDriveType != DRIVE_REMOVABLE)
             continue;
 

@@ -250,6 +250,9 @@ BEGIN
     LTEXT "Нечетные строки:", -1, 37, 103, 96, 10
     PUSHBUTTON "Выбрать цвет...", IDC_ODD_LINES_COLOR, 67, 117, 78, 14
     CONTROL -1, IDC_ODD_LINES_ICON, "STATIC", SS_ICON | SS_CENTERIMAGE | SS_REALSIZEIMAGE | WS_BORDER, 45, 117, 18, 15
+
+    LTEXT "Размер иконок панели инструментов:", -1, 13, 144, 132, 10
+    COMBOBOX IDC_ICONS_SIZE_COMBO, 151, 141, 52, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
 END
 
 STRINGTABLE DISCARDABLE
@@ -496,7 +499,7 @@ BEGIN
     IDS_BAT_CAPACITY, "Паспортная емкость"
     IDS_BAT_FULL_CAPACITY, "Емкость при полном заряде"
     IDS_BAT_CURRENT_CAPACITY, "Текущая емкость"
-    IDS_BAT_VOLTAGE, "Напряжение питания"
+    IDS_BAT_VOLTAGE, "Напряжение"
     IDS_BAT_DEPRECIATION, "Степень изношенности"
     IDS_BAT_MANUFACTUREDATE, "Дата производства"
     IDS_BAT_TEMPERATURE, "Температура"
@@ -1102,6 +1105,8 @@ BEGIN
     IDS_DMI_IPMI_INTERRUPT_TRIGGER_MODE, "Interrupt Trigger Mode"
     IDS_DMI_IPMI_INTERRUPT_NUMBER, "Interrupt Number"
     IDS_SETTINGS_APPEARANCE, "Внешний вид"
+    IDS_SYSMON_TEMPERATURE, "Температура"
+    IDS_SYSMON_BATTERY, "Battery #%d"
 
     IDS_CAT_SUMMARY, "Общая информация"
 
@@ -1233,7 +1238,8 @@ BEGIN
                        • ReactOS (http://reactos.org)\r\n\
                        • Wine (http://winehq.org)\r\n\
                        • Open Hardware Monitor (http://openhardwaremonitor.org)\r\n\
-                       • Tango Project (http://tango.freedesktop.org)"
+                       • Tango Project (http://tango.freedesktop.org)\r\n\
+                       • dmidecode (http://www.nongnu.org/dmidecode)"
 END
 
 STRINGTABLE DISCARDABLE
