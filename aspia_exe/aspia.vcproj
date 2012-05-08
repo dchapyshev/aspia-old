@@ -386,6 +386,42 @@
 				RelativePath=".\winmain.c"
 				>
 			</File>
+			<Filter
+				Name="sysmon"
+				>
+				<File
+					RelativePath=".\sysmon\amdcpu.c"
+					>
+				</File>
+				<File
+					RelativePath=".\sysmon\ati.c"
+					>
+				</File>
+				<File
+					RelativePath=".\sysmon\battery.c"
+					>
+				</File>
+				<File
+					RelativePath=".\sysmon\harddrives.c"
+					>
+				</File>
+				<File
+					RelativePath=".\sysmon\intelcpu.c"
+					>
+				</File>
+				<File
+					RelativePath=".\sysmon\lpc.c"
+					>
+				</File>
+				<File
+					RelativePath=".\sysmon\nvidia.c"
+					>
+				</File>
+				<File
+					RelativePath=".\sysmon\sysmon.c"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Заголовочные файлы"
@@ -424,6 +460,14 @@
 				RelativePath="..\include\version.h"
 				>
 			</File>
+			<Filter
+				Name="sysmon"
+				>
+				<File
+					RelativePath=".\sysmon\sysmon.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Файлы ресурсов"

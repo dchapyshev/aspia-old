@@ -250,6 +250,9 @@ BEGIN
     LTEXT "Odd Lines:", -1, 37, 103, 96, 10
     PUSHBUTTON "Choose color...", IDC_ODD_LINES_COLOR, 67, 117, 78, 14
     CONTROL -1, IDC_ODD_LINES_ICON, "STATIC", SS_ICON | SS_CENTERIMAGE | SS_REALSIZEIMAGE | WS_BORDER, 45, 117, 18, 15
+
+    LTEXT "Tool Bar Icons Size:", -1, 13, 144, 132, 10
+    COMBOBOX IDC_ICONS_SIZE_COMBO, 151, 141, 52, 160, CBS_DROPDOWNLIST | CBS_SORT | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL
 END
 
 STRINGTABLE DISCARDABLE
@@ -1101,6 +1104,8 @@ BEGIN
     IDS_DMI_IPMI_INTERRUPT_TRIGGER_MODE, "Interrupt Trigger Mode"
     IDS_DMI_IPMI_INTERRUPT_NUMBER, "Interrupt Number"
     IDS_SETTINGS_APPEARANCE, "Appearance"
+    IDS_SYSMON_TEMPERATURE, "Temperature"
+    IDS_SYSMON_BATTERY, "Battery #%d"
 
     IDS_CAT_SUMMARY, "Summary Information"
 
@@ -1232,7 +1237,8 @@ BEGIN
                        • ReactOS (http://reactos.org)\r\n\
                        • Wine (http://winehq.org)\r\n\
                        • Open Hardware Monitor (http://openhardwaremonitor.org)\r\n\
-                       • Tango Project (http://tango.freedesktop.org)"
+                       • Tango Project (http://tango.freedesktop.org)\r\n\
+                       • dmidecode (http://www.nongnu.org/dmidecode)"
 END
 
 STRINGTABLE DISCARDABLE

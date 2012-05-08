@@ -27,12 +27,12 @@ static const TBBUTTON Buttons[] =
     { 0, ID_SAVE,     TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szSaveReportBtn},
     { 1, ID_RELOAD,   TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szReloadBtn},
     {-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
-    //{ 3, ID_SYSMON,   TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szSysMonBtn},
+    { 2, ID_SYSMON,   TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szSysMonBtn},
     //{ 4, ID_BENCH,    TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)szBenchBtn},
-    //{-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
-    { 2, ID_SETTINGS, TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0},
     {-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
-    { 3, ID_HELP_MENU,TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0}
+    { 3, ID_SETTINGS, TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0},
+    {-1, 0,           TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
+    { 4, ID_HELP_MENU,TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, 0}
 };
 
 
@@ -143,18 +143,13 @@ SplitterWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 }
 
 VOID
-MainWndOnSize(LPARAM lParam)
+MainWndOnSize(INT Width, INT Height)
 {
     HDWP hdwp = BeginDeferWindowPos(3);
     INT VSplitterPos;
 
     /* Size tool bar */
     SendMessage(hToolBar, TB_AUTOSIZE, 0, 0);
-
-    /*
-     * HIWORD(lParam) - Height of main window
-     * LOWORD(lParam) - Width of main window
-     */
 
     /* Size vertical splitter bar */
     DeferWindowPos(hdwp,
@@ -163,7 +158,7 @@ MainWndOnSize(LPARAM lParam)
                    (VSplitterPos = GetWindowWidth(hTreeView)),
                    GetWindowHeight(hToolBar),
                    SPLIT_WIDTH,
-                   HIWORD(lParam) - GetWindowHeight(hToolBar),
+                   Height - GetWindowHeight(hToolBar),
                    SWP_NOZORDER|SWP_NOACTIVATE);
 
     /* Size TreeView */
@@ -173,7 +168,7 @@ MainWndOnSize(LPARAM lParam)
                    0,
                    GetWindowHeight(hToolBar),
                    VSplitterPos,
-                   HIWORD(lParam) - GetWindowHeight(hToolBar),
+                   Height - GetWindowHeight(hToolBar),
                    SWP_NOZORDER|SWP_NOACTIVATE);
 
     /* Size ListView */
@@ -182,8 +177,8 @@ MainWndOnSize(LPARAM lParam)
                    0,
                    VSplitterPos + SPLIT_WIDTH,
                    GetWindowHeight(hToolBar),
-                   LOWORD(lParam) - (VSplitterPos + SPLIT_WIDTH),
-                   HIWORD(lParam) - GetWindowHeight(hToolBar),
+                   Width - (VSplitterPos + SPLIT_WIDTH),
+                   Height - GetWindowHeight(hToolBar),
                    SWP_NOZORDER|SWP_NOACTIVATE);
 
     EndDeferWindowPos(hdwp);
@@ -336,8 +331,8 @@ InitToolBar(HWND hwnd)
                 0);
 
     /* Create image list for ToolBar */
-    hImageList = ImageList_Create(TOOLBAR_HEIGHT,
-                                  TOOLBAR_HEIGHT,
+    hImageList = ImageList_Create(SettingsInfo.ToolBarIconsSize,
+                                  SettingsInfo.ToolBarIconsSize,
                                   ILC_MASK | ParamsInfo.SysColorDepth,
                                   1, 1);
     if (!hImageList)
@@ -347,12 +342,12 @@ InitToolBar(HWND hwnd)
     }
 
     /* Add images to ImageList */
-    AddIconToImageList(hIconsInst, hImageList, IDI_SAVE);
-    AddIconToImageList(hIconsInst, hImageList, IDI_RELOAD);
-    //AddIconToImageList(hIconsInst, hImageList, IDI_TASKMGR);
-    //AddIconToImageList(hIconsInst, hImageList, IDI_HWBENCH);
-    AddIconToImageList(hIconsInst, hImageList, IDI_SETTINGS);
-    AddIconToImageList(hIconsInst, hImageList, IDI_INFO);
+    AddIconToImageList(hIconsInst, hImageList, SettingsInfo.ToolBarIconsSize, IDI_SAVE);
+    AddIconToImageList(hIconsInst, hImageList, SettingsInfo.ToolBarIconsSize, IDI_RELOAD);
+    AddIconToImageList(hIconsInst, hImageList, SettingsInfo.ToolBarIconsSize, IDI_TASKMGR);
+    //AddIconToImageList(hIconsInst, hImageList, SettingsInfo.ToolBarIconsSize, IDI_HWBENCH);
+    AddIconToImageList(hIconsInst, hImageList, SettingsInfo.ToolBarIconsSize, IDI_SETTINGS);
+    AddIconToImageList(hIconsInst, hImageList, SettingsInfo.ToolBarIconsSize, IDI_INFO);
 
     ImageList_Destroy((HIMAGELIST)SendMessage(hToolBar,
                                               TB_SETIMAGELIST,
@@ -392,7 +387,9 @@ ReInitControls(VOID)
     TreeView_SetImageList(hTreeView, hImageTreeView, TVSIL_NORMAL);
 
     InitToolBar(hMainWnd);
-    SendMessage(hToolBar, TB_AUTOSIZE, 0, 0);
+
+    MainWndOnSize(GetClientWindowWidth(hMainWnd),
+                  GetClientWindowHeight(hMainWnd));
 
     LeaveCriticalSection(&CriticalSection);
 

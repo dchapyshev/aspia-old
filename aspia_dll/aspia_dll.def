@@ -103,4 +103,5 @@ GetCanceledState
 GetCPUName
 GetCPUVendor
 GetTjmaxTemperature
+GetPhysicalProcessorsCount
 ListViewGetlParam

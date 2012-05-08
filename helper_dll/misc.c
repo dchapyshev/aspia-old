@@ -682,7 +682,7 @@ GetBinaryFromRegistry(HKEY hRootKey,
 }
 
 INT
-AddIconToImageList(HINSTANCE hInst, HIMAGELIST hImageList, UINT IconIndex)
+AddIconToImageList(HINSTANCE hInst, HIMAGELIST hImageList, INT IconSize, UINT IconIndex)
 {
     HICON hIcon = NULL;
     INT Index;
@@ -690,8 +690,8 @@ AddIconToImageList(HINSTANCE hInst, HIMAGELIST hImageList, UINT IconIndex)
     hIcon = (HICON)LoadImage(hInst,
                              MAKEINTRESOURCE(IconIndex),
                              IMAGE_ICON,
-                             24,
-                             24,
+                             IconSize,
+                             IconSize,
                              LR_CREATEDIBSECTION);
 
     if (!hIcon) return -1;

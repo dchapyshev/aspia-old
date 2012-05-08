@@ -756,7 +756,7 @@ SIZE_T StrToHex(LPWSTR lpszStr, SIZE_T StrLen);
 BOOL IsWindows2000(VOID);
 BOOL GetBinaryFromRegistry(HKEY hRootKey, LPWSTR lpszPath, LPWSTR lpszKeyName, LPBYTE lpdwValue, DWORD dwSize);
 BOOL GetStringFromRegistry(BOOL Is64KeyRequired, HKEY hRootKey, LPWSTR lpszPath, LPWSTR lpszKeyName, LPWSTR lpszValue, DWORD dwSize);
-INT AddIconToImageList(HINSTANCE hInst, HIMAGELIST hImageList, UINT IconIndex);
+INT AddIconToImageList(HINSTANCE hInst, HIMAGELIST hImageList, INT IconSize, UINT IconIndex);
 BOOL KillProcess(DWORD pid, BOOL KillTree);
 BOOL GetFileExt(LPWSTR lpFileName, LPWSTR lpExt, SIZE_T ExtSize);
 

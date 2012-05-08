@@ -760,6 +760,28 @@ SysTrayPageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
     return FALSE;
 }
 
+VOID
+InitIconsSizeCombo(HWND hDlg)
+{
+    HWND hCombo = GetDlgItem(hDlg, IDC_ICONS_SIZE_COMBO);
+    INT Index;
+
+    Index = SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"32 x 32");
+    SendMessage(hCombo, CB_SETITEMDATA, Index, (LPARAM)32);
+    if (SettingsInfo.ToolBarIconsSize == 32)
+        SendMessage(hCombo, CB_SETCURSEL, Index, 0);
+
+    Index = SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"24 x 24");
+    SendMessage(hCombo, CB_SETITEMDATA, Index, (LPARAM)24);
+    if (SettingsInfo.ToolBarIconsSize == 24)
+        SendMessage(hCombo, CB_SETCURSEL, Index, 0);
+
+    Index = SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"16 x 16");
+    SendMessage(hCombo, CB_SETITEMDATA, Index, (LPARAM)16);
+    if (SettingsInfo.ToolBarIconsSize == 16)
+        SendMessage(hCombo, CB_SETCURSEL, Index, 0);
+}
+
 INT_PTR CALLBACK
 AppearancePageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
@@ -776,6 +798,7 @@ AppearancePageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                            SettingsInfo.ShowAltRows ? BST_CHECKED : BST_UNCHECKED);
 
             InitIconsCombo(hIconsList);
+            InitIconsSizeCombo(hDlg);
 
             EvenLinesColor = SettingsInfo.EvenLines;
             OddLinesColor = SettingsInfo.OddLines;
@@ -803,6 +826,15 @@ AppearancePageWndProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
                         SendMessage(GetDlgItem(hDlg, IDC_EVEN_LINES_ICON),
                                     STM_SETICON, (WPARAM)hEvenLinesIcon, 0);
                     }
+                }
+                break;
+
+                case IDC_ALT_ROWS:
+                {
+                    BOOL IsChecked = (IsDlgButtonChecked(hDlg, IDC_ALT_ROWS) == BST_CHECKED) ? TRUE : FALSE;
+
+                    EnableWindow(GetDlgItem(hDlg, IDC_EVEN_LINES_COLOR), IsChecked);
+                    EnableWindow(GetDlgItem(hDlg, IDC_ODD_LINES_COLOR), IsChecked);
                 }
                 break;
 
@@ -975,6 +1007,17 @@ SaveSettingsFromDialog(HWND hDlg)
         ShowWindow(hListView, SW_HIDE);
         ShowWindow(hListView, SW_SHOW);
         UpdateWindow(hListView);
+    }
+    Selected = SendMessage(GetDlgItem(hDialogs[APPEARANCE_DIALOG], IDC_ICONS_SIZE_COMBO),
+                           CB_GETCURSEL, 0, 0);
+    if (SettingsInfo.ToolBarIconsSize !=
+        (INT)SendMessage(GetDlgItem(hDialogs[APPEARANCE_DIALOG], IDC_ICONS_SIZE_COMBO),
+                          CB_GETITEMDATA, Selected, 0))
+    {
+        SettingsInfo.ToolBarIconsSize =
+            (INT)SendMessage(GetDlgItem(hDialogs[APPEARANCE_DIALOG], IDC_ICONS_SIZE_COMBO),
+                             CB_GETITEMDATA, Selected, 0);
+        ReInitCtrls = TRUE;
     }
 
     SetWindowPos(hMainWnd,

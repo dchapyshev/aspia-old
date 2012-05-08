@@ -595,6 +595,7 @@ OnCommand(UINT Command)
         break;
 
         case ID_SYSMON:
+            CreateSysMonWindow();
             break;
 
         case ID_BENCH:
@@ -996,7 +997,7 @@ MainWindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
         break;
 
         case WM_SIZE:
-            MainWndOnSize(lParam);
+            MainWndOnSize(LOWORD(lParam), HIWORD(lParam));
             break;
 
         case WM_SIZING:
@@ -1353,6 +1354,7 @@ wWinMain(HINSTANCE hInst,
         SettingsInfo.StayOnTop = FALSE;
         SettingsInfo.ShowAltRows = TRUE;
         SettingsInfo.ShowWindowStyles = TRUE;
+        SettingsInfo.ToolBarIconsSize = 24;
 
         SettingsInfo.EvenLines = 0xFFFFFF;
         SettingsInfo.OddLines = 0xF3F3F3;
