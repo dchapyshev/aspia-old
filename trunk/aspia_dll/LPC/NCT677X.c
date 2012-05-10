@@ -6,6 +6,7 @@
  */
 
 #include "aspia.h"
+#include "../aspia_dll.h"
 #include "lpc.h"
 
 
@@ -119,6 +120,7 @@ IsNuvotonVendor(WORD port)
 VOID
 NCT677X_GetInfo(WORD wChipType, BYTE revision, WORD port)
 {
+    WCHAR szText[MAX_STR_LEN];
     INT minFanRPM;
     INT iMaxFans;
     FLOAT fValue;
@@ -143,6 +145,9 @@ NCT677X_GetInfo(WORD wChipType, BYTE revision, WORD port)
             break;
     }
 
+    LPC_ChipTypeToText(wChipType, szText, sizeof(szText));
+    IoAddItem(0, 2, szText);
+
     for (i = 0; i < 9; i++)
     {
         fValue = 0.008f * NCT677X_ReadByte(port, VOLTAGE_REG[i]);
@@ -152,7 +157,21 @@ NCT677X_GetInfo(WORD wChipType, BYTE revision, WORD port)
         if (Valid && VOLTAGE_REG[i] == VOLTAGE_VBAT_REG)
             Valid = (NCT677X_ReadByte(port, 0x005D) & 0x01) > 0;
 
-        DebugTrace(L"Voltages[%d] = %f", i, Valid ? iValue : 0.0);
+        DebugTrace(L"Voltages[%d] = %f", i, Valid ? fValue : 0.0);
+
+        if (SafeStrLen(LpcVoltageDesc[i].szDesc) > 0)
+        {
+            IoAddItem(1, 3, LpcVoltageDesc[i].szDesc);
+            IoSetItemText(L"%.3f V",
+                fValue + (fValue - LpcVoltageDesc[i].vf) * LpcVoltageDesc[i].ri / LpcVoltageDesc[i].rf);
+        }
+        else
+        {
+            StringCbPrintf(szText, sizeof(szText), L"Voltage #%d", i + 1);
+            IoAddItem(1, 3, szText);
+
+            IoSetItemText(L"%.3f V", fValue);
+        }
     }
 
     for (i = 8; i >= 0; i--)
@@ -180,15 +199,23 @@ NCT677X_GetInfo(WORD wChipType, BYTE revision, WORD port)
                     {
                         case NCT6771F_PECI_0:
                             DebugTrace(L"Temperatures[0] = %f", fValue);
+                            IoAddItem(1, 4, L"PECI #%d", i);
+                            IoSetItemText(L"%.2f °C", fValue);
                             break;
                         case NCT6771F_CPUTIN:
                             DebugTrace(L"Temperatures[1] = %f", fValue);
+                            IoAddItem(1, 4, L"CPUTIN #%d", i);
+                            IoSetItemText(L"%.2f °C", fValue);
                             break;
                         case NCT6771F_AUXTIN:
                             DebugTrace(L"Temperatures[2] = %f", fValue);
+                            IoAddItem(1, 4, L"AUXTIN #%d", i);
+                            IoSetItemText(L"%.2f °C", fValue);
                             break;
                         case NCT6771F_SYSTIN:
                             DebugTrace(L"Temperatures[3] = %f", fValue);
+                            IoAddItem(1, 4, L"SYSTIN #%d", i);
+                            IoSetItemText(L"%.2f °C", fValue);
                             break;
                     }
                 }
@@ -200,15 +227,23 @@ NCT677X_GetInfo(WORD wChipType, BYTE revision, WORD port)
                     {
                         case NCT6776F_PECI_0:
                             DebugTrace(L"Temperatures[0] = %f", fValue);
+                            IoAddItem(1, 4, L"PECI #%d", i);
+                            IoSetItemText(L"%.2f °C", fValue);
                             break;
                         case NCT6776F_CPUTIN:
                             DebugTrace(L"Temperatures[1] = %f", fValue);
+                            IoAddItem(1, 4, L"CPUTIN #%d", i);
+                            IoSetItemText(L"%.2f °C", fValue);
                             break;
                         case NCT6776F_AUXTIN:
                             DebugTrace(L"Temperatures[2] = %f", fValue);
+                            IoAddItem(1, 4, L"AUXTIN #%d", i);
+                            IoSetItemText(L"%.2f °C", fValue);
                             break;
                         case NCT6776F_SYSTIN:
                             DebugTrace(L"Temperatures[3] = %f", fValue);
+                            IoAddItem(1, 4, L"SYSTIN #%d", i);
+                            IoSetItemText(L"%.2f °C", fValue);
                             break;
                     }
                 }
@@ -225,5 +260,19 @@ NCT677X_GetInfo(WORD wChipType, BYTE revision, WORD port)
         iValue = (high << 8) | low;
 
         DebugTrace(L"Fans[%d] = %f", i, iValue > minFanRPM ? iValue : 0);
+
+        if (iValue <= minFanRPM) continue;
+
+        if (SafeStrLen(szLpcFanDesc[i]) > 0)
+        {
+            IoAddItem(1, 5, szLpcFanDesc[i]);
+        }
+        else
+        {
+            StringCbPrintf(szText, sizeof(szText), L"Fans #%d", i + 1);
+            IoAddItem(1, 5, szText);
+        }
+
+        IoSetItemText(L"%d RPM", iValue);
     }
 }

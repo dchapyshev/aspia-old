@@ -25,8 +25,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "helper_dll", "helper_dll\he
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aspia_dll", "aspia_dll\aspia_dll.vcproj", "{EC6ABB07-436F-4970-80D0-ABFAA22126C3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aspiad_exe", "aspiad_exe\aspiad.vcproj", "{D6C7508C-80F6-458A-AA23-3BC7E545BFEB}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -115,14 +113,6 @@ Global
 		{EC6ABB07-436F-4970-80D0-ABFAA22126C3}.Release|Win32.Build.0 = Release|Win32
 		{EC6ABB07-436F-4970-80D0-ABFAA22126C3}.Release|x64.ActiveCfg = Release|x64
 		{EC6ABB07-436F-4970-80D0-ABFAA22126C3}.Release|x64.Build.0 = Release|x64
-		{D6C7508C-80F6-458A-AA23-3BC7E545BFEB}.Debug|Win32.ActiveCfg = Debug|Win32
-		{D6C7508C-80F6-458A-AA23-3BC7E545BFEB}.Debug|Win32.Build.0 = Debug|Win32
-		{D6C7508C-80F6-458A-AA23-3BC7E545BFEB}.Debug|x64.ActiveCfg = Debug|x64
-		{D6C7508C-80F6-458A-AA23-3BC7E545BFEB}.Debug|x64.Build.0 = Debug|x64
-		{D6C7508C-80F6-458A-AA23-3BC7E545BFEB}.Release|Win32.ActiveCfg = Release|Win32
-		{D6C7508C-80F6-458A-AA23-3BC7E545BFEB}.Release|Win32.Build.0 = Release|Win32
-		{D6C7508C-80F6-458A-AA23-3BC7E545BFEB}.Release|x64.ActiveCfg = Release|x64
-		{D6C7508C-80F6-458A-AA23-3BC7E545BFEB}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

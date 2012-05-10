@@ -330,6 +330,7 @@ CPUIDInfo(VOID)
     IoAddIcon(IDI_CPU);
     IoAddIcon(IDI_CHECKED);
     IoAddIcon(IDI_UNCHECKED);
+    IoAddIcon(IDI_TEMPERATURE);
 
     IoAddHeader(0, 0, IDS_PROP);
 
@@ -376,6 +377,14 @@ CPUIDInfo(VOID)
     {
         IoAddValueName(1, 0, IDS_CPUID_LOGICAL_COUNT);
         IoSetItemText(L"%d", Count);
+    }
+
+    /* Tjmax */
+    GetCPUVendor(szText, sizeof(szText));
+    if (wcscmp(szText, L"GenuineIntel") == 0)
+    {
+        IoAddValueName(1, 3, IDS_CPUID_TJMAX);
+        IoSetItemText(L"%d °C", GetTjmaxTemperature(0));
     }
 
     IoAddFooter();

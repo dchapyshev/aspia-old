@@ -147,12 +147,19 @@ GetIntelCpuInfo(VOID)
 
     if (GetCPUName(szText, sizeof(szText)))
     {
+        INT Count = GetPhysicalProcessorsCount();
         UINT64 Value;
         UINT Temp, Tjmax;
         bIndex = 0;
 
-        while (ReadMsr(IA32_THERM_STATUS, bIndex, &Value))
+        while (Count > 0)
         {
+            if (!ReadMsr(IA32_THERM_STATUS, bIndex, &Value))
+            {
+                ++bIndex;
+                continue;
+            }
+
             Temp = ((Value >> 16) & 0xFF);
 
             if (Temp == 0)
@@ -177,6 +184,7 @@ GetIntelCpuInfo(VOID)
             DebugTrace(L"Core = %d, Tjmax = %d, Temp = %d, Result = %d",
                        bIndex + 1, Tjmax, Temp, Tjmax - Temp);
             ++bIndex;
+            --Count;
         }
 
         IoAddFooter();

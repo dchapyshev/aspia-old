@@ -923,6 +923,7 @@
 #define IDS_SETTINGS_APPEARANCE              942
 #define IDS_SYSMON_TEMPERATURE               943
 #define IDS_SYSMON_BATTERY                   944
+#define IDS_CPUID_TJMAX                      945
 
 #define IDS_CAT_SUMMARY           1000
 

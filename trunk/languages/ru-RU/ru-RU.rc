@@ -1106,7 +1106,8 @@ BEGIN
     IDS_DMI_IPMI_INTERRUPT_NUMBER, "Interrupt Number"
     IDS_SETTINGS_APPEARANCE, "Внешний вид"
     IDS_SYSMON_TEMPERATURE, "Температура"
-    IDS_SYSMON_BATTERY, "Battery #%d"
+    IDS_SYSMON_BATTERY, "Батарея #%d"
+    IDS_CPUID_TJMAX, "Температура Tjmax"
 
     IDS_CAT_SUMMARY, "Общая информация"
 

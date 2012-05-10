@@ -31,6 +31,7 @@ ReadMsrByRegisterAndCpuIndex(IN UINT32 CpuIndex,
 
     /* Get active CPU mask */
     ActiveAffinity = KeQueryActiveProcessors();
+
     /* calc requested mask */
     ReqAffinity = ActiveAffinity & ((KAFFINITY)1 << CpuIndex);
 
@@ -38,25 +39,36 @@ ReadMsrByRegisterAndCpuIndex(IN UINT32 CpuIndex,
     if (ReqAffinity == 0) return STATUS_UNSUCCESSFUL;
 
     /* Use KeSetSystemAffinityThreadEx instead of the KeSetSystemAffinityThread routine whenever possible */
-    if (_KeSetSystemAffinityThreadEx && _KeRevertToUserAffinityThreadEx) {
+    if (_KeSetSystemAffinityThreadEx && _KeRevertToUserAffinityThreadEx)
+    {
         ActiveAffinity = _KeSetSystemAffinityThreadEx(ReqAffinity);
-    } else {
+    }
+    else
+    {
         _KeSetSystemAffinityThread(ReqAffinity);
     }
-    __try {
+
+    __try
+    {
         /* Get MSR Reg value */
         *Output = __readmsr(Register);
         Status = STATUS_SUCCESS;
     }
-    __except(EXCEPTION_EXECUTE_HANDLER) {
+    __except(EXCEPTION_EXECUTE_HANDLER)
+    {
         Status = GetExceptionCode();
     }
+
     /* Set default CPU mask to the current thread */
-    if (_KeSetSystemAffinityThreadEx && _KeRevertToUserAffinityThreadEx) {
+    if (_KeSetSystemAffinityThreadEx && _KeRevertToUserAffinityThreadEx)
+    {
         _KeRevertToUserAffinityThreadEx(ActiveAffinity);
-    } else {
+    }
+    else
+    {
         _KeSetSystemAffinityThread(ActiveAffinity);
     }
+
     return Status;
 }
 
@@ -180,6 +192,7 @@ ReadPmcByRegisterAndCpuIndex(IN UINT32 CpuIndex,
 
     /* Get active CPU mask */
     ActiveAffinity = KeQueryActiveProcessors();
+
     /* calc requested mask */
     ReqAffinity = ActiveAffinity & ((KAFFINITY)1 << CpuIndex);
 
@@ -187,25 +200,36 @@ ReadPmcByRegisterAndCpuIndex(IN UINT32 CpuIndex,
     if (ReqAffinity == 0) return STATUS_UNSUCCESSFUL;
 
     /* Use KeSetSystemAffinityThreadEx instead of the KeSetSystemAffinityThread routine whenever possible */
-    if (_KeSetSystemAffinityThreadEx && _KeRevertToUserAffinityThreadEx) {
+    if (_KeSetSystemAffinityThreadEx && _KeRevertToUserAffinityThreadEx)
+    {
         ActiveAffinity = _KeSetSystemAffinityThreadEx(ReqAffinity);
-    } else {
+    }
+    else
+    {
         _KeSetSystemAffinityThread(ReqAffinity);
     }
-    __try {
+
+    __try
+    {
         /* Get PMC Reg value */
         *Output = __readpmc(Counter);
         Status = STATUS_SUCCESS;
     }
-    __except(EXCEPTION_EXECUTE_HANDLER) {
+    __except(EXCEPTION_EXECUTE_HANDLER)
+    {
         Status = GetExceptionCode();
     }
+
     /* Set default CPU mask to the current thread */
-    if (_KeSetSystemAffinityThreadEx && _KeRevertToUserAffinityThreadEx) {
+    if (_KeSetSystemAffinityThreadEx && _KeRevertToUserAffinityThreadEx)
+    {
         _KeRevertToUserAffinityThreadEx(ActiveAffinity);
-    } else {
+    }
+    else
+    {
         _KeSetSystemAffinityThread(ActiveAffinity);
     }
+
     return Status;
 }
 
@@ -242,10 +266,10 @@ IOCTL_GetPmc(IN PIRP Irp,
 NTSTATUS
 NTAPI
 IOCTL_ReadPort(IN ULONG ControlCode,
-               IN PVOID InputBuffer, 
-               IN ULONG InputSize, 
-               OUT PVOID OutputBuffer, 
-               IN ULONG OutputSize, 
+               IN PVOID InputBuffer,
+               IN ULONG InputSize,
+               OUT PVOID OutputBuffer,
+               IN ULONG OutputSize,
                OUT PULONG BytesReturned)
 {
     ULONG Port = *(PULONG)InputBuffer;
@@ -273,10 +297,10 @@ IOCTL_ReadPort(IN ULONG ControlCode,
 NTSTATUS
 NTAPI
 IOCTL_WritePort(IN ULONG ControlCode,
-                IN PVOID InputBuffer, 
-                IN ULONG InputSize, 
-                OUT PVOID OutputBuffer, 
-                IN ULONG OutputSize, 
+                IN PVOID InputBuffer,
+                IN ULONG InputSize,
+                OUT PVOID OutputBuffer,
+                IN ULONG OutputSize,
                 OUT PULONG BytesReturned)
 {
     PPORT_WRITE_INPUT Data = (PPORT_WRITE_INPUT)InputBuffer;
@@ -342,10 +366,10 @@ ReadPciConfig(ULONG PciAddress,
 
 NTSTATUS
 NTAPI
-IOCTL_ReadPciConfig(IN PVOID InputBuffer, 
-                    IN ULONG InputSize, 
-                    OUT PVOID OutputBuffer, 
-                    IN ULONG OutputSize, 
+IOCTL_ReadPciConfig(IN PVOID InputBuffer,
+                    IN ULONG InputSize,
+                    OUT PVOID OutputBuffer,
+                    IN ULONG OutputSize,
                     OUT PULONG BytesReturned)
 {
     PREAD_PCI_CONFIG_INPUT Data =
@@ -408,10 +432,10 @@ WritePciConfig(ULONG PciAddress,
 
 NTSTATUS
 NTAPI
-IOCTL_WritePciConfig(IN PVOID InputBuffer, 
-                     IN ULONG InputSize, 
-                     OUT PVOID OutputBuffer, 
-                     IN ULONG OutputSize, 
+IOCTL_WritePciConfig(IN PVOID InputBuffer,
+                     IN ULONG InputSize,
+                     OUT PVOID OutputBuffer,
+                     IN ULONG OutputSize,
                      OUT PULONG BytesReturned)
 
 {
@@ -453,6 +477,6 @@ IOCTL_Init()
 
     if (_KeSetSystemAffinityThread || (_KeSetSystemAffinityThreadEx && _KeRevertToUserAffinityThreadEx))
         Status = STATUS_SUCCESS;
-   
+
     return Status;
 }

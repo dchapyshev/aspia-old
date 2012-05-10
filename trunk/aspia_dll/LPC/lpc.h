@@ -130,6 +130,7 @@ VOID NCT677X_GetInfo(WORD wChipType, BYTE revision, WORD port);
 #define P9X79                 0x1011
 #define P6T                   0x1012
 #define P8Z68_V_PRO           0x1013
+#define P8Z68_V_LX            0x1014
 /* DFI (0x2001 - 0x2300) */
 #define LP_BI_P45_T2RS_Elite  0x2001
 #define LP_DK_P55_T3eH9       0x2002

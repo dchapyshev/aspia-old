@@ -150,6 +150,7 @@ MB_MODELS MbModelsList[] =
     { P9X79, L"P9X79" },
     { P6T, L"P6T" },
     { P8Z68_V_PRO, L"P8Z68-V PRO" },
+    { P8Z68_V_LX, L"P8Z68-V LX" },
     /* DFI */
     { LP_BI_P45_T2RS_Elite, L"LP BI P45-T2RS Elite" },
     { LP_DK_P55_T3eH9, L"LP DK P55-T3eH9" },
@@ -1357,6 +1358,22 @@ LPC_MainboardInfoInit(WORD wChipType)
                             InitTItem(0, L"CPU");
                             InitTItem(2, L"Auxiliary");
                             InitTItem(3, L"Motherboard");
+                            break;
+
+                        case P8Z68_V_LX: /* NCT6776F */
+                            InitVItem(0, L"CPU VCore",     0.0f,  1.0f, 0.0f);
+                            InitVItem(1, L"+12V",          11.0f, 1.0f, 0.0f);
+                            InitVItem(2, L"Analog +3.3V",  34.0f, 34.0f, 0.0f);
+                            InitVItem(3, L"+3.3V",         34.0f, 34.0f, 0.0f);
+                            InitVItem(4, L"+5V",           12.0f, 3.0f, 0.0f);
+                            InitVItem(7, L"Standby +3.3V", 34.0f, 34.0f, 0.0f);
+                            InitVItem(8, L"VBAT",          34.0f, 34.0f, 0.0f);
+
+                            InitTItem(0, L"CPU");
+                            InitTItem(2, L"Auxiliary");
+                            InitTItem(3, L"Motherboard");
+
+                            InitFItem(1, L"CPU");
                             break;
 
                         default:
