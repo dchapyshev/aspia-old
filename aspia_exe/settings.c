@@ -221,6 +221,64 @@ LoadSettings(VOID)
 
     SettingsInfo.Autorun = GetAutostartState();
 
+    if (!Result)
+    {
+        /* If loading failed fill default values */
+
+        SettingsInfo.StartupCategory = IDS_CAT_SUMMARY;
+
+        /* View Settings */
+        SettingsInfo.SaveWindowPos = TRUE;
+        SettingsInfo.StayOnTop = FALSE;
+        SettingsInfo.ShowAltRows = TRUE;
+        SettingsInfo.ShowWindowStyles = TRUE;
+        SettingsInfo.ToolBarIconsSize = 24;
+
+        SettingsInfo.EvenLines = 0xFFFFFF;
+        SettingsInfo.OddLines = 0xF3F3F3;
+
+        SettingsInfo.Bottom = 660;
+        SettingsInfo.Left = 20;
+        SettingsInfo.Right = 870;
+        SettingsInfo.Top = 20;
+        SettingsInfo.IsMaximized = FALSE;
+
+        SettingsInfo.SplitterPos = 250;
+
+        SettingsInfo.ReportBottom = 409;
+        SettingsInfo.ReportLeft = 20;
+        SettingsInfo.ReportRight = 342;
+        SettingsInfo.ReportTop = 20;
+        SettingsInfo.ReportIsMaximized = FALSE;
+
+        /* Autorun */
+        SettingsInfo.Autorun = FALSE;
+        SettingsInfo.HideToTray = FALSE;
+        SettingsInfo.ShowProgIcon = FALSE;
+        SettingsInfo.ShowSensorIcons = FALSE;
+
+        SettingsInfo.AllowKmDriver = TRUE;
+
+        /* Report: Content Filtering */
+        SettingsInfo.ELogShowError = TRUE;
+        SettingsInfo.ELogShowWarning = TRUE;
+        SettingsInfo.ELogShowInfo = FALSE;
+        SettingsInfo.IEShowFile = TRUE;
+        SettingsInfo.IEShowFtp = TRUE;
+        SettingsInfo.IEShowHttp = TRUE;
+
+        /* Sensors Icons */
+        SettingsInfo.CpuBackground = 0x80ffff;
+        SettingsInfo.CpuFontColor = 0;
+        SettingsInfo.HddBackground = 0;
+        SettingsInfo.HddFontColor = 0xffffff;
+
+        SettingsInfo.SensorsRefreshRate = 30;
+
+        SettingsInfo.IsAddContent = TRUE;
+        SettingsInfo.ReportFileType = IDS_TYPE_HTML;
+    }
+
     return Result;
 }
 

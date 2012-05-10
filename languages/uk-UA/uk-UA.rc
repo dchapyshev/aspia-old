@@ -1108,6 +1108,7 @@ BEGIN
     IDS_SETTINGS_APPEARANCE, "Appearance"
     IDS_SYSMON_TEMPERATURE, "Temperature"
     IDS_SYSMON_BATTERY, "Battery #%d"
+    IDS_CPUID_TJMAX, "Tjmax Temperature"
 
     IDS_CAT_SUMMARY, "Загальна інформація"
 

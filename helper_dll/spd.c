@@ -35,7 +35,7 @@ DWORD
 ReadPciDword(BYTE bus, BYTE dev, BYTE func, BYTE offset)
 {
     DWORD value, ind;
-        
+
     ind = 0x80000000 + bus * 0x10000 + dev * 0x800 + func * 0x100;
     value = GetRegisterDataDword(ind, offset);
 
@@ -206,6 +206,7 @@ EnumSmBusBaseAddress(SMBUS_BASEADR_ENUMPROC lpEnumProc)
                         lpEnumProc(BaseAddress, NVCK804_SMBUS);
                         break;
 
+                    case 0x1C228086: /* 6 Series/C200 */
                     case 0x30501106: /* VIA 596 */
                     case 0x30511106: /* VIA596B */
                     case 0x71138086: /* PIIX4 */
@@ -258,14 +259,14 @@ EnumSmBusBaseAddress(SMBUS_BASEADR_ENUMPROC lpEnumProc)
                     case 0x153510B9: /* ALI1535 */
                     case 0x164710B9: /* ALI1647 */
                         DebugTrace(L"Unsupported chip type (0x%x) yet!", chip);
-                        return;
+                        break;
 
                     default:
                         DebugTrace(L"chip = 0x%x", chip);
-                        return;
+                        break;
                 }
             }
-         }
+        }
     }
 }
 

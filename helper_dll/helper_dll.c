@@ -185,7 +185,11 @@ LoadDriver(VOID)
     }
 
     scHandle = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
-    if (!scHandle) return FALSE;
+    if (!scHandle)
+    {
+        DebugTrace(L"OpenSCManager() failed!");
+        return FALSE;
+    }
 
     bStarted = InstallDriver(scHandle, szDriverExec) &&
                StartDriver(scHandle);
@@ -194,6 +198,7 @@ LoadDriver(VOID)
 
     if (!bStarted)
     {
+        DebugTrace(L"bStarted = FALSE");
         CloseServiceHandle(scHandle);
         return FALSE;
     }
@@ -203,9 +208,12 @@ LoadDriver(VOID)
     hDriverFile = OpenDevice();
     if (hDriverFile == INVALID_HANDLE_VALUE)
     {
+        DebugTrace(L"OpenDevice() failed!");
         UnloadDriver();
         return FALSE;
     }
+
+    DebugTrace(L"LoadDriver() success!");
 
     return TRUE;
 }
