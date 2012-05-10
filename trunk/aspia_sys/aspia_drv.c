@@ -62,6 +62,10 @@ DriverIoControl(IN PDEVICE_OBJECT DeviceObject,
             Status = IOCTL_GetMsr(Irp, Stack);
             break;
 
+        case IOCTL_WRITE_MSR:
+            Status = IOCTL_WriteMsr(Irp, Stack);
+            break;
+
         case IOCTL_GET_PMC:
             Status = IOCTL_GetPmc(Irp, Stack);
             break;
