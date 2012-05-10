@@ -148,6 +148,68 @@ IOCTL_GetSMBIOS(IN PIRP Irp,
     return Status;
 }
 
+/* Write MSR data */
+NTSTATUS
+NTAPI
+IOCTL_WriteMsr(IN PIRP Irp,
+               IN PIO_STACK_LOCATION Stack)
+{
+    NTSTATUS Status = STATUS_UNSUCCESSFUL;
+    PWRITE_MSR_QUERY Query;
+    KAFFINITY ActiveAffinity;
+    KAFFINITY ReqAffinity;
+
+    if (Stack->Parameters.DeviceIoControl.InputBufferLength == sizeof(WRITE_MSR_QUERY))
+    {
+        Query = (PWRITE_MSR_QUERY)Irp->AssociatedIrp.SystemBuffer;
+
+        /* No return value */
+        Irp->IoStatus.Information = 0;
+
+        /* Get active CPU mask */
+        ActiveAffinity = KeQueryActiveProcessors();
+
+        /* calc requested mask */
+        ReqAffinity = ActiveAffinity & ((KAFFINITY)1 << Query->CpuIndex);
+
+        /* If not available the specified CPU, return STATUS_UNSUCCESSFUL */
+        if (ReqAffinity == 0) return STATUS_UNSUCCESSFUL;
+
+        /* Use KeSetSystemAffinityThreadEx instead of the KeSetSystemAffinityThread routine whenever possible */
+        if (_KeSetSystemAffinityThreadEx && _KeRevertToUserAffinityThreadEx)
+        {
+            ActiveAffinity = _KeSetSystemAffinityThreadEx(ReqAffinity);
+        }
+        else
+        {
+            _KeSetSystemAffinityThread(ReqAffinity);
+        }
+
+        __try
+        {
+            /* Get MSR Reg value */
+            __writemsr(Query->Register, Query->Value.QuadPart);
+            Status = STATUS_SUCCESS;
+        }
+        __except(EXCEPTION_EXECUTE_HANDLER)
+        {
+            Status = GetExceptionCode();
+        }
+
+        /* Set default CPU mask to the current thread */
+        if (_KeSetSystemAffinityThreadEx && _KeRevertToUserAffinityThreadEx)
+        {
+            _KeRevertToUserAffinityThreadEx(ActiveAffinity);
+        }
+        else
+        {
+            _KeSetSystemAffinityThread(ActiveAffinity);
+        }
+    }
+
+    return Status;
+}
+
 /* Read MSR data */
 NTSTATUS
 NTAPI
@@ -162,8 +224,8 @@ IOCTL_GetMsr(IN PIRP Irp,
     {
         Query = (PREAD_MSR_QUERY)Irp->AssociatedIrp.SystemBuffer;
 
-        Status = ReadMsrByRegisterAndCpuIndex(Query->CpuIndex, 
-                                              Query->Register, 
+        Status = ReadMsrByRegisterAndCpuIndex(Query->CpuIndex,
+                                              Query->Register,
                                               (UINT64*)Irp->AssociatedIrp.SystemBuffer);
         if (NT_SUCCESS(Status))
         {

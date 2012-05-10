@@ -6,6 +6,7 @@ GetSmbiosData
 EnumSmBusBaseAddress
 ReadSpdData
 ReadMsr
+WriteMsr
 ReadIoPortWord
 ReadIoPortDword
 ReadIoPortByte

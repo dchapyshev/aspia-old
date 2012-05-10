@@ -271,7 +271,6 @@ GetSmbiosData(OUT DWORD* ReturnSize)
 }
 
 // Получение данных MSR из регистра
-// hFile - хендл открытого драйвера
 // Register - номер регистра
 // CpuIndex - номер процессора
 // Data - указатель на переменную в которую запищутся данные MSR регистра
@@ -293,6 +292,30 @@ ReadMsr(IN UINT32 Register,
                            sizeof(READ_MSR_QUERY),
                            Data, sizeof(UINT64),
                            &ReadByte, 0);
+}
+
+BOOL
+WriteMsr(IN UINT32 Register,
+         IN UINT32 CpuIndex,
+         IN UINT32 Eax,
+         IN UINT32 Edx)
+{
+    WRITE_MSR_QUERY Query;
+    DWORD Temp, ReadByte;
+
+    Query.CpuIndex       = CpuIndex;
+    Query.Register       = Register;
+    Query.Value.LowPart  = Eax;
+    Query.Value.HighPart = Edx;
+
+    return DeviceIoControl(hDriverFile,
+                           (DWORD)IOCTL_WRITE_MSR,
+                           &Query,
+                           sizeof(WRITE_MSR_QUERY),
+                           &Temp,
+                           sizeof(Temp),
+                           &ReadByte,
+                           0);
 }
 
 WORD
