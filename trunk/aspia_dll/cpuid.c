@@ -9,6 +9,9 @@
 #include "aspia_dll.h"
 
 
+#define IA32_PERF_STATUS 0x0198
+#define MSR_PLATFORM_INFO 0xCE
+
 typedef struct
 {
     DWORD dwFlag;
@@ -318,6 +321,992 @@ Is64BitCpu(VOID)
     return CPUInfo[3] & 0x20000000;
 }
 
+LONG
+GetMicrocodeRevision(VOID)
+{
+    INT CPUInfo[4] = {-1};
+    LARGE_INTEGER Value;
+
+    if (!WriteMsr(0x8B, 0, 0, 0))
+        return 0;
+
+    __cpuid(CPUInfo, 1);
+
+    if (ReadMsr(0x8B, 0, (UINT64*)&Value))
+    {
+        return Value.HighPart;
+    }
+
+    return 0;
+}
+
+BYTE
+GetPlatformId(VOID)
+{
+    LARGE_INTEGER Value;
+
+    if (ReadMsr(0x17, 0, (UINT64*)&Value))
+    {
+        return 1 << ((Value.HighPart >> 18) & 7);
+    }
+
+    return 0;
+}
+
+DOUBLE
+GetCpuMultiplierCore(VOID)
+{
+    LARGE_INTEGER Value;
+
+    if (ReadMsr(IA32_PERF_STATUS, 0, (UINT64*)&Value))
+    {
+        return ((Value.HighPart >> 8) & 0x1F) + 0.5 * ((Value.HighPart >> 14) & 1);
+    }
+
+    return 0;
+}
+
+DOUBLE
+GetCpuMultiplierSandyBridge(VOID)
+{
+    LARGE_INTEGER Value;
+
+    if (ReadMsr(MSR_PLATFORM_INFO, 0, (UINT64*)&Value))
+    {
+        return (Value.LowPart >> 8) & 0xFF;
+    }
+
+    return 0;
+}
+
+DOUBLE
+GetCpuMultiplier(VOID)
+{
+    CPU_IDS CpuIds = {0};
+
+    GetProcessorIDs(&CpuIds);
+
+    switch (CpuIds.Family)
+    {
+        case 0x06:
+        {
+            switch (CpuIds.Model)
+            {
+                case 0x1A:
+                case 0x1E:
+                case 0x1F:
+                case 0x25:
+                case 0x2C:
+                case 0x2E:
+                case 0x2A:
+                case 0x2D:
+                    return GetCpuMultiplierSandyBridge();
+            }
+        }
+        break;
+    }
+
+    return GetCpuMultiplierCore();
+}
+
+DOUBLE
+GetCpuSpeed(INT CpuIndex)
+{
+    UINT64 Start, End, Freq;
+    UINT64 TimeStampCount;
+    HANDLE hThread;
+    DWORD_PTR OldMask;
+
+    if (CpuIndex != -1)
+    {
+        hThread = GetCurrentThread();
+
+        OldMask = SetThreadAffinityMask(hThread, 1 << CpuIndex);
+    }
+
+    QueryPerformanceFrequency((LARGE_INTEGER*)&Freq);
+
+    QueryPerformanceCounter((LARGE_INTEGER*)&Start);
+
+    TimeStampCount = __rdtsc();
+
+    Sleep(100);
+
+    TimeStampCount = __rdtsc() - TimeStampCount;
+
+    QueryPerformanceCounter((LARGE_INTEGER*)&End);
+
+    if (CpuIndex != -1)
+    {
+        SetThreadAffinityMask(hThread, OldMask);
+    }
+
+    return (DOUBLE)(TimeStampCount * Freq / (End - Start)) / 1000000.0;
+}
+
+DOUBLE
+GetCpuBusSpeed(INT CpuIndex)
+{
+    DOUBLE Multiplier = GetCpuMultiplier();
+
+    if (Multiplier == 0) return 0;
+
+    return GetCpuSpeed(CpuIndex) / Multiplier;
+}
+
+typedef struct
+{
+    UINT L1DataSize;
+    UINT L1InstSize;
+    UINT L1DataWays;
+    UINT L1InstWays;
+    UINT L1DataLines;
+    UINT L1InstLines;
+
+    UINT L2Size;
+    UINT L2Ways;
+    UINT L2Lines;
+
+    UINT L3Size;
+    UINT L3Ways;
+    UINT L3Lines;
+} INTEL_CACHE_INFO;
+
+VOID
+GetIntelCpuCacheInfo(INTEL_CACHE_INFO *Info)
+{
+    INT i, Values[16] = {0};
+    INT CPUInfo[4] = {-1};
+    BYTE Family;
+
+    __cpuid(CPUInfo, 1);
+
+    Family = (CPUInfo[0] >> 8) & 0xf;
+
+    __cpuid(CPUInfo, 2);
+
+    Values[0]  = (CPUInfo[0] & 0xFF000000) >> 24;
+    Values[1]  = (CPUInfo[0] & 0x00FF0000) >> 16;
+    Values[2]  = (CPUInfo[0] & 0x0000FF00) >> 8;
+    Values[3]  =  CPUInfo[0] & 0x000000FF;
+
+    Values[4]  = (CPUInfo[1] & 0xFF000000) >> 24;
+    Values[5]  = (CPUInfo[1] & 0x00FF0000) >> 16;
+    Values[6]  = (CPUInfo[1] & 0x0000FF00) >> 8;
+    Values[7]  =  CPUInfo[1] & 0x000000FF;
+
+    Values[8]  = (CPUInfo[2] & 0xFF000000) >> 24;
+    Values[9]  = (CPUInfo[2] & 0x00FF0000) >> 16;
+    Values[10] = (CPUInfo[2] & 0x0000FF00) >> 8;
+    Values[11] =  CPUInfo[2] & 0x000000FF;
+
+    Values[12] = (CPUInfo[3] & 0xFF000000) >> 24;
+    Values[13] = (CPUInfo[3] & 0x00FF0000) >> 16;
+    Values[14] = (CPUInfo[3] & 0x0000FF00) >> 8;
+    Values[15] =  CPUInfo[3] & 0x000000FF;
+
+    for (i = 0; i < 16; i++)
+    {
+        /* See Intel Processor Identification and the CPUID Instruction, Table 5-7 */
+        switch (Values[i])
+        {
+            case 0x06: Info->L1InstSize = 8;    Info->L1InstWays = 4;  Info->L1InstLines = 32; break;
+            case 0x08: Info->L1InstSize = 16;   Info->L1InstWays = 4;  Info->L1InstLines = 32; break;
+            case 0x09: Info->L1InstSize = 32;   Info->L1InstWays = 4;  Info->L1InstLines = 64; break;
+            case 0x0A: Info->L1DataSize = 8;    Info->L1DataWays = 2;  Info->L1DataLines = 32; break;
+            case 0x0C: Info->L1DataSize = 16;   Info->L1DataWays = 4;  Info->L1DataLines = 32; break;
+            case 0x0D: Info->L1DataSize = 16;   Info->L1DataWays = 4;  Info->L1DataLines = 64; break;
+            case 0x0E: Info->L1DataSize = 24;   Info->L1DataWays = 6;  Info->L1DataLines = 64; break;
+            case 0x10: Info->L1DataSize = 16;   Info->L1DataWays = 4;  Info->L1DataLines = 32; break;
+            case 0x15: Info->L1InstSize = 16;   Info->L1InstWays = 4;  Info->L1InstLines = 32; break;
+            case 0x1A: Info->L2Size     = 96;   Info->L2Ways     = 6;  Info->L2Lines     = 64; break;
+            case 0x21: Info->L2Size     = 256;  Info->L2Ways     = 8;  Info->L2Lines     = 64; break;
+            case 0x22: Info->L3Size     = 512;  Info->L3Ways     = 4;  Info->L3Lines     = 64; break;
+            case 0x23: Info->L3Size     = 1024; Info->L3Ways     = 8;  Info->L3Lines     = 64; break;
+            case 0x25: Info->L3Size     = 2048; Info->L3Ways     = 8;  Info->L3Lines     = 64; break;
+            case 0x29: Info->L3Size     = 4096; Info->L3Ways     = 8;  Info->L3Lines     = 64; break;
+            case 0x2C: Info->L1DataSize = 32;   Info->L1DataWays = 8;  Info->L1DataLines = 64; break;
+            case 0x30: Info->L1InstSize = 32;   Info->L1InstWays = 8;  Info->L1InstLines = 64; break;
+            case 0x39: Info->L2Size     = 128;  Info->L2Ways     = 4;  Info->L2Lines     = 64; break;
+            case 0x3A: Info->L2Size     = 192;  Info->L2Ways     = 6;  Info->L2Lines     = 64; break;
+            case 0x3B: Info->L2Size     = 128;  Info->L2Ways     = 2;  Info->L2Lines     = 64; break;
+            case 0x3C: Info->L2Size     = 256;  Info->L2Ways     = 4;  Info->L2Lines     = 64; break;
+            case 0x3D: Info->L2Size     = 384;  Info->L2Ways     = 6;  Info->L2Lines     = 64; break;
+            case 0x3E: Info->L2Size     = 512;  Info->L2Ways     = 4;  Info->L2Lines     = 64; break;
+            case 0x41: Info->L2Size     = 128;  Info->L2Ways     = 4;  Info->L2Lines     = 32; break;
+            case 0x42: Info->L2Size     = 256;  Info->L2Ways     = 4;  Info->L2Lines     = 32; break;
+            case 0x43: Info->L2Size     = 512;  Info->L2Ways     = 4;  Info->L2Lines     = 32; break;
+            case 0x44: Info->L2Size     = 1024; Info->L2Ways     = 4;  Info->L2Lines     = 32; break;
+            case 0x45: Info->L2Size     = 2048; Info->L2Ways     = 4;  Info->L2Lines     = 32; break;
+            case 0x46: Info->L3Size     = 4096; Info->L3Ways     = 4;  Info->L3Lines     = 64; break;
+            case 0x47: Info->L3Size     = 8192; Info->L3Ways     = 8;  Info->L3Lines     = 64; break;
+            case 0x48: Info->L2Size     = 3072; Info->L2Ways     = 12; Info->L2Lines     = 64; break;
+
+            case 0x49:
+                if (Family != 0x0F)
+                {
+                    Info->L2Size = 4096; Info->L2Ways = 16; Info->L2Lines = 64;
+                }
+                else
+                {
+                    Info->L3Size = 4096; Info->L3Ways = 16; Info->L3Lines = 64;
+                } break;
+            case 0x4A: Info->L3Size     = 6144;  Info->L3Ways     = 12; Info->L3Lines     = 64;  break;
+            case 0x4B: Info->L3Size     = 8192;  Info->L3Ways     = 16; Info->L3Lines     = 64;  break;
+            case 0x4C: Info->L3Size     = 12288; Info->L3Ways     = 12; Info->L3Lines     = 64;  break;
+            case 0x4D: Info->L3Size     = 16384; Info->L3Ways     = 16; Info->L3Lines     = 64;  break;
+            case 0x4E: Info->L2Size     = 6144;  Info->L2Ways     = 24; Info->L2Lines     = 64;  break;
+            case 0x60: Info->L1DataSize = 16;    Info->L1DataWays = 8;  Info->L1DataLines = 64;  break;
+            case 0x66: Info->L1DataSize = 8;     Info->L1DataWays = 4;  Info->L1DataLines = 64;  break;
+            case 0x67: Info->L1DataSize = 16;    Info->L1DataWays = 4;  Info->L1DataLines = 64;  break;
+            case 0x68: Info->L1DataSize = 32;    Info->L1DataWays = 4;  Info->L1DataLines = 64;  break;
+            case 0x77: Info->L1InstSize = 16;    Info->L1InstWays = 8;  Info->L1InstLines = 64;  break;
+            case 0x78: Info->L2Size     = 1024;  Info->L2Ways     = 4;  Info->L2Lines     = 64;  break;
+            case 0x79: Info->L2Size     = 128;   Info->L2Ways     = 8;  Info->L2Lines     = 64;  break;
+            case 0x7A: Info->L2Size     = 256;   Info->L2Ways     = 8;  Info->L2Lines     = 64;  break;
+            case 0x7B: Info->L2Size     = 512;   Info->L2Ways     = 8;  Info->L2Lines     = 64;  break;
+            case 0x7C: Info->L2Size     = 1024;  Info->L2Ways     = 8;  Info->L2Lines     = 64;  break;
+            case 0x7D: Info->L2Size     = 2048;  Info->L2Ways     = 8;  Info->L2Lines     = 64;  break;
+            case 0x7E: Info->L2Size     = 256;   Info->L2Ways     = 8;  Info->L2Lines     = 128; break;
+            case 0x7F: Info->L2Size     = 512;   Info->L2Ways     = 2;  Info->L2Lines     = 64;  break;
+            case 0x80: Info->L2Size     = 512;   Info->L2Ways     = 8;  Info->L2Lines     = 64;  break;
+            case 0x81: Info->L2Size     = 128;   Info->L2Ways     = 8;  Info->L2Lines     = 32;  break;
+            case 0x82: Info->L2Size     = 256;   Info->L2Ways     = 8;  Info->L2Lines     = 32;  break;
+            case 0x83: Info->L2Size     = 512;   Info->L2Ways     = 8;  Info->L2Lines     = 32;  break;
+            case 0x84: Info->L2Size     = 1024;  Info->L2Ways     = 8;  Info->L2Lines     = 32;  break;
+            case 0x85: Info->L2Size     = 2048;  Info->L2Ways     = 8;  Info->L2Lines     = 32;  break;
+            case 0x86: Info->L2Size     = 512;   Info->L2Ways     = 8;  Info->L2Lines     = 64;  break;
+            case 0x87: Info->L2Size     = 1024;  Info->L2Ways     = 8;  Info->L2Lines     = 64;  break;
+            case 0x88: Info->L3Size     = 2048;  Info->L3Ways     = 4;  Info->L3Lines     = 64;  break;
+            case 0x89: Info->L3Size     = 4096;  Info->L3Ways     = 4;  Info->L3Lines     = 64;  break;
+            case 0x8A: Info->L3Size     = 8192;  Info->L3Ways     = 4;  Info->L3Lines     = 64;  break;
+            case 0x8D: Info->L3Size     = 3096;  Info->L3Ways     = 12; Info->L3Lines     = 128; break;
+            case 0xD0: Info->L3Size     = 512;   Info->L3Ways     = 4;  Info->L3Lines     = 64;  break;
+            case 0xD1: Info->L3Size     = 1024;  Info->L3Ways     = 4;  Info->L3Lines     = 64;  break;
+            case 0xD2: Info->L3Size     = 2048;  Info->L3Ways     = 4;  Info->L3Lines     = 64;  break;
+            case 0xD6: Info->L3Size     = 1024;  Info->L3Ways     = 8;  Info->L3Lines     = 64;  break;
+            case 0xD7: Info->L3Size     = 2048;  Info->L3Ways     = 8;  Info->L3Lines     = 64;  break;
+            case 0xD8: Info->L3Size     = 4096;  Info->L3Ways     = 8;  Info->L3Lines     = 64;  break;
+            case 0xDC: Info->L3Size     = 1536;  Info->L3Ways     = 12; Info->L3Lines     = 64;  break;
+            case 0xDD: Info->L3Size     = 3072;  Info->L3Ways     = 12; Info->L3Lines     = 64;  break;
+            case 0xDE: Info->L3Size     = 6144;  Info->L3Ways     = 12; Info->L3Lines     = 64;  break;
+            case 0xE2: Info->L3Size     = 2048;  Info->L3Ways     = 16; Info->L3Lines     = 64;  break;
+            case 0xE3: Info->L3Size     = 4096;  Info->L3Ways     = 16; Info->L3Lines     = 64;  break;
+            case 0xE4: Info->L3Size     = 8192;  Info->L3Ways     = 16; Info->L3Lines     = 64;  break;
+            case 0xEA: Info->L3Size     = 12288; Info->L3Ways     = 24; Info->L3Lines     = 64;  break;
+            case 0xEB: Info->L3Size     = 18432; Info->L3Ways     = 24; Info->L3Lines     = 64;  break;
+            case 0xEC: Info->L3Size     = 24576; Info->L3Ways     = 24; Info->L3Lines     = 64;  break;
+
+            default:
+                if (Values[i] != 0)
+                    DebugTrace(L"Unknown value! Values[%d] = 0x%X", i, Values[i]);
+                break;
+        }
+    }
+
+    if (!Info->L1DataSize && !Info->L1InstSize && !Info->L2Size && !Info->L3Size)
+    {
+        DWORD Ways, Partitions, LineSize, Sets;
+        UINT Index, Type, Level, CacheSize;
+
+        DebugTrace(L"Use CPUID Function 04h to query cache params");
+
+        ZeroMemory(CPUInfo, sizeof(CPUInfo));
+
+        for (Index = 0; Index < 4; Index++)
+        {
+            __cpuidex(CPUInfo, 4, Index);
+
+            Ways       = GetBitsDWORD(CPUInfo[1], 22, 31) + 1;
+            Partitions = GetBitsDWORD(CPUInfo[1], 12, 21) + 1;
+            LineSize   = GetBitsDWORD(CPUInfo[1], 0, 11) + 1;
+            Sets       = CPUInfo[2] + 1;
+            CacheSize  = (Ways * Partitions * LineSize * Sets) / 1024;
+            Level      = GetBitsDWORD(CPUInfo[0], 5, 7);
+
+            DebugTrace(L"Ways = %u, Partitions = %u, LineSize = %u, Sets = %u, CacheSize = %u, Level = %u",
+                       Ways, Partitions, LineSize, Sets, CacheSize, Level);
+
+            switch (Level)
+            {
+                case 1:
+                {
+                    Type = GetBitsDWORD(CPUInfo[0], 0, 4);
+
+                    if (Type == 1)
+                    {
+                        Info->L1DataSize  = CacheSize;
+                        Info->L1DataWays  = Ways;
+                        Info->L1DataLines = LineSize;
+                    }
+                    else if (Type == 2)
+                    {
+                        Info->L1InstSize  = CacheSize;
+                        Info->L1InstWays  = Ways;
+                        Info->L1InstLines = LineSize;
+                    }
+                }
+                break;
+
+                case 2:
+                    Info->L2Size  = CacheSize;
+                    Info->L2Ways  = Ways;
+                    Info->L2Lines = LineSize;
+                    break;
+
+                case 3:
+                    Info->L3Size  = CacheSize;
+                    Info->L3Ways  = Ways;
+                    Info->L3Lines = LineSize;
+                    break;
+            }
+        }
+    }
+}
+
+typedef struct
+{
+    WCHAR szMicroarch[MAX_STR_LEN];
+    WCHAR szPackage[MAX_STR_LEN];
+    UINT Technology;
+} INTEL_CPU_INFO;
+
+VOID
+GetCpuInfoIntel(INTEL_CACHE_INFO CacheInfo, INTEL_CPU_INFO *CpuInfo)
+{
+    BYTE PlatformId, Family, Model, Stepping, ExtFamily,
+         ExtModel, BrandId = 0;
+    WCHAR *pMicroarch = L"", *pPackage = L"";
+    WCHAR szCpuName[MAX_STR_LEN];
+    INT LogicalCpuCount, PhysicalCpuCount;
+    UINT Technology = 0;
+    INT CPUInfo[4] = {-1};
+
+    __cpuid(CPUInfo, 1);
+
+    Family = (CPUInfo[0] >> 8) & 0xf;
+    Model = (CPUInfo[0] >> 4) & 0xf;
+    Stepping = CPUInfo[0] & 0xf;
+
+    ExtFamily = (CPUInfo[0] >> 20) & 0xff;
+    ExtModel = (CPUInfo[0] >> 16) & 0xf;
+
+    BrandId = (CPUInfo[1] & 0xff);
+
+    PlatformId = (CPUInfo[0] >> 4) & 0x3;
+
+    GetCPUName(szCpuName, sizeof(szCpuName));
+
+    PhysicalCpuCount = GetPhysicalProcessorsCount();
+    LogicalCpuCount = GetLogicalProcessorsCount();
+
+    DebugTrace(L"Family = 0x%02X, Model = 0x%02X, Stepping = 0x%02X",
+               Family, Model, Stepping);
+    DebugTrace(L"ExtFamily = 0x%02X, ExtModel = 0x%02X",
+               ExtFamily, ExtModel);
+    DebugTrace(L"BrandId = 0x%02X, PlatformId = %d, szCpuName = %s",
+               BrandId, PlatformId, szCpuName);
+    DebugTrace(L"PhysicalCpuCount = %d, LogicalCpuCount = %d",
+               PhysicalCpuCount, LogicalCpuCount);
+
+    switch (Family)
+    {
+        case 0x06:
+        {
+            if ((ExtModel * 16 + Model) >= 0x10)
+            {
+                switch (ExtModel * 16 + Model)
+                {
+                    case 0x16:
+                    {
+                        Technology = 65;
+
+                        if (PhysicalCpuCount == 4)
+                        {
+                            if (wcsstr(szCpuName, L"Xeon"))
+                            {
+                                pMicroarch = L"Clovertown";
+                                pPackage = L"LGA771";
+                            }
+                            else
+                            {
+                                pMicroarch = L"Kentsfield";
+                                pPackage = L"LGA775";
+                            }
+                        }
+                        else if (wcsstr(szCpuName, L"Xeon") && wcsstr(szCpuName, L" 30"))
+                        {
+                            pMicroarch = L"Conroe";
+                            pPackage = L"LGA775";
+                        }
+                        else if (PlatformId == 2 || LogicalCpuCount == 4 || wcsstr(szCpuName, L"Xeon"))
+                        {
+                            pMicroarch = L"Woodcrest";
+                            pPackage = L"LGA771";
+                        }
+                        else if (wcsstr(szCpuName, L"2.93"))
+                        {
+                            pMicroarch = L"Conroe";
+                            pPackage = L"LGA775";
+                        }
+                        else if (PhysicalCpuCount == 2)
+                        {
+                            if (PlatformId == 5)
+                            {
+                                pMicroarch = L"Merom";
+                                pPackage = L"Socket 479";
+                            }
+                            else
+                            {
+                                pPackage = L"LGA775";
+
+                                if (CacheInfo.L2Size <= 1024)
+                                {
+                                    pMicroarch = L"Conroe-1M";
+                                }
+                                else if (CacheInfo.L2Size <= 2048)
+                                {
+                                    pMicroarch = L"Allendale";
+                                }
+                                else
+                                {
+                                    pMicroarch = L"Conroe";
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (PlatformId == 5)
+                            {
+                                pMicroarch = L"Merom-L";
+                                pPackage = L"Socket 479";
+                            }
+                            else
+                            {
+                                pMicroarch = L"Conroe-L";
+                                pPackage = L"LGA775";
+                            }
+                        }
+                    }
+                    break;
+
+                    case 0x17:
+                    {
+                        Technology = 45;
+
+                        if (PhysicalCpuCount == 4)
+                        {
+                            if (wcsstr(szCpuName, L"Xeon") || PlatformId == 6)
+                            {
+                                pMicroarch = L"Harpertown";
+                                pPackage = L"LGA771";
+                            }
+                            else
+                            {
+                                pMicroarch = L"Yorkfield";
+                                pPackage = L"LGA775";
+                            }
+                        }
+                        else if (PlatformId == 7)
+                        {
+                            pMicroarch = L"Penryn";
+                            pPackage = L"Socket P";
+                        }
+                        else
+                        {
+                            pMicroarch = L"Wolfdale";
+                            pPackage = L"LGA775";
+                        }
+                    }
+                    break;
+
+                    case 0x1A: /* Intel Core i7 LGA1366 (45nm) */
+                    case 0x1E: /* Intel Core i5, i7 LGA1156 (45nm) */
+                    case 0x1F: /* Intel Core i5, i7  */
+                    {
+                        Technology = 45;
+
+                        pMicroarch = L"Nehalem";
+                        pPackage = L"LGA1366 or LGA1156";
+                    }
+                    break;
+
+                    case 0x25: /* Intel Core i3, i5, i7 LGA1156 (32nm) */
+                    case 0x2C: /* Intel Core i7 LGA1366 (32nm) 6 Core */
+                    case 0x2E: /* Intel Xeon Processor 7500 series */
+                    {
+                        Technology = 32;
+
+                        pMicroarch = L"Nehalem";
+                        pPackage = L"LGA1366 or LGA1156";
+                    }
+                    break;
+
+                    case 0x1C:
+                        Technology = 45;
+                        break;
+
+                    case 0x2A:
+                    case 0x2D:
+                    {
+                        Technology = 32;
+
+                        if (PlatformId == 2)
+                        {
+                            pMicroarch = L"SandyBridge";
+                            pPackage = L"LGA1155";
+                        }
+                    }
+                    break;
+                }
+            }
+            else
+            {
+                switch (Model)
+                {
+                    case 0x05:
+                    {
+                        Technology = 250;
+
+                        if (CacheInfo.L2Size > 512)
+                        {
+                            pMicroarch = L"Deschutes";
+                            pPackage = L"Slot 2";
+                        }
+                        else if (CacheInfo.L2Size == 512)
+                        {
+                            pMicroarch = L"Deschutes";
+                            pPackage = L"Slot 1";
+                        }
+                        else
+                        {
+                            pMicroarch = L"Covinton";
+                            pPackage = L"Slot 1";
+                        }
+                    }
+                    break;
+
+                    case 0x06:
+                    {
+                        Technology = 250;
+
+                        if ((Stepping == 0x0A || Stepping == 0x0D) && CacheInfo.L2Size == 256)
+                        {
+                            pMicroarch = L"Dixon";
+                            pPackage = L"Mobile Module";
+                        }
+                        else if ((Stepping == 0x0A || Stepping == 0x0D) && CacheInfo.L2Size == 128)
+                        {
+                            pMicroarch = L"Dixon-128K";
+                            pPackage = L"Mobile Module";
+                        }
+                        else
+                        {
+                            pMicroarch = L"Mendocino";
+                            pPackage = L"Socket 370";
+                        }
+                    }
+                    break;
+
+                    case 0x07:
+                    {
+                        Technology = 250;
+
+                        if (CacheInfo.L2Size == 1024)
+                        {
+                            pMicroarch = L"Tanner";
+                            pPackage = L"Slot 2";
+                        }
+                        else
+                        {
+                            pMicroarch = L"Katmai";
+                            pPackage = L"Slot 1";
+                        }
+                    }
+                    break;
+
+                    case 0x08:
+                    {
+                        Technology = 180;
+
+                        if (BrandId == 0x03)
+                        {
+                            pMicroarch = L"Cascades";
+                            pPackage = L"Slot 2";
+                        }
+                        else if (CacheInfo.L2Size == 256 && PlatformId % 2)
+                        {
+                            pMicroarch = L"Coppermine";
+                            pPackage = L"Mobile Module";
+                        }
+                        else if (CacheInfo.L2Size == 256 && PlatformId == 0)
+                        {
+                            pMicroarch = L"Coppermine";
+                            pPackage = L"Slot 1";
+                        }
+                        else if (CacheInfo.L2Size == 256)
+                        {
+                            pMicroarch = L"Coppermine";
+                            pPackage = L"Socket 370";
+                        }
+                        else if (CacheInfo.L2Size <= 128 && PlatformId % 2)
+                        {
+                            pMicroarch = L"Coppermine-128K";
+                            pPackage = L"Mobile Module";
+                        }
+                        else if (CacheInfo.L2Size <= 128)
+                        {
+                            pMicroarch = L"Coppermine-128K";
+                            pPackage = L"Socket 370";
+                        }
+                    }
+                    break;
+
+                    case 0x09:
+                    {
+                        Technology = 130;
+                        pPackage = L"Socket 479";
+
+                        if (CacheInfo.L2Size == 1024)
+                            pMicroarch = L"Banias";
+                        else
+                            pMicroarch = L"Banias-512K";
+                    }
+                    break;
+
+                    case 0x0A:
+                        Technology = 180;
+                        pMicroarch = L"Cascades";
+                        break;
+
+                    case 0x0B:
+                    {
+                        Technology = 130;
+
+                        if (BrandId == 0x07 || BrandId == 0x06)
+                        {
+                            pMicroarch = L"Tualatin";
+                            pPackage = L"Mobile Module";
+                        }
+                        else
+                        {
+                            pMicroarch = L"Tualatin";
+                            pPackage = L"Socket 370";
+                        }
+                    }
+                    break;
+
+                    case 0x0C:
+                    case 0x0D:
+                    {
+                        Technology = 90;
+
+                        pPackage = L"Socket 479";
+
+                        if (CacheInfo.L2Size == 1024)
+                            pMicroarch = L"Dothan-1024K";
+                        else
+                            pMicroarch = L"Dothan";
+                    }
+                    break;
+
+                    case 0x0E:
+                    {
+                        Technology = 65;
+
+                        pPackage = L"Socket 479";
+
+                        if (LogicalCpuCount == 4 || wcsstr(szCpuName, L"Xeon"))
+                            pMicroarch = L"Sossaman";
+                        else if (CacheInfo.L2Size == 1024)
+                            pMicroarch = L"Yonah";
+                        else if (PhysicalCpuCount == 2)
+                            pMicroarch = L"Yonah DC";
+                        else
+                            pMicroarch = L"Yonah SC";
+                    }
+                    break;
+
+                    case 0x0F:
+                    {
+                        Technology = 65;
+
+                        if (PhysicalCpuCount == 4)
+                        {
+                            if (wcsstr(szCpuName, L"Xeon"))
+                            {
+                                pMicroarch = L"Clovertown";
+                                pPackage = L"LGA771";
+                            }
+                            else
+                            {
+                                pMicroarch = L"Kentsfield";
+                                pPackage = L"LGA775";
+                            }
+                        }
+                        else if (wcsstr(szCpuName, L"Xeon") && wcsstr(szCpuName, L" 30"))
+                        {
+                            pMicroarch = L"Conroe";
+                            pPackage = L"LGA775";
+                        }
+                        else if (PlatformId == 2 || LogicalCpuCount == 4 || wcsstr(szCpuName, L"Xeon"))
+                        {
+                            pMicroarch = L"Woodcrest";
+                            pPackage = L"LGA771";
+                        }
+                        else if (wcsstr(szCpuName, L"2.93"))
+                        {
+                            pMicroarch = L"Conroe";
+                            pPackage = L"LGA775";
+                        }
+                        else if (PhysicalCpuCount == 2)
+                        {
+                            if (PlatformId == 5 || PlatformId == 7)
+                            {
+                                pMicroarch = L"Merom";
+                                pPackage = L"Socket 479";
+                            }
+                            else
+                            {
+                                pPackage = L"LGA775";
+
+                                if (CacheInfo.L2Size <= 1024)
+                                    pMicroarch = L"Conroe-1M";
+                                else if (CacheInfo.L2Size <= 2048)
+                                    pMicroarch = L"Allendale";
+                                else
+                                    pMicroarch = L"Conroe";
+                            }
+                        }
+                        else
+                        {
+                            if (PlatformId == 5 || PlatformId == 7)
+                            {
+                                pMicroarch = L"Merom-L";
+                                pPackage = L"Socket 479";
+                            }
+                            else
+                            {
+                                pMicroarch = L"Conroe-L";
+                                pPackage = L"LGA775";
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        break;
+
+        case 0x07:
+            pMicroarch = L"Merced";
+            break;
+
+        case 0x0F:
+        {
+            switch (Model)
+            {
+                case 0x00:
+                case 0x01:
+                {
+                    Technology = 180;
+
+                    if ((BrandId == 0x0B && Model <= 1 && Stepping < 3) || BrandId == 0x0C)
+                    {
+                        pMicroarch = L"Foster MP";
+                        pPackage = L"Socket 603";
+                    }
+                    else if (BrandId == 0x0E || BrandId == 0x0B)
+                    {
+                        pMicroarch = L"Foster";
+                        pPackage = L"Socket 603";
+                    }
+                    else if (CacheInfo.L2Size == 128)
+                    {
+                        pMicroarch = L"Willamette-128K";
+                        pPackage = L"Socket 478";
+                    }
+                    else
+                    {
+                        if (Model == 1)
+                        {
+                            pMicroarch = L"Willamette";
+                            pPackage = L"Socket 478";
+                        }
+                        else
+                        {
+                            pMicroarch = L"Willamette";
+                            pPackage = L"Socket 423";
+                        }
+                    }
+                }
+                break;
+
+                case 0x02:
+                {
+                    Technology = 130;
+
+                    if (PlatformId == 2 || PlatformId == 3)
+                    {
+                        pPackage = L"Socket 478";
+                    }
+                    else if (PlatformId == 4)
+                    {
+                        pPackage = L"LGA775";
+                    }
+                    else
+                    {
+                        pPackage = L"Socket 478 or LGA775";
+                    }
+
+                    if (BrandId == 0x0C)
+                    {
+                        pMicroarch = L"Gallatin";
+                        pPackage = L"Socket 603/604";
+                    }
+                    else if (BrandId == 0x0B)
+                    {
+                        pMicroarch = L"Prestonia";
+                        pPackage = L"Socket 603/604";
+                    }
+                    else if (BrandId == 0x09 && CacheInfo.L3Size == 2048)
+                    {
+                        pMicroarch = L"Gallatin";
+                    }
+                    else if (CacheInfo.L2Size == 256)
+                    {
+                        pMicroarch = L"Northwood-256K";
+                        pPackage = L"Socket 478";
+                    }
+                    else if (CacheInfo.L2Size == 128 && wcsstr(szCpuName, L"Pentium"))
+                    {
+                        pMicroarch = L"Northwood-128K";
+                    }
+                    else if (CacheInfo.L2Size == 128)
+                    {
+                        pMicroarch = L"Northwood-128K";
+                    }
+                    else
+                    {
+                        pMicroarch = L"Northwood";
+                    }
+                }
+                break;
+
+                case 0x03:
+                case 0x04:
+                {
+                    Technology = 90;
+
+                    if (PlatformId == 2 || PlatformId == 3)
+                    {
+                        pPackage = L"Socket 478";
+                    }
+                    else if (PlatformId == 4)
+                    {
+                        pPackage = L"LGA775";
+                    }
+                    else
+                    {
+                        pPackage = L"Socket 478 or LGA775";
+                    }
+
+                    if (wcsstr(szCpuName, L"Pentium") && CacheInfo.L2Size >= 1024 && BrandId != 0xC &&
+                        (PlatformId == 0 || BrandId == 0x0B || wcsstr(szCpuName, L"Xeon")))
+                    {
+                        pPackage = L"Socket 604";
+
+                        if (PhysicalCpuCount == 2)
+                            pMicroarch = L"Paxville DP";
+                        else if (CacheInfo.L2Size == 2048)
+                            pMicroarch = L"Irwindale";
+                        else
+                            pMicroarch = L"Nocona";
+                    }
+                    else if (BrandId == 0x0C || wcsstr(szCpuName, L"Xeon"))
+                    {
+                        pPackage = L"Socket 604";
+
+                        if (PhysicalCpuCount == 2)
+                            pMicroarch = L"Paxville";
+                        else if (CacheInfo.L3Size == 0)
+                            pMicroarch = L"Cranford";
+                        else
+                            pMicroarch = L"Potomac";
+                    }
+                    else if (PhysicalCpuCount == 2)
+                    {
+                        pMicroarch = L"Smithfield";
+                    }
+                    else if (CacheInfo.L2Size == 2048)
+                    {
+                        pMicroarch = L"Prescott-2M";
+                    }
+                    else if (wcsstr(szCpuName, L"Celeron") && CacheInfo.L2Size == 256)
+                    {
+                        pMicroarch = L"Prescott-256K";
+                    }
+                    else if (wcsstr(szCpuName, L"Mobile Celeron") && CacheInfo.L2Size == 512)
+                    {
+                        pMicroarch = L"Prescott-512K";
+                    }
+                    else if (wcsstr(szCpuName, L"Celeron") && CacheInfo.L2Size == 128)
+                    {
+                        pMicroarch = L"Prescott-128K";
+                    }
+                    else
+                    {
+                        pMicroarch = L"Prescott";
+                    }
+                }
+                break;
+
+                case 0x05:
+                {
+                    Technology = 90;
+                    pPackage = L"LGA775";
+                    pMicroarch = L"Tejas";
+                }
+                break;
+
+                case 0x06:
+                {
+                    Technology = 65;
+
+                    if (wcsstr(szCpuName, L"Xeon"))
+                    {
+                        pPackage = L"LGA771";
+                        pMicroarch = L"Dempsey";
+                    }
+                    else
+                    {
+                        pPackage = L"LGA775";
+
+                        if (PhysicalCpuCount == 2)
+                        {
+                            pMicroarch = L"Presler";
+                        }
+                        else if (CacheInfo.L2Size <= 512)
+                        {
+                            pMicroarch = L"Cedar Mill-V";
+                        }
+                        else
+                        {
+                            pMicroarch = L"Cedar Mill";
+                        }
+                    }
+                }
+                break;
+            }
+        }
+        break;
+    }
+
+    wcscpy(CpuInfo->szMicroarch, pMicroarch);
+    wcscpy(CpuInfo->szPackage, pPackage);
+    CpuInfo->Technology  = Technology;
+}
+
 VOID
 CPUIDInfo(VOID)
 {
@@ -325,7 +1314,6 @@ CPUIDInfo(VOID)
     DWORD dwECX, dwEDX;
     INT CPUInfo[4] = {-1};
     CPU_IDS CpuIds = {0};
-    INT Count;
 
     IoAddIcon(IDI_CPU);
     IoAddIcon(IDI_CHECKED);
@@ -348,41 +1336,118 @@ CPUIDInfo(VOID)
 
     GetProcessorIDs(&CpuIds);
 
-    /* Stepping ID */
-    IoAddValueName(1, 0, IDS_CPUID_STEPPINGID);
-    IoSetItemText(L"%d (%xh)",
+    /* Family / Model / Stepping */
+    IoAddValueName(1, 0, IDS_CPUID_MODEL);
+    IoSetItemText(L"%u (%Xh) / %u (%Xh) / %u (%Xh)",
+                  CpuIds.Family, CpuIds.Family,
+                  CpuIds.Model, CpuIds.Model,
                   CpuIds.Stepping, CpuIds.Stepping);
 
-    /* Model */
-    IoAddValueName(1, 0, IDS_CPUID_MODEL);
-    IoSetItemText(L"%d (%xh)",
-                  CpuIds.Model, CpuIds.Model);
+    /* Cores count */
+    IoAddValueName(1, 0, IDS_CPUID_CPU_COUNT);
+    IoSetItemText(L"%d / %d",
+                  GetPhysicalProcessorsCount(),
+                  GetLogicalProcessorsCount());
 
-    /* Family */
-    IoAddValueName(1, 0, IDS_CPUID_FAMILY);
-    IoSetItemText(L"%d (%xh)",
-                  CpuIds.Family, CpuIds.Family);
-
-    /* Physical processors count */
-    Count = GetPhysicalProcessorsCount();
-    if (Count > 0)
-    {
-        IoAddValueName(1, 0, IDS_CPUID_PHYSICAL_COUNT);
-        IoSetItemText(L"%d", Count);
-    }
-
-    /* Logical processors count */
-    Count = GetLogicalProcessorsCount();
-    if (Count > 0)
-    {
-        IoAddValueName(1, 0, IDS_CPUID_LOGICAL_COUNT);
-        IoSetItemText(L"%d", Count);
-    }
-
-    /* Tjmax */
     GetCPUVendor(szText, sizeof(szText));
     if (wcscmp(szText, L"GenuineIntel") == 0)
     {
+        DOUBLE Multiplier = GetCpuMultiplier();
+        DOUBLE BusSpeed = GetCpuBusSpeed(0);
+        LONG MicrocodeRev = GetMicrocodeRevision();
+        BYTE PlatformId = GetPlatformId();
+        INTEL_CACHE_INFO CacheInfo = {0};
+        INTEL_CPU_INFO CpuInfo = {0};
+
+        GetIntelCpuCacheInfo(&CacheInfo);
+        GetCpuInfoIntel(CacheInfo, &CpuInfo);
+
+        /* Package */
+        if (CpuInfo.szPackage[0] != 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_SOCKET);
+            IoSetItemText(L"%s", CpuInfo.szPackage);
+        }
+
+        /* Technology */
+        if (CpuInfo.Technology != 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_TECHNOLOGY);
+            IoSetItemText(L"%u nm", CpuInfo.Technology);
+        }
+
+        /* Microarchitecture */
+        if (CpuInfo.szMicroarch[0] != 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_MICROARCH);
+            IoSetItemText(L"%s", CpuInfo.szMicroarch);
+        }
+
+        /* Platform Id */
+        if (PlatformId > 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_PLATFORM_ID);
+            IoSetItemText(L"%02Xh", PlatformId);
+        }
+
+        /* Microcode Update Revision */
+        if (MicrocodeRev > 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_MICROCODE_REV);
+            IoSetItemText(L"%X", MicrocodeRev);
+        }
+
+        /* Multiplier */
+        if (Multiplier > 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_MULTIPLIER);
+            IoSetItemText(L"%.1fx", Multiplier);
+        }
+
+        /* Bus Speed */
+        if (BusSpeed > 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_BUS_SPEED);
+            IoSetItemText(L"%.2f MHz", BusSpeed);
+        }
+
+        /* Speed */
+        IoAddValueName(1, 0, IDS_CPUID_SPEED);
+        IoSetItemText(L"%.2f MHz", GetCpuSpeed(0));
+
+        /* L1 Instruction Cache */
+        if (CacheInfo.L1InstSize > 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_L1_CODE_CACHE);
+            IoSetItemText(L"%u kB (%u-ways, %u-byte line size)",
+                          CacheInfo.L1InstSize, CacheInfo.L1InstWays, CacheInfo.L1InstLines);
+        }
+
+        /* L1 Data Cache */
+        if (CacheInfo.L1DataSize > 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_L1_DATA_CACHE);
+            IoSetItemText(L"%u kB (%u-ways, %u-byte line size)",
+                          CacheInfo.L1DataSize, CacheInfo.L1DataWays, CacheInfo.L1DataLines);
+        }
+
+        /* L2 Cache */
+        if (CacheInfo.L2Size > 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_L2_CACHE);
+            IoSetItemText(L"%u kB (%u-ways, %u-byte line size)",
+                          CacheInfo.L2Size, CacheInfo.L2Ways, CacheInfo.L2Lines);
+        }
+
+        /* L3 Cache */
+        if (CacheInfo.L3Size > 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_L3_CACHE);
+            IoSetItemText(L"%u kB (%u-ways, %u-byte line size)",
+                          CacheInfo.L3Size, CacheInfo.L3Ways, CacheInfo.L3Lines);
+        }
+
+        /* Tjmax */
         IoAddValueName(1, 3, IDS_CPUID_TJMAX);
         IoSetItemText(L"%d °C", GetTjmaxTemperature(0));
     }

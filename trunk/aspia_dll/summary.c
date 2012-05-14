@@ -413,7 +413,6 @@ ShowSummaryInfo(VOID)
     WCHAR szText[MAX_STR_LEN];
     MEMORYSTATUSEX MemStatus;
     DWORD dwSize;
-    INT Count;
 
     DebugStartReceiving();
 
@@ -510,21 +509,11 @@ ShowSummaryInfo(VOID)
     IoAddValueName(1, 1, IDS_HW_ARCH);
     IoSetItemText(Is64BitCpu() ? L"AMD64/EM64T" : L"x86");
 
-    /* Physical processors count */
-    Count = GetPhysicalProcessorsCount();
-    if (Count > 0)
-    {
-        IoAddValueName(1, 1, IDS_CPUID_PHYSICAL_COUNT);
-        IoSetItemText(L"%d", Count);
-    }
-
-    /* Logical processors count */
-    Count = GetLogicalProcessorsCount();
-    if (Count > 0)
-    {
-        IoAddValueName(1, 1, IDS_CPUID_LOGICAL_COUNT);
-        IoSetItemText(L"%d", Count);
-    }
+    /* Cores count */
+    IoAddValueName(1, 1, IDS_CPUID_CPU_COUNT);
+    IoSetItemText(L"%d / %d",
+                  GetPhysicalProcessorsCount(),
+                  GetLogicalProcessorsCount());
 
     IoAddFooter();
 
