@@ -355,8 +355,6 @@
 #define IDS_CPUID_UNSUPPORTED       369
 #define IDS_CPUID_LOGICAL_COUNT     370
 #define IDS_CPUID_MODEL             371
-#define IDS_CPUID_FAMILY            372
-#define IDS_CPUID_STEPPINGID        373
 #define IDS_CPUID_NAME              374
 
 #define IDS_BAT_ID                  375
@@ -756,7 +754,7 @@
 #define IDS_REPORT_SAVE_ERROR3           775
 #define IDS_SIGNED_FILE                  776
 #define IDS_DRIVER_SEARCH_URL            777
-#define IDS_CPUID_PHYSICAL_COUNT         778
+#define IDS_CPUID_CPU_COUNT              778
 #define IDS_SUPPORTED_ENABLED            779
 #define IDS_SUPPORTED_DISABLED           780
 #define IDS_HDD_INTERFACE                781
@@ -924,6 +922,18 @@
 #define IDS_SYSMON_TEMPERATURE               943
 #define IDS_SYSMON_BATTERY                   944
 #define IDS_CPUID_TJMAX                      945
+#define IDS_CPUID_MICROCODE_REV              946
+#define IDS_CPUID_PLATFORM_ID                947
+#define IDS_CPUID_MULTIPLIER                 948
+#define IDS_CPUID_BUS_SPEED                  949
+#define IDS_CPUID_SPEED                      950
+#define IDS_CPUID_SOCKET                     951
+#define IDS_CPUID_TECHNOLOGY                 952
+#define IDS_CPUID_MICROARCH                  953
+#define IDS_CPUID_L1_CODE_CACHE              954
+#define IDS_CPUID_L1_DATA_CACHE              955
+#define IDS_CPUID_L2_CACHE                   956
+#define IDS_CPUID_L3_CACHE                   957
 
 #define IDS_CAT_SUMMARY           1000
 
