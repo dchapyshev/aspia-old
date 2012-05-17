@@ -838,7 +838,7 @@ HW_MonitorInfo(VOID)
     WCHAR szDevPath[MAX_PATH], szKeyPath[MAX_PATH],
           szDeviceName[MAX_STR_LEN];
     HDEVINFO hDevInfo;
-    INT DeviceIndex = 0;
+    DWORD DeviceIndex = 0;
     BYTE Edid[0x80];
 
     DebugStartReceiving();
@@ -847,7 +847,7 @@ HW_MonitorInfo(VOID)
 
     hDevInfo = SetupDiGetClassDevs(&GUID_DEVCLASS_MONITOR,
                                    0, 0,
-                                   DIGCF_PRESENT);
+                                   DIGCF_PROFILE);
     if (hDevInfo == INVALID_HANDLE_VALUE)
     {
         DebugTrace(L"SetupDiGetClassDevs() falied. Error code = %x",
@@ -857,11 +857,22 @@ HW_MonitorInfo(VOID)
 
     DeviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
 
-    while (SetupDiEnumDeviceInfo(hDevInfo,
-                                 DeviceIndex,
-                                 &DeviceInfoData))
+    while (TRUE)
     {
-        ++DeviceIndex;
+        if (!SetupDiEnumDeviceInfo(hDevInfo,
+                                   DeviceIndex++,
+                                   &DeviceInfoData))
+        {
+            DWORD dwError = GetLastError();
+
+            DebugTrace(L"SetupDiEnumDeviceInfo() failed with error code 0x%08X",
+                       dwError);
+
+            if (dwError != ERROR_NO_MORE_ITEMS)
+                continue;
+            else
+                break;
+        }
 
         if (!SetupDiGetDeviceInstanceId(hDevInfo,
                                         &DeviceInfoData,
@@ -869,6 +880,8 @@ HW_MonitorInfo(VOID)
                                         MAX_PATH,
                                         NULL))
         {
+            DebugTrace(L"SetupDiGetDeviceInstanceId() failed with error code 0x%08X",
+                       GetLastError());
             continue;
         }
 
@@ -897,12 +910,18 @@ HW_MonitorInfo(VOID)
                        L"SYSTEM\\CurrentControlSet\\Enum\\%s\\Device Parameters",
                        szDevPath);
 
+        DebugTrace(L"szDevPath = %s, szDeviceName = %s", szDevPath, szDeviceName);
+
         if (GetBinaryFromRegistry(HKEY_LOCAL_MACHINE,
                                   szKeyPath, L"EDID",
                                   (LPBYTE)&Edid, sizeof(Edid)))
         {
             ParseAndShowEDID(szDeviceName, Edid);
             IoAddFooter();
+        }
+        else
+        {
+            DebugTrace(L"GetBinaryFromRegistry() failed!");
         }
     }
 

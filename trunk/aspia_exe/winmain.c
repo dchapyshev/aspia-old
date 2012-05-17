@@ -1111,7 +1111,12 @@ HandleCommandLine(VOID)
         ptr = lpCmd[Index];
     }
 
-    LoadDriver();
+    ParamsInfo.IsDriverInitialized = LoadDriver();
+
+    if (!ParamsInfo.IsDriverInitialized)
+    {
+        DebugTrace(L"LoadDriver() failed!");
+    }
 
     if (!InitInfoDll())
         return FALSE;
@@ -1381,7 +1386,8 @@ wWinMain(HINSTANCE hInst,
     }
 
     /* Загружаем драйвер режима ядра */
-    if (!LoadDriver())
+    ParamsInfo.IsDriverInitialized = LoadDriver();
+    if (!ParamsInfo.IsDriverInitialized)
     {
         DebugTrace(L"LoadDriver() failed!");
     }

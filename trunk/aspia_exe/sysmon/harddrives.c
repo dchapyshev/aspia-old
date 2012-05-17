@@ -60,6 +60,8 @@ InitHardDrivesSensors(VOID)
         Temperature = GetSmartTemperature(HddDrives->hDrive, Index);
         HddDrives->MaxTemp = HddDrives->MinTemp = Temperature;
 
+        if (HddDrives->MaxTemp == 0) continue;
+
         ++HddSensorsCount;
 
         HddDrives->Next = (PHDD_DRIVES)Alloc(sizeof(HDD_DRIVES));

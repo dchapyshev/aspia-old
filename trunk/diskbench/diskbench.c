@@ -270,10 +270,10 @@ InitDiskBenchDlg(HWND hDlg)
     if (!hDiskImgList)
         return;
 
-    AddIconToImageList(hInstance, hDiskImgList, IDI_START);
-    AddIconToImageList(hInstance, hDiskImgList, IDI_STOP);
-    AddIconToImageList(hInstance, hDiskImgList, IDI_SAVE);
-    AddIconToImageList(hInstance, hDiskImgList, IDI_CLEAR);
+    AddIconToImageList(hInstance, hDiskImgList, 24, IDI_START);
+    AddIconToImageList(hInstance, hDiskImgList, 24, IDI_STOP);
+    AddIconToImageList(hInstance, hDiskImgList, 24, IDI_SAVE);
+    AddIconToImageList(hInstance, hDiskImgList, 24, IDI_CLEAR);
 
     SendMessage(hDiskToolBar,
                 TB_SETIMAGELIST,
