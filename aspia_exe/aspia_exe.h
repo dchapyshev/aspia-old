@@ -47,6 +47,7 @@ typedef struct
 {
     BOOL DebugMode;
 
+    BOOL IsDriverInitialized;
     BOOL IsIoInitialized;
     BOOL IsPortable;
 

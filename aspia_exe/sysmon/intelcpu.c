@@ -6,6 +6,7 @@
  */
 
 #include <aspia.h>
+#include "../aspia_exe.h"
 #include "sysmon.h"
 
 
@@ -48,6 +49,9 @@ InitIntelCpuSensors(VOID)
     WCHAR szText[MAX_STR_LEN] = {0};
     PINTEL_CPUS IntelCpu;
 
+    if (!ParamsInfo.IsDriverInitialized)
+        return FALSE;
+
     CpuSensorsCount = 0;
 
     GetCPUVendor(szText, sizeof(szText));
@@ -72,7 +76,13 @@ InitIntelCpuSensors(VOID)
             IntelCpu->MaxTemp = IntelCpu->MinTemp =
                 GetIntelCpuTemperature(IntelCpu->Index, IntelCpu->Tjmax);
 
-            if (--Count) ++CpuSensorsCount;
+            if (IntelCpu->MaxTemp == 0)
+            {
+                --Count;
+                continue;
+            }
+
+            if (Count) ++CpuSensorsCount;
 
             IntelCpu->Next = (PINTEL_CPUS)Alloc(sizeof(INTEL_CPUS));
             IntelCpu = IntelCpu->Next;
