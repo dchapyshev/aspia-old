@@ -338,13 +338,19 @@ INFO_STRUCT IntelSSDSmartAttribList[] =
     { 0xAA, FALSE, L"Available Reserved Space" },
     { 0xAB, FALSE, L"Program Fail Count" },
     { 0xAC, FALSE, L"Erase Fail Count" },
-    { 0xB8, FALSE, L"End To End Error" },
+    { 0xAE, FALSE, L"Unexpected Power Loss" },
+    { 0xB8, FALSE, L"End To End Error Detection Count" },
+    { 0xBB, FALSE, L"Uncorrectable Error Count" },
     { 0xC0, FALSE, L"Unsafe Shutdown Count" },
     { 0xE1, FALSE, L"Host Writes" },
-    { 0xE8, FALSE, L"Remaining Life" },
+    { 0xE2, FALSE, L"Timed Workload Media Wear" },
+    { 0xE3, FALSE, L"Timed Workload Host Read/Write Ratio" },
+    { 0xE4, FALSE, L"Timed Workload Timer" },
+    { 0xE8, FALSE, L"Available Reserved Space" },
     { 0xE9, FALSE, L"Media Wear Out Indicator" },
-    { 0xF1, FALSE, L"Host Writes" },
-    { 0xF2, FALSE, L"Host Reads" },
+    { 0xF1, FALSE, L"Total LBAs Written" },
+    { 0xF2, FALSE, L"Total LBAs Read" },
+    { 0xF9, FALSE, L"Total NAND Writes" },
     { 0 }
 };
 
@@ -422,16 +428,21 @@ SMART_IDToText(INFO_STRUCT *InfoStruct,
     return FALSE;
 }
 
+#define GENERIC_DISK  0
+#define INTEL_SSD     1
+#define PLEXTOR_SSD   2
+#define SANDFORCE_SSD 3
+#define INDILINX_SSD  4
+
 BOOL
 EnumSmartData(HANDLE hSmartHandle, BYTE bDevNumber, SMART_ENUMDATAPROC lpEnumProc)
 {
-    INFO_STRUCT *InfoStruct;
     GETVERSIONINPARAMS Version;
     SMART_DRIVE_INFO m_stDrivesInfo;
     SMART_RESULT Result;
     HANDLE hHandle;
     IDSECTOR IdInfo = {0};
-    BYTE bIndex, Count;
+    BYTE bIndex, Count, Type;
     BOOL bE1 = FALSE, bE8 = FALSE,
          bE9 = FALSE, bAB = FALSE,
          bD1 = FALSE;
@@ -488,40 +499,87 @@ EnumSmartData(HANDLE hSmartHandle, BYTE bDevNumber, SMART_ENUMDATAPROC lpEnumPro
          strncmp(IdInfo.sModelNumber, " INTEL SSD", 10) == 0))
     {
         DebugTrace(L"Intel SSD detected!");
-        InfoStruct = IntelSSDSmartAttribList;
+        Type = INTEL_SSD;
     }
     /* Plextor SSD */
     else if (strncmp(IdInfo.sModelNumber, "PLEXTOR", 9) == 0)
     {
         DebugTrace(L"Plextor SSD detected!");
-        InfoStruct = PlextorSSDSmartAttribList;
+        Type = PLEXTOR_SSD;
     }
     /* Sandforce SSD */
     else if (bAB)
     {
         DebugTrace(L"Sandforce SSD detected!");
-        InfoStruct = SandforceSSDSmartAttribList;
+        Type = SANDFORCE_SSD;
     }
     /* Indilinx SSD */
     else if (bD1)
     {
         DebugTrace(L"Indilinx SSD detected!");
-        InfoStruct = IndilinxSSDSmartAttribList;
+        Type = INDILINX_SSD;
     }
     /* Generic Disk */
     else
     {
         DebugTrace(L"Generic disk detected!");
-        InfoStruct = SmartAttribList;
+        Type = GENERIC_DISK;
     }
 
     for (bIndex = 0, Count = 0; bIndex < m_stDrivesInfo.m_ucSmartValues; ++bIndex)
     {
         Result.IsCritical =
-            SMART_IDToText(InfoStruct,
+            SMART_IDToText(SmartAttribList,
                            m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId,
                            Result.szName,
                            sizeof(Result.szName));
+
+        switch (Type)
+        {
+            case INTEL_SSD:
+            {
+                DebugTrace(L"Load Intel-specific attributes");
+                Result.IsCritical =
+                    SMART_IDToText(IntelSSDSmartAttribList,
+                                   m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId,
+                                   Result.szName,
+                                   sizeof(Result.szName));
+            }
+            break;
+
+            case PLEXTOR_SSD:
+            {
+                DebugTrace(L"Load Plextor-specific attributes");
+                Result.IsCritical =
+                    SMART_IDToText(PlextorSSDSmartAttribList,
+                                   m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId,
+                                   Result.szName,
+                                   sizeof(Result.szName));
+            }
+            break;
+
+            case SANDFORCE_SSD:
+            {
+                DebugTrace(L"Load SandForce-specific attributes");
+                Result.IsCritical =
+                    SMART_IDToText(SandforceSSDSmartAttribList,
+                                   m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId,
+                                   Result.szName,
+                                   sizeof(Result.szName));
+            }
+            break;
+
+            case INDILINX_SSD:
+            {
+                DebugTrace(L"Load Indilinx-specific attributes");
+                Result.IsCritical =
+                    SMART_IDToText(IndilinxSSDSmartAttribList,
+                                   m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId,
+                                   Result.szName,
+                                   sizeof(Result.szName));
+            }
+            break;
+        }
 
         /* ID */
         Result.dwAttrID = m_stDrivesInfo.m_stSmartInfo[bIndex].bAttribId;
