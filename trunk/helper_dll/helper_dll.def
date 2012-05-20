@@ -81,4 +81,4 @@ ScsiOverAtaEnableSmart
 ScsiOverAtaReadSmartAttributes
 ScsiOverAtaReadSmartThresholds
 ScsiOverAtaEnumSmartData
-EscapePercentSymbols
+GetMemorySizeWithUnit

@@ -1968,6 +1968,10 @@ GetCpuInfoAmd(CACHE_INFO CacheInfo, CPU_INFO *CpuInfo)
             break;
         }
     }
+
+    wcscpy(CpuInfo->szMicroarch, pMicroarch);
+    wcscpy(CpuInfo->szPackage, pPackage);
+    CpuInfo->Technology  = Technology;
 }
 
 VOID

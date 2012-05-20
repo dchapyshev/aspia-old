@@ -3072,45 +3072,6 @@ DMI_MemModuleInfo(VOID)
     DebugEndReceiving();
 }
 
-VOID
-GetMemorySizeWithUnit(DWORD64 MemorySize, BOOL Shift,
-                      WCHAR *pOut, SIZE_T OutSize)
-{
-    DWORD64 Size = Shift ? MemorySize * 1024 : MemorySize;
-    DWORD64 Divider;
-    LPWSTR pUnit;
-
-    if (Size >= ((DWORD64)1024 * (DWORD64)1024 * (DWORD64)1024 * (DWORD64)1024))
-    {
-        Divider = ((DWORD64)1024 * (DWORD64)1024 * (DWORD64)1024 * (DWORD64)1024);
-        pUnit = L"TB";
-    }
-    else if (Size >= ((DWORD64)1024 * (DWORD64)1024 * (DWORD64)1024))
-    {
-        Divider = ((DWORD64)1024 * (DWORD64)1024 * (DWORD64)1024);
-        pUnit = L"GB";
-    }
-    else if (Size >= ((DWORD64)1024 * (DWORD64)1024))
-    {
-        Divider = ((DWORD64)1024 * (DWORD64)1024);
-        pUnit = L"MB";
-    }
-    else if (Size >= (DWORD64)1024)
-    {
-        Divider = ((DWORD64)1024);
-        pUnit = L"kB";
-    }
-    else
-    {
-        Divider = 1;
-        pUnit = L"Bytes";
-    }
-
-    StringCbPrintf(pOut, OutSize, L"%lu ",
-                   (Size / Divider));
-    StringCbCat(pOut, OutSize, pUnit);
-}
-
 VOID CALLBACK
 MemArrayInfoEnumProc(BYTE *pBuf, BYTE Length)
 {

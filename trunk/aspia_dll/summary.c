@@ -111,13 +111,17 @@ HardDrivesInfo(VOID)
                                &TotalNumberOfBytes,
                                &TotalNumberOfFreeBytes))
         {
+            WCHAR szFree[MAX_STR_LEN], szTotal[MAX_STR_LEN];
+
             IoAddItem(1, 2, szResult);
 
-            IoSetItemText(L"%.2f GB (%I64d MB) / %.2f GB (%I64d MB)",
-                          ((DOUBLE)TotalNumberOfFreeBytes.QuadPart / (DOUBLE)(1024 * 1024 * 1024)),
-                          (TotalNumberOfFreeBytes.QuadPart / (1024 * 1024)),
-                          ((DOUBLE)TotalNumberOfBytes.QuadPart / (DOUBLE)(1024 * 1024 * 1024)),
-                          (TotalNumberOfBytes.QuadPart / (1024 * 1024)));
+            GetMemorySizeWithUnit(TotalNumberOfFreeBytes.QuadPart, 0,
+                                  szFree, sizeof(szFree));
+
+            GetMemorySizeWithUnit(TotalNumberOfBytes.QuadPart, 0,
+                                  szTotal, sizeof(szTotal));
+
+            IoSetItemText(L"%s / %s", szFree, szTotal);
         }
         else
         {
