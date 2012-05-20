@@ -1043,28 +1043,28 @@ typedef struct
 
 MS_LICENSIES_INFO MsLicensies[] =
 {
-    {L"Microsoft Windows",     "SOFTWARE\\MICROSOFT\\Windows NT\\CurrentVersion"},
+    {L"Microsoft Windows",     "MICROSOFT\\Windows NT\\CurrentVersion"},
 
-    {L"Microsoft SQL 7.0", "SOFTWARE\\Microsoft\\Microsoft SQL Server\\70\\Registration"},
-    {L"Microsoft SQL Server 2000", "SOFTWARE\\Microsoft\\Microsoft SQL Server\\80\\Registration"},
-    {L"Microsoft SQL Server 2005", "SOFTWARE\\Microsoft\\Microsoft SQL Server\\90\\Registration"},
-    {L"Microsoft SQL Server 2008", "SOFTWARE\\Microsoft\\MSDN\\9.0\\Registration"},
+    {L"Microsoft SQL 7.0", "Microsoft\\Microsoft SQL Server\\70\\Registration"},
+    {L"Microsoft SQL Server 2000", "Microsoft\\Microsoft SQL Server\\80\\Registration"},
+    {L"Microsoft SQL Server 2005", "Microsoft\\Microsoft SQL Server\\90\\Registration"},
+    {L"Microsoft SQL Server 2008", "Microsoft\\MSDN\\9.0\\Registration"},
 
-    {L"Microsoft Office 2010", "SOFTWARE\\Microsoft\\Office\\14.0\\Registration\\{90140000-0057-0000-0000-0000000FF1CE}"},
+    {L"Microsoft Office 2010", "Microsoft\\Office\\14.0\\Registration\\{90140000-0057-0000-0000-0000000FF1CE}"},
 
-    {L"Microsoft Office 2007", "SOFTWARE\\Microsoft\\Office\\12.0\\Registration\\{90120000-0030-0000-0000-0000000FF1CE}"},
-    {L"Microsoft Office 2007", "SOFTWARE\\Microsoft\\Office\\12.0\\Registration\\{90120000-0011-0000-0000-0000000FF1CE}"},
+    {L"Microsoft Office 2007", "Microsoft\\Office\\12.0\\Registration\\{90120000-0030-0000-0000-0000000FF1CE}"},
+    {L"Microsoft Office 2007", "Microsoft\\Office\\12.0\\Registration\\{90120000-0011-0000-0000-0000000FF1CE}"},
 
-    {L"Microsoft Office 2003", "SOFTWARE\\Microsoft\\Office\\11.0\\Registration\\{90170409-6000-11D3-8CFE-0150048383C9}"},
-    {L"Microsoft Office 2003", "SOFTWARE\\Microsoft\\Office\\11.0\\Registration\\{90110419-6000-11D3-8CFE-0150048383C9}"},
+    {L"Microsoft Office 2003", "Microsoft\\Office\\11.0\\Registration\\{90170409-6000-11D3-8CFE-0150048383C9}"},
+    {L"Microsoft Office 2003", "Microsoft\\Office\\11.0\\Registration\\{90110419-6000-11D3-8CFE-0150048383C9}"},
 
-    {L"Microsoft Office XP", "SOFTWARE\\Microsoft\\Office\\10.0\\Registration\\{90280409-6000-11D3-8CFE-0050048383C9}"},
+    {L"Microsoft Office XP", "Microsoft\\Office\\10.0\\Registration\\{90280409-6000-11D3-8CFE-0050048383C9}"},
 
-    {L"Office Web Developer 2007", "SOFTWARE\\Microsoft\\Office\\12.0\\Registration\\{90120000-0021-0000-0000-0000000FF1CE}"},
+    {L"Office Web Developer 2007", "Microsoft\\Office\\12.0\\Registration\\{90120000-0021-0000-0000-0000000FF1CE}"},
 
-    {L"Windows Mobile Device Center 6.1", "SOFTWARE\\Microsoft\\Windows Mobile Device Center\\6.1\\Registration"},
+    {L"Windows Mobile Device Center 6.1", "Microsoft\\Windows Mobile Device Center\\6.1\\Registration"},
 
-    {L"Internet Explorer", "SOFTWARE\\Microsoft\\Internet Explorer\\Registration"},
+    {L"Internet Explorer", "Microsoft\\Internet Explorer\\Registration"},
 
     {0}
 };
@@ -1173,10 +1173,58 @@ GetMSProductKey(BOOL is64, LPSTR lpszKeyPath, LPWSTR lpszKey, INT iSize)
     }
     else
     {
-         GetMSProductKey(TRUE, lpszKeyPath, NULL, 0);
+        GetMSProductKey(TRUE, lpszKeyPath, NULL, 0);
     }
 
     return TRUE;
+}
+
+VOID
+GetMsVsLicensiesFromSubKey(BOOL Is64Key, LPWSTR szPath, LPWSTR lpKey, SIZE_T Size)
+{
+    DWORD dwSamDis = KEY_READ, dwType, dwSize = MAX_PATH;
+    WCHAR szTemp[MAX_PATH] = {0}, szKeyName[MAX_PATH];
+    INT ItemIndex = 0;
+    HKEY hKey, hSubKey;
+
+    if (!IsWindows2000() && Is64Key)
+    {
+        dwSamDis |= KEY_WOW64_64KEY;
+    }
+
+    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, szPath, 0, dwSamDis, &hKey) == ERROR_SUCCESS)
+    {
+        while (RegEnumKeyEx(hKey, ItemIndex, szKeyName, &dwSize,
+                            NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+        {
+            if (RegOpenKey(hKey, szKeyName, &hSubKey) == ERROR_SUCCESS)
+            {
+                dwType = REG_SZ;
+                dwSize = MAX_STR_LEN;
+
+                if (RegQueryValueEx(hSubKey,
+                                    L"PIDKEY",
+                                    NULL,
+                                    &dwType,
+                                    (LPBYTE)szTemp,
+                                    &dwSize) == ERROR_SUCCESS &&
+                    szTemp[0] != 0)
+                {
+                    RegCloseKey(hSubKey);
+                    break;
+                }
+
+                RegCloseKey(hSubKey);
+            }
+
+            dwSize = MAX_PATH;
+            ++ItemIndex;
+        }
+
+        RegCloseKey(hKey);
+    }
+
+    StringCbCopy(lpKey, Size, szTemp);
 }
 
 VOID
@@ -1204,16 +1252,35 @@ GetMsVsLicensies(VOID)
 
     do
     {
+        szTemp[0] = 0;
+
         StringCbPrintf(szPath, sizeof(szPath),
                        L"SOFTWARE\\%s",
                        MsVsLicensies[i].lpKeyPath);
 
-        if (GetStringFromRegistry(TRUE,
-                                  HKEY_LOCAL_MACHINE,
-                                  szPath,
-                                  L"PIDKEY",
-                                  szTemp,
-                                  sizeof(szTemp)/sizeof(WCHAR)))
+        if (!GetStringFromRegistry(TRUE,
+                                   HKEY_LOCAL_MACHINE,
+                                   szPath,
+                                   L"PIDKEY",
+                                   szTemp,
+                                   sizeof(szTemp)/sizeof(WCHAR)) || szTemp[0] == 0)
+        {
+            GetMsVsLicensiesFromSubKey(TRUE, szPath, szTemp, sizeof(szTemp));
+            if (szTemp[0] == 0)
+            {
+                if (!GetStringFromRegistry(FALSE,
+                                           HKEY_LOCAL_MACHINE,
+                                           szPath,
+                                           L"PIDKEY",
+                                           szTemp,
+                                           sizeof(szTemp)/sizeof(WCHAR)) || szTemp[0] == 0)
+                {
+                    GetMsVsLicensiesFromSubKey(FALSE, szPath, szTemp, sizeof(szTemp));
+                }
+            }
+        }
+
+        if (szTemp[0] != 0)
         {
             InsertKeySep(szTemp, szText);
             IoAddItem(0, 0, MsVsLicensies[i].lpProductName);
@@ -1222,8 +1289,7 @@ GetMsVsLicensies(VOID)
     }
     while (MsVsLicensies[++i].lpProductName != 0);
 
-    if (!IsWin64System()) return;
-
+#ifdef _AMD64_
     i = 0;
     do
     {
@@ -1240,44 +1306,7 @@ GetMsVsLicensies(VOID)
         {
             if (szTemp[0] == 0)
             {
-                DWORD dwType, dwSize = MAX_PATH;
-                WCHAR szKeyName[MAX_PATH];
-                INT ItemIndex = 0;
-                HKEY hKey, hSubKey;
-
-                if (RegOpenKey(HKEY_LOCAL_MACHINE,
-                               szPath,
-                               &hKey) == ERROR_SUCCESS)
-                {
-                    while (RegEnumKeyEx(hKey, ItemIndex, szKeyName, &dwSize,
-                           NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
-                    {
-                        if (RegOpenKey(hKey, szKeyName, &hSubKey) == ERROR_SUCCESS)
-                        {
-                            dwType = REG_SZ;
-                            dwSize = MAX_STR_LEN;
-
-                            if (RegQueryValueEx(hSubKey,
-                                                L"PIDKEY",
-                                                NULL,
-                                                &dwType,
-                                                (LPBYTE)szTemp,
-                                                &dwSize) == ERROR_SUCCESS &&
-                                szTemp[0] != 0)
-                            {
-                                RegCloseKey(hSubKey);
-                                break;
-                            }
-
-                            RegCloseKey(hSubKey);
-                        }
-
-                        dwSize = MAX_PATH;
-                        ++ItemIndex;
-                    }
-
-                    RegCloseKey(hKey);
-                }
+                GetMsVsLicensiesFromSubKey(TRUE, szPath, szTemp, sizeof(szTemp));
             }
 
             if (szTemp[0] != 0)
@@ -1289,27 +1318,29 @@ GetMsVsLicensies(VOID)
         }
     }
     while (MsVsLicensies[++i].lpProductName != 0);
+#endif
 }
 
 VOID
-SOFTWARE_LicensesInfo(VOID)
+GetMsLicensies(VOID)
 {
     WCHAR szText[MAX_STR_LEN];
+    CHAR szPath[MAX_PATH];
     INT i = 0;
-
-    DebugStartReceiving();
-
-    IoAddIcon(IDI_CONTACT);
 
     do
     {
+        StringCbPrintfA(szPath, sizeof(szPath),
+                        "SOFTWARE\\%s",
+                        MsLicensies[i].lpKeyPath);
+
         szText[0] = 0;
         if (!GetMSProductKey(FALSE,
-                             MsLicensies[i].lpKeyPath,
+                             szPath,
                              szText, MAX_STR_LEN))
         {
             GetMSProductKey(TRUE,
-                            MsLicensies[i].lpKeyPath,
+                            szPath,
                             szText, MAX_STR_LEN);
         }
         if (szText[0] != 0)
@@ -1319,6 +1350,42 @@ SOFTWARE_LicensesInfo(VOID)
         }
     }
     while (MsLicensies[++i].lpProductName != 0);
+
+#ifdef _AMD64_
+    i = 0;
+    do
+    {
+        StringCbPrintfA(szPath, sizeof(szPath),
+                        "SOFTWARE\\Wow6432Node\\%s",
+                        MsLicensies[i].lpKeyPath);
+
+        szText[0] = 0;
+        if (!GetMSProductKey(FALSE,
+                             szPath,
+                             szText, MAX_STR_LEN))
+        {
+            GetMSProductKey(TRUE,
+                            szPath,
+                            szText, MAX_STR_LEN);
+        }
+        if (szText[0] != 0)
+        {
+            IoAddItem(0, 0, MsLicensies[i].lpProductName);
+            IoSetItemText(szText);
+        }
+    }
+    while (MsLicensies[++i].lpProductName != 0);
+#endif
+}
+
+VOID
+SOFTWARE_LicensesInfo(VOID)
+{
+    DebugStartReceiving();
+
+    IoAddIcon(IDI_CONTACT);
+
+    GetMsLicensies();
 
     /* MS Visual Studio */
     GetMsVsLicensies();
