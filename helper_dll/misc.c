@@ -948,37 +948,41 @@ GetFileExt(LPWSTR lpFileName, LPWSTR lpExt, SIZE_T ExtSize)
     return TRUE;
 }
 
-WCHAR*
-EscapePercentSymbols(WCHAR *pIn)
+VOID
+GetMemorySizeWithUnit(DWORD64 MemorySize, BOOL Shift,
+                      WCHAR *pOut, SIZE_T OutSize)
 {
-    INT i, j, len = SafeStrLen(pIn);
-    INT count = 0;
-    WCHAR *buf;
+    DWORD64 Size = Shift ? MemorySize * 1024 : MemorySize;
+    DWORD64 Divider;
+    LPWSTR pUnit;
 
-    if (len == 0) return NULL;
-
-    /* Подсчитываем количество знаков процента в строке */
-    for (i = 0; i < len; i++)
+    if (Size >= ((DWORD64)1024 * (DWORD64)1024 * (DWORD64)1024 * (DWORD64)1024))
     {
-        if (pIn[i] == L'%')
-            count++;
+        Divider = ((DWORD64)1024 * (DWORD64)1024 * (DWORD64)1024 * (DWORD64)1024);
+        pUnit = L"TB";
+    }
+    else if (Size >= ((DWORD64)1024 * (DWORD64)1024 * (DWORD64)1024))
+    {
+        Divider = ((DWORD64)1024 * (DWORD64)1024 * (DWORD64)1024);
+        pUnit = L"GB";
+    }
+    else if (Size >= ((DWORD64)1024 * (DWORD64)1024))
+    {
+        Divider = ((DWORD64)1024 * (DWORD64)1024);
+        pUnit = L"MB";
+    }
+    else if (Size >= (DWORD64)1024)
+    {
+        Divider = ((DWORD64)1024);
+        pUnit = L"kB";
+    }
+    else
+    {
+        Divider = 1;
+        pUnit = L"Bytes";
     }
 
-    /* Вычисляем количество памяти, которое необходимо для новой строки
-       и выделяем память */
-    buf = (WCHAR*)Alloc((len + count + 1) * sizeof(WCHAR));
-    if (!buf) return NULL;
-
-    /* Копируем строку посимвольно, добавляя после каждого знака
-       процента еще один знак процента */
-    for (i = 0, j = 0; i < len; i++, j++)
-    {
-        buf[j] = pIn[i];
-        if (pIn[i] == L'%')
-            buf[++j] = L'%';
-    }
-
-    buf[j] = 0;
-
-    return buf;
+    StringCbPrintf(pOut, OutSize, L"%.2f ",
+                   ((DOUBLE)Size / (DOUBLE)Divider));
+    StringCbCat(pOut, OutSize, pUnit);
 }

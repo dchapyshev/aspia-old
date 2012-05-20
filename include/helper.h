@@ -768,6 +768,7 @@ BOOL GetStringFromRegistry(BOOL Is64KeyRequired, HKEY hRootKey, LPWSTR lpszPath,
 INT AddIconToImageList(HINSTANCE hInst, HIMAGELIST hImageList, INT IconSize, UINT IconIndex);
 BOOL KillProcess(DWORD pid, BOOL KillTree);
 BOOL GetFileExt(LPWSTR lpFileName, LPWSTR lpExt, SIZE_T ExtSize);
+VOID GetMemorySizeWithUnit(DWORD64 MemorySize, BOOL Shift, WCHAR *pOut, SIZE_T OutSize);
 
 /* NVIDIA GPU Information */
 typedef struct
@@ -885,7 +886,6 @@ BOOL TimeToString(time_t Time, LPWSTR lpTimeStr, SIZE_T Size);
 BOOL GetFileDescription(LPWSTR lpszPath, LPWSTR lpszDesc, SIZE_T Size);
 HICON GetFolderAssocIcon(LPWSTR lpszFolder);
 INT LoadMUIStringF(HINSTANCE hLangInst, UINT ResID, LPWSTR Buffer, INT BufLen);
-WCHAR* EscapePercentSymbols(WCHAR *pIn);
 
 #define LoadMUIString(a, b, c) LoadMUIStringF(DllParams.hLangInst, a, b, c)
 
