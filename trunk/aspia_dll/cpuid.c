@@ -1975,9 +1975,28 @@ GetCpuInfoAmd(CACHE_INFO CacheInfo, CPU_INFO *CpuInfo)
 }
 
 VOID
+GetCpuManufacturer(LPWSTR lpName, SIZE_T Size)
+{
+    WCHAR szVendor[MAX_STR_LEN], *p = L"Unknown";
+
+    GetCPUVendor(szVendor, sizeof(szVendor));
+
+    if (wcscmp(szVendor, L"GenuineIntel") == 0)
+    {
+        p = L"Intel Corporation";
+    }
+    else if (wcscmp(szVendor, L"AuthenticAMD") == 0)
+    {
+        p = L"Advanced Micro Devices, Inc.";
+    }
+
+    StringCbCopy(lpName, Size, p);
+}
+
+VOID
 CPUIDInfo(VOID)
 {
-    WCHAR szText[MAX_STR_LEN];
+    WCHAR szText[MAX_STR_LEN], szVendor[MAX_STR_LEN];
     DWORD dwECX, dwEDX;
     INT CPUInfo[4] = {-1};
     CPU_IDS CpuIds = {0};
@@ -1997,9 +2016,11 @@ CPUIDInfo(VOID)
     }
 
     /* Get CPU Vendor */
-    GetCPUVendor(szText, sizeof(szText));
+    GetCPUVendor(szVendor, sizeof(szVendor));
+    GetCpuManufacturer(szText, sizeof(szText));
+
     IoAddValueName(1, 0, IDS_MANUFACTURER);
-    IoSetItemText(szText);
+    IoSetItemText(L"%s (%s)", szText, szVendor);
 
     GetProcessorIDs(&CpuIds);
 

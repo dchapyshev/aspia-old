@@ -414,7 +414,7 @@ ShowNetAdaptersInfo(VOID)
 VOID
 ShowSummaryInfo(VOID)
 {
-    WCHAR szText[MAX_STR_LEN];
+    WCHAR szText[MAX_STR_LEN], szVendor[MAX_STR_LEN];
     MEMORYSTATUSEX MemStatus;
     DWORD dwSize;
 
@@ -505,9 +505,11 @@ ShowSummaryInfo(VOID)
     }
 
     /* Get CPU Vendor */
-    GetCPUVendor(szText, sizeof(szText));
+    GetCPUVendor(szVendor, sizeof(szVendor));
+    GetCpuManufacturer(szText, sizeof(szText));
+
     IoAddValueName(1, 1, IDS_MANUFACTURER);
-    IoSetItemText(szText);
+    IoSetItemText(L"%s (%s)", szText, szVendor);
 
     /* CPU Architecture */
     IoAddValueName(1, 1, IDS_HW_ARCH);
