@@ -251,9 +251,8 @@ COLUMN_LIST SysFilesColumnList[] =
 {
     { IDS_SYSFILES_NAME,    110 },
     { IDS_SYSFILES_SIZE,    70  },
-    { IDS_SIGNED_FILE,      40  },
-    { IDS_SYSFILES_VERSION, 90  },
-    { IDS_SYSFILES_MANUF,   110 },
+    { IDS_SYSFILES_VERSION, 120  },
+    { IDS_SYSFILES_MANUF,   150 },
     { IDS_SYSFILES_DESC,    230 },
     { 0 }
 };

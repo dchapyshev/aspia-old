@@ -1874,8 +1874,7 @@ FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
 {
     HANDLE hFind = INVALID_HANDLE_VALUE;
     WCHAR szPath[MAX_PATH], szText[MAX_STR_LEN],
-          szFilePath[MAX_PATH], szYes[MAX_STR_LEN],
-          szNo[MAX_STR_LEN];
+          szFilePath[MAX_PATH];
     WIN32_FIND_DATA FindFileData;
     DWORD dwSize, dwHandle;
     LPVOID pData, pResult;
@@ -1887,9 +1886,6 @@ FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
     } *lpTranslate;
 
     DebugStartReceiving();
-
-    LoadMUIString(IDS_YES, szYes, MAX_STR_LEN);
-    LoadMUIString(IDS_NO, szNo, MAX_STR_LEN);
 
     StringCbPrintf(szPath, sizeof(szPath), L"%s\\%s", lpDir, lpExt);
 
@@ -1909,8 +1905,6 @@ FindSysFiles(LPWSTR lpDir, LPWSTR lpExt)
 
         StringCbPrintf(szFilePath, sizeof(szFilePath),
                        L"%s\\%s", lpDir, FindFileData.cFileName);
-
-        IoSetItemText((IsSignedFile(szFilePath) == TRUE) ? szYes : szNo);
 
         dwSize = GetFileVersionInfoSize(szFilePath, &dwHandle);
 
