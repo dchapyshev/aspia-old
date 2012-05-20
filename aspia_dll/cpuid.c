@@ -470,10 +470,78 @@ typedef struct
     UINT L3Size;
     UINT L3Ways;
     UINT L3Lines;
-} INTEL_CACHE_INFO;
+} CACHE_INFO;
 
 VOID
-GetIntelCpuCacheInfo(INTEL_CACHE_INFO *Info)
+GetAmdCpuCacheInfo(CACHE_INFO *Info)
+{
+    BYTE Family, Model, Stepping;
+    INT CPUInfo[4] = {-1};
+
+    __cpuid(CPUInfo, 0x80000005);
+
+    Info->L1DataSize  =  CPUInfo[2] >> 24;
+    Info->L1DataWays  = (CPUInfo[2] >> 16) & 0xFF;
+    Info->L1DataLines =  CPUInfo[2] & 0xFF;
+
+    Info->L1InstSize  =  CPUInfo[3] >> 24;
+    Info->L1InstWays  = (CPUInfo[3] >> 16) & 0xFF;
+    Info->L1InstLines =  CPUInfo[3] & 0xFF;
+
+    __cpuid(CPUInfo, 1);
+
+    Family   = (CPUInfo[0] >> 8) & 0xF;
+    Model    = (CPUInfo[0] >> 4) & 0xF;
+    Stepping =  CPUInfo[0] & 0xF;
+
+    if (Family == 0x06 && Model == 0x03 && Stepping == 0x00)
+        Info->L2Size = 64;
+    else if (Family == 0x06 && Model == 0x04 && Stepping <= 1)
+        Info->L2Size = 256;
+    else
+    {
+        __cpuid(CPUInfo, 0x80000006);
+
+        Info->L2Size  = GetBitsDWORD(CPUInfo[2], 16, 31);
+        Info->L2Lines = GetBitsDWORD(CPUInfo[2], 0, 7) / 1024;
+        switch (GetBitsDWORD(CPUInfo[2], 12, 15))
+        {
+            case 0x0: Info->L2Ways = 0;    break;
+            case 0x1: Info->L2Ways = 1;    break;
+            case 0x2: Info->L2Ways = 2;    break;
+            case 0x4: Info->L2Ways = 4;    break;
+            case 0x6: Info->L2Ways = 8;    break;
+            case 0x8: Info->L2Ways = 16;   break;
+            case 0xA: Info->L2Ways = 32;   break;
+            case 0xB: Info->L2Ways = 48;   break;
+            case 0xC: Info->L2Ways = 64;   break;
+            case 0xD: Info->L2Ways = 96;   break;
+            case 0xE: Info->L2Ways = 128;  break;
+            case 0xF: Info->L2Ways = 0xFF; break;
+        }
+
+        Info->L3Size  = GetBitsDWORD(CPUInfo[3], 18, 31) * 512;
+        Info->L3Lines = GetBitsDWORD(CPUInfo[3], 0, 7) / 1024;
+        switch (GetBitsDWORD(CPUInfo[3], 12, 15))
+        {
+            case 0x0: Info->L3Ways = 0;    break;
+            case 0x1: Info->L3Ways = 1;    break;
+            case 0x2: Info->L3Ways = 2;    break;
+            case 0x4: Info->L3Ways = 4;    break;
+            case 0x6: Info->L3Ways = 8;    break;
+            case 0x8: Info->L3Ways = 16;   break;
+            case 0xA: Info->L3Ways = 32;   break;
+            case 0xB: Info->L3Ways = 48;   break;
+            case 0xC: Info->L3Ways = 64;   break;
+            case 0xD: Info->L3Ways = 96;   break;
+            case 0xE: Info->L3Ways = 128;  break;
+            case 0xF: Info->L3Ways = 0xFF; break;
+        }
+    }
+}
+
+VOID
+GetIntelCpuCacheInfo(CACHE_INFO *Info)
 {
     INT i, Values[16] = {0};
     INT CPUInfo[4] = {-1};
@@ -669,10 +737,10 @@ typedef struct
     WCHAR szMicroarch[MAX_STR_LEN];
     WCHAR szPackage[MAX_STR_LEN];
     UINT Technology;
-} INTEL_CPU_INFO;
+} CPU_INFO;
 
 VOID
-GetCpuInfoIntel(INTEL_CACHE_INFO CacheInfo, INTEL_CPU_INFO *CpuInfo)
+GetCpuInfoIntel(CACHE_INFO CacheInfo, CPU_INFO *CpuInfo)
 {
     BYTE PlatformId, Family, Model, Stepping, ExtFamily,
          ExtModel, BrandId = 0;
@@ -1307,6 +1375,601 @@ GetCpuInfoIntel(INTEL_CACHE_INFO CacheInfo, INTEL_CPU_INFO *CpuInfo)
     CpuInfo->Technology  = Technology;
 }
 
+BOOL
+IsAmdMobileCpu(VOID)
+{
+    INT CPUInfo[4] = {-1};
+
+    __cpuid(CPUInfo, 0x80000007);
+
+    return (((CPUInfo[3] >> 1) & 0x3) == 3) ? TRUE : FALSE;
+}
+
+VOID
+GetCpuInfoAmd(CACHE_INFO CacheInfo, CPU_INFO *CpuInfo)
+{
+    BYTE PlatformId, Family, Model, Stepping, ExtFamily,
+         ExtModel, FullFamily, FullModel, BrandId;
+    WCHAR *pMicroarch = L"", *pPackage = L"";
+    WCHAR szCpuName[MAX_STR_LEN];
+    INT LogicalCpuCount, PhysicalCpuCount;
+    BOOL IsAmdMobile = IsAmdMobileCpu();
+    BOOL IsSempron19, IsAmdVSupported, IsSSE3Supported;
+    UINT Technology = 0;
+    INT CPUInfo[4] = {-1};
+
+    __cpuid(CPUInfo, 0x80000001);
+    IsSempron19 = ((CPUInfo[3] >> 19) & 0x1) ? TRUE : FALSE;
+    IsAmdVSupported = ((CPUInfo[2] >> 2) & 0x1) ? TRUE : FALSE;
+
+    __cpuid(CPUInfo, 1);
+
+    Family = (CPUInfo[0] >> 8) & 0xf;
+    Model = (CPUInfo[0] >> 4) & 0xf;
+    Stepping = CPUInfo[0] & 0xf;
+
+    ExtFamily = (CPUInfo[0] >> 20) & 0xff;
+    ExtModel = (CPUInfo[0] >> 16) & 0xf;
+
+    BrandId = (CPUInfo[1] & 0xff);
+
+    PlatformId = (CPUInfo[0] >> 4) & 0x3;
+
+    IsSSE3Supported = (CPUInfo[2] & 0x1) ? TRUE : FALSE;
+
+    FullFamily = (Family == 0x0F) ? Family + ExtFamily : Family;
+    FullModel  = (Family == 0x0F) ? Model + (ExtModel << 4) : Model;
+
+    GetCPUName(szCpuName, sizeof(szCpuName));
+
+    PhysicalCpuCount = GetPhysicalProcessorsCount();
+    LogicalCpuCount = GetLogicalProcessorsCount();
+
+    DebugTrace(L"Family = 0x%02X, Model = 0x%02X, Stepping = 0x%02X",
+               Family, Model, Stepping);
+    DebugTrace(L"ExtFamily = 0x%02X, ExtModel = 0x%02X",
+               ExtFamily, ExtModel);
+    DebugTrace(L"BrandId = 0x%02X, PlatformId = %d, szCpuName = %s",
+               BrandId, PlatformId, szCpuName);
+    DebugTrace(L"PhysicalCpuCount = %d, LogicalCpuCount = %d",
+               PhysicalCpuCount, LogicalCpuCount);
+
+    if (FullFamily == 0x10)
+    {
+        if (Model == 4)
+        {
+            Technology = 45;
+
+            if (wcsstr(szCpuName, L"Opteron"))
+            {
+                if (wcsstr(szCpuName, L"23") || wcsstr(szCpuName, L"83"))
+                {
+                    pMicroarch = L"Barcelona";
+                    pPackage = L"Socket F/F+";
+                }
+                else
+                {
+                    pMicroarch = L"Budapest";
+                    pPackage = L"Socket AM2/AM2+";
+                }
+            }
+            else
+            {
+                pPackage = L"Socket AM2+/AM3";
+
+                if (CacheInfo.L3Size > 0 && PhysicalCpuCount == 4)
+                    pMicroarch = L"Deneb";
+                else if (PhysicalCpuCount == 4)
+                    pMicroarch = L"Propus";
+                else if (CacheInfo.L3Size > 0 && PhysicalCpuCount == 3)
+                    pMicroarch = L"Heka";
+                else if (PhysicalCpuCount == 3)
+                    pMicroarch = L"Rana";
+            }
+        }
+        else if (Model == 3)
+        {
+            Technology = 45;
+        }
+        else if (Model <= 2)
+        {
+            Technology = 65;
+
+            if (wcsstr(szCpuName, L"Opteron"))
+            {
+                if (wcsstr(szCpuName, L"22") || wcsstr(szCpuName, L"82"))
+                {
+                    pPackage = L"Socket F/F+";
+                    pMicroarch = L"Barcelona";
+                }
+                else
+                {
+                    pPackage = L"Socket AM2/AM2+";
+                    pMicroarch = L"Budapest";
+                }
+            }
+            else
+            {
+                pPackage = L"Socket AM2/AM2+";
+
+                if (CacheInfo.L3Size > 0 && PhysicalCpuCount == 4)
+                    pMicroarch = L"Agena";
+                else if (CacheInfo.L3Size > 0 && PhysicalCpuCount == 3)
+                    pMicroarch = L"Toliman";
+                else if (CacheInfo.L3Size > 0 && PhysicalCpuCount == 2)
+                    pMicroarch = L"Kuma";
+                else if (wcsstr(szCpuName, L"Athlon"))
+                    pMicroarch = L"Lima";
+                else if (wcsstr(szCpuName, L"Sempron"))
+                    pMicroarch = L"Sparta";
+            }
+        }
+    }
+    else
+    {
+        switch (FullFamily)
+        {
+            case 0x05:
+            {
+                switch (Model)
+                {
+                    case 0x00:
+                        pPackage = L"Socket 5/7";
+                        break;
+
+                    case 0x01:
+                    case 0x02:
+                    case 0x03:
+                        Technology = 350;
+                        pPackage = L"Socket 5/7";
+                        break;
+
+                    case 0x06:
+                        Technology = 300;
+                        pPackage = L"Socket 7";
+                        break;
+
+                    case 0x07:
+                        Technology = 250;
+                        pPackage = L"Socket 7";
+                        break;
+
+                    case 0x08:
+                        Technology = 250;
+                        pPackage = L"Socket 7";
+                        break;
+
+                    case 0x09:
+                        Technology = 250;
+                        pPackage = L"Socket 7";
+                        pMicroarch = L"Sharptooth";
+                        break;
+
+                    case 0x0A:
+                        Technology = 130;
+                        break;
+
+                    case 0x0C:
+                    case 0x0D:
+                    {
+                        Technology = 180;
+                        pPackage = L"Socket 7 / Mobile";
+                    }
+                    break;
+                }
+            }
+            break;
+
+            case 0x06:
+            {
+                switch (Model)
+                {
+                    case 0x00:
+                    case 0x01:
+                        Technology = 250;
+                        pPackage = L"Slot A";
+                        pMicroarch = L"K7";
+                        break;
+
+                    case 0x02:
+                        Technology = 180;
+                        pPackage = L"Slot A";
+                        pMicroarch = L"K75";
+                        break;
+
+                    case 0x03:
+                        Technology = 180;
+                        pPackage = L"Socket A";
+                        pMicroarch = L"Spitfire";
+                        break;
+
+                    case 0x04:
+                        Technology = 180;
+                        pPackage = L"Slot A / Socket A";
+                        pMicroarch = L"Thunderbird";
+                        break;
+
+                    case 0x06:
+                        Technology = 180;
+                        pPackage = L"Socket A";
+                        pMicroarch = L"Palomino";
+                        break;
+
+                    case 0x07:
+                        Technology = 180;
+                        pPackage = L"Socket A";
+                        pMicroarch = L"Morgan";
+                        break;
+
+                    case 0x08:
+                    {
+                        Technology = 130;
+                        pPackage = L"Socket A";
+
+                        if (CacheInfo.L2Size == 256)
+                            pMicroarch = L"Thoroughbred";
+                        else if (CacheInfo.L2Size == 64)
+                            pMicroarch = L"Applebred";
+                    }
+                    break;
+
+                    case 0x0A:
+                    {
+                        Technology = 130;
+                        pPackage = L"Socket A";
+
+                        if (IsAmdMobile)
+                        {
+                            if (CacheInfo.L2Size == 512)
+                                pMicroarch = L"Barton";
+                            else
+                                pMicroarch = L"Thorton";
+                        }
+                        else
+                        {
+                            if (CacheInfo.L2Size == 512)
+                                pMicroarch = L"Barton";
+                            else if (CacheInfo.L2Size == 256)
+                                pMicroarch = L"Thorton";
+                            else
+                                pMicroarch = L"Barton";
+                        }
+                    }
+                    break;
+                }
+            }
+            break;
+
+            case 0x0F:
+            {
+                if (ExtModel >= 6)
+                    Technology = 65;
+                else if (ExtModel > 0)
+                    Technology = 90;
+                else
+                    Technology = 130;
+
+                if (ExtModel == 6)
+                {
+                    if (PlatformId == 0)
+                    {
+                        pPackage = L"Socket S1g1";
+
+                        if (BrandId == 0x02 || BrandId == 0x03)
+                            pMicroarch = L"Tyler";
+                    }
+                    else if (PlatformId == 1)
+                    {
+                        pPackage = L"Socket F";
+
+                        if (BrandId == 0x01 || BrandId == 0x04)
+                            pMicroarch = L"Hound";
+                    }
+                    else
+                    {
+                        pPackage = L"Socket AM2";
+
+                        switch (BrandId)
+                        {
+                            case 0x01:
+                                pMicroarch = L"Hound";
+                                break;
+                            case 0x03:
+                                if (PhysicalCpuCount == 2)
+                                    pMicroarch = L"Brisbane";
+                                break;
+                            case 0x04:
+                                if (PhysicalCpuCount == 2)
+                                    pMicroarch = L"Brisbane";
+                                else
+                                    pMicroarch = L"Lima";
+                                break;
+                            case 0x05:
+                                pMicroarch = L"Brisbane";
+                                break;
+                            case 0x06:
+                                pMicroarch = L"Sparta";
+                                break;
+                            case 0x07:
+                                pMicroarch = L"Brisbane";
+                                break;
+                        }
+                    }
+                }
+                else if (ExtModel >= 4)
+                {
+                    if (PlatformId == 0)
+                    {
+                        pPackage = L"Socket S1g1";
+
+                        switch (BrandId)
+                        {
+                            case 0x02:
+                            {
+                                if (PhysicalCpuCount == 2)
+                                {
+                                    if (CacheInfo.L2Size == 512)
+                                        pMicroarch = L"Trinidad";
+                                    else
+                                        pMicroarch = L"Taylor";
+                                }
+                                else
+                                {
+                                    pMicroarch = L"Richmond";
+                                }
+                            }
+                            break;
+
+                            case 0x03:
+                                pMicroarch = L"Keene";
+                                break;
+                        }
+                    }
+                    else if (PlatformId == 1)
+                    {
+                        pPackage = L"Socket F";
+
+                        if (BrandId == 0x01 || BrandId == 0x04)
+                            pMicroarch = L"Santa Rosa";
+                    }
+                    else
+                    {
+                        pPackage = L"Socket AM2";
+
+                        switch (BrandId)
+                        {
+                            case 0x01:
+                                pMicroarch = L"Santa Rosa";
+                                break;
+                            case 0x04:
+                                if (PhysicalCpuCount == 2)
+                                    pMicroarch = L"Windsor";
+                                else
+                                    pMicroarch = L"Orleans";
+                                break;
+                            case 0x05:
+                                pMicroarch = L"Windsor";
+                                break;
+                            case 0x06:
+                                pMicroarch = L"Manila";
+                                break;
+                        }
+                    }
+                }
+                else
+                {
+                    switch (BrandId)
+                    {
+                        case 0x4:
+                        case 0x18:
+                        {
+                            if (CacheInfo.L2Size == 512)
+                            {
+                                if (ExtModel == 0x02)
+                                    pMicroarch = L"Venice";
+                                else if (ExtModel == 0x01)
+                                    pMicroarch = L"Winchester";
+                                else if (Model == 0x04 || Model == 0x07)
+                                    pMicroarch = L"ClawHammer";
+                                else if (Model == 0x08 || Model == 0x0B || Model == 0x0C ||
+                                         Model == 0x0E || Model == 0x0F)
+                                     pMicroarch = L"NewCastle";
+
+                            }
+                            else
+                            {
+                                if (ExtModel > 0)
+                                    pMicroarch = L"San Diego";
+                                else
+                                {
+                                    if (Model == 0x04 || Model == 0x0C || Model == 0x0E)
+                                        pMicroarch = L"ClawHammer";
+                                    else
+                                        pMicroarch = L"SledgeHammer";
+                                }
+                            }
+                        }
+                        break;
+
+                        case 0x05:
+                        {
+                            if (CacheInfo.L2Size == 512 && FullModel == 0x23)
+                                pMicroarch = L"Toledo-512K";
+                            else if (CacheInfo.L2Size == 512)
+                                pMicroarch = L"Manchester";
+                            else
+                                pMicroarch = L"Toledo";
+                        }
+                        break;
+
+                        case 0x06:
+                            pMicroarch = L"Toledo";
+                            break;
+
+                        case 0x08:
+                            if (ExtModel > 0)
+                                pMicroarch = L"Newark";
+                            else if (Model == 4)
+                                pMicroarch = L"ClawHammer";
+                            else
+                                pMicroarch = L"Odessa";
+                            break;
+
+                        case 0x09:
+                            if (ExtModel > 0 && CacheInfo.L2Size == 1024)
+                                pMicroarch = L"Lancaster";
+                            else if (ExtModel > 0)
+                                pMicroarch = L"Oakville";
+                            else if (Model == 0x04)
+                                pMicroarch = L"ClawHammer";
+                            else
+                                pMicroarch = L"Odessa";
+                            break;
+
+                        case 0x0A:
+                        case 0x0B:
+                            if (IsAmdVSupported)
+                                pMicroarch = L"Richmond";
+                            else
+                                pMicroarch = L"Lancaster";
+                            break;
+
+                        case 0x0C:
+                        case 0x0D:
+                        case 0x0E:
+                        case 0x0F:
+                            if (ExtModel >= 0x01)
+                                pMicroarch = L"Venus";
+                            else if (ExtModel == 0x00)
+                                pMicroarch = L"SledgeHammer";
+                            break;
+
+                        case 0x10:
+                        case 0x11:
+                        case 0x12:
+                        case 0x13:
+                            if (ExtModel >= 0x01)
+                                pMicroarch = L"Troy";
+                            else if (ExtModel == 0x00)
+                                pMicroarch = L"SledgeHammer";
+                            break;
+
+                        case 0x14:
+                        case 0x15:
+                        case 0x16:
+                        case 0x17:
+                            if (ExtModel >= 0x01)
+                                pMicroarch = L"Athens";
+                            else if (ExtModel == 0x00)
+                                pMicroarch = L"SledgeHammer";
+                            break;
+
+                        case 0x1D:
+                        case 0x1E:
+                            pMicroarch = L"Dublin";
+                            break;
+
+                        case 0x20:
+                            if (ExtModel > 0x00)
+                                pMicroarch = L"Palermo";
+                            else
+                                pMicroarch = L"Paris";
+                            break;
+
+                        case 0x21:
+                            if (ExtModel == 0x02)
+                                pMicroarch = L"Albany";
+                            else if (ExtModel == 0x01)
+                                pMicroarch = L"Georgetown";
+                            else
+                                pMicroarch = L"Dublin";
+                            break;
+
+                        case 0x22:
+                        {
+                            switch (FullModel)
+                            {
+                                case 0x0C:
+                                    pMicroarch = L"Paris";
+                                    break;
+                                case 0x1F:
+                                    if (CacheInfo.L2Size == 128)
+                                        pMicroarch = L"Winchester-128K";
+                                    else if (CacheInfo.L2Size == 256)
+                                        pMicroarch = L"Winchester-256K";
+                                    else
+                                        pMicroarch = L"Winchester";
+                                    break;
+                                case 0x1C:
+                                case 0x2C:
+                                    pMicroarch = L"Palermo";
+                                    break;
+                            }
+                        }
+                        break;
+
+                        case 0x23:
+                            if (ExtModel == 0x02)
+                                pMicroarch = L"Roma";
+                            else if (ExtModel == 0x01)
+                                pMicroarch = L"Sonora";
+                            else
+                                pMicroarch = L"Dublin";
+                            break;
+
+                        case 0x24:
+                            if (ExtModel > 0x00)
+                                pMicroarch = L"San Diego";
+                            else
+                                pMicroarch = L"SledgeHammer";
+                            break;
+
+                        case 0x26:
+                            if (ExtModel > 0)
+                            {
+                                if (Is64BitCpu() || IsSSE3Supported)
+                                    pMicroarch = L"Palermo";
+                                else
+                                    pMicroarch = L"Victoria";
+                            }
+                            else
+                                pMicroarch = L"Paris";
+                            break;
+
+                        case 0x29:
+                        case 0x2C:
+                        case 0x2D:
+                        case 0x2E:
+                        case 0x2F:
+                        case 0x38:
+                            pMicroarch = L"Denmark";
+                            break;
+
+                        case 0x2A:
+                        case 0x30:
+                        case 0x31:
+                        case 0x32:
+                        case 0x33:
+                        case 0x39:
+                            pMicroarch = L"Italy";
+                            break;
+
+                        case 0x2B:
+                        case 0x34:
+                        case 0x35:
+                        case 0x36:
+                        case 0x37:
+                        case 0x3A:
+                            pMicroarch = L"Egypt";
+                            break;
+                    }
+                }
+            }
+            break;
+        }
+    }
+}
+
 VOID
 CPUIDInfo(VOID)
 {
@@ -1356,8 +2019,8 @@ CPUIDInfo(VOID)
         DOUBLE BusSpeed = GetCpuBusSpeed(0);
         LONG MicrocodeRev = GetMicrocodeRevision();
         BYTE PlatformId = GetPlatformId();
-        INTEL_CACHE_INFO CacheInfo = {0};
-        INTEL_CPU_INFO CpuInfo = {0};
+        CACHE_INFO CacheInfo = {0};
+        CPU_INFO CpuInfo = {0};
 
         GetIntelCpuCacheInfo(&CacheInfo);
         GetCpuInfoIntel(CacheInfo, &CpuInfo);
@@ -1450,6 +2113,71 @@ CPUIDInfo(VOID)
         /* Tjmax */
         IoAddValueName(1, 3, IDS_CPUID_TJMAX);
         IoSetItemText(L"%d °C", GetTjmaxTemperature(0));
+    }
+    else if (wcscmp(szText, L"AuthenticAMD") == 0)
+    {
+        CACHE_INFO CacheInfo = {0};
+        CPU_INFO CpuInfo = {0};
+
+        GetAmdCpuCacheInfo(&CacheInfo);
+        GetCpuInfoAmd(CacheInfo, &CpuInfo);
+
+        /* Package */
+        if (CpuInfo.szPackage[0] != 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_SOCKET);
+            IoSetItemText(L"%s", CpuInfo.szPackage);
+        }
+
+        /* Technology */
+        if (CpuInfo.Technology != 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_TECHNOLOGY);
+            IoSetItemText(L"%u nm", CpuInfo.Technology);
+        }
+
+        /* Microarchitecture */
+        if (CpuInfo.szMicroarch[0] != 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_MICROARCH);
+            IoSetItemText(L"%s", CpuInfo.szMicroarch);
+        }
+
+        /* Speed */
+        IoAddValueName(1, 0, IDS_CPUID_SPEED);
+        IoSetItemText(L"%.2f MHz", GetCpuSpeed(0));
+
+        /* L1 Instruction Cache */
+        if (CacheInfo.L1InstSize > 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_L1_CODE_CACHE);
+            IoSetItemText(L"%u kB (%u-ways, %u-byte line size)",
+                          CacheInfo.L1InstSize, CacheInfo.L1InstWays, CacheInfo.L1InstLines);
+        }
+
+        /* L1 Data Cache */
+        if (CacheInfo.L1DataSize > 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_L1_DATA_CACHE);
+            IoSetItemText(L"%u kB (%u-ways, %u-byte line size)",
+                          CacheInfo.L1DataSize, CacheInfo.L1DataWays, CacheInfo.L1DataLines);
+        }
+
+        /* L2 Cache */
+        if (CacheInfo.L2Size > 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_L2_CACHE);
+            IoSetItemText(L"%u kB (%u-ways, %u-byte line size)",
+                          CacheInfo.L2Size, CacheInfo.L2Ways, CacheInfo.L2Lines);
+        }
+
+        /* L3 Cache */
+        if (CacheInfo.L3Size > 0)
+        {
+            IoAddValueName(1, 0, IDS_CPUID_L3_CACHE);
+            IoSetItemText(L"%u kB (%u-ways, %u-byte line size)",
+                          CacheInfo.L3Size, CacheInfo.L3Ways, CacheInfo.L3Lines);
+        }
     }
 
     IoAddFooter();

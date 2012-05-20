@@ -165,7 +165,7 @@ ShowMonitorsInfo(VOID)
 
     hDevInfo = SetupDiGetClassDevs(&GUID_DEVCLASS_MONITOR,
                                    0, 0,
-                                   DIGCF_PRESENT);
+                                   DIGCF_PROFILE);
     if (hDevInfo == INVALID_HANDLE_VALUE)
         return;
 
