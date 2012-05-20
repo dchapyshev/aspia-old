@@ -30,6 +30,7 @@ INT GetPhysicalProcessorsCount(VOID);
 VOID ShowIEShortInfo(INT IconIndex);
 BOOL GetCPUName(LPWSTR lpszCpuName, SIZE_T Size);
 VOID GetCPUVendor(LPWSTR lpszCpuVendor, SIZE_T Size);
+VOID GetCpuManufacturer(LPWSTR lpName, SIZE_T Size);
 BOOL Is64BitCpu(VOID);
 BOOL SMBIOS_GetMainboardName(LPWSTR lpName, SIZE_T NameSize, LPWSTR lpManuf, SIZE_T ManufSize);
 BOOL GetMSProductKey(BOOL is64, LPSTR lpszKeyPath, LPWSTR lpszKey, INT iSize);
