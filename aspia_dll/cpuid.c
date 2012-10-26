@@ -228,13 +228,17 @@ GetLogicalProcessorsCount(VOID)
         }
         else
         {
-            logical_count = CPUInfo_B[1];
+            logical_count = GetBitsDWORD(CPUInfo_B[1], 0, 15);
 
             __cpuidex(CPUInfo_B, 0xB, 1);
-            physical_count = CPUInfo_B[1];
+            physical_count = GetBitsDWORD(CPUInfo_B[1], 0, 15);
 
             logical_count =
-                (logical_count * physical_count) / 2;
+                (logical_count * physical_count);
+
+            /* HACK :( */
+            if (logical_count != physical_count)
+                logical_count /= 2;
         }
     }
 
@@ -248,7 +252,7 @@ GetPhysicalProcessorsCount(VOID)
     INT CPUInfo_A[4] = {-1};
     INT CPUInfo_B[4] = {-1};
     INT CPUInfo[4] = {-1};
-    INT max, physical_count;
+    INT max, physical_count = 1;
 
     __cpuid(CPUInfo, 0);
     max = CPUInfo[0];
@@ -271,13 +275,18 @@ GetPhysicalProcessorsCount(VOID)
         }
         else
         {
+            INT logical_count = GetBitsDWORD(CPUInfo_B[1], 0, 15);
+
             __cpuidex(CPUInfo_B, 0xB, 1);
-            physical_count = CPUInfo_B[1] / 2;
+            physical_count = GetBitsDWORD(CPUInfo_B[1], 0, 15);
+
+            logical_count =
+                (logical_count * physical_count);
+
+            /* HACK :( */
+            if (logical_count != physical_count)
+                physical_count /= 2;
         }
-    }
-    else
-    {
-        physical_count = 1;
     }
 
     return physical_count;

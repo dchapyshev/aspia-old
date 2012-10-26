@@ -526,7 +526,14 @@ QueryEventMessages(LPWSTR lpMachineName,
 
                 GetEventMessage(lpSourceLogName, lpSourceName,
                                 pevlr, szEventText, sizeof(szEventText));
-                IoSetItemText(szEventText);
+                __try
+                {
+                    IoSetItemText(szEventText);
+                }
+                __except(EXCEPTION_EXECUTE_HANDLER)
+                {
+                    IoSetItemText(L"-");
+                }
             }
 
             dwRead -= pevlr->Length;

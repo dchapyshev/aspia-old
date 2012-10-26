@@ -1116,6 +1116,7 @@ BEGIN
     IDS_CPUID_L1_DATA_CACHE, "Кеш L1 данных"
     IDS_CPUID_L2_CACHE, "Кеш L2"
     IDS_CPUID_L3_CACHE, "Кеш L3"
+    IDS_TYPE_XML, "XML-файл (*.xml)"
 
     IDS_CAT_SUMMARY, "Общая информация"
 

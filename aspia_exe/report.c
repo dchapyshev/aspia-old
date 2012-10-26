@@ -101,26 +101,61 @@ ReportAddNavigationMenu(BOOL IsSaveAll, CATEGORY_LIST *List)
     while (List[++Index].StringID != 0);
 }
 
+BOOL
+IsChildChecked(CATEGORY_LIST *List)
+{
+    SIZE_T Index = 0;
+    BOOL result = FALSE;
+
+    do
+    {
+        if (List[Index].Checked)
+            return TRUE;
+
+        if (List[Index].Child)
+            result = IsChildChecked(List[Index].Child);
+
+        if (result) return TRUE;
+    }
+    while (List[++Index].StringID != 0);
+
+    return result;
+}
+
 static BOOL
-ReportAction(LPWSTR lpszRootName, BOOL IsSaveAll, CATEGORY_LIST *List)
+ReportAction(INT Depth, LPWSTR lpszRootName, BOOL IsSaveAll, CATEGORY_LIST *List)
 {
     WCHAR szText[MAX_STR_LEN], szStatus[MAX_STR_LEN];
     HICON hIcon = NULL;
     SIZE_T Index = 0;
     BOOL Result = TRUE;
+    BOOL Child;
     INT Count = 0;
 
     do
     {
         if (GetCanceledState()) return FALSE;
 
-        if (List[Index].Checked || IsSaveAll)
-        {
-            LoadMUIStringF(hLangInst, List[Index].StringID, szText, MAX_STR_LEN);
+        LoadMUIStringF(hLangInst, List[Index].StringID, szText, MAX_STR_LEN);
 
+        Child = (IoGetTarget() == IO_TARGET_XML && List[Index].Child && IsChildChecked(List[Index].Child));
+        if (Child)
+        {
             IoWriteTableTitle(szText,
                               List[Index].StringID,
-                              SettingsInfo.IsAddContent);
+                              FALSE,
+                              Depth);
+        }
+
+        if (List[Index].Checked || IsSaveAll)
+        {
+            if (!Child)
+            {
+                IoWriteTableTitle(szText,
+                                  List[Index].StringID,
+                                  SettingsInfo.IsAddContent,
+                                  Depth);
+            }
 
             if (hStatusDlg)
             {
@@ -149,7 +184,12 @@ ReportAction(LPWSTR lpszRootName, BOOL IsSaveAll, CATEGORY_LIST *List)
             else
             {
                 DestroyIcon(hIcon);
-                Result = ReportAction(szText, IsSaveAll, List[Index].Child);
+                Result = ReportAction(Depth + 1, szText, IsSaveAll, List[Index].Child);
+            }
+
+            if (List[Index].Checked || IsSaveAll || Child)
+            {
+                IoWriteCategoryEnd(Depth);
             }
 
             ++Count;
@@ -169,6 +209,8 @@ GetIoTargetById(UINT id)
     {
         case IDS_TYPE_HTML:
             return IO_TARGET_HTML;
+        case IDS_TYPE_XML:
+            return IO_TARGET_XML;
         case IDS_TYPE_TEXT:
             return IO_TARGET_TXT;
         case IDS_TYPE_CSV:
@@ -217,7 +259,7 @@ ReportThread(IN LPVOID lpParameter)
         IoWriteEndContentTable();
     }
 
-    if (!ReportAction(NULL, IsSaveAll, RootCategoryList))
+    if (!ReportAction(0, NULL, IsSaveAll, RootCategoryList))
     {
         IoCloseReport();
         DeleteFile(SettingsInfo.szReportPath);
@@ -316,6 +358,8 @@ GetIoTargetByFileExt(LPWSTR lpPath)
         return IO_TARGET_HTML;
     //else if (wcscmp(szExt, L"jsn") == 0)
         //return IO_TARGET_JSON;
+    else if (wcscmp(szExt, L"xml") == 0)
+        return IO_TARGET_XML;
     else if (wcscmp(szExt, L"ini") == 0)
         return IO_TARGET_INI;
     else if (wcscmp(szExt, L"txt") == 0)
@@ -335,6 +379,8 @@ GetIdByIoTarget(UINT id)
     {
         case IO_TARGET_HTML:
             return IDS_TYPE_HTML;
+        case IO_TARGET_XML:
+            return IDS_TYPE_XML;
         case IO_TARGET_TXT:
             return IDS_TYPE_TEXT;
         case IO_TARGET_CSV:
@@ -396,11 +442,15 @@ ReportCategoryInfo(IN UINT Category,
 
                 IoWriteTableTitle(szText,
                                   List[Index].StringID,
-                                  FALSE);
+                                  FALSE,
+                                  0);
                 IoWriteBeginTable();
                 IoAddColumnsList(List[Index].ColumnList, 0, 0);
                 List[Index].InfoFunc();
                 IoWriteEndTable();
+
+                if (IoGetTarget() == IO_TARGET_XML)
+                    IoWriteCategoryEnd(0);
                 return;
             }
         }
@@ -690,6 +740,9 @@ GetReportExtById(UINT id, LPWSTR lpExt, SIZE_T Size)
         case IDS_TYPE_HTML:
             szExt = L".htm";
             break;
+        case IDS_TYPE_XML:
+            szExt = L".xml";
+            break;
         case IDS_TYPE_TEXT:
             szExt = L".txt";
             break;
@@ -726,8 +779,7 @@ ReportSaveFileDialog(HWND hDlg, LPWSTR lpszPath, SIZE_T PathSize)
     saveas.lStructSize     = sizeof(OPENFILENAME);
     saveas.hwndOwner       = hDlg;
     saveas.hInstance       = hInstance;
-    //saveas.lpstrFilter     = L"HTML File (*.htm)\0*.htm\0RTF File (*.rtf)\0*.rtf\0Text File (*.txt)\0*.txt\0JSON File (*.jsn)\0*.jsn\0INI File (*.ini)\0*.ini\0CSV File (*.csv)\0*.csv\0\0";
-    saveas.lpstrFilter     = L"HTML File (*.htm)\0*.htm\0RTF File (*.rtf)\0*.rtf\0Text File (*.txt)\0*.txt\0INI File (*.ini)\0*.ini\0CSV File (*.csv)\0*.csv\0\0";
+    saveas.lpstrFilter     = L"HTML File (*.htm)\0*.htm\0XML File (*.xml)\0*.xml\0RTF File (*.rtf)\0*.rtf\0Text File (*.txt)\0*.txt\0INI File (*.ini)\0*.ini\0CSV File (*.csv)\0*.csv\0\0";
     saveas.lpstrFile       = szPath;
     saveas.nMaxFile        = MAX_PATH;
     saveas.lpstrInitialDir = NULL;
@@ -1043,6 +1095,7 @@ ReportWindowInitControls(HWND hwnd)
     SendMessage(hComboBox, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
 
     AddFileTypeToComboBox(hComboBox, IDS_TYPE_HTML);
+    AddFileTypeToComboBox(hComboBox, IDS_TYPE_XML);
     AddFileTypeToComboBox(hComboBox, IDS_TYPE_TEXT);
     AddFileTypeToComboBox(hComboBox, IDS_TYPE_CSV);
     //AddFileTypeToComboBox(hComboBox, IDS_TYPE_JSON);

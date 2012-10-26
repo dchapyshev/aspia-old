@@ -30,6 +30,8 @@ AspiaDllInitialize(ASPIA_DLL_PARAMS *Params)
 {
     if (!Params) return FALSE;
 
+    DllParams.IsDriverInitialized = Params->IsDriverInitialized;
+
     DllParams.ELogShowError   = Params->ELogShowError;
     DllParams.ELogShowInfo    = Params->ELogShowInfo;
     DllParams.ELogShowWarning = Params->ELogShowWarning;

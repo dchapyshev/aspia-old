@@ -365,6 +365,12 @@ IoAddHeaderString(INT Indent, INT IconIndex, LPWSTR pText, ...)
             AppendStringToFile(L"</td><td>&nbsp;</td></tr>\r\n");
             break;
 
+        case IO_TARGET_XML:
+            AppendStringToFile(L"\t<datarow><fieldvalue>");
+            AppendStringToFile(ptr);
+            AppendStringToFile(L"</fieldvalue><fieldvalue>&nbsp;</fieldvalue></datarow>\r\n");
+            break;
+
         case IO_TARGET_CSV:
             AppendStringToFile(L"\r\n\r\n");
             AppendStringToFile(ptr);
@@ -442,6 +448,12 @@ IoAddItem(INT Indent, INT IconIndex, LPWSTR pText, ...)
             AppendStringToFile(L"\r\n\t<tr><td>");
             AppendStringToFile(ptr);
             AppendStringToFile(L"</td>");
+            break;
+
+        case IO_TARGET_XML:
+            AppendStringToFile(L"\r\n\t<datarow><fieldvalue>");
+            AppendStringToFile(ptr);
+            AppendStringToFile(L"</fieldvalue>");
             break;
 
         case IO_TARGET_CSV:
@@ -526,6 +538,17 @@ IoSetItemText(LPWSTR pText, ...)
 
             if (IoGetColumnsCount() == CurrentColumn + 1)
                 AppendStringToFile(L"</tr>");
+        }
+        break;
+
+        case IO_TARGET_XML:
+        {
+            AppendStringToFile(L"<fieldvalue>");
+            AppendStringToFile(ptr);
+            AppendStringToFile(L"</fieldvalue>");
+
+            if (IoGetColumnsCount() == CurrentColumn + 1)
+                AppendStringToFile(L"</datarow>");
         }
         break;
 
@@ -620,6 +643,10 @@ IoReportBeginColumn(VOID)
         case IO_TARGET_HTML:
             AppendStringToFile(L"\r\n\t<tr>");
             break;
+
+        case IO_TARGET_XML:
+            AppendStringToFile(L"\r\n\t");
+            break;
     }
 }
 
@@ -630,6 +657,10 @@ IoReportEndColumn(VOID)
     {
         case IO_TARGET_HTML:
             AppendStringToFile(L"</tr>\r\n");
+            break;
+
+        case IO_TARGET_XML:
+            AppendStringToFile(L"\r\n");
             break;
 
         case IO_TARGET_RTF:
@@ -648,6 +679,10 @@ IoReportWriteColumnString(LPWSTR lpszString)
     {
         case IO_TARGET_HTML:
             pFormat = L"<td class='c'>%s</td>";
+            break;
+
+        case IO_TARGET_XML:
+            pFormat = L"<fieldname>%s</fieldname>";
             break;
 
         case IO_TARGET_CSV:
@@ -738,6 +773,7 @@ IoAddColumnsList(COLUMN_LIST *List, LPWSTR lpCategoryName, LPWSTR lpIniPath)
             break;
 
             case IO_TARGET_HTML:
+            case IO_TARGET_XML:
             case IO_TARGET_CSV:
             case IO_TARGET_TXT:
             case IO_TARGET_INI:
@@ -833,6 +869,10 @@ IoCreateReport(LPWSTR lpszFile)
     {
         AppendStringToFile(lpszHtmlHeader);
     }
+    else if (IoTarget == IO_TARGET_XML)
+    {
+        AppendStringToFile(L"<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>\r\n<computeraudit>");
+    }
     else if (IoTarget == IO_TARGET_RTF)
     {
         WCHAR szText[MAX_STR_LEN], szCodePage[MAX_STR_LEN];
@@ -871,6 +911,10 @@ IoCloseReport(VOID)
     else if (IoTarget == IO_TARGET_JSON)
     {
         AppendStringToFile(L"\n}");
+    }
+    else if (IoTarget == IO_TARGET_XML)
+    {
+        AppendStringToFile(L"\r\n</computeraudit>");
     }
 
     CloseHandle(hReport);
@@ -917,7 +961,7 @@ IoReportWriteItemString(LPWSTR lpszString, BOOL bIsHeader)
 }
 
 VOID
-IoWriteTableTitle(LPWSTR lpszTitle, UINT StringID, BOOL WithContentTable)
+IoWriteTableTitle(LPWSTR lpszTitle, UINT StringID, BOOL WithContentTable, INT Depth)
 {
     WCHAR szText[MAX_STR_LEN * 5] = {0};
 
@@ -948,6 +992,12 @@ IoWriteTableTitle(LPWSTR lpszTitle, UINT StringID, BOOL WithContentTable)
             AppendStringToFile(L"</h2>\r\n");
             return;
         }
+        break;
+
+        case IO_TARGET_XML:
+            StringCbPrintf(szText, sizeof(szText), L"\r\n%s<%scategory title=\"%s\">",
+                (Depth != 0) ? ((Depth == 1) ? L"\t\t" : L"\t\t\t") : L"\t",
+                (Depth != 0) ? ((Depth == 1) ? L"sub" : L"subsub") : L"", lpszTitle);
         break;
 
         case IO_TARGET_CSV:
@@ -1012,6 +1062,23 @@ IoWriteEndTable(VOID)
         case IO_TARGET_JSON:
             AppendStringToFile(L"\n    }");
             break;
+    }
+}
+
+VOID IoWriteCategoryEnd(INT Depth)
+{
+    switch (IoTarget)
+    {
+        case IO_TARGET_XML:
+        {
+            WCHAR szText[MAX_STR_LEN];
+
+            StringCbPrintf(szText, sizeof(szText), L"\r\n%s</%scategory>",
+                (Depth != 0) ? ((Depth == 1) ? L"\t\t" : L"\t\t\t") : L"\t",
+                (Depth > 0) ? ((Depth == 1) ? L"sub" : L"subsub") : L"");
+            AppendStringToFile(szText);
+        }
+        break;
     }
 }
 

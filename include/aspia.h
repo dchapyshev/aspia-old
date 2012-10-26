@@ -59,6 +59,7 @@
 #define IO_TARGET_JSON     5
 #define IO_TARGET_INI      6
 #define IO_TARGET_RTF      7
+#define IO_TARGET_XML      8
 
 #define Alloc(a) HeapAlloc(GetProcessHeap(), 0, a)
 #define Free(a) HeapFree(GetProcessHeap(), 0, a)
@@ -77,6 +78,8 @@ typedef INT (*PIO_GET_CURRENT_ITEM_INDEX)(VOID);
 typedef struct
 {
     HWND hMainWnd;
+
+    BOOL IsDriverInitialized;
 
     HINSTANCE hLangInst;
     HINSTANCE hIconsInst;

@@ -349,15 +349,18 @@ SOFTWARE_TaskMgr(VOID)
         if (GetModuleFileNameEx(hProcess, NULL,
                                 szFilePath, MAX_PATH))
         {
-            hIcon = ExtractIcon(DllParams.hIconsInst, szFilePath, 0);
-            if (!hIcon)
+            if (IoGetTarget() == IO_TARGET_LISTVIEW)
             {
-                IconIndex = IoAddIcon(IDI_APPS);
-            }
-            else
-            {
-                IconIndex = ImageList_AddIcon(*DllParams.hListImgList, hIcon);
-                DestroyIcon(hIcon);
+                hIcon = ExtractIcon(DllParams.hIconsInst, szFilePath, 0);
+                if (!hIcon)
+                {
+                    IconIndex = IoAddIcon(IDI_APPS);
+                }
+                else
+                {
+                    IconIndex = ImageList_AddIcon(*DllParams.hListImgList, hIcon);
+                    DestroyIcon(hIcon);
+                }
             }
         }
         else
