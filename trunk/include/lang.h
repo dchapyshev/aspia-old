@@ -933,6 +933,7 @@
 #define IDS_CPUID_L1_DATA_CACHE              955
 #define IDS_CPUID_L2_CACHE                   956
 #define IDS_CPUID_L3_CACHE                   957
+#define IDS_TYPE_XML                         958
 
 #define IDS_CAT_SUMMARY           1000
 

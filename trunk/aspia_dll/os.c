@@ -587,34 +587,38 @@ AutorunShowRegPath(HKEY hRootKey, LPWSTR lpszPath, LPWSTR lpszName)
             WCHAR szNewPath[MAX_PATH];
             UINT i, len;
 
-            if (szPath[0] == L'"')
+            IconIndex = -1;
+            if (IoGetTarget() == IO_TARGET_LISTVIEW)
             {
-                for (i = 1, len = wcslen(szPath); i < len; i++)
+                if (szPath[0] == L'"')
                 {
-                    if (szPath[i] == L'"')
+                    for (i = 1, len = wcslen(szPath); i < len; i++)
                     {
-                        szNewPath[i - 1] = L'\0';
-                        ExtractIconEx(szNewPath, 0, NULL, &hIcon, 1);
-                        break;
+                        if (szPath[i] == L'"')
+                        {
+                            szNewPath[i - 1] = L'\0';
+                            ExtractIconEx(szNewPath, 0, NULL, &hIcon, 1);
+                            break;
+                        }
+                        szNewPath[i - 1] = szPath[i];
                     }
-                    szNewPath[i - 1] = szPath[i];
                 }
-            }
-            else
-            {
-                ExtractIconEx(szPath, 0, NULL, &hIcon, 1);
-            }
+                else
+                {
+                    ExtractIconEx(szPath, 0, NULL, &hIcon, 1);
+                }
 
-            if (!hIcon)
-            {
-                IconIndex = IoAddIcon(IDI_APPS);
-            }
-            else
-            {
-                IconIndex = ImageList_AddIcon(*DllParams.hListImgList,
-                                              hIcon);
+                if (!hIcon)
+                {
+                    IconIndex = IoAddIcon(IDI_APPS);
+                }
+                else
+                {
+                    IconIndex = ImageList_AddIcon(*DllParams.hListImgList,
+                                                  hIcon);
 
-                DestroyIcon(hIcon);
+                    DestroyIcon(hIcon);
+                }
             }
 
             if (Count == 0)
@@ -741,17 +745,21 @@ AutorunShowFolderContent(LPWSTR lpszPath)
                 StringCbCopy(szCmd, sizeof(szCmd), szFilePath);
             }
 
-            ExtractIconEx(szCmd, 0, NULL, &hIcon, 1);
-            if (hIcon)
+            IconIndex = -1;
+            if (IoGetTarget() == IO_TARGET_LISTVIEW)
             {
-                IconIndex = ImageList_AddIcon(*DllParams.hListImgList,
-                                              hIcon);
+                ExtractIconEx(szCmd, 0, NULL, &hIcon, 1);
+                if (hIcon)
+                {
+                    IconIndex = ImageList_AddIcon(*DllParams.hListImgList,
+                                                  hIcon);
 
-                DestroyIcon(hIcon);
-            }
-            else
-            {
-                IconIndex = IoAddIcon(IDI_APPS);
+                    DestroyIcon(hIcon);
+                }
+                else
+                {
+                    IconIndex = IoAddIcon(IDI_APPS);
+                }
             }
 
             if (Count == 0)
@@ -931,15 +939,19 @@ OS_AutorunInfo(VOID)
                               szPath,
                               MAX_PATH))
     {
-        ExtractIconEx(szPath, 0, NULL, &hIcon, 1);
-
-        if (hIcon)
+        IconIndex = -1;
+        if (IoGetTarget() == IO_TARGET_LISTVIEW)
         {
-            IconIndex = ImageList_AddIcon(*DllParams.hListImgList, hIcon);
-            DestroyIcon(hIcon);
+            ExtractIconEx(szPath, 0, NULL, &hIcon, 1);
+
+            if (hIcon)
+            {
+                IconIndex = ImageList_AddIcon(*DllParams.hListImgList, hIcon);
+                DestroyIcon(hIcon);
+            }
+            else
+                IconIndex = IoAddIcon(IDI_APPS);
         }
-        else
-            IconIndex = IoAddIcon(IDI_APPS);
 
         IoAddItem(1, IconIndex, L"Shell");
         IoSetItemText(szPath);
@@ -966,15 +978,19 @@ OS_AutorunInfo(VOID)
                               szPath,
                               MAX_PATH))
     {
-        ExtractIconEx(szPath, 0, NULL, &hIcon, 1);
-
-        if (hIcon)
+        IconIndex = -1;
+        if (IoGetTarget() == IO_TARGET_LISTVIEW)
         {
-            IconIndex = ImageList_AddIcon(*DllParams.hListImgList, hIcon);
-            DestroyIcon(hIcon);
+            ExtractIconEx(szPath, 0, NULL, &hIcon, 1);
+
+            if (hIcon)
+            {
+                IconIndex = ImageList_AddIcon(*DllParams.hListImgList, hIcon);
+                DestroyIcon(hIcon);
+            }
+            else
+                IconIndex = IoAddIcon(IDI_APPS);
         }
-        else
-            IconIndex = IoAddIcon(IDI_APPS);
 
         IoAddHeaderString(0, 0, L"HKCU\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon");
         IoAddItem(1, IconIndex, L"Shell");

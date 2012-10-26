@@ -32,6 +32,10 @@ typedef INT (CALLBACK *PINTELCPU_SENSORS_ENUMPROC)
 typedef INT (CALLBACK *PBATTERY_SENSORS_ENUMPROC)
     (INT ItemIndex, INT BatteryIndex, DWORD Current, DWORD Max, DWORD Min);
 
+typedef INT (CALLBACK *PLPC_SENSORS_ENUMPROC)
+    (INT ItemIndex, LPWSTR ChipType, LPWSTR SensorName,
+     INT SensorType, INT Current, INT Max, INT Min);
+
 /* harddrives.c */
 BOOL InitHardDrivesSensors(VOID);
 VOID EnumHardDrivesSensors(PHARDDRIVES_SENSORS_ENUMPROC lpEnumProc);

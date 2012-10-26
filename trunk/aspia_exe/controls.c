@@ -437,6 +437,8 @@ InitInfoDll(VOID)
     DllParams.SySmIcon      = ParamsInfo.SySmIcon;
     DllParams.SysColorDepth = ParamsInfo.SysColorDepth;
 
+    DllParams.IsDriverInitialized = ParamsInfo.IsDriverInitialized;
+
     return AspiaDllInitialize(&DllParams);
 }
 

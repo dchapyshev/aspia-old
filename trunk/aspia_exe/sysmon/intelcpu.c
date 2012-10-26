@@ -76,11 +76,10 @@ InitIntelCpuSensors(VOID)
             IntelCpu->MaxTemp = IntelCpu->MinTemp =
                 GetIntelCpuTemperature(IntelCpu->Index, IntelCpu->Tjmax);
 
+            --Count;
+
             if (IntelCpu->MaxTemp == 0)
-            {
-                --Count;
                 continue;
-            }
 
             if (Count) ++CpuSensorsCount;
 

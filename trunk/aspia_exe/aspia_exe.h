@@ -64,6 +64,7 @@ typedef VOID (*PFREEFUNC)(VOID);
 
 typedef struct _CATEGORY_LIST
 {
+    LPWSTR ShortName;
     UINT StringID;
     UINT IconID;
     UINT MenuID;
@@ -193,7 +194,7 @@ VOID IoAddColumnsList(COLUMN_LIST*, LPWSTR lpCategoryName, LPWSTR lpIniPath);
 INT IoAddIcon(UINT);
 INT IoGetColumnsCount(VOID);
 VOID IoSetColumnsCount(INT);
-VOID IoWriteTableTitle(LPWSTR, UINT, BOOL);
+VOID IoWriteTableTitle(LPWSTR, UINT, BOOL, INT Depth);
 VOID IoWriteBeginTable(VOID);
 VOID IoWriteEndTable(VOID);
 VOID IoWriteBeginContentTable(LPWSTR);
@@ -201,6 +202,7 @@ VOID IoWriteEndContentTable(VOID);
 VOID IoWriteContentTableItem(UINT, LPWSTR, BOOL);
 VOID IoWriteContentTableEndRootItem(VOID);
 VOID IoRunInfoFunc(UINT, LPVOID);
+VOID IoWriteCategoryEnd(INT Depth);
 
 /* report/listview.c */
 INT ListViewAddItem(INT, INT, LPWSTR);

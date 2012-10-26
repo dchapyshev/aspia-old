@@ -3784,8 +3784,11 @@ DmiBiosLanguages(BYTE *pBuf, BYTE Length)
     {
         szText[wcslen(szText) - 2] = 0;
 
-        IoAddHeader(0, 0, IDS_DMI_BIOS_LANG_LANGUAGES);
-        IoSetItemText(szText);
+        if (szText[0] != 0)
+        {
+            IoAddHeader(0, 0, IDS_DMI_BIOS_LANG_LANGUAGES);
+            IoSetItemText(szText);
+        }
     }
 }
 
@@ -3799,12 +3802,12 @@ BiosLanguageInfoEnumProc(BYTE *pBuf, BYTE Length)
     /* Current Language */
     if (GetDmiString(pBuf, pBuf[0x15], Length, szText, sizeof(szText)))
     {
-        IoAddValueName(1, 0, IDS_DMI_BIOS_LANG_CURRENT);
+        IoAddValueName(0, 0, IDS_DMI_BIOS_LANG_CURRENT);
         IoSetItemText(szText);
     }
 
     /* Languages Count */
-    IoAddValueName(1, 0, IDS_DMI_BIOS_LANG_COUNT);
+    IoAddValueName(0, 0, IDS_DMI_BIOS_LANG_COUNT);
     IoSetItemText(L"%u", pBuf[0x04]);
 
     /* Languages List */

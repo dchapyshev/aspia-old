@@ -143,6 +143,9 @@ GetIntelCpuInfo(VOID)
     WCHAR szText[MAX_STR_LEN], szFormat[MAX_STR_LEN];
     BYTE bIndex;
 
+    if (!DllParams.IsDriverInitialized)
+        return;
+
     DebugTrace(L"Intel CPU");
 
     if (GetCPUName(szText, sizeof(szText)))
