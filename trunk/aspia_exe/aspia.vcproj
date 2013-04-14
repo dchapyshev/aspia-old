@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="aspia"
+	Name="aspia_exe"
 	ProjectGUID="{6ED4C44D-8AEB-4F4D-9E70-C3F06203F321}"
 	RootNamespace="aspia"
 	Keyword="Win32Proj"
@@ -227,7 +227,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msvcrt_win2000.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib winmm.lib helper.lib aspia.lib opengl32.lib"
+				AdditionalDependencies="msvcrt_win2000.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib winmm.lib helper.lib opengl32.lib"
+				OutputFile="$(OutDir)\aspia.exe"
 				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\i386\&quot;;&quot;$(OutDir)\&quot;;&quot;$(DDK)\lib\wlh\i386\&quot;"
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames=""
@@ -313,7 +314,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="msvcrt_win2003.obj setupapi.lib comctl32.lib psapi.lib netapi32.lib wtsapi32.lib rasapi32.lib iphlpapi.lib wininet.lib ws2_32.lib version.lib aspia64.lib helper64.lib"
-				OutputFile="$(OutDir)\$(ProjectName)64.exe"
+				OutputFile="$(OutDir)\aspia64.exe"
 				AdditionalLibraryDirectories="&quot;$(DDK)\lib\Crt\amd64\&quot;;&quot;$(DDK)\lib\wlh\amd64\&quot;;&quot;$(OutDir)\&quot;"
 				GenerateManifest="false"
 				SubSystem="2"
@@ -349,85 +350,21 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Файлы исходного кода"
+			Name="Source Files"
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\categories.c"
-				>
-			</File>
-			<File
-				RelativePath=".\controls.c"
-				>
-			</File>
-			<File
-				RelativePath=".\io.c"
-				>
-			</File>
-			<File
-				RelativePath=".\listview.c"
-				>
-			</File>
-			<File
 				RelativePath=".\misc.c"
-				>
-			</File>
-			<File
-				RelativePath=".\report.c"
-				>
-			</File>
-			<File
-				RelativePath=".\settings.c"
-				>
-			</File>
-			<File
-				RelativePath=".\systray.c"
 				>
 			</File>
 			<File
 				RelativePath=".\winmain.c"
 				>
 			</File>
-			<Filter
-				Name="sysmon"
-				>
-				<File
-					RelativePath=".\sysmon\amdcpu.c"
-					>
-				</File>
-				<File
-					RelativePath=".\sysmon\ati.c"
-					>
-				</File>
-				<File
-					RelativePath=".\sysmon\battery.c"
-					>
-				</File>
-				<File
-					RelativePath=".\sysmon\harddrives.c"
-					>
-				</File>
-				<File
-					RelativePath=".\sysmon\intelcpu.c"
-					>
-				</File>
-				<File
-					RelativePath=".\sysmon\lpc.c"
-					>
-				</File>
-				<File
-					RelativePath=".\sysmon\nvidia.c"
-					>
-				</File>
-				<File
-					RelativePath=".\sysmon\sysmon.c"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
-			Name="Заголовочные файлы"
+			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
@@ -448,10 +385,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\include\lang.h"
-				>
-			</File>
-			<File
 				RelativePath=".\resource.h"
 				>
 			</File>
@@ -463,17 +396,9 @@
 				RelativePath="..\include\version.h"
 				>
 			</File>
-			<Filter
-				Name="sysmon"
-				>
-				<File
-					RelativePath=".\sysmon\sysmon.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
-			Name="Файлы ресурсов"
+			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
@@ -485,6 +410,22 @@
 				RelativePath=".\version.rc"
 				>
 			</File>
+			<Filter
+				Name="languages"
+				>
+				<File
+					RelativePath=".\languages\en-US.rc"
+					>
+				</File>
+				<File
+					RelativePath=".\languages\ru-RU.rc"
+					>
+				</File>
+				<File
+					RelativePath=".\languages\uk-UA.rc"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

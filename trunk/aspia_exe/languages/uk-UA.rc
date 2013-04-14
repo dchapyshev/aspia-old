@@ -1,0 +1,80 @@
+/*
+ * PROJECT:         Aspia
+ * FILE:            languages/uk-UA/uk-UA.rc
+ * LICENSE:         LGPL (GNU Lesser General Public License)
+ * PROGRAMMERS:     Dmitry Chapyshev (dmitry@aspia.ru)
+ * TRANSLATORS:     Sakara Eugene (vzov@yandex.ua), igor Paliychuk (mansonigor@gmail.com)
+ */
+
+/* Ukrainian resource file */
+
+#include "../include/icons.h"
+#include "../resource.h"
+
+LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
+
+IDR_SAVE_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Поточна сторінка\tCtrl+S", ID_SAVE_CURRENT
+        MENUITEM "&Всі категорії", ID_SAVE_ALL
+        MENUITEM "В&ибірково...", ID_SAVE_REPORT
+    END
+END
+
+IDR_HELP_POPUP MENU
+BEGIN
+    POPUP "popup"
+    BEGIN
+        MENUITEM "&Зміст...\tF1", ID_HELP
+        MENUITEM SEPARATOR
+        MENUITEM "&Про програму...", ID_ABOUT
+    END
+END
+
+IDD_ABOUT_DIALOG DIALOGEX 100, 100, 198, 187
+STYLE DS_SHELLFONT | WS_BORDER | WS_DLGFRAME | WS_SYSMENU | DS_MODALFRAME | DS_CENTER
+CAPTION "О программе"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CONTROL -1, IDC_ABOUT_ICON, "STATIC", SS_ICON | SS_CENTERIMAGE | SS_REALSIZEIMAGE, 15, 10, 30, 30
+    LTEXT "Aspia (версия %s)", IDC_VERSION_TEXT, 67, 15, 73, 11
+    LTEXT "© 2011-2013 Aspia Software", -1, 66, 27, 100, 10
+    EDITTEXT IDC_ABOUT_EDIT, 5, 45, 188, 87, WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_GROUP | WS_TABSTOP | ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL
+    CONTROL "", -1, "STATIC", SS_ETCHEDFRAME, 5, 136, 188, 27
+    PUSHBUTTON "&Поддержать материально!", IDC_DONATE_BTN, 75, 143, 110, 14
+    PUSHBUTTON "&Сайт", IDC_SITE_BTN, 13, 143, 55, 14
+
+    PUSHBUTTON "&Закрыть", IDOK, 140, 168, 50, 14
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_SAVE, "Зберегти звіт"
+    IDS_RELOAD, "Оновити"
+    IDS_HELP, "Довідка"
+    IDS_SETTINGS, "Параметри"
+    IDS_SITE_LINK, "http://www.aspia.ru"
+    IDS_SITE_DONATE_LINK, "http://www.aspia.ru/donate"
+    IDS_ABOUT_STRING, "Aspia - вільне програмне забезпечення, що розповсюджується за ліцензією GNU LGPL.\r\n\
+                       Ви можете отримати копію ліцензії GNU LGPL за адресою:\r\n\
+                       http://www.gnu.org/licenses/lgpl.html\r\n\r\n\
+                       Ознайомитися з перекладом GNU LGPL на свою мову можна за адресою:\r\n\
+                       http://www.gnu.org/licenses/translations.html\r\n\r\n\
+                       Розробники:\r\n\
+                       • Dmitry Chapyshev (dmitry@aspia.ru) (основна програма, драйвер)\r\n\
+                       • Maksim Shevchuk (maksim.shevchuk@gmail.com) (драйвер)\r\n\r\n\
+                       Перекладачі:\r\n\
+                       • Igor Paliychuk (mansonigor@gmail.com) (Українська)\r\n\
+                       • Sakara Eugene (vzov@yandex.ua) (Українська)\r\n\r\n\
+                       Цифровий підпис для драйверів наданий ReactOS Foundation.\r\n\r\n\
+                       При розробці були використані напрацювання наступних проектів:\r\n\
+                       • ReactOS (http://reactos.org)\r\n\
+                       • Wine (http://winehq.org)\r\n\
+                       • Open Hardware Monitor (http://openhardwaremonitor.org)\r\n\
+                       • Tango Project (http://tango.freedesktop.org)\r\n\
+                       • dmidecode (http://www.nongnu.org/dmidecode)"
+END
+
+/* EOF */
