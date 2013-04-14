@@ -72,7 +72,6 @@
 #define IDC_VERSION_TEXT        103
 #define IDC_SITE_BTN            104
 #define IDC_DONATE_BTN          105
-#define IDC_ACCELERATORS        106
 #define IDC_LANGUAGE_COMBO      108
 #define IDC_SAVE_WINDOW_POS     109
 #define IDC_STARTUP_CAT_COMBO   110
