@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru-ru" lang="ru-ru" dir="ltr" >
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=windows-1251" />
+	<title>Работа из командной строки</title>
+	<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+	<table border="0" cellspacing="0" cellpadding="4" class="htop">
+		<tr>
+			<td class="logo">
+				<a href="index.html">
+					<img border="0" src="images/logo.png" alt="Aspia Software" />
+				</a>
+			</td>
+			<td id="topmenu">
+Работа из командной строки
+			</td>
+		</tr>
+	</table>
+	
+	<table border="0" cellspacing="0" cellpadding="0" id="main">
+		<tr>
+			<td id="content">
+
+<p><strong>Aspia</strong> может работать из командной строки. Эта возможность позволяет сохранить отчет в выбранном формате и в указанную пользователем 
+директорию без запуска графического интерфейса.<br /><br />
+
+<strong>aspia.exe [file_path].[file_ext] [-nonav] [-help]</strong><br /><br />
+<strong>file_path</strong> - путь к файлу и имя файла. Например, C:\Temp\report.htm<br />
+<strong>file_ext</strong> - расширение файла. Необходимо правильно указать расширение, так как по нему определяется формат файла, в который будет 
+сохранен отчет. Поддерживаются следующие расширения (форматы):<br />
+<ul>
+<li><strong>htm</strong> - HTML-файл</li>
+<li><strong>txt</strong> - Текстовый файл</li>
+<li><strong>csv</strong> - Таблица с разделителем ";"</li>
+<li><strong>rtf</strong> - Текст в формате Rich Text Format</li>
+<li><strong>ini</strong> - INI-файл</li>
+</ul>
+<strong>-nonav</strong> - параметр отключает добавление оглавления в файл отчета.<br />
+<strong>-help</strong> - выводит справку по использованию Aspia в командной строке.<br />
+<br />
+
+<strong>Примеры использования:</strong><br />
+<ul>
+<li>Вывод справки:<br />
+<strong>aspia.exe -help</strong></li>
+<li>Сохранение отчета без оглавления в директорию C:\Temp с именем файла test в формате HTML:<br />
+<strong>aspia.exe C:\Temp\test.htm -nonav</strong></li>
+<li>Сохранение отчета с оглавлением в директорию C:\Temp с именем файла test2 в формате RTF:<br />
+<strong>aspia.exe C:\Temp\test2.rtf</strong></li>
+</ul>
+</p>
+
+			</td>
+		</tr>
+	</table>
+
+	<table border="0" cellspacing="0" cellpadding="0" class="footer">
+		<tr>
+			<td id="copyright">&copy; 2011-2012 <a href="http://aspia.ru">Aspia Software</a></td>
+		</tr>
+	</table>
+
+</body>
+</html>

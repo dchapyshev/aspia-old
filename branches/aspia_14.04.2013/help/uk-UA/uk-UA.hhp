@@ -1,0 +1,25 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=uk-UA.chm
+Contents file=uk-UA.hhc
+Default topic=index.html
+Display compile progress=No
+Full-text search=Yes
+Language=0x422 Украинский (Украина)
+Title=Довідка Aspia
+
+
+[FILES]
+cmd.html
+contacts.html
+donate.html
+faq.html
+index.html
+license.html
+report.html
+settings.html
+hotkeys.html
+systemreq.html
+
+[INFOTYPES]
+

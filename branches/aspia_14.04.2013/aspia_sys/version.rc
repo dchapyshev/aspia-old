@@ -1,0 +1,51 @@
+/*
+ * PROJECT:         Aspia
+ * FILE:            aspia_sys/version.rc
+ * LICENSE:         LGPL (GNU Lesser General Public License)
+ * PROGRAMMERS:     Shevchuk Maksim (maksim.shevchuk@gmail.com)
+ */
+
+#include <windows.h>
+#include "../include/version.h"
+
+#if defined (_X86_)
+    #define VER_FILEDESCRIPTION_STR_ASPIA_SYS  "Aspia x86 Driver\0"
+    #define VER_ORIGINALFILENAME_STR_ASPIA_SYS "aspia_x86.sys\0"
+#elif defined (_AMD64_)
+    #define VER_FILEDESCRIPTION_STR_ASPIA_SYS  "Aspia x64 Driver\0"
+    #define VER_ORIGINALFILENAME_STR_ASPIA_SYS "aspia_x64.sys\0"
+#else
+    #error Unknown arch
+#endif
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     VER_FILEVERSION
+PRODUCTVERSION  VER_PRODUCTVERSION
+FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
+FILEFLAGS       0x0L
+FILEOS          VOS__WINDOWS32
+FILETYPE        VFT_DLL
+FILESUBTYPE     VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName",      VER_COMPANYNAME_STR
+            VALUE "FileDescription",  VER_FILEDESCRIPTION_STR_ASPIA_SYS
+            VALUE "FileVersion",      VER_FILEVERSION_STR
+            VALUE "InternalName",     VER_INTERNALNAME_STR
+            VALUE "LegalCopyright",   VER_LEGALCOPYRIGHT_STR
+            VALUE "LegalTrademarks1", VER_LEGALTRADEMARKS1_STR
+            VALUE "LegalTrademarks2", VER_LEGALTRADEMARKS2_STR
+            VALUE "OriginalFilename", VER_ORIGINALFILENAME_STR_ASPIA_SYS
+            VALUE "ProductName",      VER_PRODUCTNAME_STR
+            VALUE "ProductVersion",   VER_PRODUCTVERSION_STR
+        END
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
